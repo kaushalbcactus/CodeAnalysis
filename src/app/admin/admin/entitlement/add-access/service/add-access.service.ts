@@ -914,6 +914,7 @@ export class AddAccessService {
       true,
       true
     );
+    debugger
     const ListOfUpdatedItems = dbItemList.filter((c) => c.edited === true);
     if (ListOfUpdatedItems && ListOfUpdatedItems.length > 0) {
       await this.updateAllEditedItems(ListOfUpdatedItems, type, disMessage);
@@ -1705,19 +1706,16 @@ export class AddAccessService {
       // add rule owner to access Maxwell
 
       dbItemList
-        .filter((c) => RuleItems.includes(c[parameter]))
-        .map(
-          (d) =>
-           d[access] =  d[access] &&
-            d[access].hasOwnProperty("results") &&
-            d[access].results.length &&
-            d[dbArrayName]
-              .split(";#")
-              .map((i) => +i)
-              .indexOf(rule.ID) > 0
-              ? { results: [d[access].results.push(rule.OwnerPG)]}
-              : { results: [rule.OwnerPG]})
-
+      .filter((c) => RuleItems.includes(c[parameter]))
+      .map(
+        (d) =>
+         d[access] =   d[dbArrayName]
+         .split(";#")
+         .map((i) => +i)
+         .indexOf(rule.ID) > 0 ?  ( d[access] &&
+         d[access].hasOwnProperty("results") &&
+         d[access].results.length > 0  ? {results : [...d[access].results,...[rule.OwnerPG]]} : { results: [rule.OwnerPG]} ) : d[access]) ;
+       
     }
     return dbItemList;
   }

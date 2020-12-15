@@ -461,7 +461,7 @@ export class AdminConstantService {
         "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title," +
         "DeliveryLevel2/ID,DeliveryLevel2/Title",
       filter:
-        "Status ne 'Closed'",
+        "Status eq 'Approved'",
       top: 4900,
     },
     GET_All_QUALITY_COMPLAINTS: {
