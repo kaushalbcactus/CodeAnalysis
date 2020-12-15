@@ -937,7 +937,6 @@ export class AddAccessService {
   }
 
   async updateAllEditedItems(ListOfUpdatedItems, TypeName, disMessage) {
-    debugger;
     let batchURL = [];
     let ListName = "";
     let ListType = "";
@@ -1345,7 +1344,6 @@ export class AddAccessService {
           dbItemList.filter((c) => AllCodeList.includes(c[parameter])).length >
             0
         ) {
-          debugger;
           dbItemList
             .filter((c) => AllCodeList.includes(c[parameter]))
             .map((d) => (d.edited = true));
@@ -1385,7 +1383,6 @@ export class AddAccessService {
     parameter,
     type
   ) {
-    debugger;
     dbItemList
       .filter((c) => AllCodeList.includes(c[parameter]))
       .map((d) => d[arrayName].push(Rule));
@@ -1480,7 +1477,6 @@ export class AddAccessService {
     parameter,
     type
   ) {
-    debugger;
     // make edited true for containing current rule
     if (
       dbItemList.filter((c) => RuleItems.includes(c[parameter])) &&
@@ -1646,7 +1642,6 @@ export class AddAccessService {
           );
 
         // update access user with existing and new (adhoc user)
-        debugger;
         dbItemList
           .filter((c) => RuleItems.includes(c[parameter]))
           .filter((a) => a[access] && a[access].hasOwnProperty("results"))
