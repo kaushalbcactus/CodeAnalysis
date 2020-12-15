@@ -1674,7 +1674,8 @@ export class ManageFinanceComponent implements OnInit {
           this.commonService.setBatchObject(
             batchUrl,
             this.spServices.getReadURL(
-              this.constant.listNames.ProjectBudgetBreakup.name
+              this.constant.listNames.ProjectBudgetBreakup.name,
+              null
             ),
             pbb,
             this.constant.Method.POST,
@@ -2690,7 +2691,7 @@ export class ManageFinanceComponent implements OnInit {
           } else {
             this.commonService.setBatchObject(
               batchURL,
-              this.spServices.getItemURL(
+              this.spServices.getReadURL(
                 this.constant.listNames.ProjectFinanceBreakup.name,
                 null
               ),
@@ -2835,12 +2836,12 @@ export class ManageFinanceComponent implements OnInit {
           if (sowUpdateData.hasOwnProperty("TotalLinked")) {
             this.commonService.setBatchObject(
               batchURL,
-              this.spServices.getReadURL(
+              this.spServices.getItemURL(
                 this.constant.listNames.SOW.name,
                 +sowObj.ID
               ),
               sowUpdateData,
-              this.constant.Method.POST,
+              this.constant.Method.PATCH,
               this.constant.listNames.SOW.name
             );
           }
@@ -2875,7 +2876,7 @@ export class ManageFinanceComponent implements OnInit {
             } else {
               this.commonService.setBatchObject(
                 batchURL,
-                this.spServices.getItemURL(
+                this.spServices.getReadURL(
                   this.constant.listNames.InvoiceLineItems.name,
                   null
                 ),
