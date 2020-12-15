@@ -2815,6 +2815,7 @@ export class ManageFinanceComponent implements OnInit {
                 true,
                 budgetArr[0].revenue < 0 ? true : false
               );
+              returnObj.pbbObj = projectBudgetBreakupData;
               this.commonService.setBatchObject(
                 batchURL,
                 this.spServices.getReadURL(
