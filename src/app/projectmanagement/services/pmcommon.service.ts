@@ -2722,6 +2722,11 @@ export class PMCommonService {
             c.Access.hasOwnProperty("results")
           ).map((d) => d.Access.results.map((e) => e.ID))
         : [];
+        if( this.pmObject.RuleTypeArray.Delivery &&
+          this.pmObject.RuleTypeArray.Delivery.length > 1){
+            IDsArray.push(this.pmObject.RuleTypeArray.Delivery.slice(1).map(c=>c.OwnerPG.ID));
+          }
+
     selectedDeliveryAccess = [
       ...new Set(IDsArray.reduce((a, b) => [...a, ...b], [])),
     ];
@@ -2741,6 +2746,12 @@ export class PMCommonService {
             c.Access.hasOwnProperty("results")
           ).map((d) => d.Access.results.map((e) => e.ID))
         : [];
+
+        if( this.pmObject.RuleTypeArray.CM &&
+          this.pmObject.RuleTypeArray.CM.length > 1){
+            IDsArray.push(this.pmObject.RuleTypeArray.CM.slice(1).map(c=>c.OwnerPG.ID));
+          }
+
 
     selectedCMAccess = [
       ...new Set(IDsArray.reduce((a, b) => [...a, ...b], [])),
@@ -2837,9 +2848,9 @@ export class PMCommonService {
     const RulesAccessIDs = Rules.filter(
       (c) => c.ResourceType === Type
     ).filter((c) => c.Access.hasOwnProperty("results"))
-      ? Rules.filter((c) => c.ResourceType === Type)
+      ? [...Rules.filter((c) => c.ResourceType === Type)
           .filter((c) => c.Access.hasOwnProperty("results"))
-          .map((d) => d.Access.results.map((e) => e.ID))
+          .map((d) => d.Access.results.map((e) => e.ID)), [...Rules.filter((c) => c.ResourceType === Type).slice(1).map(g=>g.OwnerPG.ID)]]
       : [];
     Data.IDs = [...new Set(RulesAccessIDs.reduce((a, b) => [...a, ...b], []))];
     return Data;
