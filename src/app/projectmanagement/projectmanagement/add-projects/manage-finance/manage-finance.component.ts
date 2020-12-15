@@ -10,7 +10,7 @@ import {
   FormGroup,
   FormBuilder,
   Validators,
-  FormControl, 
+  FormControl,
 } from "@angular/forms";
 import { PMObjectService } from "src/app/projectmanagement/services/pmobject.service";
 import { PmconstantService } from "src/app/projectmanagement/services/pmconstant.service";
@@ -2648,7 +2648,7 @@ export class ManageFinanceComponent implements OnInit {
     this.saveUpdatePO(this.BudgetType);
   }
 
-  /////////// Refactor 
+  /////////// Refactor
   async saveUpdatePO(budgetType) {
     const returnObj = {
       pfObj: {},
@@ -3154,92 +3154,70 @@ export class ManageFinanceComponent implements OnInit {
                   c.FileSystemObjectType === 1 &&
                   c.Title === months[i].monthName
               );
-
-              if (milestone && milestone.Title === selectedDateMonth) {
-                this.commonService.setBatchObject(
-                  batchURL,
-                  this.spServices.getItemURL(
-                    this.constant.listNames.Schedules.name,
-                    milestone.Id
-                  ),
-                  {
-                    __metadata: {
-                      type: this.constant.listNames.Schedules.type,
-                    },
-                    Actual_x0020_End_x0020_Date: new Date(
-                      this.selectedProposedEndDate.setHours(23, 45)
-                    ),
-                    DueDateDT: new Date(
-                      this.selectedProposedEndDate.setHours(23, 45)
-                    ),
-                  },
-                  this.constant.Method.PATCH,
-                  this.constant.listNames.Schedules.name
-                );
-
-                const milestoneTasks = response.filter(
-                  (c) =>
-                    c.FileSystemObjectType === 0 &&
-                    c.Milestone === milestone.Title
-                );
-                milestoneTasks.forEach((task) => {
-                  const taskUpdate = Object.assign({}, options);
-                  taskUpdate.data = {
-                    __metadata: {
-                      type: this.constant.listNames.Schedules.type,
-                    },
-                    DueDateDT: new Date(
-                      this.selectedProposedEndDate.setHours(23, 45)
-                    ),
-                  };
-                  if (task.Task === "Blocking") {
-                    const businessDay = this.commonService.calcBusinessDays(
-                      task.StartDate,
-                      months[i].monthEndDay
-                    );
-                    taskUpdate.data.ExpectedTime =
-                      "" + businessDay * Resources[0].MaxHrs;
-                  }
-
+              if (milestone) {
+                if (milestone.Title === selectedDateMonth) {
                   this.commonService.setBatchObject(
                     batchURL,
                     this.spServices.getItemURL(
                       this.constant.listNames.Schedules.name,
-                      task.Id
+                      milestone.Id
                     ),
-                    taskUpdate.data,
+                    {
+                      __metadata: {
+                        type: this.constant.listNames.Schedules.type,
+                      },
+                      Actual_x0020_End_x0020_Date: new Date(
+                        this.selectedProposedEndDate.setHours(23, 45)
+                      ),
+                      DueDateDT: new Date(
+                        this.selectedProposedEndDate.setHours(23, 45)
+                      ),
+                    },
                     this.constant.Method.PATCH,
                     this.constant.listNames.Schedules.name
                   );
-                });
-              } else {
-                this.commonService.setBatchObject(
-                  batchURL,
-                  this.spServices.getItemURL(
-                    this.constant.listNames.Schedules.name,
-                    milestone.Id
-                  ),
-                  {
-                    __metadata: {
-                      type: this.constant.listNames.Schedules.type,
-                    },
-                    Status: "Deleted",
-                  },
-                  this.constant.Method.PATCH,
-                  this.constant.listNames.Schedules.name
-                );
 
-                const milestoneTasks = response.filter(
-                  (c) =>
-                    c.FileSystemObjectType === 0 &&
-                    c.Milestone === milestone.Title
-                );
-                milestoneTasks.forEach((task) => {
+                  const milestoneTasks = response.filter(
+                    (c) =>
+                      c.FileSystemObjectType === 0 &&
+                      c.Milestone === milestone.Title
+                  );
+                  milestoneTasks.forEach((task) => {
+                    const taskUpdate = Object.assign({}, options);
+                    taskUpdate.data = {
+                      __metadata: {
+                        type: this.constant.listNames.Schedules.type,
+                      },
+                      DueDateDT: new Date(
+                        this.selectedProposedEndDate.setHours(23, 45)
+                      ),
+                    };
+                    if (task.Task === "Blocking") {
+                      const businessDay = this.commonService.calcBusinessDays(
+                        task.StartDate,
+                        months[i].monthEndDay
+                      );
+                      taskUpdate.data.ExpectedTime =
+                        "" + businessDay * Resources[0].MaxHrs;
+                    }
+
+                    this.commonService.setBatchObject(
+                      batchURL,
+                      this.spServices.getItemURL(
+                        this.constant.listNames.Schedules.name,
+                        task.Id
+                      ),
+                      taskUpdate.data,
+                      this.constant.Method.PATCH,
+                      this.constant.listNames.Schedules.name
+                    );
+                  });
+                } else {
                   this.commonService.setBatchObject(
                     batchURL,
                     this.spServices.getItemURL(
                       this.constant.listNames.Schedules.name,
-                      task.Id
+                      milestone.Id
                     ),
                     {
                       __metadata: {
@@ -3250,7 +3228,30 @@ export class ManageFinanceComponent implements OnInit {
                     this.constant.Method.PATCH,
                     this.constant.listNames.Schedules.name
                   );
-                });
+
+                  const milestoneTasks = response.filter(
+                    (c) =>
+                      c.FileSystemObjectType === 0 &&
+                      c.Milestone === milestone.Title
+                  );
+                  milestoneTasks.forEach((task) => {
+                    this.commonService.setBatchObject(
+                      batchURL,
+                      this.spServices.getItemURL(
+                        this.constant.listNames.Schedules.name,
+                        task.Id
+                      ),
+                      {
+                        __metadata: {
+                          type: this.constant.listNames.Schedules.type,
+                        },
+                        Status: "Deleted",
+                      },
+                      this.constant.Method.PATCH,
+                      this.constant.listNames.Schedules.name
+                    );
+                  });
+                }
               }
               if (
                 ProjectMilestones.find(
