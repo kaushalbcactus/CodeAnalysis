@@ -914,7 +914,6 @@ export class AddAccessService {
       true,
       true
     );
-    debugger
     const ListOfUpdatedItems = dbItemList.filter((c) => c.edited === true);
     if (ListOfUpdatedItems && ListOfUpdatedItems.length > 0) {
       await this.updateAllEditedItems(ListOfUpdatedItems, type, disMessage);
