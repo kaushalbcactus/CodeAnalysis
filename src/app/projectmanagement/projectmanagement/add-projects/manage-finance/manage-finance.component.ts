@@ -3691,6 +3691,7 @@ export class ManageFinanceComponent implements OnInit {
         if (element.status === this.constant.STATUS.APPROVED) {
           data.ProformaLookup = element.proformaLookup;
           data.InvoiceLookup = element.invoiceLookup;
+          data.TaggedDate = (new Date()).toDateString();
         }
         return data;
       } else {

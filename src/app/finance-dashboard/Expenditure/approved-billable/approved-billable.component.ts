@@ -1601,6 +1601,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     if (InvoiceType !== "new") {
       Data["ProformaLookup"] = this.invoice.ProformaLookup;
       Data["InvoiceLookup"] = scheduleOopInvoice_form.getRawValue().InvoiceId;
+      Data["TaggedDate"] = new Date();
     }
     return Data;
   }

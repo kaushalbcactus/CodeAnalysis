@@ -853,6 +853,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
                 __metadata: { type: this.constantService.listNames.InvoiceLineItems.type },
                 Status: 'Scheduled',
                 ScheduledDate: new Date(),
+                TaggedDate : null,
                 ProformaLookup: null,
                 InvoiceLookup: null
             }

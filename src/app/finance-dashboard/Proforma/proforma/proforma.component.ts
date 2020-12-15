@@ -1777,6 +1777,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
       let iliData = {
         Status: "Approved",
         InvoiceLookup: oInv.ID,
+        TaggedDate: oInv.InvoiceDate
       };
       // let data = [];
       iliData["__metadata"] = {

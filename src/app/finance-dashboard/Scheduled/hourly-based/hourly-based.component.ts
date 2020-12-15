@@ -1201,6 +1201,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     if (InvoiceType !== "new") {
       iliData["ProformaLookup"] = Invoice.ProformaLookup;
       iliData["InvoiceLookup"] = Invoiceform.value.InvoiceId;
+      iliData["TaggedDate"] = new Date();
     }
     return iliData;
   }

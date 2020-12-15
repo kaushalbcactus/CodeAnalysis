@@ -1097,6 +1097,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
       },
       Status: "Scheduled",
       ScheduledDate: new Date(),
+      TaggedDate: null,
       ProformaLookup: null,
       InvoiceLookup: null,
     };
