@@ -1658,6 +1658,17 @@ export class AddAccessService {
                   : d[access].results)
           );
       }
+
+      dbItemList
+      .filter((c) => RuleItems.includes(c[parameter]))
+      .map(
+        (c) =>
+          ( c[access] =  c[access] &&
+            c[access].hasOwnProperty("results") &&
+            c[access].results.length > 0 
+              ? {results: c[access].results.filter((e) => e.ID !== c[owner].ID)}
+              : c[access])
+      );
     }
     return dbItemList;
   }
@@ -1714,6 +1725,18 @@ export class AddAccessService {
          .indexOf(rule.ID) > 0 ?  ( d[access] &&
          d[access].hasOwnProperty("results") &&
          d[access].results.length > 0  ? {results : [...d[access].results,...[rule.OwnerPG]]} : { results: [rule.OwnerPG]} ) : d[access]) ;
+
+
+         dbItemList
+         .filter((c) => RuleItems.includes(c[parameter]))
+         .map(
+           (c) =>
+             ( c[access] =  c[access] &&
+               c[access].hasOwnProperty("results") &&
+               c[access].results.length > 0 
+                 ? {results: c[access].results.filter((e) => e.ID !== c[owner].ID)}
+                 : c[access])
+         );
        
     }
     return dbItemList;
