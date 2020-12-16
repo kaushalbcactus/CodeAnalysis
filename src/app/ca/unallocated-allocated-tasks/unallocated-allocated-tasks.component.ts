@@ -404,13 +404,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
               task.selectedResources.push(user);
             });
 
-            // Items.sort((user1, user2) => {
-            //   if (user1.value.timeAvailable > user2.value.timeAvailable) { return -1; }
-            //   if (user1.value.timeAvailable < user2.value.timeAvailable) { return 1; }
-            //   if (user1.value.Title > user2.value.Title) { return 1; }
-            //   if (user1.value.Title < user2.value.Title) { return -1; }
-            // });
-
             task.displayselectedResources.push({ label: retRes, items: Items });
           }
         }
@@ -563,9 +556,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     if (!this.emailTemplate) {
       this.emailTemplate = await this.GetEmailTemplate(templateName);
     }
-
-
-
     milestoneTask.Title = slot.ProjectCode + ' ' +
       slot.Milestone + ' ' + milestoneTask.TaskName
 
@@ -760,9 +750,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   }
 
-
-
-
   async getMilestoneTasks(task) {
 
     let alltasks = [];
@@ -785,6 +772,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       return alltasks;
     }
   }
+
   async OnRowExpand(event) {
 
     event.data.subTaskloaderenable = true;
@@ -860,6 +848,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       event.data.subTaskloaderenable = false;
     }
   }
+
   async modelChanged(event, Slot) {
     event.editMode = true;
     event.edited = true;
@@ -887,6 +876,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     allConstantTasks = await this.caCommonService.GetAllTasksMilestones(taskName);
     return allConstantTasks.map(c => c.Title);
   }
+
   async GetTask(task, IsdbTask) {
 
     // const taskObj = $.extend(true, {}, this.caGlobal.caObject);
@@ -1375,10 +1365,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     return true;
   }
 
-
-
-
-
   validateTaskDates(AllTasks, slot) {
     let errorPresnet = false;
     const taskCount = AllTasks.length;
@@ -1407,11 +1393,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     // });
   }
 
-
-
-
   // tslint:enable
-
 
   public async generateSaveTasks(unt) {
 

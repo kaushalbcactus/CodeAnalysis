@@ -260,11 +260,7 @@ export class CapacityDashboardComponent implements OnInit {
           : [];
 
       const resValues = resources.map(({ value }) => value); // this.Resources.map(o => o.value);
-      // tslint:disable-next-line: no-string-literal
-      //this.searchCapacityForm.controls['practicearea'].setValue(null);
-      // tslint:disable-next-line: no-string-literal
-      //this.searchCapacityForm.controls['skill'].setValue(null);
-      // tslint:disable-next-line: no-string-literal
+     
       this.searchCapacityForm.patchValue({
         practicearea: practiceAreas,
         skill: skills,
@@ -294,11 +290,6 @@ export class CapacityDashboardComponent implements OnInit {
                 (c) => c.UserNamePG.Title !== null
               ).map((o) => new Object({ label: o.UserNamePG.Title, value: o }))
             );
-
-      // tslint:disable-next-line: no-string-literal
-      //this.searchCapacityForm.controls['skill'].setValue(null);
-      // tslint:disable-next-line: no-string-literal
-      //this.searchCapacityForm.controls['resources'].setValue(this.Resources);
 
       const resValues = resources.map(({ value }) => value);
       this.searchCapacityForm.patchValue({
@@ -417,6 +408,7 @@ export class CapacityDashboardComponent implements OnInit {
       }
     }
   }
+  
   EnableBlockResourceDialog() {
     const resources = this.AlldbResources.filter((c) =>
       this.searchCapacityForm.value.resources.includes(c)

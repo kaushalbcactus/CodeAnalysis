@@ -291,8 +291,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         }));
     }
 
-
-
     createAddToProformaFormField() {
         this.addToProforma_form = this.fb.group({
             ClientLegalEntity: [{ value: '', disabled: true }],
@@ -471,16 +469,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 sowcn = sowCode + ' / ' + sowName;
             }
             const poItem = await this.getPONumber(element);
-            // let pnumber = poItem.Number ? poItem.Number : '';
-            // const pname = poItem.Name ? poItem.Name : '';
-            // if (pnumber === 'NA') {
-            //     pnumber = '';
-            // }
-            // let ponn = pnumber + ' ' + pname;
-            // if (pname && pnumber) {
-            //     ponn = pnumber + ' / ' + pname;
-            // }
-            // const POValues = ponn;
 
             this.confirmedRes.push({
                 Id: element.ID,
@@ -609,9 +597,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         });
     }
     onRowSelect(event) {
-        // console.log('Event ', event);
-        // console.log('this.selectedAllRowData ', this.selectedAllRowData);
-        // this.selectedRowItemData.push(event.data);
         this.calculateData();
     }
     calculateData() {
@@ -629,9 +614,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     onRowUnselect(event) {
-        // console.log(event);
-        // console.log('this.selectedAllRowData ', this.selectedAllRowData);
-
         const rowUnselectIndex = this.selectedRowItemData.indexOf(event.data);
         this.selectedRowItemData.splice(rowUnselectIndex, 1);
         // console.log(this.selectedRowItemData);

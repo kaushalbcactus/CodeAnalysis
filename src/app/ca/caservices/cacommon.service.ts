@@ -185,30 +185,7 @@ export class CACommonService {
     sDate = sDates + ' ' + sHrs + ':' + sMins + ':00 ' + sAMPM;
     return sDate;
   }
-  // /**
-  //  * This method is used to send the email to particualr user with subject and body.
-  //  * @param to
-  //  * @param from
-  //  * @param cc
-  //  * @param templateName
-  //  * @param objEmailBody
-  //  * @param mailSubject
-  //  */
-  // async triggerMail(to, from, cc, templateName, objEmailBody, mailSubject) {
-  //   const mailContent = this.globalConstantService.listNames.MailContent.name;
-  //   const mailQuery = this.caConstantService.mailContent;
-  //   mailQuery.filter = mailQuery.filter.replace('{0}', templateName);
-  //   //tslint:disable
-  //   // tslint:enable
-  //   const body = await this.spServices.readItems(mailContent, mailQuery);
-  //   // let mailBody = JSON.parse(body._body).d.results[0].Content;
-  //   let mailBody = body.length ? body[0].Content : [];
-  //   for (const data of objEmailBody) {
-  //     mailBody = mailBody.replace(RegExp(data.key, 'gi'), data.value);
-  //   }
-  //   //  cc = [fromEmail];
-  //   this.spServices.sendMail(to, from, mailSubject, mailBody, cc);
-  // }
+  
   /**
    * This method is to give the unique value with seperator.
    * @param sVal
@@ -424,10 +401,6 @@ export class CACommonService {
           for (let i = sortField.length - 1; i >= 0; i--) {
             this.customSort(data, sortField[i].field, sortField[i].order);
           }
-          // sortField.forEach(element => {
-
-          // });
-          // this.customSort(data, sortField, sortOrder);
         }
         if (globalFilter) {
           data = data.filter(row => this.globalFilter(row, globalFilter, filterColumns))
@@ -519,21 +492,7 @@ export class CACommonService {
    */
   customSort(data, fieldName: string, order: number) {
     data.sort((data1, data2) => {
-      //   const val1 = row1[fieldName];
-      //   const val2 = row2[fieldName];
-      //   if (val1 === val2) {
-      //     return 0;
-      //   }
-      //   let result = -1;
-      //   if (val1 > val2) {
-      //     result = 1;
-      //   }
-      //   if (order < 0) {
-      //     result = -result;
-      //   }
-      //   return result;
-      // });
-
+      
       let value1 = data1[fieldName];
       let value2 = data2[fieldName];
       let result = null;
@@ -628,21 +587,7 @@ export class CACommonService {
    * @param task
    */
   sortResources(filteredResources, task) {
-    // if (task.projectTask.length > 0) {
-    //   const projectTaskFilter = task.projectTask.filter(function (projObj) {
-    //     return projObj.projectCode === task.projectCode;
-    //   });
-    //   let completedTask;
-    //   if (projectTaskFilter.length) {
-    //     completedTask = projectTaskFilter[0].MilestoneTasks.filter(function (tasobj) {
-    //       return tasobj.Status === 'Completed' && task.task === tasobj.Task;
-    //     });
-    //   }
-
-    // }
-    // else {
-    //   return filteredResources;
-    // }
+    
     const sortedResources = [];
     const recommended = filteredResources.filter(function (objt) {
       return objt.userType === 'Recommended' || objt.userType === 'Best Fit';
