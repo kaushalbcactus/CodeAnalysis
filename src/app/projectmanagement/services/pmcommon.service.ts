@@ -1762,6 +1762,7 @@ export class PMCommonService {
         if (element.status === this.constant.STATUS.APPROVED) {
           data.ProformaLookup = element.proformaLookup;
           data.InvoiceLookup = element.invoiceLookup;
+          data.TaggedDate = new Date();
           const invoice = this.pmObject.arrAdvanceInvoices.find(
             (e) => e.ID === element.invoiceLookup
           );
