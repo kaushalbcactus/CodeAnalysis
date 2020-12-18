@@ -68,6 +68,13 @@ export class AppComponent implements OnDestroy {
     }];
   }
 
+  goToEmpDashboard() {
+    this.visibleSidebar = false;
+    if (!this.router.url.includes('/myDashboard/my-current-tasks')) {
+      this.router.navigate(['/myDashboard']);
+    }
+  }
+
   initSPPageObject() {
     this.globalService.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
       ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
