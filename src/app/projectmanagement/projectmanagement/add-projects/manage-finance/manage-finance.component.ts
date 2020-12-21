@@ -3786,10 +3786,10 @@ export class ManageFinanceComponent implements OnInit {
       (c) => !ExisitingPOList.includes(c.label)
     );
 
-    if (ReplacePOList && ReplacePOList.length > 0) {
+    if (this.poList && this.poList.length > 0) {
       const ref = this.dialogService.open(PoChangeDialogComponent, {
         data: {
-          POList: ReplacePOList,
+          POList: this.poList,
           LineItems: this.PoReplaceLineItemList,
         },
 
@@ -3869,7 +3869,22 @@ export class ManageFinanceComponent implements OnInit {
             });
           });
 
-          PODataTemp.push({ Id: 0, poInfo: POInfo, poInfoData: allLineItems });
+          if(!(this.poData.filter(e=> e.poInfo.find((d) => d.poId == data.selectedPO)).length)){
+            PODataTemp.push({ Id: 0, poInfo: POInfo, poInfoData: allLineItems });
+          } else  {
+            PODataTemp.forEach(e=> {
+              if(e.poInfo.poId == data.selectedPO) {
+                  e.poInfo.scTotal = e.poInfo.scTotal + POInfo.scTotal;
+                  e.poInfo.scRevenue = e.poInfo.scRevenue + POInfo.scRevenue;
+                  e.poInfo.scOOP = e.poInfo.scOOP + POInfo.scOOP;
+                  e.poInfo.scTax = e.poInfo.scTax + POInfo.scTax;
+                  e.poInfo.total = e.poInfo.total + POInfo.total;
+                  e.poInfo.revenue = e.poInfo.revenue + POInfo.revenue;
+                  e.poInfo.oop = e.poInfo.oop + POInfo.oop;
+                  e.poInfoData.push(...allLineItems);
+              }        
+            })
+          }
 
           PODataTemp.forEach((element) => {
             const projectFinanceBreakupData = this.getProjectFinanceBreakupData(
@@ -3944,6 +3959,7 @@ export class ManageFinanceComponent implements OnInit {
               );
             });
           }
+          // console.log(batchURL);
           await this.spServices.executeBatch(batchURL);
 
           this.enableCheckList = this.enableCheckList === true ? false : true;
