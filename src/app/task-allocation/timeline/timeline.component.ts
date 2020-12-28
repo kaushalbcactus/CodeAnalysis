@@ -48,6 +48,7 @@ import { ConflictAllocationComponent } from "src/app/shared/conflict-allocations
 import { PreStackcommonService } from "src/app/shared/pre-stack-allocation/service/pre-stackcommon.service";
 import { IConflictResource } from "src/app/shared/conflict-allocations/interface/conflict-allocation";
 import { GanttService } from "src/app/shared/gantt-chart/service/gantt.service";
+import { IUserCapacity } from 'src/app/shared/usercapacity/interface/usercapacity';
 
 @Component({
   selector: "app-timeline",
@@ -244,6 +245,7 @@ export class TimelineComponent
   preferredResources = [];
   minTime: any;
   maxTime: any;
+  leaveAlertMsgs: any[] = [];
   constructor(
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -797,7 +799,7 @@ export class TimelineComponent
     preferredResObj.listName = this.constants.listNames.PreferredResources.name;
     preferredResObj.type = "GET";
     batchUrl.push(preferredResObj);
-    
+
     this.commonService.SetNewrelic(
       "TaskAllocation",
       "Timeline",
@@ -1998,7 +2000,7 @@ export class TimelineComponent
         //   this.singleTask
         // );
       } else if (this.singleTask.type == "task") {
-        this.DateChange(this.singleTask, type);
+        await this.DateChange(this.singleTask, type);
         this.GanttchartData = allTasks.data;
       }
 
@@ -2499,7 +2501,7 @@ export class TimelineComponent
           this.milestoneData,
           true
         );
-
+        const arrMsgs = [];
         for (const task of allTasks.data) {
           if (task.type == "task") {
             if (task.id == this.updatedTasks.id) {
@@ -2513,15 +2515,24 @@ export class TimelineComponent
                 }
               );
               if (this.budgetHrs !== 0) {
-                await this.prestackService.calcPrestackAllocation(
+                const resourceCapacity = await this.prestackService.calcPrestackAllocation(
                   resource,
                   task
                 );
+                if (resourceCapacity && resourceCapacity.leaves.length) {
+                  const leaves = [];
+                  for (const leave of resourceCapacity.leaves) {
+                    const formattedleave = this.datepipe.transform(new Date(leave), "d MMM y");
+                    leaves.push(formattedleave);
+                  }
+                  arrMsgs.push(resourceCapacity.userName + " is on leave on " + leaves.join(','));
+                }
               } else {
                 this.taskAllocateCommonService.resetDailyAllocation(task);
               }
+              this.commonService.showToastrMessage(this.constants.MessageType.info, arrMsgs.join('/\n'), false);
               this.setDateToCurrent(task);
-              this.DateChange(task, type);
+              await this.DateChange(task, type);
               this.sharedObject.currentTaskData = task;
             }
           } else if (task.type == "milestone") {
@@ -2569,7 +2580,7 @@ export class TimelineComponent
         scrollDate = new Date(cascadingObject.node.end_date);
         this.setDateToCurrent(cascadingObject.node);
         ////// Cascade future  dates
-        this.DateChange(cascadingObject.node, cascadingObject.type);
+        await this.DateChange(cascadingObject.node, cascadingObject.type);
         this.sharedObject.currentTaskData = cascadingObject.node;
       } else {
         let updatedTask = this.updateMilestoneTaskObject(
@@ -3962,6 +3973,7 @@ export class TimelineComponent
   // **************************************************************************************************
   async DateChangePart(node, type) {
     this.disableSave = true;
+    this.leaveAlertMsgs = [];
     this.reallocationMailArray.length = 0;
     this.deallocationMailArray.length = 0;
     node.pUserStart = new Date(
@@ -3997,14 +4009,49 @@ export class TimelineComponent
         );
       }
       await this.changeDateOfEditedTask(node, type);
-      await this.prestackService.calcPrestackAllocation(resource, node);
+      const resourceCapacity: IUserCapacity = await this.prestackService.calcPrestackAllocation(resource, node);
+      if (resourceCapacity && resourceCapacity.leaves.length) {
+        const resourceExists = this.leaveAlertMsgs.find(r => r.resource === resourceCapacity.userName);
+        if (resourceExists) {
+          for (const leave of resourceCapacity.leaves) {
+            if (!resourceExists.allLeaves.find(r => new Date(r).getTime() === new Date(leave).getTime())) {
+              const formattedleave = this.datepipe.transform(new Date(leave), "d MMM y");
+              resourceExists.allLeaves.push(formattedleave);
+            }
+          }
+        } else {
+          const leaves = [];
+          for (const leave of resourceCapacity.leaves) {
+            const formattedleave = this.datepipe.transform(new Date(leave), "d MMM y");
+            leaves.push(formattedleave);
+          }
+          this.leaveAlertMsgs.push({
+            resource: resourceCapacity.userName,
+            allLeaves: leaves
+          })
+        }
+      }
       await this.DateChange(node, type);
+      setTimeout(() => {
+        const alertMsg = [];
+        for (const resource of this.leaveAlertMsgs) {
+          alertMsg.push(resource.resource + " is on leave on " + resource.allLeaves.join(','));
+        }
+        if (alertMsg.length) {
+          this.commonService.showToastrMessage(
+            this.constants.MessageType.info,
+            alertMsg.join('\n'),
+            true
+          );
+        }
+      }, 100);
+
     }
     this.disableSave = false;
   }
 
   // tslint:disable
-  DateChange(node, type) {
+  async DateChange(node, type) {
     let previousNode = node;
     let selectedMil = -1;
     let subMilestonePosition = 0;
@@ -4031,7 +4078,7 @@ export class TimelineComponent
 
     // clickedInput variable is used to know if start or end date changed
     previousNode.clickedInput = type;
-    this.cascadeNextNodes(previousNode, subMilestonePosition, selectedMil);
+    await this.cascadeNextNodes(previousNode, subMilestonePosition, selectedMil);
     this.resetStartAndEnd();
     previousNode.clickedInput = undefined;
   }
@@ -4064,7 +4111,7 @@ export class TimelineComponent
     return sentPrevNode;
   }
 
-  cascadeNextNodes(previousNode, subMilestonePosition, selectedMil) {
+  async cascadeNextNodes(previousNode, subMilestonePosition, selectedMil) {
     var nextNode = [];
     let sentPrevNode = undefined;
     if (
@@ -4156,7 +4203,7 @@ export class TimelineComponent
       }
     }
     if (sentPrevNode.slotType === "Slot" && sentPrevNode.id > 0) {
-      this.compareSlotSubTasksTimeline(
+      await this.compareSlotSubTasksTimeline(
         sentPrevNode,
         subMilestonePosition,
         selectedMil
@@ -4164,7 +4211,7 @@ export class TimelineComponent
     }
 
     if (nextNode.length) {
-      nextNode.forEach(element => {
+      nextNode.forEach(async element => {
         const elementData = element.hasOwnProperty("data")
           ? element.data
           : element;
@@ -4175,7 +4222,7 @@ export class TimelineComponent
             elementData.status === "Not Confirmed" ||
             elementData.status === "Not Saved")
         ) {
-          this.cascadeNextTask(
+          await this.cascadeNextTask(
             sentPrevNode,
             element,
             subMilestonePosition,
@@ -4208,11 +4255,11 @@ export class TimelineComponent
         prevNodeEndDate > new Date(nodeData.start_date)
       ) {
         if (nodeData.itemType !== "Client Review") {
-          this.cascadeNode(previousNode, nodeData);
-          this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
+          await this.cascadeNode(previousNode, nodeData);
+          await this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
         } else {
-          this.cascadeNode(previousNode, nodeData);
-          this.cascadeNextNodes(nodeData, 0, selectedMil + 1);
+          await this.cascadeNode(previousNode, nodeData);
+          await this.cascadeNextNodes(nodeData, 0, selectedMil + 1);
         }
       }
     } else if (nodeData.type === "submilestone") {
@@ -4220,12 +4267,12 @@ export class TimelineComponent
         const allParallelTasks = nextNode.children.filter(dataEl => {
           return !dataEl.data.previousTask;
         });
-        allParallelTasks.forEach(element => {
+        allParallelTasks.forEach(async element => {
           if (
             !element.data.DisableCascade &&
             element.data.status !== "In Progress"
           ) {
-            this.cascadeNextTask(
+            await this.cascadeNextTask(
               previousNode,
               element.data,
               parseInt(nodeData.position),
@@ -4260,9 +4307,9 @@ export class TimelineComponent
             allParallelTasks.push.apply(allParallelTasks, tempData);
           });
         }
-        allParallelTasks.forEach(element => {
+        allParallelTasks.forEach(async element => {
           if (!element.DisableCascade && element.status !== "In Progress") {
-            this.cascadeNextTask(
+            await this.cascadeNextTask(
               previousNode,
               element,
               element.submilestone ? 1 : 0,
@@ -4304,7 +4351,28 @@ export class TimelineComponent
         return node.AssignedTo && node.AssignedTo.ID === objt.UserNamePG.ID;
       }
     );
-    await this.prestackService.calcPrestackAllocation(resource, nodeData);
+    const resourceCapacity: IUserCapacity = await this.prestackService.calcPrestackAllocation(resource, nodeData);
+    if (resourceCapacity && resourceCapacity.leaves.length) {
+      const resourceExists = this.leaveAlertMsgs.find(r => r.resource === resourceCapacity.userName);
+      if (resourceExists) {
+        for (const leave of resourceCapacity.leaves) {
+          if (!resourceExists.allLeaves.find(r => new Date(r).getTime() === new Date(leave).getTime())) {
+            const formattedleave = this.datepipe.transform(new Date(leave), "d MMM y");
+            resourceExists.allLeaves.push(formattedleave);
+          }
+        }
+      } else {
+        const leaves = [];
+        for (const leave of resourceCapacity.leaves) {
+          const formattedleave = this.datepipe.transform(new Date(leave), "d MMM y");
+          leaves.push(formattedleave);
+        }
+        this.leaveAlertMsgs.push({
+          resource: resourceCapacity.userName,
+          allLeaves: leaves
+        })
+      }
+    }
     if (
       nodeData.IsCentrallyAllocated === "Yes" &&
       node.slotType !== "Slot" &&
@@ -4469,7 +4537,7 @@ export class TimelineComponent
   }
 
   resetStartAndEnd() {
-    this.milestoneData.forEach(milestone => {
+    for (const milestone of this.milestoneData) {
       if (milestone.children !== undefined) {
         milestone.children.forEach(submilestone => {
           if (submilestone.data.type === "submilestone") {
@@ -4478,7 +4546,7 @@ export class TimelineComponent
         });
       }
       this.setStartAndEnd(milestone);
-    });
+    }
   }
 
   // tslint:enable
@@ -4553,7 +4621,7 @@ export class TimelineComponent
 
       this.changeDateProperties(node);
       await this.prestackService.calcPrestackAllocation(resource, node);
-      this.DateChange(node, "end");
+      await this.DateChange(node, "end");
     }
   }
 
@@ -4607,12 +4675,12 @@ export class TimelineComponent
         if (
           sentPrevNode.data.start_date > slotFirstTaskSorted[0].data.start_date
         ) {
-          slotFirstTaskSorted.forEach(element => {
+          slotFirstTaskSorted.forEach(async element => {
             if (
               !element.data.DisableCascade &&
               element.data.status === "Not Started"
             ) {
-              this.cascadeNextTask(
+              await this.cascadeNextTask(
                 sentPrevNode,
                 element,
                 subMilestonePosition,
@@ -6337,6 +6405,7 @@ export class TimelineComponent
           );
         }
 
+        this.alertResourceLeave(checkTasks);
         const isValid = this.validationsForActive(checkTasks);
         if (!isValid) {
           return false;
@@ -6381,6 +6450,31 @@ export class TimelineComponent
     return true;
   }
 
+  async alertResourceLeave(allTasks) {
+    const arrMsgs = [];
+    for (const task of allTasks) {
+      const resource = this.sharedObject.oTaskAllocation.oResources.filter(
+        objt => {
+          return (
+            task.AssignedTo && task.AssignedTo.ID === objt.UserNamePG.ID
+          );
+        }
+      );
+      const resourceCapacity: IUserCapacity = await this.prestackService.calcPrestackAllocation(
+        resource,
+        task
+      );
+      if (resourceCapacity && resourceCapacity.leaves.length) {
+        const leaves = [];
+        for (const leave of resourceCapacity.leaves) {
+          const formattedleave = this.datepipe.transform(new Date(leave), "d MMM y");
+          leaves.push(formattedleave);
+        }
+        arrMsgs.push(resourceCapacity.userName + " is on leave on " + leaves.join(','));
+      }
+    }
+    this.commonService.showToastrMessage(this.constants.MessageType.info, arrMsgs.join('/\n'), false);
+  }
   async checkForPubSupportTasks(allTasks) {
     const allowedTasks = ['Journal Requirement', 'Galley', "GalleySlot", 'Submission Pkg', 'Submit', 'SubmitSlot'];
     const status = ['Completed', 'Auto Closed'];
@@ -6635,7 +6729,7 @@ export class TimelineComponent
           if (validateNextMilestone) {
             this.loaderenable = true;
             // setTimeout(async () => {
-              await this.setAsNextMilestone(task);
+            await this.setAsNextMilestone(task);
             // }, 200);
           }
         }
@@ -6675,7 +6769,7 @@ export class TimelineComponent
       } else {
         previousTasks = [];
       }
-      
+
     } else {
       const newCurrentMilestone = this.milestoneData.find(obj => {
         return (
