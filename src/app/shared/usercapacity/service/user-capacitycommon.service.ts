@@ -134,38 +134,33 @@ export class UserCapacitycommonService {
                 let allocationPerDay = oUser.tasks[j].AllocationPerDay.split(
                   /\n/
                 );
-                allocationPerDay = allocationPerDay.forEach((allocation) => {
+                for (const allocation of allocationPerDay) {
                   const arrAllocation = allocation.split(":");
-                  const allocationDate =
-                    arrAllocation.length &&
-                      new Date(arrAllocation[0]) instanceof Date
-                      ? new Date(arrAllocation[0])
-                      : new Date();
-                  let allocationTime =
-                    arrAllocation.length > 0 ? arrAllocation[1] : "0";
-                  allocationTime =
-                    arrAllocation.length > 1
-                      ? arrAllocation[1] + ":" + arrAllocation[2]
-                      : "0";
-                  if (
-                    allocationDate.getTime() ===
-                    new Date(oUser.dates[i].date).getTime()
-                  ) {
+                  const allocationDate = arrAllocation.length && new Date(arrAllocation[0]) instanceof Date ?
+                  new Date(arrAllocation[0]) : new Date();
+                  let allocationTime = arrAllocation.length > 0 ? arrAllocation[1] : "0";
+                  allocationTime = arrAllocation.length > 1 ? arrAllocation[1] + ":" + arrAllocation[2] : "0";
+                  if (allocationDate.getTime() === new Date(oUser.dates[i].date).getTime()) {
                     oUser.tasks[j].timeAllocatedPerDay = allocationTime;
                   }
-                });
+                }
+                // allocationPerDay = allocationPerDay.forEach((allocation) => {
+                //   const arrAllocation = allocation.split(":");
+                //   const allocationDate = arrAllocation.length && new Date(arrAllocation[0]) instanceof Date
+                //       ? new Date(arrAllocation[0]) : new Date();
+                //   let allocationTime = arrAllocation.length > 0 ? arrAllocation[1] : "0";
+                //   allocationTime = arrAllocation.length > 1 ? arrAllocation[1] + ":" + arrAllocation[2] : "0";
+                //   if (
+                //     allocationDate.getTime() ===
+                //     new Date(oUser.dates[i].date).getTime()
+                //   ) {
+                //     oUser.tasks[j].timeAllocatedPerDay = allocationTime;
+                //   }
+                // });
                 if (!oUser.tasks[j].timeAllocatedPerDay) {
-                  oUser.tasks[
-                    j
-                  ].timeAllocatedPerDay = this.commonservice.convertToHrsMins(
-                    "" +
-                    this.getPerDayTime(
-                      oUser.tasks[j].ExpectedTime !== null
-                        ? '' + oUser.tasks[j].ExpectedTime
-                        : "0",
-                      taskBusinessDays - arrLeaveDays.length
-                    )
-                  );
+                  oUser.tasks[j].timeAllocatedPerDay = this.commonservice.convertToHrsMins("" +
+                    this.getPerDayTime(oUser.tasks[j].ExpectedTime !== null ? '' + oUser.tasks[j].ExpectedTime
+                        : "0", taskBusinessDays - arrLeaveDays.length));
                 }
               } else {
                 oUser.tasks[
