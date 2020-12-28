@@ -1,6 +1,6 @@
 <div class='UserButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="modalloaderenable">
 
-    <button type="button" pButton [icon]="buttonloader ? 'pi  pi-spin pi-spinner' : 'pi pi-save'" id="saveUser" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" [disabled]="selectedProjects.length === 0 || (AuditType ==='Finance'  &&  selectedProjects.length > 10) || buttonloader"
+    <button type="button" pButton [icon]="buttonloader ? 'pi  pi-spin pi-spinner' : 'pi pi-save'" id="saveUser" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" [disabled]="selectedProjects.length === 0 || (selectedProjects.length > 10) || buttonloader"
         (click)="AuditProjects(AuditType)" label="Audit"></button>
 
     <button type="button" pButton icon="pi pi-times" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;" (click)="cancel();"></button>
@@ -12,7 +12,7 @@
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
-<div class="p-col-12" style="color: #ff0000;" *ngIf="!modalloaderenable && AuditType ==='Finance'">*Note : Multiselect checkbox can select first 10 rows of current page.</div>
+<div class="p-col-12" style="color: #ff0000;" *ngIf="!modalloaderenable">*Note : Multiselect checkbox can select first 10 rows of current page.</div>
 
 <p-table #allProjectRef [hidden]="modalloaderenable" [columns]="displayedColumns" [(selection)]="selectedProjects" dataKey="ProjectCode" [value]="projectList" (onRowSelect)='onRowSelect()' (onRowUnselect)="onRowUnselect()" [paginator]="true" [rows]="10"
     [style]="{'font-size':'13px'}" (onHeaderCheckboxToggle)="MultipleSelectRows(AuditType)">
