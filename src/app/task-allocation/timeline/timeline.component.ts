@@ -4032,17 +4032,20 @@ export class TimelineComponent
         }
       }
       await this.DateChange(node, type);
-      const alertMsg = [];
-      for (const resource of this.leaveAlertMsgs) {
-        alertMsg.push(resource.resource + " is on leave on " + resource.allLeaves.join(','));
-      }
-      if (alertMsg.length) {
-        this.commonService.showToastrMessage(
-          this.constants.MessageType.info,
-          alertMsg.join('\n'),
-          true
-        );
-      }
+      setTimeout(() => {
+        const alertMsg = [];
+        for (const resource of this.leaveAlertMsgs) {
+          alertMsg.push(resource.resource + " is on leave on " + resource.allLeaves.join(','));
+        }
+        if (alertMsg.length) {
+          this.commonService.showToastrMessage(
+            this.constants.MessageType.info,
+            alertMsg.join('\n'),
+            true
+          );
+        }
+      }, 100);
+
     }
     this.disableSave = false;
   }
