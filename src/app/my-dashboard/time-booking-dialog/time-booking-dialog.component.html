@@ -1,21 +1,22 @@
-<div fxLayout="column" style="padding: 12vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+<div class="p-d-flex p-flex-column" style="padding: 12vw;" *ngIf="modalloaderenable">
     <div id="modalInnerLoader"></div>
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
-<div class='blockBookingButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="modalloaderenable">
 
-    <button type="button" pButton icon="pi pi-save" id="saveBooking" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SaveTimeBooking()" label="Save"></button>
+<div class="pdialogButton p-col-12 p-grid p-jc-end" *ngIf="!modalloaderenable">
+    <button class="p-mx-1 p-button-raised p-button-danger" type="button" pButton icon="pi pi-save" id="saveBooking" [ngStyle]="{'cursor':'pointer' }" (click)="SaveTimeBooking()" label="Save"></button>
 
-    <button type="button" pButton icon="pi pi-times" (click)="cancelTBooking();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
+    <button type="button" pButton icon="pi pi-times" (click)="cancelTBooking();" label="Cancel" class="p-button-raised p-button-danger"></button>
 
 </div>
+
 
 <div fxLayout="row" *ngIf="!modalloaderenable" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
 
 
     <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start" fxLayoutGap="20px">
-        <p-table #tableId [style]="{'font-size':'12px','width' : '100%'}" [value]="UserMilestones" [globalFilterFields]="['Entity','ProjectCode','Milestone']" id="datatable">
+        <p-table #tableId [style]="{'font-size':'12px','width' : '100%'}" [value]="UserMilestones" [globalFilterFields]="['Entity','ProjectCode','Milestone']" id="datatable" styleClass="p-datatable-cactus p-datatable-gridlines">
             <ng-template pTemplate="caption">
                 <div style="text-align: right">
                     <i class="fa fa-search" style="margin:4px 4px 0 0"></i>

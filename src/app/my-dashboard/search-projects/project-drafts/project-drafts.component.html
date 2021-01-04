@@ -1,42 +1,47 @@
-<p-tabMenu [ngStyle]="{'padding': '5px'}" [model]="items" [activeItem]="activeItem"></p-tabMenu>
+<p-tabView>
+    <p-tabMenu [ngStyle]="{'padding': '5px'}" [model]="items" [activeItem]="activeItem">
+    </p-tabMenu>
 
-<div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" [hidden]="!loaderenable">
-    <div id="modalInnerLoader"></div>
-    <div id="modalInnerLoaderText">Loading...</div>
-</div>
+    <div class="p-d-flex p-flex-column" style="padding: 2vw;width: 100%;" *ngIf="loaderenable">
+        <div id="modalInnerLoader"></div>
+        <div id="modalInnerLoaderText">Loading...</div>
+    </div>
 
-<p-tabPanel [header]="item.label" [hidden]="loaderenable" *ngFor="let item of items; let i = index" [selected]="item.label === selectedTab">
+    <div *ngIf="!loaderenable">
 
-    <p-table [style]="{'margin-top':'1vh','font-size':'12px'}" *ngIf="DocumentArray.length > 0" [columns]="dbcols" [(selection)]="selectedDocuments" [value]="DocumentArray">
+        <p-tabPanel [header]="item.label" *ngFor="let item of items; let i = index" [selected]="item.label === selectedTab">
 
-        <ng-template pTemplate="header" let-columns>
-            <tr>
-                <th style="width: 3em">
-                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                </th>
-                <th *ngFor="let col of columns" [ngStyle]="{'line-height': '33px'}">
-                    {{col.header}}
-                    <!-- <i  style="font-size: 1.2em; margin-left: 0.5vw;cursor: pointer;vertical-align: middle;" [hidden]="col.header !=='Document Name'" (click)="downloadFile()" title="Download" class="fa fa-download" aria-hidden="true"></i> -->
+            <p-table [style]="{'margin-top':'1vh','font-size':'12px'}" *ngIf="DocumentArray.length > 0" [columns]="dbcols" [(selection)]="selectedDocuments" [value]="DocumentArray" styleClass="p-datatable-cactus p-datatable-gridlines">
 
-                    <button style="float: right;font-size: 12px;" [hidden]="col.header !=='Document Name'" pButton type="button" label="Download" (click)="downloadFile()" class="ui-button-danger"></button>
-                </th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-rowData let-columns="columns">
-            <tr>
-                <td style="width: 3em">
-                    <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
-                </td>
-                <td *ngFor="let col of columns">
-                    <a href="{{rowData.ServerRelativeUrl}}" target="_blank" style="color:#c53e3e;word-break: break-all;" target="_blank" *ngIf="col.field === 'Name'">{{rowData[col.field]}}</a>
-                    <span *ngIf="col.field !== 'Name'">{{rowData[col.field]}}</span>
-                </td>
-            </tr>
-        </ng-template>
-    </p-table>
-</p-tabPanel>
+                <ng-template pTemplate="header" let-columns>
+                    <tr>
+                        <th style="width: 3em">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th *ngFor="let col of columns">
+                            {{col.header}}
+                            <button style="float: right;font-size: 12px;" [hidden]="col.header !=='Document Name'" pButton type="button" label="Download" (click)="downloadFile()" class="p-button-raised p-button-danger"></button>
 
-<div *ngIf="items === undefined && !loaderenable" style="    padding: 30px 0px 0px 0px;color: #c53e3e;font-size: 1.2em;">* No Milestones present for current Project.
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData let-columns="columns">
+                    <tr>
+                        <td style="width: 3em">
+                            <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+                        </td>
+                        <td *ngFor="let col of columns">
+                            <a href="{{rowData.ServerRelativeUrl}}" target="_blank" style="color:#c53e3e;word-break: break-all;" target="_blank" *ngIf="col.field === 'Name'">{{rowData[col.field]}}</a>
+                            <span *ngIf="col.field !== 'Name'">{{rowData[col.field]}}</span>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-tabPanel>
+
+    </div>
+</p-tabView>
+<div *ngIf="items === undefined && !loaderenable" style="padding: 30px 0px 0px 0px;color: #c53e3e;font-size: 1.2em;">* No Milestones present for current Project.
 </div>
 <div *ngIf="items !== undefined && DocumentArray.length === 0 && !loaderenable" style="    padding: 30px 0px 0px 0px;color: #c53e3e;font-size: 1.2em;">* No Documents present for current Milestone.
 </div>

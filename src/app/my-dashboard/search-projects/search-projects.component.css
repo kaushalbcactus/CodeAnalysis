@@ -1,43 +1,11 @@
-#float-input {
-    padding: 0.4em !important;
-    border: 1px solid #848484 !important;
-    border-radius: 4px !important;
-}
-
-.ui-float-label>label
-{
-    font-weight: 500 !important;
-    color:#c53e3e !important;
-}
-.ui-button-danger{
-    padding: 1px !important;
-    border-radius: 4px !important;
-  
-}
-.SearchBox{
-    padding: 1.3em !important;
+.SearchBox {
+    padding: 1em !important;
     border: 1px solid #848484 !important;
     border-radius: 4px !important;
     background: #f4f4f4 !important;
 }
 
-::ng-deep p-dropdownitem > li
-{
-   padding: 4px !important;
-   font-size: 12px !important;
-}
-
-::ng-deep .ui-table .ui-sortable-column.ui-state-highlight , ::ng-deep  .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active, ::ng-deep .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
-    background-color :#C53E3E !important;
-  }
-
-
-  :host ::ng-deep .ui-slidemenu-wrapper
-  {
-      height: 42px !important;
-  }
-  ::ng-deep .mat-expansion-panel-header
-{
+::ng-deep .mat-expansion-panel-header {
     height: 40px !important;
     background-color: #cdcdcd !important;
     border-bottom-right-radius: 0px !important;
@@ -46,107 +14,75 @@
     font-weight: 500 !important;
 }
 
-.mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]).cdk-keyboard-focused, .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]).cdk-program-focused, .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]):hover
-{
+.mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]).cdk-keyboard-focused,
+.mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]).cdk-program-focused,
+.mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]):hover {
     background-color: #ededed !important;
 }
 
-
-.ProjectDetails , .ProjectDetails > tbody > tr > th, .ProjectDetails > tbody > tr > td {
+.ProjectDetails,
+.ProjectDetails>tbody>tr>th,
+.ProjectDetails>tbody>tr>td {
     border: 1px solid black !important;
     border-collapse: collapse !important;
-    
-  }
- .ProjectDetails > tbody > tr > th , .ProjectDetails >  tbody tr > td {
+}
+
+.ProjectDetails>tbody>tr>th,
+.ProjectDetails>tbody tr>td {
     padding: 5px !important;
     text-align: left !important;
     font-size: 1.1em !important;
-  }
-  .ProjectDetails >  tbody > tr > th {
-      color :#C53E3E !important;
-      font-weight: 500 !important;
-      width: 12vw !important;
-  }
+}
 
+.ProjectDetails>tbody>tr>th {
+    color: #C53E3E !important;
+    font-weight: 500 !important;
+    width: 12vw !important;
+}
 
+::ng-deep p-dropdownitem>li {
+    padding: 4px !important;
+    font-size: 12px !important;
+}
 
-  
-  #modalInnerLoader{
-    border: 5px solid #f3f3f3;
-    border-radius: 50%;
-    border-top: 5px solid red;
-    border-bottom: 5px solid red;
-    width: 50px;
-    height: 50px;
-    -webkit-animation: spin 2s linear infinite;
-    animation: spin 2s linear infinite;
-    margin: 0 auto;
+::ng-deep .ui-table .ui-sortable-column.ui-state-highlight,
+ ::ng-deep .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active,
+ ::ng-deep .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
+    background-color: #C53E3E !important;
+}
+
+ :host ::ng-deep .ui-slidemenu-wrapper {
+    height: 42px !important;
+}
+
+ ::ng-deep .SearchProjectTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
+    overflow: visible;
+}
+
+ ::ng-deep .SearchProjectTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
     position: relative;
-    top: 50%;
-    transform: translateY(-50%);
-   
-  }
-  
-  #modalInnerLoaderText{
-    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
-    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
-    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
-    animation: loading-text-opacity 2s linear 0s infinite normal;
-    color: black;
-    font-family: "Helvetica Neue, "Helvetica", ""arial";
-    font-size: 10px;
-    font-weight: bold;
-    opacity: 0.5;
-    text-align: center;
-    text-transform: uppercase;
-    top: 0;
-   
-  }
+}
 
+ ::ng-deep .SearchProjectTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div>i {
+    top: 0px !important;
+}
 
-  @-webkit-keyframes spin {
-    0% { -webkit-transform: rotate(0deg)}
-    100% { -webkit-transform: rotate(360deg)  }
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg) }
-    100% { transform: rotate(360deg) }
-  }
+ ::ng-deep .SearchProjectTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
+    top: 0px !important;
+    left: inherit !important;
+    right: 40px !important;
+}
 
-   
-      
-      ::ng-deep  .SearchProjectTable  .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
-        overflow: visible;
-      }
-      
-      ::ng-deep  .SearchProjectTable  .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
-        position: relative;
-      }
-      
-      ::ng-deep  .SearchProjectTable  .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div > i {
-        top: 0px !important;
-      }
-      
-      ::ng-deep  .SearchProjectTable  .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
-        top: 0px !important;
-        left: inherit !important;
-        right: 40px !important;
-      }
+ ::ng-deep .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight,
+ ::ng-deep .ui-chkbox .ui-chkbox-box.ui-state-active {
+    background-color: #C53E3E !important;
+    border-color: #C53E3E !important;
+}
 
-      
-  ::ng-deep  .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight , ::ng-deep  .ui-chkbox .ui-chkbox-box.ui-state-active {
-    background-color :#C53E3E   !important;
-    border-color :#C53E3E !important;
-     
-  }
-  ::ng-deep .ui-multiselect-label
-  {
+ ::ng-deep .ui-multiselect-label {
     font-size: 12px;
-  }
+}
 
-  ::ng-deep  .ui-multiselect-panel .ui-multiselect-header .ui-multiselect-filter-container .ui-multiselect-filter-icon  {
-   color :#C53E3E   !important;
-    
-     
-  }
+ ::ng-deep .ui-multiselect-panel .ui-multiselect-header .ui-multiselect-filter-container .ui-multiselect-filter-icon {
+    color: #C53E3E !important;
+}

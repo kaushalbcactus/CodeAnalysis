@@ -1,13 +1,13 @@
-<div class="storagebutton p-grid p-align-end">
-
-    <button type="button" pButton class="SaveButton" icon="pi pi-check" style="margin-right: 5px;" (click)="SaveGraph()" label="Save"></button>
-    <button type="button" pButton icon="pi pi-times" (click)="cancelGraph();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
-
-</div>
-
-<div style="padding: 10vw;width: 100%;" [hidden]="!initialLoad">
+<div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="initialLoad">
     <div id="scInnerLoader"></div>
     <div id="scInnerLoaderText">Loading...</div>
+</div>
+
+<div class="pdialogButton p-col-12 p-grid p-jc-end" *ngIf="!initialLoad">
+
+    <button type="button" pButton icon="pi pi-check" (click)="SaveGraph()" label="Save" class="p-mx-1 p-button-raised p-button-danger" [ngStyle]="{'cursor':'pointer' }"></button>
+    <button type="button" pButton icon="pi pi-times" (click)="cancelGraph();" label="Cancel" class="p-button-raised p-button-danger"></button>
+
 </div>
 
 <div class="p-grid p-dir-col" [hidden]="initialLoad">
@@ -59,8 +59,8 @@
 
                 <ng-template #nodeTemplate let-node>
                     <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (click)="ontaskClick(node)" (contextmenu)="(node.Status ==='Not Saved' || node.Status ==='Not Started') ?  RemoveNode($event,node,'task'): ErrorMessage($event,'Task')">
-                        <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
-                        <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">
+                        <svg:rect [attr.width]="node.dimension.width" [attr.style.cursor]="pointer" [attr.height]="node.dimension.height" [attr.fill]="node.color || node.options.color" />
+                        <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2">
                             {{node.label}}
                         </svg:text>
                     </svg:g>
@@ -88,8 +88,8 @@
                 <ng-template #nodeTemplate let-node>
 
                     <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (click)="ontaskClick(node)" (contextmenu)="(node.Status ==='Not Saved' || node.Status ==='Not Started') ?  RemoveNode($event,node,'task'): ErrorMessage($event,'Task')">
-                        <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
-                        <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">
+                        <svg:rect [attr.width]="node.dimension.width" [attr.style.cursor]="pointer" [attr.height]="node.dimension.height" [attr.fill]="node.color || node.options.color" />
+                        <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2">
                             {{node.label}}
                         </svg:text>
                     </svg:g>

@@ -1,11 +1,14 @@
-<div fxLayout="row" fxLayoutAlign="space-between center">
-    <p-tabMenu [model]="items" fxFlex="97"></p-tabMenu>
+<div class="p-grid  p-jc-between">
+    <p-tabMenu class="p-col-11 p-pb-0 p-pr-0" [model]="items" [activeItem]="activeItem"></p-tabMenu>
+    <div class="p-col p-pb-0 p-pt-3" style="border-bottom: 1px solid #e0e0e0;">
+        <div class=" p-grid p-jc-end p-mr-3">
+            <i title="Manage FTE Work" *ngIf="isUserFTE" (click)="createTask()" style="cursor: pointer; font-size: 2em;" class="p-mr-4 fa fa-user" aria-hidden="true"></i>
 
-    <i fxFlex="3" title="Manage FTE Work" *ngIf="isUserFTE" (click)="createTask()" style="cursor: pointer; font-size: 2em;padding:3px;border-bottom:1px solid #C53E3E;" class="fa fa-user" aria-hidden="true">
-    </i>
-
-    <i fxFlex="3" (click)="loadTimeBookingDialog()" title="Time Booking" style="cursor: pointer; font-size: 2em;padding:3px;border-bottom:1px solid #C53E3E;" class="fa fa-calendar-plus-o" aria-hidden="true"></i>
+            <i (click)="loadTimeBookingDialog()" title="Time Booking" style="cursor: pointer; font-size: 2em" class="fa fa-calendar-plus-o" aria-hidden="true"></i>
+        </div>
+    </div>
 </div>
+
 
 <ng-container #createTaskcontainer></ng-container>
 

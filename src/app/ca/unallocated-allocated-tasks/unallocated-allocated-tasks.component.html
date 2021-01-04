@@ -1,12 +1,21 @@
-<!-- **************************************************************************************************
+<!-- ****************************************************************************************
                                                         Table View Data
-**************************************************************************************************** -->
+***************************************************************************************** -->
 <div class="p-grid p-justify-between mainPage">
     <p-dropdown [options]="DropdownOptions" class="mainfilter" [(ngModel)]="selectedTab" (onChange)="getProperties()"></p-dropdown>
 
     <button mat-raised-button type="button" [disabled]="disableSave" (click)="saveTasks(taskTable)">
     <mat-icon>save</mat-icon> Save
 </button>
+</div>
+
+
+
+<div #loader class="overlay"></div>
+<div #spanner class="spanner">
+    <div class="loader"></div>
+    <p>Please wait...</p>
+    <p>Fetching available resources...</p>
 </div>
 
 
@@ -17,23 +26,48 @@
 
 <div class="allocatedUnallocatedTable" *ngIf='!loaderenable'>
     <p-table #taskTable class="slotTable" dataKey="Id" [columns]="displayedColumns" [value]="caGlobal.dataSource" sortMode="multiple" [lazy]="true" (onLazyLoad)="lazyLoadTask($event)" [paginator]="true" [rows]="10" [totalRecords]="caGlobal.totalRecords" rowExpandMode="multiple"
-        [loading]="caGlobal.loading" [style]="{'font-size':'13px'}" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)" [lazyLoadOnInit]="false">
+        [loading]="caGlobal.loading" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)" [lazyLoadOnInit]="false" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" [stateKey]="selectedTab" [globalFilterFields]="filterColumns">
+        <ng-template pTemplate="caption">
+            <div class="p-d-flex">
+                <span class="p-input-icon-left p-ml-auto">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text" (input)="taskTable.filterGlobal($event.target.value, 'contains')" placeholder="Global Filter" />
+                </span>
+            </div>
+        </ng-template>
         <ng-template pTemplate="header" let-columns>
             <tr class="slotTableTr">
-                <th style="width: 3%;"></th>
+                <th class="lastColumnWidth"></th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field">
-                    {{ col.header }}
-                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                    <div class="p-d-flex p-jc-between p-ai-center">
+                        {{col.header}}
+                        <p-sortIcon [field]="col.field"></p-sortIcon>
+                        <p-columnFilter *ngIf="col.header != ''" [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                            <ng-template pTemplate="header">
+                                <div class="p-px-3 p-pt-3 p-pb-0">
+                                    <span class="p-text-bold"> {{col.header}} Picker</span>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-multiSelect [ngModel]="value" [options]="caArrays[col.filterColumnName]" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                                    <ng-template let-option pTemplate="item">
+                                        <div class="p-multiselect-representative-option">
+                                            <span class="p-ml-1">{{option.label}}</span>
+                                        </div>
+                                    </ng-template>
+                                </p-multiSelect>
+                            </ng-template>
+                        </p-columnFilter>
+                    </div>
                 </th>
                 <th>Next Task Start</th>
                 <th>Last Task End </th>
                 <th>SC Date</th>
-                <!-- <th [pSortableColumn]="'assignedTo'">Allocated To
-                    <p-sortIcon [field]="'assignedTo'"></p-sortIcon>
-                </th> -->
-                <th style="width: 3%;"></th>
+
+                <th class="lastColumnWidth"></th>
             </tr>
-            <tr class="slotTableTr1">
+            <!-- <tr class="slotTableTr1">
                 <th></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
                     <p-multiSelect *ngSwitchCase="'ClientName'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.clientLegalEntityArray" defaultLabel="All" class="ClientName" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
@@ -51,12 +85,12 @@
                 </th>
 
 
-            </tr>
+            </tr> -->
         </ng-template>
         <ng-template pTemplate="body" let-task let-expanded="expanded" let-columns="columns" let-rowIndex="rowIndex" let-Slot>
             <tr>
                 <td>
-                    <a href="#" [pRowToggler]="task">
+                    <a href="#" [pRowToggler]="task" style="color:#C53E3E;">
                         <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
                     </a>
                 </td>
@@ -124,7 +158,7 @@
                                             [inputStyle]="{'width': '75%', 'min-width': '75%','padding':'0px'}">
                                         </p-calendar>
                                         <input  readonly [ngxTimepicker]="picker"
-                                            [(ngModel)]="rowData.UserStartTimePart" class="timePicker">
+                                            [(ngModel)]="rowData.UserStartTimePart" class="p-ml-1 timePicker">
                                         <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
                                         <ngx-material-timepicker [preventOverlayClick]="true"
                                             (closed)="DateChangePart(rowData,Slot,'start')" #picker
@@ -148,7 +182,7 @@
                                         </p-calendar>
                                         <input #inputDate  readonly [ngxTimepicker]="picker"
                                             [min]="rowData.UserStartDatePart === rowData.UserEndDatePart ? rowData.UserStartTimePart :'12:00 am'"
-                                            [(ngModel)]="rowData.UserEndTimePart" class="timePicker">
+                                            [(ngModel)]="rowData.UserEndTimePart" class="p-ml-1  timePicker">
                                         <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
                                         <ngx-material-timepicker [preventOverlayClick]="true"
                                             (closed)="DateChangePart(rowData,Slot,'start')" #picker
@@ -156,20 +190,16 @@
                                         </ngx-material-timepicker>
                                     </span>
                                 </td>
-                                  <!-- Budget Hrs -->
-                                  <td style="text-align: center;">
+                                <!-- Budget Hrs -->
+                                <td style="text-align: center;">
                                     <span *ngIf="!rowData.editMode">{{rowData.EstimatedTime}}</span>
                                     <input type="number" class="form-control budgetHr" required="required" min="0" value="0" onchange="validity.valid||(value='0');" step="0.25" *ngIf=" rowData.editMode" required="required" [id]="rowData.ID" (change)="modelChanged(rowData,Slot)" [(ngModel)]="rowData.EstimatedTime">
-                                    <span class='overlayIcon'
-                                      (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)"
-                                        style="float: right;cursor: pointer;"
-                                        title="Click to see allocation split"
-                                      *ngIf="rowData.showAllocationSplit">
+                                    <span class='overlayIcon' (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)" style="float: right;cursor: pointer;" title="Click to see allocation split" *ngIf="rowData.showAllocationSplit">
                                       <i class="fa fa-info-circle" aria-hidden="true"></i>
                                 </span>
                                 </td>
-                                 <!-- spent Hrs -->
-                                 <td style="text-align: center;">{{rowData.SpentTime}}</td>
+                                <!-- spent Hrs -->
+                                <td style="text-align: center;">{{rowData.SpentTime}}</td>
                                 <!-- Assign To -->
                                 <td>
                                     <span *ngIf="!rowData.editMode  || ( rowData.editMode && (rowData.Status ==='In Progress' || rowData.Status ==='Completed'))"> {{rowData.AssignedTo.Title}}</span>
@@ -190,9 +220,9 @@
                                 </td>
                                 <!--Daily Allocation Type-->
                                 <td [style.backgroundColor]="rowData?.allocationColor">
-                                  <div fxLayout="column" fxLayoutAlign="center center" *ngIf="rowData?.allocationTypeLoader">
-                                    <div id="allocationTypeLoader"></div>
-                                  </div>
+                                    <div fxLayout="column" fxLayoutAlign="center center" *ngIf="rowData?.allocationTypeLoader">
+                                        <div id="allocationTypeLoader"></div>
+                                    </div>
                                 </td>
                                 <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
                                     <span *ngIf="!rowData.editMode">{{rowData.DisableCascade === true  ? 'Yes':'No'}}</span>
@@ -232,7 +262,19 @@
 
 <p-dialog header="{{taskTitle}}" [closable]="false" [modal]="true" styleClass="ScopeComment" [style]="{width: '700px', minWidth: '600px'}" [(visible)]="displayCommentenable">
 
-    <div [hidden]="modalloaderenable" class="p-grid p-dir-col p-justify-between">
+
+
+    <div class="pdialogButton p-col-12 p-grid p-jc-end" *ngIf="!modalloaderenable">
+
+        <button *ngIf="taskType !=='Slot'" type="button" pButton icon="pi pi-check" label="Delete" class="p-mx-1 p-button-raised p-button-danger" [ngStyle]="{'cursor':'pointer' }" (click)="saveTaskScope(caGlobal.curTaskScope, caGlobal.taskScope); displayCommentenable=false"
+            label="Save"></button>
+
+
+        <button type="button" pButton icon="pi pi-times" label="Cancel" class="p-button-raised p-button-danger" (click)="displayCommentenable=false"></button>
+
+    </div>
+
+    <div [hidden]="modalloaderenable" class="p-grid p-mt-1 p-dir-col p-justify-between">
         <p-card class="p-col" *ngIf="taskType ==='Slot'">
             <p-header style="padding: 0.5em;font-size: 1.2em;color: #af0b14;font-weight: 600; width: 100%;"><i class="fa fa-commenting" aria-hidden="true"></i>&nbsp;&nbsp; Task Previous Comments</p-header>
             <div>
@@ -258,8 +300,5 @@
             </div>
         </p-card>
     </div>
-    <p-footer>
-        <button *ngIf="taskType !=='Slot'" type="button" pButton icon="pi pi-check" style="background-color: #af0b14;border-color:#af0b14;" (click)="saveTaskScope(caGlobal.curTaskScope, caGlobal.taskScope); displayCommentenable=false" label="Save"></button>
-        <button type="button" pButton icon="pi pi-times" (click)="displayCommentenable=false" label="Cancel" class="ui-button-secondary"></button>
-    </p-footer>
+
 </p-dialog>

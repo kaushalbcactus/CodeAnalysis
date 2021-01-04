@@ -152,25 +152,25 @@
                                                     </thead>
                                                     <tbody>
                                                         <tr *ngFor="let task of user.TimeSpentDayTasks" class="UserspentTasksRow">
-                                                            <td style="border: 1px solid #ddd;">
+                                                            <td class="capacitytd" style="border: 1px solid #ddd;">
                                                                 <span>{{task.Title}} <span *ngIf='task.SubMilestones'> -
                                                                             {{task.SubMilestones}} </span>
                                                                 <span *ngIf='task.shortTitle'>({{task.shortTitle}})</span></span>
                                                             </td>
-                                                            <td>
+                                                            <td class="capacitytd">
                                                                 <span>{{(task.StartDate | date:'dd MMM yy h:mm a') || '--' }}</span>
                                                             </td>
-                                                            <td>
+                                                            <td class="capacitytd">
                                                                 <span>{{task.EndDate | date : "dd MMM yy h:mm a" || '--'}}</span>
                                                             </td>
-                                                            <td>
+                                                            <td class="capacitytd">
                                                                 <span>{{task.TimeSpentPerDay}}
                                                                         ({{task.TotalTimeSpent}})</span>
                                                             </td>
-                                                            <td>
+                                                            <td class="capacitytd">
                                                                 <span>{{task.Status}}</span>
                                                             </td>
-                                                            <td>
+                                                            <td class="capacitytd">
 
                                                             </td>
                                                         </tr>
@@ -268,24 +268,24 @@
                 </td>
             </tr>
             <tr *ngFor="let task of user.dayTasks" class="UserTasksRow">
-                <td style="border: 1px solid #ddd;">
+                <td class="capacitytd" style="border: 1px solid #ddd;">
                     <span>{{task.title}} <span *ngIf='task.SubMilestones'> -
                                         {{task.SubMilestones}} </span><span *ngIf='task.shortTitle'>({{task.shortTitle}})</span></span>
                 </td>
-                <td>
+                <td class="capacitytd">
                     <span>{{(task.startDate | date:'dd MMM yy h:mm a') || '--' }}</span>
                 </td>
-                <td>
+                <td class="capacitytd">
                     <span>{{task.dueDate | date : "dd MMM yy h:mm a" || '--'}}</span>
                 </td>
-                <td>
+                <td class="capacitytd">
                     <span>{{(task.milestoneDeadline!='--') ? (task.milestoneDeadline | date : "dd MMM yy h:mm a") : '--'}}</span>
                 </td>
-                <td>
+                <td class="capacitytd">
                     <span>{{task.displayTimeAllocatedPerDay}}
                                     ({{task.displayTotalAllocatedTime}})</span>
                 </td>
-                <td>
+                <td class="capacitytd">
                     <span>{{task.status}}</span>
                 </td>
 
@@ -334,26 +334,26 @@
                 </td>
             </tr>
             <tr *ngFor="let task of user.TimeSpentDayTasks" class="UserspentTasksRow">
-                <td style="border: 1px solid #ddd;">
+                <td class="capacitytd" style="border: 1px solid #ddd;">
                     <span>{{task.Title}} <span *ngIf='task.SubMilestones'> -
                         {{task.SubMilestones}} </span>
                     <span *ngIf='task.shortTitle'>({{task.shortTitle}})</span></span>
                 </td>
-                <td>
+                <td class="capacitytd">
                     <span>{{(task.StartDate | date:'dd MMM yy h:mm a') || '--' }}</span>
                 </td>
-                <td>
+                <td class="capacitytd">
                     <span>{{task.EndDate | date : "dd MMM yy h:mm a" || '--'}}</span>
                 </td>
 
-                <td>
+                <td class="capacitytd">
                     <span>{{task.TimeSpentPerDay}}
                                             ({{task.TotalTimeSpent}})</span>
                 </td>
-                <td>
+                <td class="capacitytd">
                     <span>{{task.Status}}</span>
                 </td>
-                <td>
+                <td class="capacitytd">
                 </td>
             </tr>
         </div>

@@ -2,8 +2,7 @@
                                                loader 
 ************************************************************************************************** -->
 
-
-<div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+<div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="modalloaderenable">
     <div id="modalInnerLoader"></div>
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
@@ -13,112 +12,105 @@
                                           popup   data view 
 ************************************************************************************************** -->
 
-<div *ngIf="!modalloaderenable">
-
-    <div class='blockBookingButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="modalloaderenable">
-
-        <!-- <button type="button" [hidden]="mode==='edit' || mode==='create'" pButton icon="pi pi-pencil" id="saveBooking" [ngStyle]="{'margin-right':'5px','cursor':'pointer' }" (click)="editBooking()"
-        label="Edit"></button> -->
-
-        <button type="button" *ngIf="data.task !== undefined" pButton icon="fa fa-trash" (click)="MarkAsDelete();" label="Delete" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" style=" background-color: #C53E3E !important;
-        border:1px solid #C53E3E;"></button>
-
-        <button type="button" *ngIf="data.timeblockType !=='Leave'" pButton icon="pi pi-save" id="saveBooking" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="saveBooking()" label="Save"></button>
-        <button type="button" *ngIf="data.timeblockType ==='Leave'" pButton icon="pi pi-save" id="saveBooking" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="saveLeave()" label="Save"></button>
-
-        <!-- [label]="(mode ==='edit' || mode ==='view') ? 'Update': 'Save'" -->
-        <button type="button" pButton icon="pi pi-times" (click)="cancelTBooking();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
-
-    </div>
 
 
-    <table [hidden]="modalloaderenable" style="width:100%;margin:10px 0px 0px 0px;">
-        <tr *ngIf="data.timeblockType !=='Admin' && data.timeblockType !=='Internal Meeting' && data.timeblockType !=='Training' && data.timeblockType !=='Leave'">
-            <th>Client Name:</th>
-            <td>
-                <p-dropdown [style]="{'min-width':'100%'}" [options]="ClientLegalEntities" [(ngModel)]="SelectedClientLegalEntity" resetFilterOnHide="true" filter="true" placeholder="Select a Client" [showClear]="true"></p-dropdown>
+<div class="pdialogButton p-col-12 p-grid p-jc-end" *ngIf="!modalloaderenable">
 
-            </td>
-        </tr>
-        <tr *ngIf="data.timeblockType !== 'Leave'">
-            <th>Date:</th>
-            <td>
+    <button type="button" *ngIf="data.task !== undefined" pButton icon="fa fa-trash" (click)="MarkAsDelete();" label="Delete" class="p-mx-1 p-button-raised p-button-danger" [ngStyle]="{'cursor':'pointer' }"></button>
 
+    <button type="button" *ngIf="data.timeblockType !=='Leave'" pButton icon="pi pi-save" id="saveBooking" [ngStyle]="{'cursor':'pointer' }" (click)="saveBooking()" label="Save" class="p-mx-1 p-button-raised p-button-danger"></button>
+    <button type="button" *ngIf="data.timeblockType ==='Leave'" pButton icon="pi pi-save" id="saveBooking" [ngStyle]="{'cursor':'pointer' }" (click)="saveLeave()" label="Save" class="p-mx-1 p-button-raised p-button-danger"></button>
 
-                <p-calendar [style]="{'min-width':'100%'}" [minDate]="minDateValue" placeholder="Select Date" [(ngModel)]="eventDate" [maxDate]="maxDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" [yearNavigator]="true"></p-calendar>
-
-
-
-            </td>
-        </tr>
-        <tr *ngIf="data.timeblockType ==='Admin'">
-            <th>Total Hours:</th>
-            <td>
-                <input placeholder="Select Hours" style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em; width:100%;    margin: 0px 8px 0px 0px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" (ngModelChange)="SetEndTime($event)"
-                    [(ngModel)]="starttime" [ngxTimepicker]="StartTime" [format]="24" readonly>
-
-                <ngx-material-timepicker #StartTime [minutesGap]="15" [enableKeyboardInput]="true" (closed)="SetTime(starttime)" [ngxMaterialTimepickerTheme]="darkTheme">
-                </ngx-material-timepicker>
-            </td>
-
-        </tr>
-
-        <tr *ngIf="data.timeblockType !=='Admin' && data.timeblockType !=='Leave'">
-            <th>Time:</th>
-            <td>
-
-                <input placeholder="Select Start Time" style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em; width:49%;    margin: 0px 8px 0px 0px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" (ngModelChange)="SetEndTime($event)"
-                    [(ngModel)]="starttime" [ngxTimepicker]="StartTime" [format]="12" readonly>
-
-                <ngx-material-timepicker #StartTime [minutesGap]="15" [ngxMaterialTimepickerTheme]="darkTheme">
-                </ngx-material-timepicker>
-
-
-                <input placeholder="Select End Time" style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em; width:49%; border: 1px solid #a6a6a6; border-radius: 4px;" min="{{minEndTime}}" aria-label="12hr format" [(ngModel)]="endtime" [ngxTimepicker]="EndTime"
-                    readonly>
-
-                <ngx-material-timepicker #EndTime [minutesGap]="15" [ngxMaterialTimepickerTheme]="darkTheme">
-                </ngx-material-timepicker>
-
-
-            </td>
-        </tr>
-
-        <tr *ngIf="data.timeblockType ==='Leave'">
-            <th>Start Date:</th>
-            <td>
-
-                <p-calendar [style]="{'min-width':'100%'}" [minDate]="minDateValue" placeholder="Select Start Date" [(ngModel)]="eventDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" [yearNavigator]="true"
-                    (onClose)="EnableHalfDay()"></p-calendar>
-
-            </td>
-        </tr>
-
-
-
-        <tr *ngIf="data.timeblockType ==='Leave'">
-            <th>End Date:</th>
-            <td>
-
-                <p-calendar [style]="{'min-width':'100%'}" [minDate]="eventDate" placeholder="Select End Date" [(ngModel)]="eventEndDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" (onClose)="EnableHalfDay()"
-                    [yearNavigator]="true"></p-calendar>
-            </td>
-        </tr>
-        <tr *ngIf="halfDayEnable">
-            <th>Is Half Day :</th>
-            <td>
-                <p-checkbox [(ngModel)]="IsHalfDay" binary="true"></p-checkbox>
-            </td>
-        </tr>
-
-
-
-        <tr>
-            <th>Comments:</th>
-            <td> <textarea rows="7" cols="30" style="width: 100%;" [(ngModel)]="commment" pInputTextarea></textarea> </td>
-
-        </tr>
-
-    </table>
+    <button type="button" pButton icon="pi pi-times" (click)="cancelTBooking();" label="Cancel" class="p-button-raised p-button-danger"></button>
 
 </div>
+
+
+<table [hidden]="modalloaderenable" style="width:100%;margin:10px 0px 0px 0px;">
+    <tr *ngIf="data.timeblockType !=='Admin' && data.timeblockType !=='Internal Meeting' && data.timeblockType !=='Training' && data.timeblockType !=='Leave'">
+        <th>Client Name:</th>
+        <td>
+            <p-dropdown [style]="{'min-width':'100%'}" [options]="ClientLegalEntities" [(ngModel)]="SelectedClientLegalEntity" resetFilterOnHide="true" filter="true" placeholder="Select a Client" [showClear]="true"></p-dropdown>
+
+        </td>
+    </tr>
+    <tr *ngIf="data.timeblockType !== 'Leave'">
+        <th>Date:</th>
+        <td>
+
+
+            <p-calendar [style]="{'min-width':'100%'}" [minDate]="minDateValue" placeholder="Select Date" [(ngModel)]="eventDate" [maxDate]="maxDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" [yearNavigator]="true"></p-calendar>
+
+
+
+        </td>
+    </tr>
+    <tr *ngIf="data.timeblockType ==='Admin'">
+        <th>Total Hours:</th>
+        <td>
+            <input placeholder="Select Hours" style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em; width:100%;    margin: 0px 8px 0px 0px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" (ngModelChange)="SetEndTime($event)"
+                [(ngModel)]="starttime" [ngxTimepicker]="StartTime" [format]="24" readonly>
+
+            <ngx-material-timepicker #StartTime [minutesGap]="15" [enableKeyboardInput]="true" (closed)="SetTime(starttime)" [ngxMaterialTimepickerTheme]="darkTheme">
+            </ngx-material-timepicker>
+        </td>
+
+    </tr>
+
+    <tr *ngIf="data.timeblockType !=='Admin' && data.timeblockType !=='Leave'">
+        <th>Time:</th>
+        <td>
+
+            <input placeholder="Select Start Time" style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em; width:49%;    margin: 0px 8px 0px 0px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" (ngModelChange)="SetEndTime($event)"
+                [(ngModel)]="starttime" [ngxTimepicker]="StartTime" [format]="12" readonly>
+
+            <ngx-material-timepicker #StartTime [minutesGap]="15" [ngxMaterialTimepickerTheme]="darkTheme">
+            </ngx-material-timepicker>
+
+
+            <input placeholder="Select End Time" style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em; width:49%; border: 1px solid #a6a6a6; border-radius: 4px;" min="{{minEndTime}}" aria-label="12hr format" [(ngModel)]="endtime" [ngxTimepicker]="EndTime"
+                readonly>
+
+            <ngx-material-timepicker #EndTime [minutesGap]="15" [ngxMaterialTimepickerTheme]="darkTheme">
+            </ngx-material-timepicker>
+
+
+        </td>
+    </tr>
+
+    <tr *ngIf="data.timeblockType ==='Leave'">
+        <th>Start Date:</th>
+        <td>
+
+            <p-calendar [style]="{'min-width':'100%'}" [minDate]="minDateValue" placeholder="Select Start Date" [(ngModel)]="eventDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" [yearNavigator]="true"
+                (onClose)="EnableHalfDay()"></p-calendar>
+
+        </td>
+    </tr>
+
+
+
+    <tr *ngIf="data.timeblockType ==='Leave'">
+        <th>End Date:</th>
+        <td>
+
+            <p-calendar [style]="{'min-width':'100%'}" [minDate]="eventDate" placeholder="Select End Date" [(ngModel)]="eventEndDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" (onClose)="EnableHalfDay()"
+                [yearNavigator]="true"></p-calendar>
+        </td>
+    </tr>
+    <tr *ngIf="halfDayEnable">
+        <th>Is Half Day :</th>
+        <td>
+            <p-checkbox [(ngModel)]="IsHalfDay" binary="true"></p-checkbox>
+        </td>
+    </tr>
+
+
+
+    <tr>
+        <th>Comments:</th>
+        <td> <textarea rows="7" cols="30" style="width: 100%;" [(ngModel)]="commment" pInputTextarea></textarea> </td>
+
+    </tr>
+
+</table>

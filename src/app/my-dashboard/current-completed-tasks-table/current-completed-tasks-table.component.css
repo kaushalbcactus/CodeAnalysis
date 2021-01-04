@@ -1,8 +1,17 @@
-::ng-deep .selectedDateButton {
+::ng-deep .p-overlaypanel:after,
+::ng-deep .p-overlaypanel:before {
+    margin-left: -35px !important;
+}
+
+
+/* ::ng-deep .selectedDateButton {
     background-color: #C53E3E !important;
     border: 1px solid #C53E3E !important;
     color: #ffffff !important;
 }
+
+
+
 
 ::ng-deep p-calendar>span>input {
     width: 15em !important;
@@ -79,13 +88,6 @@
 }
 
 
-/* :host ::ng-deep .ui-menuitem 
-{
-  width:20em !important;
-}
-::ng-deep .ui-slidemenu-content {
-	min-height: 200px  !important;
-} */
 
 :host ::ng-deep .ui-calendar-w-btn .ui-inputtext {
     width: 80% !important;
@@ -135,4 +137,4 @@ body .ui-buttonset.ui-button-secondary>.ui-button.ui-state-default {
 
  ::ng-deep .ui-overlaypanel-close {
     background-color: #db1721 !important;
-}
+} */

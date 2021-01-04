@@ -118,7 +118,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
   previousNextTaskChildRes: any = [];
 
   ngOnInit() {
-  
+    localStorage.clear();
     this.commonService.SetNewrelic('MyDashboard','MyCurrentCompletedTask' + this.route.snapshot.data.type, 'GetEmailTemplate');
     this.myDashboardConstantsService.getEmailTemplate();
   }

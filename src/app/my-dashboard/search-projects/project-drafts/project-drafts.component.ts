@@ -26,7 +26,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   tempObject: any;
   allDocuments: any;
   DocumentArray: any = [];
-  loaderenable: boolean;
+  loaderenable: boolean = true;
   dbcols: { field: string; header: string; }[];
   cols: { field: string; header: string; }[];
   selectedDocuments: any = [];
@@ -54,8 +54,6 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   items: MenuItem[];
   activeItem: MenuItem;
   ngOnInit() {
-
-
     this.loaderenable = true;
     this.DocumentArray = [];
     this.data = this.milestoneData;

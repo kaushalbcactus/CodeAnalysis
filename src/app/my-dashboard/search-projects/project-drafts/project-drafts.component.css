@@ -1,55 +1,23 @@
-#modalInnerLoader{
-    border: 5px solid #f3f3f3 ;
-    border-radius: 50% ;
-    border-top: 5px solid red ;
-    border-bottom: 5px solid red ;
-    width: 50px ;
-    height: 50px ;
-    -webkit-animation: spin 2s linear infinite ;
-    animation: spin 2s linear infinite ;
-    margin: 0 auto ;
-    position: relative ;
-    top: 50% ;
-    transform: translateY(-50%) ;
-   
-  }
-  
-  #modalInnerLoaderText{
-    -moz-animation: loading-text-opacity 2s linear 0s infinite normal ;
-    -o-animation: loading-text-opacity 2s linear 0s infinite normal ;
-    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal ;
-    animation: loading-text-opacity 2s linear 0s infinite normal ;
-    color: black ;
-    font-family: "Helvetica Neue, "Helvetica", ""arial" ;
-    font-size: 10px ;
-    font-weight: bold ;
-    opacity: 0.5 ;
-    text-align: center ;
-    text-transform: uppercase ;
-    top: 0 ;
-   
-  }
-
-
-  ::ng-deep .ui-state-active{
+ ::ng-deep .ui-state-active {
     border-color: #ca5151 !important;
     background-color: #c94c4c !important;
     color: #ffffff !important;
-  }
+}
 
-  ::ng-deep body .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover, ::ng-deep body .ui-fileupload-choose:not(.ui-state-disabled):hover, ::ng-deep body .ui-button.ui-state-default.ui-button-info:enabled:hover,::ng-deep body .ui-buttonset.ui-button-info > .ui-button.ui-state-default:enabled:hover {
+ ::ng-deep body .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover,
+ ::ng-deep body .ui-fileupload-choose:not(.ui-state-disabled):hover,
+ ::ng-deep body .ui-button.ui-state-default.ui-button-info:enabled:hover,
+::ng-deep body .ui-buttonset.ui-button-info>.ui-button.ui-state-default:enabled:hover {
     border-color: #e49a9a !important;
     background-color: #e49a9a !important;
     color: #ffffff !important;
 }
 
-
-
-::ng-deep .ui-tabmenuitem
-{
-  cursor: pointer !important;
+::ng-deep .ui-tabmenuitem {
+    cursor: pointer !important;
 }
- 
+
+
 /* ::ng-deep .ui-table-scrollable-header-box {
   margin-right: 17px !important !important;
   } */

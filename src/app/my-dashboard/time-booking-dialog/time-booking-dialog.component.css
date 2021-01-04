@@ -1,9 +1,3 @@
-           ::ng-deep .blockBookingButton {
-              position: fixed !important;
-              width: 100% !important;
-              margin: -50px !important;
-          }
-          
            :host ::ng-deep .ui-table .ui-table-thead>tr>th {
               position: -webkit-sticky;
               position: sticky;
@@ -47,11 +41,6 @@
               text-align: center;
               text-transform: uppercase;
               top: 0;
-          }
-          
-           ::ng-deep #saveBooking {
-              background-color: #C53E3E !important;
-              border-color: #C53E3E !important;
           }
           
            ::ng-deep .clock-face__inner {

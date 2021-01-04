@@ -1,38 +1,51 @@
-<div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px" style="padding:5px;"> </div>
-
-
+<div class="p-grid p-m-1">
+</div>
 <!-- *****************************************************************************************
                                                         Date Options 
 ****************************************************************************************** -->
+<!-- p-mt-2 p-mb-3 p-ml-2 p-mr-2 -->
 
+<!-- <div fxLayout="row" fxLayoutAlign="space-between  center" fxLayoutGap="10px"> -->
 
-<div fxLayout="row" fxLayoutAlign="space-between  center" fxLayoutGap="10px">
+<div class="p-grid">
+    <div class="p-col-11">
+        <div class="p-grid p-jc-start">
+            <button pButton type="button" pRipple label="Today" [ngClass]="selectedDate ==='Today'  ? 'selectedDateButton':'p-button-text'" class="p-m-2 p-button-raised  p-button-plain currenttask" (click)="GetDatabyDateSelection('Today',0)"></button>
+            <button pButton type="button" pRipple label="Next 7 Days" [ngClass]="selectedDate ==='Next7'  ? 'selectedDateButton':'p-button-text'" class="p-m-2 p-button-raised p-button-plain currenttask" (click)="GetDatabyDateSelection('Next',7)"></button>
+            <button pButton type="button" pRipple label="Next 14 Days" class="p-m-2 p-button-raised  p-button-plain currenttask" [ngClass]="selectedDate ==='Next14'  ? 'selectedDateButton':'p-button-text'" (click)="GetDatabyDateSelection('Next',14)"></button>
+            <button pButton type="button" pRipple label="Past 7 Days" class="p-m-2 p-button-raised  p-button-plain currenttask" [ngClass]="selectedDate ==='Past7'  ? 'selectedDateButton':'p-button-text'" (click)="GetDatabyDateSelection('Past',7)"></button>
+            <button pButton type="button" pRipple label="Past 14 Days" class="p-m-2 p-button-raised  p-button-plain currenttask" [ngClass]="selectedDate ==='Past14'  ? 'selectedDateButton':'p-button-text'" (click)="GetDatabyDateSelection('Past',14)"></button>
 
-    <div fxLayoutAlign="start center" fxFlex="97" fxLayoutGap="10px">
-        <button pButton type="button" label="Today" [ngClass]="selectedDate ==='Today'  ? 'selectedDateButton':''" class="ui-button-raised ui-button-secondary currenttask" (click)="GetDatabyDateSelection('Today',0)"></button>
-        <button pButton type="button" label="Next 7 Days" [ngClass]="selectedDate ==='Next7'  ? 'selectedDateButton':''" class="ui-button-raised ui-button-secondary currenttask" (click)="GetDatabyDateSelection('Next',7)"></button>
-        <button pButton type="button" label="Next 14 Days" class="ui-button-raised ui-button-secondary currenttask" [ngClass]="selectedDate ==='Next14'  ? 'selectedDateButton':''" (click)="GetDatabyDateSelection('Next',14)"></button>
-        <button pButton type="button" label="Past 7 Days" class="ui-button-raised ui-button-secondary currenttask" [ngClass]="selectedDate ==='Past7'  ? 'selectedDateButton':''" (click)="GetDatabyDateSelection('Past',7)"></button>
-        <button pButton type="button" label="Past 14 Days" class="ui-button-raised ui-button-secondary currenttask" [ngClass]="selectedDate ==='Past14'  ? 'selectedDateButton':''" (click)="GetDatabyDateSelection('Past',14)"></button>
-
-        <p-calendar [(ngModel)]="rangeDates" selectionMode="range" (onClose)="GetDatabyDateSelection('Custom',0)" [style]="{'width':'130%'}" numberOfMonths='1' dateFormat="M dd, yy" [showIcon]="true" [disabledDays]="[0,6]" [readonlyInput]="true" placeholder="Select Custom Dates"
-            [style]="{'cursor': 'pointer'}"></p-calendar>
+            <div class="p-fluid p-col-3 p-p-0 p-mt-2">
+                <p-calendar [(ngModel)]="rangeDates" selectionMode="range" (onClose)="GetDatabyDateSelection('Custom',0)" [style]="{'width':'130%'}" numberOfMonths='1' dateFormat="M dd, yy" [showIcon]="true" [disabledDays]="[0,6]" [readonlyInput]="true" placeholder="Select Custom Dates"
+                    [style]="{'cursor': 'pointer'}"></p-calendar>
+            </div>
+        </div>
+    </div>
+    <div class="p-col-1 p-mt-3" *ngIf="allTasks.length > 0 && !loderenable">
+        <div class="p-grid  p-jc-end p-mr-3">
+            <i style="font-size: 1.8em;cursor: pointer;" (click)="TasksTable.exportTasks();" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+        </div>
     </div>
 
-    <div fxLayoutAlign="start center" fxFlex="3" fxLayoutGap="10px" *ngIf="allTasks.length > 0 && !loderenable">
-        <i style="font-size: 1.8em;cursor: pointer;" (click)="TasksTable.exportTasks();" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
-
-    </div>
 </div>
+
+
+
+
 
 
 <!-- ******************************************************************************************
                                                          loader enable 
 ****************************************************************************************** -->
-<div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" *ngIf="loaderenable">
+<!-- <div *ngIf="loaderenable"> -->
+
+<div class="p-d-flex p-flex-column" style="padding: 10vw;width: 100%;" *ngIf="loaderenable">
     <div id="scInnerLoader"></div>
     <div id="scInnerLoaderText">Loading...</div>
 </div>
+<!-- </div> -->
+
 
 
 <app-current-completed-tasks-table #TasksTable *ngIf="enableTableView" (reloadTableData)="updateTableDetail($event)" [allTasksData]="allTasks"></app-current-completed-tasks-table>

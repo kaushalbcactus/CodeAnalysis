@@ -1,16 +1,23 @@
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 @import "~jsgantt-improved/dist/jsgantt.css";
-@import '@fullcalendar/core/main.css';
+
+/* @import '@fullcalendar/core/main.css';
 @import '@fullcalendar/daygrid/main.css';
-@import '@fullcalendar/timegrid/main.css';
-@import '@fullcalendar/list/main.css';
-@import '@fullcalendar/bootstrap/main.css';
-@font-face {
+@import '@fullcalendar/timegrid/main.css'; */
+
+
+/* @import '@fullcalendar/list/main.css';
+@import '@fullcalendar/bootstrap/main.css'; */
+
+
+/* @font-face {
     font-family: 'Helvetica';
     url: ('/fonts/HelveticaNeue.ttf') format('truetype'), /* Safari, Android, iOS */
-}
 
-body {
+
+/* } */
+
+*/ body {
     font-family: Helvetica;
     font-size: 14px;
 }
@@ -258,6 +265,315 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     margin: -57px 0px 0px -205px;
     position: absolute;
 }
+
+
+/* new for angular 11  */
+
+.p-fluid .p-calendar {
+    display: flex !important;
+}
+
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link,
+.p-calendar-w-btn .p-datepicker-trigger.p-button span {
+    color: #c53e3e !important;
+}
+
+.p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+    background: rgb(181 63 63 / 12%) !important;
+    border-color: rgb(181 63 63 / 12%) !important;
+    color: #b53f3f !important;
+}
+
+.p-paginator .p-paginator-current {
+    margin-left: auto !important;
+}
+
+.p-datatable.p-datatable-cactus .p-paginator {
+    padding: 0.5rem !important;
+}
+
+.p-datepicker table td>span.p-highlight,
+.p-column-filter-menu-button.p-column-filter-menu-button-open,
+.p-column-filter-menu-button.p-column-filter-menu-button-open:hover,
+.p-overlaypanel .p-overlaypanel-close {
+    background: #c53e3e !important;
+    color: #ffffff !important;
+}
+
+.p-datepicker table td.p-datepicker-today>span {
+    background: #f4f4f4 !important;
+    color: #000000 !important;
+    border-color: #c53e3e !important;
+}
+
+.p-datatable .p-sortable-column.p-highlight,
+.p-overlaypanel .p-overlaypanel-close:enabled:hover,
+.p-button:enabled:hover {
+    background: #a80404 !important;
+    color: #ffffff !important;
+}
+
+.p-column-filter-menu-button.p-column-filter-menu-button-active,
+.p-column-filter-menu-button.p-column-filter-menu-button-active:hover,
+.p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon {
+    color: #ffffff !important;
+}
+
+.p-datatable .p-sortable-column.p-highlight:hover {
+    background: #c41818 !important;
+}
+
+.p-column-filter-menu-button.p-column-filter-menu-button-active,
+.p-column-filter-menu-button.p-column-filter-menu-button-active:hover,
+.p-button:enabled:active,
+.p-button:enabled:focus {
+    background: #d90000 !important;
+}
+
+.p-datatable .p-sortable-column:focus,
+.p-column-filter-menu-button:focus {
+    box-shadow: inset 0 0 0 0.2rem #fc9d9d !important;
+}
+
+.p-calendar .p-inputtext,
+.p-multiselect .p-multiselect-label,
+.p-inputtext {
+    padding: 6px !important;
+    font-size: 14px !important;
+}
+
+.p-calendar-w-btn:not(.p-disabled):hover,
+.p-dropdown:not(.p-disabled):hover,
+.p-multiselect:not(.p-disabled):hover,
+.p-inputtext:enabled:hover {
+    border-color: #c53e3e !important;
+}
+
+.p-button.p-button-text {
+    background-color: #f4f4f4 !important;
+}
+
+.p-tabmenu .p-tabmenu-nav .p-tabmenu-ink-bar,
+.p-column-filter-buttonbar>button {
+    background-color: #c53e3e !important;
+}
+
+.p-dialog-header {
+    background: #f1f1f1 !important;
+    padding: 0.75rem 2rem !important;
+}
+
+.p-overlaypanel .p-overlaypanel-content {
+    padding: 0.1rem !important;
+}
+
+.p-button.p-button-outlined {
+    color: #c53e3e !important;
+    background-color: #ffffff !important;
+}
+
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight {
+    color: #c53e3e !important;
+    background-color: #ffefef !important;
+}
+
+.p-inputtext:enabled:focus,
+.p-dropdown:not(.p-disabled).p-focus {
+    box-shadow: inset 0 0 0 1px #c53e3e, inset 0 0 0 1px #c53e3e, inset 0 0 0 1px #c53e3e, inset 0 0 0 1px #c53e3e !important;
+    border-color: #c53e3e !important;
+}
+
+.p-checkbox .p-checkbox-box.p-highlight,
+.p-fileupload-choose {
+    border-color: #c53e3e !important;
+    background: #c53e3e !important;
+}
+
+.pdialogButton {
+    margin: -53px -20px !important;
+    position: fixed !important;
+}
+
+.p-button {
+    padding: 0.3rem 0.5rem !important;
+}
+
+.p-progressbar {
+    background: #c53e3e66 !important;
+}
+
+.p-fileupload .p-fileupload-buttonbar .p-button,
+.p-fileupload-row>div>.p-button {
+    background: #c53e3e;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
+    color: #c53e3e !important;
+    background: #e7424214 !important;
+}
+
+.p-checkbox .p-checkbox-box.p-highlight .p-checkbox-icon.pi-check:before {
+    top: 9px !important;
+    left: 2px !important;
+}
+
+.lastColumnWidth {
+    width: 3em !important;
+}
+
+.p-menu.p-menu-overlay,
+.dailyAllocationOverlayComp>.p-overlaypanel {
+    top: revert !important;
+}
+
+.p-calendar-w-btn .p-datepicker-trigger.p-button:enabled:hover {
+    background: rgba(0, 0, 0, 0.04) !important;
+}
+
+.p-calendar-w-btn {
+    width: 100% !important;
+}
+
+.p-paginator .p-dropdown {
+    height: inherit !important;
+}
+
+.p-input-icon-left>.p-inputtext {
+    padding-left: 2rem !important;
+}
+
+.capacitytd {
+    border: 1px solid #e3e3e3 !important;
+}
+
+
+/** Please wait Loader **/
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.spanner {
+    position: absolute;
+    /* top: calc( 100vh - 35vh); */
+    padding: 50% 0% 35% 0%;
+    left: 0;
+    background: #2a2a2a55;
+    width: 100%;
+    display: block;
+    text-align: center;
+    color: #FFF;
+    transform: translateY(-50%);
+    z-index: 1000;
+    visibility: hidden;
+}
+
+.overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    visibility: hidden;
+}
+
+.loader,
+.loader:before,
+.loader:after {
+    border-radius: 50%;
+    width: 2.5em;
+    height: 2.5em;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    -webkit-animation: load7 1.8s infinite ease-in-out;
+    animation: load7 1.8s infinite ease-in-out;
+}
+
+.loader {
+    color: #ffffff;
+    font-size: 10px;
+    margin: 30px auto;
+    position: relative;
+    text-indent: -9999em;
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-animation-delay: -0.16s;
+    animation-delay: -0.16s;
+    margin-top: 20%;
+}
+
+.loader:before,
+.loader:after {
+    content: '';
+    position: absolute;
+    top: 0;
+}
+
+.loader:before {
+    left: -3.5em;
+    -webkit-animation-delay: -0.32s;
+    animation-delay: -0.32s;
+}
+
+.loader:after {
+    left: 3.5em;
+}
+
+@-webkit-keyframes load7 {
+    0%,
+    80%,
+    100% {
+        box-shadow: 0 2.5em 0 -1.3em;
+    }
+    40% {
+        box-shadow: 0 2.5em 0 0;
+    }
+}
+
+@keyframes load7 {
+    0%,
+    80%,
+    100% {
+        box-shadow: 0 2.5em 0 -1.3em;
+    }
+    40% {
+        box-shadow: 0 2.5em 0 0;
+    }
+}
+
+.show {
+    visibility: visible;
+}
+
+.spanner,
+.overlay {
+    opacity: 0;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
+}
+
+.spanner.show,
+.overlay.show {
+    opacity: 1;
+    z-index: 10000;
+}
+
+
+/** Please wait Loader  end **/
 
 
 /* Dynamic Dialog common Css end  */

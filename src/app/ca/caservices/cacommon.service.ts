@@ -450,6 +450,7 @@ export class CACommonService {
         if (globalFilter) {
           data = data.filter(row => this.globalFilter(row, globalFilter, filterColumns))
         }
+        debugger
         if (!$.isEmptyObject(localFilter)) {
           data = data.filter(row => this.filterLocal(row, localFilter));
         }
@@ -489,23 +490,23 @@ export class CACommonService {
     let isInFilter = false;
     let noFilter = true;
     for (var columnName in filter) {
-      if (columnName != 'global') {
-        if (row[columnName] == null) {
-          return;
-        }
-        noFilter = false;
-        let rowValue: String = row[columnName].toString().toLowerCase();
-        let filterMatchMode: String = filter[columnName].matchMode;
-        if (filterMatchMode.includes("contains") && rowValue.includes(filter[columnName].value.toLowerCase())) {
-          isInFilter = true;
-        } else if (filterMatchMode.includes("startsWith") && rowValue.startsWith(filter[columnName].value.toLowerCase())) {
-          isInFilter = true;
-        } else if (filterMatchMode.includes("in") && filter[columnName].value.includes(row[columnName])) {
-          isInFilter = true;
-        }
-        else
-          return false;
-      }
+      // if (columnName != 'global') {
+      //   if (row[columnName] == null) {
+      //     return;
+      //   }
+      //   noFilter = false;
+      //   let rowValue: String = row[columnName].toString().toLowerCase();
+      //   let filterMatchMode: String = filter[columnName] && filter[columnName].length > 0 ? filter[columnName][0].matchMode:'';
+      //   if (filterMatchMode.includes("contains") && rowValue.includes(filter[columnName].value.toLowerCase())) {
+      //     isInFilter = true;
+      //   } else if (filterMatchMode.includes("startsWith") && rowValue.startsWith(filter[columnName].value.toLowerCase())) {
+      //     isInFilter = true;
+      //   } else if (filterMatchMode.includes("in") && filter[columnName] &&  filter[columnName][0].value && filter[columnName][0].value.includes(row[columnName])) {
+      //     isInFilter = true;
+      //   }
+      //    else
+      //      return false;
+      // }
     }
     if (noFilter) { isInFilter = true; }
     return isInFilter;

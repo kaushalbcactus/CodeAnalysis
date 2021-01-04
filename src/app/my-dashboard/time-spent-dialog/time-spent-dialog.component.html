@@ -1,31 +1,24 @@
-<div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+<div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="modalloaderenable">
     <div id="modalInnerLoader"></div>
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
-<div [ngClass]="{'currentTaskButton' : config.data === undefined , 'timeLineButton': config.data !== undefined}" fxLayout="row" fxLayoutAlign="end center" [hidden]="modalloaderenable">
 
-    <button type="button" pButton [icon]="buttonloader ? 'pi  pi-spin pi-spinner' : 'pi pi-save'" id="saveTime" [ngStyle]="{'margin-right': config.data !== undefined ? '5px':''}" (click)="saveTimeSpent()" [disabled]="data.Status ==='Not Confirmed' || buttonloader"
-        label="Save Time"></button>
-    <button type="button" [hidden]="config.data === undefined" pButton icon="pi pi-times" (click)="cancelTimeSpent();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
-
+<div [ngClass]="config.data === undefined ? 'currentTaskButton p-col p-grid p-jc-end' : 'pdialogButton p-col-12 p-grid p-jc-end'" *ngIf="!modalloaderenable">
+    <button type="button " pButton [icon]="buttonloader ? 'pi  pi-spin pi-spinner' : 'pi pi-save' " id="saveTime " class="p-mx-1 p-button-raised p-button-danger " (click)="saveTimeSpent() " [disabled]="data.Status==='Not Confirmed' || buttonloader
+    " label="Save Time "></button>
+    <button type="button " *ngIf="config.data !==u ndefined " pButton icon="pi pi-times " (click)="cancelTimeSpent(); " label="Cancel " class="p-button-raised p-button-danger "></button>
 </div>
-<div fxLayoutGap="10px" [hidden]="modalloaderenable">
+<div class="p-col" *ngIf="!modalloaderenable ">
 
-    <div class="date-as-calendar inline-flex size3x" *ngFor="let datetime of dateArray">
-        <span class="month">{{datetime.date}}</span>
-        <div class="year" [ngStyle]="{'background-color': datetime.edited === false ? '#cdcdcd':''}">
-            <input placeholder="00:00" style="text-align: center;width: 80%;border: none;color:#C53E3E;" aria-label="24hr format" [ngStyle]="{'background-color': datetime.edited === false ? '#cdcdcd':''}" [disabled]="datetime.edited === false" [(ngModel)]="datetime.time"
-                [ngxTimepicker]="fullTime" [format]="24" readonly>
+    <div class="date-as-calendar p-mx-1 inline-flex size3x " *ngFor="let datetime of dateArray ">
+        <span class="month ">{{datetime.date}}</span>
+        <div class="year " [ngStyle]="{ 'background-color': datetime.edited===false ? '#cdcdcd': ''} ">
+            <input placeholder="00:00 " style="text-align: center;width: 80%;border: none;color:#C53E3E; " aria-label="24hr format " [ngStyle]="{ 'background-color': datetime.edited===false ? '#cdcdcd': ''} " [disabled]="datetime.edited===false
+    " [(ngModel)]="datetime.time " [ngxTimepicker]="fullTime " [format]="24 " readonly>
 
-            <ngx-material-timepicker #fullTime [minutesGap]="15" (closed)="SetTime(datetime.time,datetime)" [enableKeyboardInput]="true" [ngxMaterialTimepickerTheme]="darkTheme">
+            <ngx-material-timepicker #fullTime [minutesGap]="15 " (closed)="SetTime(datetime.time,datetime) " [enableKeyboardInput]="true " [ngxMaterialTimepickerTheme]="darkTheme ">
             </ngx-material-timepicker>
         </div>
     </div>
-
 </div>
-<!-- 
-<div fxLayout="row" fxLayoutAlign="end center" >
-  <button type="button" pButton icon="pi pi-save" (click)="saveTimeSpent();" label="Save Time"
-  class="ui-button-secondary"></button>
-</div> -->

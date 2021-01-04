@@ -21,6 +21,8 @@ import { MenuItem } from 'primeng/api';
   templateUrl: './my-dashboard.component.html',
   styleUrls: ['./my-dashboard.component.css'],
 
+  encapsulation: ViewEncapsulation.None, 
+
 })
 export class MyDashboardComponent implements OnInit {
 
@@ -54,20 +56,24 @@ export class MyDashboardComponent implements OnInit {
     private componentFactoryResolver: ComponentFactoryResolver,
     private commonService: CommonService,
     private datePipe: DatePipe
-  ) { }
+  ) {
+    this.items = [
+      { label: 'My Open Tasks', routerLink: ['my-current-tasks'] , url:'my-current-tasks', command: (event) => {this.activeItem = event.item}},
+      { label: 'My Timeline', routerLink: ['my-timeline'] , url:'my-timeline', command: (event) => {this.activeItem = event.item} },
+      { label: 'My Projects', routerLink: ['my-projects'] , url:'my-projects', command: (event) => {this.activeItem = event.item} },
+      { label: 'My SOW', routerLink: ['my-sow'] , url:'my-sow', command: (event) => {this.activeItem = event.item} },
+      { label: 'My Completed Tasks', routerLink: ['my-completed-tasks'] , url:'my-completed-tasks', command: (event) => {this.activeItem = event.item} },
+      { label: 'Search Projects', routerLink: ['search-projects'] , url:'search-projects', command: (event) => {this.activeItem = event.item} },
+    ];
+   }
 
   ngOnInit() {
-    this.sharedObject.currentTitle = 'My Dashboard';
-
-    this.items = [
-      { label: 'My Open Tasks', routerLink: ['my-current-tasks'] },
-      { label: 'My Timeline', routerLink: ['my-timeline'] },
-      { label: 'My Projects', routerLink: ['my-projects'] },
-      { label: 'My SOW', routerLink: ['my-sow'] },
-      { label: 'My Completed Tasks', routerLink: ['my-completed-tasks'] },
-      { label: 'Search Projects', routerLink: ['search-projects'] }
-    ];
+    setTimeout(() => {
+      this.sharedObject.currentTitle = 'My Dashboard';
+    }, 100);
+    localStorage.clear();
     this.GetCurrentUser();
+    // this.activeItem = this.items[0];
   }
 
   async onActivate(componentRef) {
@@ -76,6 +82,7 @@ export class MyDashboardComponent implements OnInit {
         this.checkTaskAvailable();
       }
       await this.executeCommonCalls();
+      this.activeItem = this.items.find(c=>c.url === this.router.url.substring(this.router.url.lastIndexOf('/')+1)) ? this.items.find(c=>c.url === this.router.url.substring(this.router.url.lastIndexOf('/')+1)) :  this.items[0];
     }
     if (this.router.url.includes('my-current-tasks') || this.router.url.includes('my-completed-tasks')) {
       this.myDashboardConstantsService.openTaskSelectedTab.event = 'Today';

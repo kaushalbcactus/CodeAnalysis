@@ -429,7 +429,7 @@ export class CaDragdropComponent implements OnInit {
 
     this.grapLoading = true;
     setTimeout(() => {
-      const uiDialog: any = document.querySelector('.ui-dialog-content');
+      const uiDialog: any = document.querySelector('.caallocation-drag-drop');
       const milestoneAreaWidth: any = document.querySelector('.taskDropArea');
       this.minWidth = milestoneAreaWidth.clientWidth;
       this.taskMaxHeight = uiDialog.clientHeight - milestoneAreaWidth.offsetTop - 60;

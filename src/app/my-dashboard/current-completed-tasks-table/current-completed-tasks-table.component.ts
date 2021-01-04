@@ -86,15 +86,9 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
       { field: 'ExpectedTime', header: 'Allocated Time', visibility: true, exportable: true },
       { field: 'TimeSpent', header: 'Time Spent', visibility: true, exportable: true },
     ];
-
+  
     this.hideIcon=  this.config.data ? true : false;
     await this.processData(this.config.data ? this.config.data.allpopupTasks : this.allTasksData);
-    // if (this.config.data) {
-    //   await this.processData(this.config.data.allpopupTasks);
-    // }
-    // else {
-    //   this.allTasks = this.allTasksData;
-    // }
     this.loaderenable = false;
     this.initializeTableOptions();
   }
@@ -179,29 +173,6 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
 
   exportTasks() {
     this.TasksTable.exportCSV();
-  }
-
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
-
-  // tslint:disable-next-line: use-life-cycle-interface
-  ngAfterViewChecked() {
-    if (this.allTasks.length && this.isOptionFilter) {
-      const obj = {
-        tableData: this.TasksTable,
-        colFields: this.AllTaskColArray
-      };
-      if (obj.tableData.filteredValue) {
-        this.commonService.updateOptionValues(obj);
-      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-        this.createColFieldValues(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-    }
-    this.cdr.detectChanges();
   }
 
 

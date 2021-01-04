@@ -1,16 +1,22 @@
-<div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+<div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="modalloaderenable">
     <div id="modalInnerLoader"></div>
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
-<div [ngClass]="{'currentTaskButton' : config.data === undefined , 'timeLineButton': config.data !== undefined}" fxLayout="row" fxLayoutAlign="end center" *ngIf="!modalloaderenable">
+<!-- 
+<div [ngClass]="{'currentTaskButton p-col' : config.data === undefined , 'pdialogButton p-col-12': config.data !== undefined}" class="p-grid p-jc-end" *ngIf="!modalloaderenable"> -->
 
-    <button *ngIf="!MarkComplete" type="button" pButton icon="pi pi-check" id="savecomment" style="margin-right: 5px;" (click)="saveComment(false)" label="Save Comment"></button>
 
-    <button *ngIf="MarkComplete" [disabled]="disableComment" type="button" pButton icon="pi pi-check" id="savewithoutcomment" (click)="saveComment(true)" [ngStyle]="{'margin-right': '5px;','cursor': disableComment===false ? 'pointer':'not-allowed'}" label="Save without Comment"></button>
-    <button *ngIf="MarkComplete" [disabled]="!disableComment" type="button" pButton icon="pi pi-save" id="savewithoutcomment" [ngStyle]="{'margin-right': '5px;','cursor': disableComment === true ? 'pointer':'not-allowed'}" (click)="saveComment(true)" label="Save with Comment"></button>
+<div [ngClass]="config.data === undefined ? 'currentTaskButton p-col p-grid p-jc-end' : 'pdialogButton p-col-12 p-grid p-jc-end'" *ngIf="!modalloaderenable">
 
-    <button type="button" pButton icon="pi pi-times" (click)="cancelComment();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
+    <button *ngIf="!MarkComplete" type="button" pButton icon="pi pi-check" id="savecomment" class="p-mx-1 p-button-raised p-button-danger" (click)="saveComment(false)" label="Save Comment"></button>
+
+    <button *ngIf="MarkComplete" [disabled]="disableComment" type="button" pButton icon="pi pi-check" id="savewithoutcomment" (click)="saveComment(true)" [ngStyle]="{'cursor': disableComment===false ? 'pointer':'not-allowed'}" class="p-button-raised p-button-danger"
+        label="Save without Comment"></button>
+    <button *ngIf="MarkComplete" class="p-button-raised p-button-danger" [disabled]="!disableComment" type="button" pButton icon="pi pi-save" id="savewithoutcomment" [ngStyle]="{'cursor': disableComment === true ? 'pointer':'not-allowed'}" (click)="saveComment(true)"
+        label="Save with Comment"></button>
+
+    <button type="button" class="p-button-raised p-button-danger" pButton icon="pi pi-times" (click)="cancelComment();" label="Cancel"></button>
 </div>
 
 
@@ -22,7 +28,7 @@
     <div *ngIf="commentsdb.length > 0">
 
         <div>
-            <div class="main-card mb-3 card">
+            <div class="main-card mb-3 card p-mt-2">
                 <div class="card-body">
                     <h5 class="card-title" style="font-weight: bold;color:#c53e3e;margin-bottom: 0rem;"><span>Comments</span><span *ngIf="commentsdb.length > 0" style="float: right;font-size: 0.9em;">Total Comments :
               {{commentsdb.length}}</span></h5>

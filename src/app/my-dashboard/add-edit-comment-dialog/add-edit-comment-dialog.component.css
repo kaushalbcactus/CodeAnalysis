@@ -1,4 +1,4 @@
-#modalInnerLoader {
+/* #modalInnerLoader {
     border: 5px solid #f3f3f3;
     border-radius: 50%;
     border-top: 5px solid red;
@@ -57,6 +57,194 @@
 }
 
  ::ng-deep #toolbar-container {
+    margin-right: 0px !important;
+}
+
+ ::ng-deep .ck.ck-toolbar {
+    border: none !important;
+    border-bottom: 1px solid #dfdfdf !important;
+}
+
+.scroll-area-sm {
+    overflow-x: hidden !important;
+}
+
+.scrollbar-sidebar,
+.scrollbar-container {
+    position: relative !important;
+    height: 100% !important;
+}
+
+perfect-scrollbar>.ps {
+    position: static !important;
+    display: block !important;
+    width: inherit !important;
+    height: inherit !important;
+    max-width: inherit !important;
+    max-height: inherit !important;
+}
+
+perfect-scrollbar {
+    position: relative !important;
+    display: block !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+}
+
+.vertical-timeline {
+    width: 100% !important;
+    position: relative !important;
+    padding: 0.8rem 0 1rem !important;
+}
+
+.vertical-timeline-element {
+    position: relative !important;
+    margin: 0 0 1rem !important;
+}
+
+.vertical-timeline-element:after {
+    content: "" !important;
+    display: table !important;
+    clear: both !important;
+}
+
+.vertical-timeline--animate .vertical-timeline-element-icon.bounce-in {
+    visibility: visible !important;
+    -webkit-animation: cd-bounce-1 .8s !important;
+    animation: cd-bounce-1 .8s !important;
+}
+
+.vertical-timeline-element-icon {
+    position: absolute !important;
+    top: 0 !important;
+    left: 85px !important;
+}
+
+.vertical-timeline .badge:empty {
+    display: inline-block !important;
+}
+
+.badge-dot-xl::before {
+    content: '' !important;
+    width: 10px !important;
+    height: 10px !important;
+    border-radius: 0.25rem !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    margin: -5px 0 0 -5px !important;
+    background: #fff !important;
+}
+
+.vertical-timeline-element-content .vertical-timeline-element-date {
+    display: block !important;
+    position: absolute !important;
+    left: -120px !important;
+    top: 0 !important;
+    padding-right: 10px !important;
+    text-align: right !important;
+    color: #545656 !important;
+    font-size: 0.8rem !important;
+    white-space: nowrap !important;
+}
+
+.vertical-timeline-element-content p {
+    color: #6c757d !important;
+    margin: 0 0 0.5rem !important;
+}
+
+.vertical-timeline::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 92px !important;
+    height: 100% !important;
+    width: 4px !important;
+    background: #e9ecef !important;
+    border-radius: 0.25rem !important;
+}
+
+.vertical-timeline-element-icon .badge-dot-xl {
+    box-shadow: 0 0 0 5px #fff !important;
+}
+
+.vertical-timeline-element-content {
+    position: relative !important;
+    margin-left: 120px !important;
+    font-size: 0.8rem !important;
+}
+
+.card {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+    word-wrap: break-word !important;
+    background-color: #fff !important;
+    background-clip: border-box !important;
+    border: 1px solid rgba(26, 54, 126, 0.125) !important;
+    border-radius: 0.25rem !important;
+}
+
+.badge-dot {
+    text-indent: -999em !important;
+    padding: 0 !important;
+    width: 8px !important;
+    height: 8px !important;
+    border: transparent solid 1px !important;
+    border-radius: 30px !important;
+    min-width: 2px !important;
+}
+
+.badge-dot-xl {
+    width: 18px !important;
+    height: 18px !important;
+    position: relative !important;
+}
+
+.badge {
+    font-weight: bold !important;
+    text-transform: uppercase !important;
+    padding: 5px 10px !important;
+}
+
+.badge-even {
+    color: #fff !important;
+    background-color: #C53E3E !important;
+}
+
+.badge-odd {
+    color: #fff !important;
+    background-color: #000000 !important;
+}
+
+.badge {
+    display: inline-block !important;
+    padding: 0.25em 0.4em !important;
+    font-size: 75% !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    vertical-align: baseline !important;
+}
+
+.vertical-timeline-element-content {
+    background-color: #f4f5f7 !important;
+    padding-left: 20px !important;
+    border: 1px solid #dfdfdf !important;
+    border-radius: 4px !important;
+    margin-right: 20px !important;
+}
+
+::ng-deep .card-body {
+    padding: 0.5rem !important;
+} */
+
+::ng-deep #toolbar-container {
     margin-right: 0px !important;
 }
 

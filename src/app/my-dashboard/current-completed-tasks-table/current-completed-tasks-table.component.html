@@ -1,46 +1,45 @@
-<div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" *ngIf="loaderenable">
+<div class="p-d-flex p-flex-column" style="padding: 10vw;width: 100%;" *ngIf="loaderenable">
     <div id="scInnerLoader"></div>
     <div id="scInnerLoaderText">Loading...</div>
 </div>
-
 
 
 <!-- ****************************************************************************************
                                                           Table View Data
    ************************************************************************************** -->
 
-<div class="MyCurrentCompletedTable" *ngIf="allTasks.length > 0 && !loaderenable" style="padding-top: 5px;">
-    <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
-    <p-table #TasksTable [columns]="cols" [value]="allTasks" [paginator]="true" [rows]="10" [style]="{'font-size':'13px','min-height': '400px'}" [exportFilename]="TabName ==='MyCompletedTask' ? 'My Completed Tasks':'My Current Tasks'">
+
+<div class="MyCurrentCompletedTable p-mt-2" *ngIf="allTasks.length > 0 && !loaderenable">
+
+    <p-table #TasksTable [columns]="cols" [value]="allTasks" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [style]="{'font-size':'13px','min-height': '400px'}"
+        styleClass="p-datatable-cactus p-datatable-gridlines" [exportFilename]="TabName ==='MyCompletedTask' ? 'My Completed Tasks':'My Current Tasks'" stateStorage="local" [stateKey]="config.data ? 'popupTaskTable' : TabName ==='MyCompletedTask' ? 'MyCompletedTasks':'MyCurrentTasks'">
 
         <ng-template pTemplate="header" let-columns>
             <tr>
-                <th style="width: 4em;">No.</th>
-                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility" [ngStyle]="{'width': (col.field === 'ExpectedTime' || col.field === 'TimeSpent' ) ? '7em': (col.field === 'StartDate' || col.field === 'DueDate'|| col.field === 'MainStatus' || col.field === 'TaskStatus') ? '10em' : '25em' }">
-                    {{col.header}}
-                    <p-sortIcon *ngIf="col.header != ''  && col.field != 'TimeSpent' " [field]="col.field"></p-sortIcon>
-
+                <th class="lastColumnWidth">No.</th>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility" [ngStyle]="{'width':  col.field === 'TimeSpent'  ? '7em': (col.field === 'StartDate' || col.field === 'DueDate'|| col.field === 'MainStatus' || col.field === 'TaskStatus' ||  col.field === 'ExpectedTime') ? '10em' : '25em' }">
+                    <div class="p-d-flex p-jc-between p-ai-center">
+                        {{col.header}}
+                        <p-sortIcon *ngIf="col.header != ''  && col.field != 'TimeSpent' " [field]="col.field"></p-sortIcon>
+                        <p-columnFilter *ngIf="col.header != ''  && col.field != 'TimeSpent'  && col.field != 'ExpectedTime' " [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                            <ng-template pTemplate="header">
+                                <div class="p-px-3 p-pt-3 p-pb-0">
+                                    <span class="p-text-bold"> {{col.header}} Picker</span>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-multiSelect [ngModel]="value" [options]="AllTaskColArray[col.field]" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                                    <ng-template let-option pTemplate="item">
+                                        <div class="p-multiselect-representative-option">
+                                            <span class="p-ml-1">{{option.label}}</span>
+                                        </div>
+                                    </ng-template>
+                                </p-multiSelect>
+                            </ng-template>
+                        </p-columnFilter>
+                    </div>
                 </th>
-                <th style="width: 3em;"></th>
-            </tr>
-            <tr>
-                <th></th>
-                <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field" class="ui-fluid" style="overflow: visible;">
-                    <ng-container *ngIf="col.field">
-
-                        <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" [disabled]="TabName ==='MyCompletedTask'" filter="true" *ngSwitchCase="'MainStatus'" [options]="AllTaskColArray.MainStatus" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="TasksTable.filter($event.value, col.field, 'in')"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                        <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" *ngSwitchCase="'TaskStatus'" filter="true" [options]="AllTaskColArray.TaskStatus" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="TasksTable.filter($event.value, col.field, 'in')"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                        <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'TaskName'" [options]="AllTaskColArray.TaskName" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="TasksTable.filter($event.value, col.field, 'in')"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                        <p-multiSelect filter="true" *ngSwitchCase="'StartDate'" [options]="AllTaskColArray.StartDate" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="TasksTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-
-                        <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'DueDate'" [options]="AllTaskColArray.DueDate" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="TasksTable.filter($event.value, col.field, 'in')"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                    </ng-container>
-                </th>
-                <th></th>
+                <th class="lastColumnWidth"></th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
@@ -64,19 +63,20 @@
                     <span *ngIf="col.field === 'ExpectedTime'">
                         <span class='overlayIcon'
                             appendTo="body"
-                            (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)"
+                            (click)="showOverlayPanel($event, rowData, dailyAllocateOP)"
                             style="float: right;cursor: pointer;"
                             title="Click to see allocation split"
                             *ngIf="rowData.showAllocationSplit">
                             <i [hidden]="hideIcon" style="font-size: 17px;" class="fa fa-info-circle" aria-hidden="true"></i>
+                            <app-allocation-overlay #dailyAllocateOP [style]="{'right' : hideIcon ? '0px !important':'','left' :  hideIcon ? 'inherit !important':''  }"></app-allocation-overlay>
                         </span>
                     </span>
                 </td>
                 <td>
                     <div *ngIf="rowData.MainStatus !=='Planned'">
-                        <p-menu #popupMenu [style]="{'width': '20em'}" [popup]="true" [model]="taskMenu"></p-menu>
+                        <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);" appendTo="body"></i>
+                        <p-menu #popupMenu [style]="{'width': '16em' , 'right' : hideIcon ? '0px !important':'','left' :  hideIcon ? 'inherit !important':''  }" [popup]="true" [model]="taskMenu"></p-menu>
 
-                        <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
                     </div>
                 </td>
             </tr>
@@ -108,7 +108,7 @@
             <div style="color: #C53E3E;">Preferably PUB ID </div>
             <div>{{enteredSubMile ? enteredSubMile.length : '0'}} / 30</div>
         </div>
-    </div>   
+    </div>
 
     <p-footer>
         <button pButton type="button" label="Update" class="redLight" (click)="onUpdate()"></button>

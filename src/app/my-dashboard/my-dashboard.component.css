@@ -1,4 +1,9 @@
- 
+.currentTaskButton {
+    padding-top: 1em !important;
+}
+
+
+/*  
 
 ::ng-deep  body .ui-tabmenu .ui-tabmenu-nav {
  
@@ -14,10 +19,6 @@
 
     border-bottom: 1px solid #C53E3E !important;
 }
-
-/* ::ng-deep .ui-menu.ui-menu-dynamic{
-  top: inherit  !important;
-  }  */
 
 body .ui-button {
     color: #333333;
@@ -104,4 +105,4 @@ body .ui-button {
   text-transform: uppercase ;
   top: 0 ;
  
-}
+} */

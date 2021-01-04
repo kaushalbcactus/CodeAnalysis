@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, ChangeDetectorRef, ElementRef } from '@angular/core';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CAConstantService } from '../caservices/caconstant.service';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -21,6 +21,7 @@ import { PreStackcommonService } from 'src/app/shared/pre-stack-allocation/servi
 import { IConflictResource } from 'src/app/shared/conflict-allocations/interface/conflict-allocation';
 import { MenuItem, SelectItem } from 'primeng/api';
 
+
 @Component({
   selector: 'app-unallocated-allocated-tasks',
   templateUrl: './unallocated-allocated-tasks.component.html',
@@ -28,6 +29,8 @@ import { MenuItem, SelectItem } from 'primeng/api';
   providers: [UsercapacityComponent, PreStackAllocationComponent, AllocationOverlayComponent, ConflictAllocationComponent]
 })
 export class UnallocatedAllocatedTasksComponent implements OnInit {
+  @ViewChild("loader", { static: false }) loaderView: ElementRef;
+  @ViewChild("spanner", { static: false }) spannerView: ElementRef;
   cols: any[];
   allTasks: any[];
   tempClick: any;
@@ -128,14 +131,14 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   completeTaskArray = [];
   subTaskloaderenable = false;
   displayedColumns: any[] = [
-    { field: 'ClientName', header: 'Client' },
-    { field: 'ProjectCode', header: 'Project' },
-    { field: 'Milestone', header: 'Milestone' },
-    { field: 'Task', header: 'Task' },
-    { field: 'DeliveryType', header: 'Deliverable' },
-    { field: 'EstimatedTime', header: 'Hrs' },
-    { field: 'StartDateText', header: 'Start Time' },
-    { field: 'DueDateText', header: 'End Time' }];
+    { field: 'ClientName', header: 'Client', filterColumnName:'clientLegalEntityArray' },
+    { field: 'ProjectCode', header: 'Project' , filterColumnName:'projectCodeArray'},
+    { field: 'Milestone', header: 'Milestone' , filterColumnName:'milestoneArray' },
+    { field: 'Task', header: 'Task' , filterColumnName:'taskArray'},
+    { field: 'DeliveryType', header: 'Deliverable' , filterColumnName:'deliveryTypeArray'},
+    { field: 'EstimatedTime', header: 'Hrs' , filterColumnName:'allocatedArray'},
+    { field: 'StartDateText', header: 'Start Time', filterColumnName:'startTimeArray' },
+    { field: 'DueDateText', header: 'End Time' , filterColumnName:'endTimeArray' }];
 
   filterColumns: any[] = [
     { field: 'ClientName' },
@@ -152,12 +155,13 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     { field: 'SendToClientDateText' },
     { field: 'AssignedTo' }
   ];
-  ngOnInit() {
-    this.globalService.currentTitle = 'Central Allocation';
+  ngOnInit() {    
+    localStorage.clear();
     this.caGlobal.loading = true;
     this.caGlobal.totalRecords = 0;
     this.modalloaderenable = false;
     setTimeout(async () => {
+      this.globalService.currentTitle = 'Central Allocation';
       await this.getProperties();
     }, 100);
 
@@ -233,6 +237,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       this.caGlobal.totalRecords = this.completeTaskArray.length;
       this.caGlobal.dataSource = this.completeTaskArray.slice(0, 10);
     }
+
+    debugger
     this.caGlobal.loading = false;
     this.loaderenable = false;
   }
@@ -348,8 +354,11 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   fetchResources(task) {
     if (!this.selectOpened) {
 
-      this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Fetching available resources...', true, true);
-      setTimeout(async () => {
+
+      // this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Fetching available resources...', true, true);
+      this.loaderView.nativeElement.classList.add('show');
+      this.spannerView.nativeElement.classList.add('show');
+      setTimeout(async () => { 
         const setResourcesExtn = $.extend(true, [], task.resources);
         const startTime = new Date(new Date(task.StartTime).setHours(0, 0, 0, 0));
         const endTime = new Date(new Date(task.EndTime).setHours(23, 59, 59, 0));
@@ -438,6 +447,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
               element.find(c => c.value.UserNamePG.ID === task.AssignedTo.ID).value : task.allocatedResource;
           });
         }
+        this.loaderView.nativeElement.classList.remove('show');
+        this.spannerView.nativeElement.classList.remove('show');
       }, 500);
     }
   }
@@ -652,6 +663,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       header: 'Central Allocation',
       width: '100vw',
       height: '100vh',
+      styleClass:"caallocation-drag-drop",
       contentStyle: { height: '90vh', overflow: 'auto' },
       closable: false,
     });

@@ -13,12 +13,13 @@ import { TagDocumentComponent } from './tag-document/tag-document.component';
 import { ViewChild } from '@angular/core';
 import { Table } from 'primeng/table';
 import { MenuItem } from 'primeng/api';
+import { TabView } from 'primeng/tabview';
 
 @Component({
   selector: 'app-view-upload-document-dialog',
   templateUrl: './view-upload-document-dialog.component.html',
   styleUrls: ['./view-upload-document-dialog.component.css'],
-  providers: [DialogService],
+  providers: [DialogService,TabView],
 })
 export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   @ViewChild('dt', { static: false }) dt: Table;
