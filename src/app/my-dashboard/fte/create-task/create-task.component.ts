@@ -292,6 +292,10 @@ export class CreateTaskComponent implements OnInit {
 
   checkSubMilestone(val) {
     if (val) {
+      const alphaExp = new RegExp(this.constantsService.REG_EXPRESSION.ALPHA_SPECIAL);
+      if (!alphaExp.test(val)) {
+        return false;
+      }
       const item = val + ':1:In Progress';
       const lowerCaseSubMile = this.subMilestonesArrayFormat && this.subMilestonesArrayFormat.length ?
         this.subMilestonesArrayFormat.map((ele) => ele.toLowerCase()) : [];
@@ -311,7 +315,12 @@ export class CreateTaskComponent implements OnInit {
     this.formSubmit.isSubmit = true;
     this.submitBtn.isClicked = true;
     if (type === 'createTask') {
-      this.checkSubMilestone(this.enteredSubMile);
+      if(!this.checkSubMilestone(this.enteredSubMile)) {
+        this.commonService.showToastrMessage(this.constantsService.MessageType.error,
+          'Special characters are not allowed for submilestone', true);
+        this.submitBtn.isClicked = false;
+        return false;
+      }
       if (this.create_task_form.invalid) {
         this.submitBtn.isClicked = false;
         return false;
@@ -436,7 +445,7 @@ export class CreateTaskComponent implements OnInit {
         // moveItemObj.type = 'POST';
         // batchUrl = [];
         // batchUrl.push(moveItemObj);
-        
+
         // const moveToMilestoneRes: any = await this.spOperationsService.executeBatch(batchUrl);
         // console.log('res ', moveToMilestoneRes);
 

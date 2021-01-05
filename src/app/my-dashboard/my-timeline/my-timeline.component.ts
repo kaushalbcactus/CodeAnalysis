@@ -265,8 +265,9 @@ export class MyTimelineComponent implements OnInit {
           self.leave = self.allLeaves.find(c => c.Id === parseInt(eventInfo.event.id));
           const actualStartDate = new Date(self.leave.EventDate);
           const allowedDate = self.commonService.CalculateminstartDateValue(new Date(), 3);
-          if (actualStartDate.getFullYear() >= allowedDate.getFullYear() &&
-            actualStartDate.getMonth() >= allowedDate.getMonth()) {
+          if ((actualStartDate.getFullYear() >= allowedDate.getFullYear() &&
+            actualStartDate.getMonth() >= allowedDate.getMonth()) ||
+            actualStartDate.getFullYear() > allowedDate.getFullYear() ) {
             self.displayleave = true;
           } else {
             self.commonService.showToastrMessage(self.constants.MessageType.warn, 'Unable to delete  leaves for ' + self.datePipe.transform(new Date(self.leave.EventDate), 'MMM d , yyyy'), false);

@@ -254,11 +254,11 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         // Check PI list
         await this.fdDataShareServie.checkProjectsAvailable();
-        this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
+        this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe(async (res) => {
             if (res) {
                 this.projectInfoData = res;
                 console.log('PI Data ', this.projectInfoData);
-                this.getRequiredData();
+                await this.getRequiredData();
             }
         }));
     }
@@ -659,14 +659,14 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
               if(expense) {
                 this.expenseForm = expense.form;
                 this.mailContentRes = expense.mailContent;
-                if(expense.event)  { 
+                if(expense.event)  {
                     await this.onFileChange(expense.event, expense.folderName);
                 }
                 await this.onSubmit(expense.type, expense.form);
               }
           })
     }
-    
+
 
     //*************************************************************************************************
     // new File uplad function updated by Maxwell
@@ -866,9 +866,10 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             this.getResCatByCMLevel();
             this.cleForselectedPI = this.getCleByPC(pc);
         } else {
-            this.cleForselectedPI = this.getCleByPC(rowItem.ProjectCode);
+            // this.cleForselectedPI = this.getCleByPC(rowItem.ProjectCode);
+            this.cleForselectedPI = this.cleData.find(project => project.Title === rowItem.ProjectCode);
             console.log('this.cleForselectedPI ', this.cleForselectedPI);
-            this.getResCatByCMLevel();
+            // this.getResCatByCMLevel();
         }
     }
 
@@ -978,12 +979,12 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 mailContent = this.replaceContent(mailContent, '@@Val8@@', this.expenseForm.value.PaymentMode.value);
                 mailContent = this.replaceContent(mailContent, '@@Val9@@', this.datePipe.transform(this.expenseForm.value.DateSpend, 'dd MMMM yyyy, hh:mm a'));
                 mailContent = this.replaceContent(mailContent, '@@Val11@@', this.expenseForm.value.Number);
-                mailContent = this.replaceContent(mailContent, '@@Val12@@', this.globalService.sharePointPageObject.rootsite + '' + this.fileUploadedUrl);
+                mailContent = this.replaceContent(mailContent, '@@Val12@@', '<a download target="_blank" href="' + this.globalService.sharePointPageObject.rootsite + '' + this.fileUploadedUrl +'">Click here</a>');
             } else {
                 mailContent = this.replaceContent(mailContent, '@@Val8@@', '');
                 mailContent = this.replaceContent(mailContent, '@@Val9@@', '');
                 mailContent = this.replaceContent(mailContent, '@@Val11@@', expense.Number);
-                mailContent = this.replaceContent(mailContent, '@@Val12@@', '');
+                mailContent = this.replaceContent(mailContent, '@@Val12@@', 'NA');
             }
         }
 

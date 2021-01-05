@@ -479,7 +479,7 @@ export class AdminConstantService {
       top: 4900,
     },
   };
-  
+
   public LOGICAL_FIELD = {
     YES: "Yes",
     NO: "No",
@@ -529,7 +529,7 @@ export class AdminConstantService {
     APLHA_NUMERIC: /^[a-zA-Z0-9]+$/,
     ALPHA_SPECIAL_NUMERIC: /^([a-zA-Z0-9])+((?:[-_](?![-_]))*([a-zA-Z0-9]))*$/,
     THREE_UPPERCASE_TWO_NUMBER: /^[A-Z]{3}[0-9]{2}$/,
-    ALPHA_SPECIAL_WITHSPACE: /^([a-z A-Z])+((?:[-_](?![-_]))*([a-z A-Z]))*$/,
+    ALPHA_SPECIAL_WITHSPACE: /^([a-z A-Z])+((?:[-_](?![-_]))*([a-z A-Z]))*$/
   };
   public RESOURCE_CATEGORY_CONSTANT = {
     CMLevel1: "CM L1",
