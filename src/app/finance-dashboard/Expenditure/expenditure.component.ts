@@ -761,7 +761,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                     Currency: this.addExpenditure_form.value.Currency,
                     Amount: element.AmountPerProject,
                     ClientCurrency: element.projectItem.Currency,
-                    ClientAmount: finalAmt.toString(),
+                    ClientAmount: finalAmt,
                     Status: 'Created',
                     FileURL: this.fileUploadedUrl,
                     ClientApprovalFileURL: this.caFileUploadedUrl,
