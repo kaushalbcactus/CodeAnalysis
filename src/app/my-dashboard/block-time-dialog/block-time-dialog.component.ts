@@ -82,8 +82,9 @@ export class BlockTimeDialogComponent implements OnInit {
       } else {
         const actualStartDate = new Date();
         const allowedDate = this.common.CalculateminstartDateValue(new Date(), 3);
-        if (actualStartDate.getFullYear() >= allowedDate.getFullYear() &&
-          actualStartDate.getMonth() >= allowedDate.getMonth()) {
+        if ((actualStartDate.getFullYear() >= allowedDate.getFullYear() &&
+          actualStartDate.getMonth() >= allowedDate.getMonth())||
+          actualStartDate.getFullYear() > allowedDate.getFullYear()) {
             this.minDateValue = new Date(allowedDate.setDate(1));
         }
       }
@@ -251,7 +252,7 @@ export class BlockTimeDialogComponent implements OnInit {
   async validateLeave(EventDate, EndDate) {
     let validation = true;
     const batchURL = [];
-  
+
     const url = this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name,
       this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
 

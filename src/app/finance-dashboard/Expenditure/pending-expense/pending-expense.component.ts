@@ -979,12 +979,12 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 mailContent = this.replaceContent(mailContent, '@@Val8@@', this.expenseForm.value.PaymentMode.value);
                 mailContent = this.replaceContent(mailContent, '@@Val9@@', this.datePipe.transform(this.expenseForm.value.DateSpend, 'dd MMMM yyyy, hh:mm a'));
                 mailContent = this.replaceContent(mailContent, '@@Val11@@', this.expenseForm.value.Number);
-                mailContent = this.replaceContent(mailContent, '@@Val12@@', this.globalService.sharePointPageObject.rootsite + '' + this.fileUploadedUrl);
+                mailContent = this.replaceContent(mailContent, '@@Val12@@', '<a download target="_blank" href="' + this.globalService.sharePointPageObject.rootsite + '' + this.fileUploadedUrl +'">Click here</a>');
             } else {
                 mailContent = this.replaceContent(mailContent, '@@Val8@@', '');
                 mailContent = this.replaceContent(mailContent, '@@Val9@@', '');
                 mailContent = this.replaceContent(mailContent, '@@Val11@@', expense.Number);
-                mailContent = this.replaceContent(mailContent, '@@Val12@@', '');
+                mailContent = this.replaceContent(mailContent, '@@Val12@@', 'NA');
             }
         }
 

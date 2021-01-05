@@ -710,10 +710,11 @@ export class ProjectAttributesComponent implements OnInit {
         new Date(),
         3
       );
-      if (
+      if ((
         actualStartDate.getFullYear() >= allowedDate.getFullYear() &&
         actualStartDate.getMonth() >= allowedDate.getMonth()
-      ) {
+      ) ||
+      actualStartDate.getFullYear() > allowedDate.getFullYear()){
         this.addProjectAttributesForm.get("practiceArea").enable();
       } else {
         this.addProjectAttributesForm.get("practiceArea").disable();
