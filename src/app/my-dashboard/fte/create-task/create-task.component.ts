@@ -9,7 +9,6 @@ import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { Dropdown } from 'primeng/primeng';
-import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 
 @Component({
   selector: 'app-create-task',
@@ -84,7 +83,6 @@ export class CreateTaskComponent implements OnInit {
     private router: Router,
     private datePipe: DatePipe,
     private commonService: CommonService,
-    private adminConstants: AdminConstantService
   ) {
   }
 
@@ -294,7 +292,7 @@ export class CreateTaskComponent implements OnInit {
 
   checkSubMilestone(val) {
     if (val) {
-      const alphaExp = new RegExp(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL);
+      const alphaExp = new RegExp(this.constantsService.REG_EXPRESSION.ALPHA_SPECIAL);
       if (!alphaExp.test(val)) {
         return false;
       }
