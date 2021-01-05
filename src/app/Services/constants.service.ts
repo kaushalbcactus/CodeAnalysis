@@ -18,6 +18,10 @@ export class ConstantsService {
     userPermissionMsg: false,
   };
 
+  public REG_EXPRESSION = {
+    ALPHA_SPECIAL: /^([a-zA-Z])+((?:[-_](?![-_]))*([a-zA-Z]))*$/,
+  }
+
   public listNames = {
     ProjectScope: {
       name: "ProjectScopeCT",
