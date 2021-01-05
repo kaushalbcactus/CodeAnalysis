@@ -439,6 +439,13 @@
             </div>
         </div>
     </div>
+    <div class="p-grid p-col">
+        <div class="p-col-4"><span class="compulsory">*</span>Placeholder User</div>
+        <div class="p-col-8">
+            <p-dropdown [options]="adminDropDown.placeholderUserArray" formControlName="placeholderUser" [style]="{'width':'240px'}">
+            </p-dropdown>
+        </div>
+    </div>
     <div class="p-grid p-col" *ngIf="!date.isFTEEffectiveDateActive">
     </div>
     <div class="p-grid p-col" *ngIf="!showeditUser">

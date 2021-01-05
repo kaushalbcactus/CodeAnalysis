@@ -272,7 +272,7 @@ export class TimeBookingDialogComponent implements OnInit {
     // const batchGuid = this.spServices.generateUUID();
     const AllMilestones = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimelineForBooking);
     const minDate = await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 4);
-    AllMilestones.filter = AllMilestones.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString());
+    AllMilestones.filter = AllMilestones.filter.replace(/{{userId}}/gi, this.sharedObject.selectedUser ? this.sharedObject.selectedUser.toString() : this.sharedObject.currentUser.userId.toString());
     AllMilestones.filter += AllMilestones.filterNotCompleted;
 
     AllMilestones.filter += AllMilestones.filterDate.replace(/{{startDateString}}/gi, startDate).replace(/{{endDateString}}/gi, endDate);
@@ -283,7 +283,7 @@ export class TimeBookingDialogComponent implements OnInit {
 
     let MyAdhocTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.AdhocTasks);
 
-    MyAdhocTask.filter = MyAdhocTask.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi, startDate).replace(/{{endDateString}}/gi, endDate);
+    MyAdhocTask.filter = MyAdhocTask.filter.replace(/{{userId}}/gi, this.sharedObject.selectedUser ? this.sharedObject.selectedUser.toString() : this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi, startDate).replace(/{{endDateString}}/gi, endDate);
 
     const resAdhoc = await this.spServices.readItems(this.constants.listNames.AdhocTask.name, MyAdhocTask);
 
@@ -557,7 +557,7 @@ export class TimeBookingDialogComponent implements OnInit {
                 TimeSpentPerDay: timeSpentString,
                 TaskComments: dbTasks[i].CommentsMT,
                 Title: dbTasks[i].ProjectCode + ' ' + dbTasks[i].Milestone + ' TB ' + this.sharedObject.currentUser.title,
-                AssignedToId: this.sharedObject.currentUser.userId,
+                AssignedToId: this.sharedObject.selectedUser ? this.sharedObject.selectedUser.toString() : this.sharedObject.currentUser.userId.toString(),
                 ContentTypeCH : this.constants.CONTENT_TYPE.TASK
               };
               count++;

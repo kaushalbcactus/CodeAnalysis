@@ -6,7 +6,7 @@ import {
   ChangeDetectorRef,
   Output,
   EventEmitter,
-  HostListener,
+  HostListener
 } from "@angular/core";
 import { ConstantsService } from "src/app/Services/constants.service";
 import { MyDashboardConstantsService } from "../services/my-dashboard-constants.service";

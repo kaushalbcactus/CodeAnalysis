@@ -43,7 +43,9 @@ export class MyDashboardConstantsService {
   };
 
   mydashboardComponent = {
-
+    componentRef: null,
+    startDate: null,
+    endDate: null,
     user: {
       isUserFTE: false,
     },
@@ -80,7 +82,7 @@ export class MyDashboardConstantsService {
       top: 4500
     },
     ResourceCategorization: {
-      select: 'ID,UserNamePG/ID,UserNamePG/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,Designation,PrimarySkill,SkillLevel/ID,SkillLevel/Title,TimeZone/ID,TimeZone/Title,IsActiveCH,IsFTE',
+      select: 'ID,UserNamePG/ID,UserNamePG/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,Designation,PrimarySkill,SkillLevel/ID,SkillLevel/Title,TimeZone/ID,TimeZone/Title,IsActiveCH,IsFTE,RoleCH,PlaceholderUser',
       expand: 'UserNamePG/ID,UserNamePG/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,SkillLevel,TimeZone/ID,TimeZone/Title',
       filter: 'IsActiveCH eq \'Yes\'',
       orderby: 'UserNamePG/Title',

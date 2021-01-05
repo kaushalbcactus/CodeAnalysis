@@ -269,6 +269,7 @@ export class UserProfileComponent implements OnInit {
         userObj.WorkingThursday = item.WorkingThursday;
         userObj.WorkingFriday = item.WorkingFriday;
         userObj.WorkingSaturday = item.WorkingSaturday;
+        userObj.PlaceholderUser = item.PlaceholderUser;
         // Add the text of below item.
         if (userObj.Task) {
           const tasks: any = userObj.Task;
@@ -419,6 +420,7 @@ export class UserProfileComponent implements OnInit {
         userObj.WorkingThursday = item.WorkingThursday;
         userObj.WorkingFriday = item.WorkingFriday;
         userObj.WorkingSaturday = item.WorkingSaturday;
+        userObj.PlaceholderUser = item.PlaceholderUser;
         // Add the text of below item.
         if (userObj.Task) {
           const tasks: any = userObj.Task;
@@ -788,6 +790,7 @@ export class UserProfileComponent implements OnInit {
       userObj.WorkingThursday = item.WorkingThursday;
       userObj.WorkingFriday = item.WorkingFriday;
       userObj.WorkingSaturday = item.WorkingSaturday;
+      userObj.PlaceholderUser = item.PlaceholderUser;
       // Add the text of below item.
       if (userObj.Task) {
         const tasks: any = userObj.Task;
@@ -1024,6 +1027,7 @@ export class UserProfileComponent implements OnInit {
       WorkingThursday: formObj.workThursday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
       WorkingFriday: formObj.workFriday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
       WorkingSaturday: formObj.workSaturday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
+      PlaceholderUser: formObj.placeholderUser,
     };
     if (formObj.role) {
       data.RoleCH = formObj.role;

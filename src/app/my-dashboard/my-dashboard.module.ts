@@ -44,6 +44,7 @@ import { FeedbackPopupComponent } from '../qms/qms/reviewer-detail-view/feedback
 import { PreStackAllocationModule } from '../shared/pre-stack-allocation/pre-stack-allocation.module';
 import { SqmsModule } from '../shared/sqms/sqms.module';
 import { JournalConferenceDetailsModule } from '../shared/journal-conference-details/journal-conference-details.module';
+import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -98,7 +99,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   providers: [ DatePipe, DialogService, DynamicDialogConfig, DynamicDialogRef, {
     provide: PERFECT_SCROLLBAR_CONFIG,
     useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
-  }],
+  },MyCurrentCompletedTasksComponent,MyTimelineComponent,AllocationOverlayComponent],
   entryComponents: [
     TimeSpentDialogComponent,
     TimeBookingDialogComponent,

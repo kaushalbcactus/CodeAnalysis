@@ -5,7 +5,7 @@ import {
   ViewChild,
   HostListener,
   ApplicationRef,
-  NgZone,
+  NgZone
 } from "@angular/core";
 import { MyDashboardConstantsService } from "../services/my-dashboard-constants.service";
 import { GlobalService } from "src/app/Services/global.service";
@@ -191,7 +191,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     );
     mytasks.filter = mytasks.filter.replace(
       /{{userId}}/gi,
-      this.sharedObject.currentUser.userId.toString()
+      this.sharedObject.selectedUser ? this.sharedObject.selectedUser.toString() : this.sharedObject.currentUser.userId.toString()
     );
     mytasks.filter +=
       status === "MyCompletedTask"

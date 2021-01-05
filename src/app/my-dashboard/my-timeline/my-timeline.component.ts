@@ -325,7 +325,7 @@ export class MyTimelineComponent implements OnInit {
     if (this.selectedType.name === 'All' || this.selectedType.name === 'Completed' || this.selectedType.name === 'Not Completed' || this.selectedType.name === 'Planned') {
       let MyTimelineObj = Object.assign({}, this.queryConfig);
       let MyTimelineUrl = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimeline);
-      MyTimelineUrl.filter = MyTimelineUrl.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString());
+      MyTimelineUrl.filter = MyTimelineUrl.filter.replace(/{{userId}}/gi, this.sharedObject.selectedUser ? this.sharedObject.selectedUser.toString() : this.sharedObject.currentUser.userId.toString());
       MyTimelineUrl.filter += this.selectedType.name === 'Completed' ? MyTimelineUrl.filterCompleted : this.selectedType.name === 'Not Completed' ?
         MyTimelineUrl.filterNotCompleted : this.selectedType.name === 'Planned' ? MyTimelineUrl.filterPlanned : MyTimelineUrl.filterAll;
       //  MyTimeline.filter.substring(0, MyTimeline.filter.lastIndexOf("and"));
@@ -342,7 +342,7 @@ export class MyTimelineComponent implements OnInit {
     //**************************************************************************************************
     let MyLeaves = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
 
-    MyLeaves.filter = MyLeaves.filter.replace(/{{currentUser}}/gi, this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1])
+    MyLeaves.filter = MyLeaves.filter.replace(/{{currentUser}}/gi, this.sharedObject.selectedUser ? this.sharedObject.selectedUser.toString() : this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1])
     const MyLeavesUrl = this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name, MyLeaves);
     this.commonService.setBatchObject(batchURL, MyLeavesUrl, null, this.constants.Method.GET, this.constants.listNames.LeaveCalendar.name);
 
@@ -352,7 +352,7 @@ export class MyTimelineComponent implements OnInit {
     if (this.selectedType.name === 'All' || this.selectedType.name === 'Adhoc') {
       let MyAdhocTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.AdhocTasks);
 
-      MyAdhocTask.filter = MyAdhocTask.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1])
+      MyAdhocTask.filter = MyAdhocTask.filter.replace(/{{userId}}/gi, this.sharedObject.selectedUser ? this.sharedObject.selectedUser.toString() : this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1])
 
 
       const MyAdhocTaskUrl = this.spServices.getReadURL(this.constants.listNames.AdhocTask.name, MyAdhocTask);
@@ -426,7 +426,8 @@ export class MyTimelineComponent implements OnInit {
   // *********************************************************************************************
 
   bindEvents() {
-
+    this.myDashboardConstantsService.mydashboardComponent.startDate = this.fullCalendar.calendar.state.dateProfile.currentRange.start;
+    this.myDashboardConstantsService.mydashboardComponent.endDate = this.fullCalendar.calendar.state.dateProfile.currentRange.start;
     const prevButton = this.fullCalendar.el.nativeElement.getElementsByClassName('fc-prev-button');
     const nextButton = this.fullCalendar.el.nativeElement.getElementsByClassName('fc-next-button');
     const todayButton = this.fullCalendar.el.nativeElement.getElementsByClassName('fc-today-button');

@@ -108,7 +108,7 @@ export class AdminConstantService {
         "SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title," +
         "TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail,Author/ID,Author/Title," +
         "Editor/ID,Editor/Title,WorkingSunday,WorkingMonday,WorkingTuesday,WorkingWednesday,WorkingThursday,WorkingFriday," +
-        "WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate",
+        "WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate,PlaceholderUser",
       expand:
         "Account/ID,Account/Title,DeliverableExclusion/ID,DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title," +
         "Manager/ID,Manager/Title,Manager/EMail,SkillLevel/ID,SkillLevel/Title,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID," +
@@ -127,7 +127,7 @@ export class AdminConstantService {
         "SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title," +
         "TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail,Author/ID,Author/Title," +
         "Editor/ID,Editor/Title,WorkingSunday,WorkingMonday,WorkingTuesday,WorkingWednesday,WorkingThursday,WorkingFriday," +
-        "WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate",
+        "WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate,PlaceholderUser",
       expand:
         "Account/ID,Account/Title,DeliverableExclusion/ID,DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title," +
         "Manager/ID,Manager/Title,Manager/EMail,SkillLevel/ID,SkillLevel/Title,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID," +
@@ -500,6 +500,7 @@ export class AdminConstantService {
     TAVISIBILITY: "TAVisibility",
     CAVISIBILITY: "CAVisibility",
     ISFTE: "IsFTE",
+    PlaceholderUser: "PlaceholderUser"
   };
   public ACTION = {
     COPY: "Copy",

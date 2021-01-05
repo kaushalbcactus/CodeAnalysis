@@ -1,6 +1,9 @@
 <div fxLayout="row" fxLayoutAlign="space-between center">
     <p-tabMenu [model]="items" fxFlex="97"></p-tabMenu>
-
+        <div *ngIf="enableOtherUsers" class="users-dropdown">
+            <p-dropdown [options]="activeUsers" placeholder="Select User" [showClear]="true" appendTo="body" filter="true" resetFilterOnHide="true" (onChange)="userChange()" [(ngModel)]="selectedUser">
+            </p-dropdown>
+        </div>
     <i fxFlex="3" title="Manage FTE Work" *ngIf="isUserFTE" (click)="createTask()" style="cursor: pointer; font-size: 2em;padding:3px;border-bottom:1px solid #C53E3E;" class="fa fa-user" aria-hidden="true">
     </i>
 
