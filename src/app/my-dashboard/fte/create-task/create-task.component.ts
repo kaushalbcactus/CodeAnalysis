@@ -306,7 +306,7 @@ export class CreateTaskComponent implements OnInit {
       } else {
         this.createSubMilestone = false;
       }
-      return;
+      return true;
     }
   }
 
