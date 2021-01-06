@@ -144,7 +144,9 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
    */
   async getScorecardItems(topCount, startDate, endDate, assignedToID) {
     // 1st  REST API request
-    const batchURL = [];
+    let batchURL = [];
+    let i = 0;
+    let tempScorecardData = [];
     // REST API url in contants file
     // const previousYear = new Date().getFullYear() - 2;
     startDate = startDate ? startDate : new Date(new Date().setMonth(new Date().getMonth() - 6)).toISOString();
@@ -167,15 +169,22 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
     const arrScoreCards = arrResult.length > 0 ? arrResult : [];
     // 2nd REST API request
     // Get parameter of scorecard rating
-    arrScoreCards.forEach(element => {
+    for (const scoreCard of arrScoreCards) {
       // 1st Query
       const getRatingData = Object.assign({}, this.options);
       getRatingData.url = this.spService.getReadURL(this.globalConstant.listNames.ScorecardRatings.name, personalFeedbackComponent.getRatings);
-      getRatingData.url = getRatingData.url.replace('{{ID}}', element.ID);
+      getRatingData.url = getRatingData.url.replace('{{ID}}', scoreCard.ID);
       getRatingData.listName = this.globalConstant.listNames.ProjectInformation.name;
       getRatingData.type = 'GET';
       batchURL.push(getRatingData);
-    });
+      i++;
+       if (i % 100 === 0) {
+         let bresult = await this.spService.executeBatch(batchURL);
+         tempScorecardData = [...tempScorecardData, ...bresult];
+         batchURL = [];
+       }
+    }
+
     // Fetch Qualitative feedback if filter is based on Last 10,20,... or it will fetch in date range filter itself
     if (topCount < 4500) {
       const past3MonthDate = new Date();
@@ -199,8 +208,9 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
       batchURL.push(getScorecardData);
     }
     this.commonService.SetNewrelic('QMS', 'personalfeedback-feedbackbyme', 'getScorecardItems', "GET-BATCH");
-    let arrRatings = await this.spService.executeBatch(batchURL);
-    arrRatings = arrRatings.length > 0 ? arrRatings : [];
+    let tempArrRatings = await this.spService.executeBatch(batchURL);
+    tempArrRatings = tempArrRatings.length > 0 ? tempArrRatings : [];
+    const arrRatings = [...tempScorecardData, ...tempArrRatings];
     for (const i in arrRatings) {
       // Feedback Type condition is added to avoid execution of below statement on Qualitative feedback
       if (arrRatings.hasOwnProperty(i)) {
