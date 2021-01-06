@@ -193,7 +193,7 @@ export class MyDashboardComponent implements OnInit {
 
     if (currentUserResCat.length) {
       this.isUserFTE = currentUserResCat[0].IsFTE && currentUserResCat[0].IsFTE === 'Yes' ? true : false;
-      this.enableOtherUsers = (currentUserResCat[0].PlaceholderUser && currentUserResCat[0].PlaceholderUser == 'Yes') && (currentUserResCat[0].RoleCH === "CM L1" || currentUserResCat[0].RoleCH === "CM L2") ? true : false  
+      this.enableOtherUsers = (currentUserResCat[0].RoleCH === "CM L1" || currentUserResCat[0].RoleCH === "CM L2") ? true : false  
       this.myDashboardConstantsService.mydashboardComponent.user.isUserFTE = this.isUserFTE;
     }
     console.log(this.isUserFTE);
@@ -218,7 +218,9 @@ export class MyDashboardComponent implements OnInit {
     const sResult = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, resCatFilter);
     if(sResult && sResult.length > 0) {
       for(const item of sResult) {
-       this.activeUsers.push({label: item.UserNamePG.Title, value: item.UserNamePG });
+        if(item.PlaceholderUser === 'Yes') {
+          this.activeUsers.push({label: item.UserNamePG.Title, value: item.UserNamePG });
+        }
       }
     }
   }
