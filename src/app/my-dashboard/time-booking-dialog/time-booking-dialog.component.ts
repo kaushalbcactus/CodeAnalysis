@@ -506,9 +506,14 @@ export class TimeBookingDialogComponent implements OnInit {
 
       const timeSpentHours1 = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
       const totalTimeSpent = timeSpentMin < 10 ? timeSpentHours1 + '.' + '0' + timeSpentMin : timeSpentHours1 + '.' + timeSpentMin;
-
-      const existingObjItem = this.allTasks.filter(c => c.ProjectCode === dbTasks[i].ProjectCode &&
-        c.Milestone === dbTasks[i].Milestone && c.SubMilestone === dbTasks[i].SubMilestones && c.Task === 'Time Booking');
+      let existingObjItem;
+      if(dbTasks[i].SubMilestone) {
+         existingObjItem = this.allTasks.filter(c => c.ProjectCode === dbTasks[i].ProjectCode &&
+          c.Milestone === dbTasks[i].Milestone && c.SubMilestones === dbTasks[i].SubMilestone && c.Task === 'Time Booking');
+      } else {
+         existingObjItem = this.allTasks.filter(c => c.ProjectCode === dbTasks[i].ProjectCode &&
+          c.Milestone === dbTasks[i].Milestone && c.Task === 'Time Booking');
+      }
 
       if (existingObjItem.length) {
         const existingObj = existingObjItem[0];
