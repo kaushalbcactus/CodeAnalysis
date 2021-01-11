@@ -449,9 +449,7 @@ export class CACommonService {
         if (globalFilter) {
           data = data.filter(row => this.globalFilter(row, globalFilter, filterColumns))
         }
-        debugger
         if (!$.isEmptyObject(localFilter)) {
-          debugger;
           data = data.filter(row => this.filterLocal(row, localFilter));
         }
         let items = data.slice(first, (first + rows));

@@ -219,7 +219,6 @@ export class ManageFinanceComponent implements OnInit {
       { label: 'Yes', value: 'Yes' },
       { label: 'No', value: 'No' }
     ];
-    debugger
     if (this.config && this.config.hasOwnProperty('data')) {
       setTimeout(async () => {
         this.projObj = this.config.data.projectObj;
@@ -2465,7 +2464,6 @@ export class ManageFinanceComponent implements OnInit {
    */
   getProjectFinanceBreakupData(po, projObj, poInfoObj) {
 
-    debugger;
     const data: any = {
       __metadata: { type: this.constant.listNames.ProjectFinanceBreakup.type },
     };
@@ -2646,7 +2644,6 @@ export class ManageFinanceComponent implements OnInit {
       const poItem = poArray.filter(poObj => poObj.Id === (element.POLookup ? element.POLookup : element.POID));
       const poExistItem = poExistingItems.find(poObj => poObj.ID === element.ID);
       if (poItem && poItem.length) {
-        debugger
         const data = {
           __metadata: { type: this.constant.listNames.PO.type },
           TotalLinked: poItem[0].TotalLinked + element.Amount - (poExistItem ? poExistItem.Amount ? poExistItem.Amount : 0 : 0),

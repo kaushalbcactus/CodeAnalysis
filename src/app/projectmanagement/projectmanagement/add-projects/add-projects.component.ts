@@ -78,7 +78,6 @@ export class AddProjectsComponent implements OnInit {
   }
 
   closePopupData(event){
-    debugger
     this.isMangageFinanceVisible = false;
   }
 }

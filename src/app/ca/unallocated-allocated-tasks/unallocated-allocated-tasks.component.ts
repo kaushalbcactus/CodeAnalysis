@@ -234,8 +234,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       this.caGlobal.totalRecords = this.completeTaskArray.length;
       this.caGlobal.dataSource = this.completeTaskArray.slice(0, 10);
     }
-
-    debugger
     this.caGlobal.loading = false;
     this.loaderenable = false;
   }

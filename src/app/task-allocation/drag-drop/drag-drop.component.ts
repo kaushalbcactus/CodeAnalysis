@@ -365,7 +365,6 @@ export class DragDropComponent implements OnInit {
             const DefaultObj = milestone.submilestone.nodes.find(c => c.label === 'Default');
             const index = milestone.submilestone.nodes.indexOf(DefaultObj);
             if (index > -1) {
-              debugger;
               milestone.submilestone.nodes.splice(index, 1);
               milestone.submilestone.nodes.push(DefaultObj);
             }

@@ -515,7 +515,6 @@ export class TimelineHistoryComponent implements OnInit {
     const ifDone = this.checkifAllDone(this.timelineBaseObj);
     if (ifDone) {
       this.totalRecords = this.timelineData.length;
-      debugger
       setTimeout(() => {
         this.setTableHeight('down', 0);
       }, 500);

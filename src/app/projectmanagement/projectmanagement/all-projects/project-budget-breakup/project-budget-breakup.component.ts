@@ -192,8 +192,6 @@ export class ProjectBudgetBreakupComponent implements OnInit {
     this.PBBFilters.CommentsMT = this.common.sortData(
       this.uniqueArrayObj(colData,'CommentsMT')
     );
-
-    debugger
   }
 
   colFiltersForSOW(colData) {

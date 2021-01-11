@@ -3758,7 +3758,6 @@ export class TimelineComponent
       if (restructureMilestones) {
         let tempmilestoneData = [],
           milestonesList = [];
-          debugger;
         // restructureMilestones.nodes = this.reConfigureNodes(
         //   restructureMilestones
         // );
@@ -6522,7 +6521,6 @@ export class TimelineComponent
           return false;
         }
       }
-      debugger;
       // previousNode - Milestone
       // milestone.data. - client review
       if (
