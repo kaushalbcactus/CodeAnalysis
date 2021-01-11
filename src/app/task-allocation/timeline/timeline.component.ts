@@ -6377,7 +6377,7 @@ export class TimelineComponent
           );
         }
 
-        this.alertResourceLeave(checkTasks);
+        await this.alertResourceLeave(checkTasks);
         const isValid = this.validationsForActive(checkTasks);
         if (!isValid) {
           return false;
