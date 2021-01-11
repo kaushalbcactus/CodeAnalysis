@@ -1,23 +1,11 @@
 <p class="error" *ngIf="error">{{errorMsg}}</p>
 
-
-<div #loader class="overlay"></div>
-<div #spanner class="spanner">
-    <div class="loader"></div>
-    <p>Please wait...</p>
-</div>
-
-
-
 <div class="pdialogButton p-col-12 p-grid p-jc-end">
     <button *ngIf="showSave && !isPOEdit" pButton pRipple type="button" (click)="savePo()" label="Save" class="p-mx-2 p-button-raised p-button-danger"></button>
 
     <button *ngIf="showSave && isPOEdit" pButton pRipple type="button" (click)="saveEditedPo()" label="Save" class="p-mx-2  p-button-raised p-button-danger"></button>
     <button type="button " pButton icon="pi pi-times " (click)="cancel(); " label="Cancel " class="p-mr-3 p-button-raised p-button-danger "></button>
 </div>
-
-
-
 
 <div class="p-mt-2">
     <p-accordion [activeIndex]="index">

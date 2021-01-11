@@ -9,15 +9,6 @@
 </button>
 </div>
 
-
-<div #loader class="overlay"></div>
-<div #spanner class="spanner">
-    <div class="loader"></div>
-    <p>Please wait...</p>
-    <p>Fetching available resources...</p>
-</div>
-
-
 <div class="p-dir-col p-align-center" style="padding-top: 10vw;" [hidden]="!loaderenable">
     <div id="scInnerLoader"></div>
     <div id="scInnerLoaderText">Loading...</div>
@@ -195,7 +186,9 @@
                                 <td class="p-d-flex" style="text-align: center;">
                                     <span *ngIf="!rowData.editMode">{{rowData.EstimatedTime}}</span>
                                     <input type="number" class="form-control budgetHr" required="required" min="0" value="0" onchange="validity.valid||(value='0');" step="0.25" *ngIf=" rowData.editMode" required="required" [id]="rowData.ID" (change)="modelChanged(rowData,Slot)" [(ngModel)]="rowData.EstimatedTime">
+
                                     <span class='p-ml-1 overlayIcon' (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)" style="float: right;cursor: pointer;" title="Click to see allocation split" *ngIf="rowData.showAllocationSplit">
+                                        <app-allocation-overlay appendTo="body" #dailyAllocateOP></app-allocation-overlay>
                                       <i class="fa fa-info-circle" aria-hidden="true"></i>
                                 </span>
                                 </td>
@@ -253,7 +246,7 @@
             </tr>
         </ng-template>
     </p-table>
-    <app-allocation-overlay appendTo="body" #dailyAllocateOP></app-allocation-overlay>
+
 </div>
 
 

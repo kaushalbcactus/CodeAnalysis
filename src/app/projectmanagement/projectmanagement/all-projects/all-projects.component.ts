@@ -35,9 +35,6 @@ declare var $;
 export class AllProjectsComponent implements OnInit {
   tempClick: any;
   @Output() sendOutput = new EventEmitter<string>();
-  @ViewChild("loader", { static: false }) loaderView: ElementRef;
-  @ViewChild("spanner", { static: false }) spannerView: ElementRef;
-
   popItems: MenuItem[];
   selectedProjectObj;
   displayedColumns: any[] = [
@@ -281,8 +278,7 @@ export class AllProjectsComponent implements OnInit {
 
   async convertToExcelFile(data) {
     this.showTable = true;
-    this.loaderView.nativeElement.classList.add('show');
-    this.spannerView.nativeElement.classList.add('show');
+    this.constants.loader.isWaitDisable= false;
     console.log(data);
     const budgets = await this.pmCommonService.getAllBudget(this.allProjectRef.filteredValue ?
       this.allProjectRef.filteredValue : this.pmObject.allProjectsArray);
@@ -298,8 +294,7 @@ export class AllProjectsComponent implements OnInit {
     });
     data._values = this.pmObject.allProjectsArray;
     this.pmCommonService.convertToExcelFile(data);
-    this.loaderView.nativeElement.classList.remove('show');
-    this.spannerView.nativeElement.classList.remove('show');
+    this.constants.loader.isWaitDisable= true;
   }
 
 
@@ -1013,9 +1008,7 @@ export class AllProjectsComponent implements OnInit {
     //   document.documentElement.clientHeight
     // ) + 'px';
 
-    this.loaderView.nativeElement.classList.add('show');
-    this.spannerView.nativeElement.classList.add('show');
-
+    this.constants.loader.isWaitDisable= false;
 
     const result = await this.getGetIds(selectedProjectObj, projectAction);
     if (result && result.length) {
@@ -1023,8 +1016,7 @@ export class AllProjectsComponent implements OnInit {
         c.listName === this.constants.listNames.Schedules.name).retItems : [];
       switch (projectAction) {
         case this.pmConstant.ACTION.CONFIRM_PROJECT:
-          this.loaderView.nativeElement.classList.remove('show');
-          this.spannerView.nativeElement.classList.remove('show');
+          this.constants.loader.isWaitDisable= true;
 
           this.commonService.confirmMessageDialog('Change Status of Project -' + selectedProjectObj.ProjectCode + '', 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
             + ' from \'' + selectedProjectObj.Status + '\' to \'' + this.constants.projectStatus.Unallocated + '\'?', null, ['Yes', 'No'], false).then(async Confirmation => {
@@ -1041,8 +1033,7 @@ export class AllProjectsComponent implements OnInit {
             if (pbbItems.find(c => c.Status === 'Approval Pending')) {
 
               this.commonService.showToastrMessage(this.constants.MessageType.error, 'Budget approval still pending for ' + selectedProjectObj.ProjectCode, true);
-              this.loaderView.nativeElement.classList.remove('show');
-              this.spannerView.nativeElement.classList.remove('show');
+              this.constants.loader.isWaitDisable= true;
               break;
             }
           }
@@ -1052,8 +1043,7 @@ export class AllProjectsComponent implements OnInit {
             if (InvoiceLineItems.find(c => c.Status === 'Scheduled')) {
 
               this.commonService.showToastrMessage(this.constants.MessageType.error, selectedProjectObj.ProjectCode + ' line item is not Confirmed.', true);
-              this.loaderView.nativeElement.classList.remove('show');
-              this.spannerView.nativeElement.classList.remove('show');
+              this.constants.loader.isWaitDisable= true;
               break;
             }
           }
@@ -1066,8 +1056,7 @@ export class AllProjectsComponent implements OnInit {
               if (AllBillable.find(c => c.Status.indexOf('Billed') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled')) {
 
                 this.commonService.showToastrMessage(this.constants.MessageType.error, selectedProjectObj.ProjectCode + ' expense not scheduled / confirmed.', true);
-                this.loaderView.nativeElement.classList.remove('show');
-                this.spannerView.nativeElement.classList.remove('show');
+                this.constants.loader.isWaitDisable= true;
                 break;
               }
             }
@@ -1077,14 +1066,12 @@ export class AllProjectsComponent implements OnInit {
 
 
                 this.commonService.showToastrMessage(this.constants.MessageType.error, selectedProjectObj.ProjectCode + ' expense not scheduled / confirmed.', true);
-                this.loaderView.nativeElement.classList.remove('show');
-                this.spannerView.nativeElement.classList.remove('show');
+                this.constants.loader.isWaitDisable= true;
                 break;
               }
             }
           }
-          this.loaderView.nativeElement.classList.remove('show');
-          this.spannerView.nativeElement.classList.remove('show');
+          this.constants.loader.isWaitDisable= true;
 
           this.commonService.confirmMessageDialog('Change Status of Project -' + selectedProjectObj.ProjectCode + '', 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
             + ' from \'' + selectedProjectObj.Status + '\' to \'' + this.constants.projectStatus.NewAuditInProgress + '\'?', null, ['Yes', 'No'], false).then(async Confirmation => {
@@ -1095,9 +1082,7 @@ export class AllProjectsComponent implements OnInit {
 
           break;
         case this.pmConstant.ACTION.CLOSE_PROJECT:
-          this.loaderView.nativeElement.classList.remove('show');
-          this.spannerView.nativeElement.classList.remove('show');
-
+          this.constants.loader.isWaitDisable= true;
           this.commonService.confirmMessageDialog('Change Status of Project -' + selectedProjectObj.ProjectCode + '', 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
             + ' from \'' + this.constants.projectStatus.NewPendingClosure + '\' to \'' + this.constants.projectStatus.Closed + '\'?', null, ['Yes', 'No'], false).then(async Confirmation => {
               if (Confirmation === 'Yes') {
@@ -1128,8 +1113,7 @@ export class AllProjectsComponent implements OnInit {
           batchURL.push(inoviceGet);
           this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetInvoiceLineItem');
           const sResult = await this.spServices.executeBatch(batchURL);
-          this.loaderView.nativeElement.classList.remove('show');
-          this.spannerView.nativeElement.classList.remove('show');
+          this.constants.loader.isWaitDisable= true;
           if (sResult && sResult.length) {
             const invoiceItems = sResult[0].retItems;
             for (const item of invoiceItems) {
@@ -2528,8 +2512,7 @@ export class AllProjectsComponent implements OnInit {
   //   This function is used to open or download project scope
   // **************************************************************************************************
   async goToProjectScope(task) {
-    this.loaderView.nativeElement.classList.add('show');
-    this.spannerView.nativeElement.classList.add('show');
+    this.constants.loader.isWaitDisable= false;
     const response = await this.commonService.goToProjectScope(task, task.Status);
     if (response === 'No Document Found.') {
       this.commonService.showToastrMessage(this.constants.MessageType.error, task.ProjectCode + ' - Project Scope not found.', false);
@@ -2537,8 +2520,7 @@ export class AllProjectsComponent implements OnInit {
     else {
       window.open(response);
     }
-    this.loaderView.nativeElement.classList.remove('show');
-    this.spannerView.nativeElement.classList.remove('show');
+    this.constants.loader.isWaitDisable= true;
   }
   goToAllocationPage(task) {
     window.open(this.globalObject.url + '/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
@@ -2744,8 +2726,7 @@ export class AllProjectsComponent implements OnInit {
    */
   async moveSOW(projObj) {
     this.sowDropDownArray = [];
-    this.loaderView.nativeElement.classList.add('show');
-    this.spannerView.nativeElement.classList.add('show');
+    this.constants.loader.isWaitDisable= false;
     let arrResults = [];
     const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.ALL_SOW_Client);
     sowFilter.filter = sowFilter.filter.replace('{Client}', this.selectedProjectObj.ClientLegalEntity);
@@ -2764,8 +2745,7 @@ export class AllProjectsComponent implements OnInit {
       });
     }
 
-    this.loaderView.nativeElement.classList.remove('show');
-    this.spannerView.nativeElement.classList.remove('show');
+    this.constants.loader.isWaitDisable= true;
     this.newSelectedSOW = undefined;
     this.pmObject.isMoveProjectToSOWVisible = true;
   }
@@ -3325,8 +3305,8 @@ export class AllProjectsComponent implements OnInit {
   }
 
   async editDeliverable() {
-    this.loaderView.nativeElement.classList.add('show');
-    this.spannerView.nativeElement.classList.add('show');
+    this.constants.loader.isWaitDisable= false;
+  
     this.deliverableTypeOptions = [];
     const result = await this.spServices.readItems(this.constants.listNames.DeliverableType.name, this.pmConstant.TIMELINE_QUERY.DELIVERY_TYPE)
     if(result.length) {
@@ -3334,8 +3314,7 @@ export class AllProjectsComponent implements OnInit {
         this.deliverableTypeOptions.push({ label: element.Title, value: element.Title });
       });
     }
-    this.loaderView.nativeElement.classList.remove('show');
-    this.spannerView.nativeElement.classList.remove('show');
+    this.constants.loader.isWaitDisable= true;
     this.changeDeliverable = true;
   }
 
@@ -3384,8 +3363,7 @@ export class AllProjectsComponent implements OnInit {
 
   async editProjectDate() {
     this.scheduledTasks = [];
-    this.loaderView.nativeElement.classList.add('show');
-    this.spannerView.nativeElement.classList.add('show');
+    this.constants.loader.isWaitDisable= false;
     if(this.selectedProjectObj.Status == this.constants.projectStatus.InProgress) {
       this.disableStartDate = true;
       this.minDateValue = this.selectedProjectObj.ProposedStartDate;
@@ -3411,8 +3389,7 @@ export class AllProjectsComponent implements OnInit {
     this.proposedStartDate = this.selectedProjectObj.ProposedStartDate;
     this.proposedEndDate = this.selectedProjectObj.ProposedEndDate;
 
-    this.loaderView.nativeElement.classList.remove('show');
-    this.spannerView.nativeElement.classList.remove('show');
+    this.constants.loader.isWaitDisable= true;
     this.updateProjectDate = true;
   }
 

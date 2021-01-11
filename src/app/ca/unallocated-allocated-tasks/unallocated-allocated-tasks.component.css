@@ -116,6 +116,16 @@
     border: 1px solid #e4e4e4 !important;
 }
 
+:host ::ng-deep .dailyAllocationOverlayComp .p-overlaypanel {
+    top: inherit !important;
+    right: 430px !important;
+    left: inherit !important;
+}
+
+:host ::ng-deep .dailyAllocationOverlayComp .p-overlaypanel {
+    margin-top: 30px !important;
+}
+
 ::ng-deep .slotTable .p-datatable .p-sortable-column:not(.p-highlight):hover {
     background: #e4e4e4;
     color: #000001;

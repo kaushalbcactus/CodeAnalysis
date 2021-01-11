@@ -1,6 +1,7 @@
 <!-- <i class="pi pi-search" (mouseenter)="op2.show($event)" style="font-size:24px"></i> -->
 <p-overlayPanel class="dailyAllocationOverlayComp" #op2 [dismissable]="true" [showCloseIcon]="true">
-    <p-table #viewAllocate [columns]="cols" [value]="allocation" [style]="{width: '350px'}" [paginator]="true" [rows]="5">
+    <p-table #viewAllocate [columns]="cols" [value]="allocation" [style]="{width: '350px','font-size':'14px'}" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10]" [showCurrentPageReport]="true" currentPageReportTemplate="{first} to {last} of {totalRecords} entries"
+        styleClass="p-datatable-cactus p-datatable-gridlines">
         <ng-template pTemplate="header">
             <tr>
                 <th *ngFor="let col of cols">

@@ -10,6 +10,7 @@ export class ConstantsService {
   constructor(public globalService: GlobalService) {}
   loader = {
     isPSInnerLoaderHidden: false,
+    isWaitDisable : true
   };
   public userPermission = {
     isFdUserManager: false,

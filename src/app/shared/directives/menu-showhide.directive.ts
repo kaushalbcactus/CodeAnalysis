@@ -16,7 +16,6 @@ export class HideShowMenuDirective {
 
   @HostListener('document:click', ['$event'])
   clickout(event) {
-      debugger
     if (event.target.className === 'pi pi-ellipsis-v') {
       if (this.tempClick) {
         this.tempClick.style.display = 'none';

@@ -29,8 +29,6 @@ import { MenuItem, SelectItem } from 'primeng/api';
   providers: [UsercapacityComponent, PreStackAllocationComponent, AllocationOverlayComponent, ConflictAllocationComponent]
 })
 export class UnallocatedAllocatedTasksComponent implements OnInit {
-  @ViewChild("loader", { static: false }) loaderView: ElementRef;
-  @ViewChild("spanner", { static: false }) spannerView: ElementRef;
   cols: any[];
   allTasks: any[];
   tempClick: any;
@@ -355,8 +353,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
 
 
-      this.loaderView.nativeElement.classList.add('show');
-      this.spannerView.nativeElement.classList.add('show');
+      this.constants.loader.isWaitDisable= false;
       setTimeout(async () => { 
 
         allocateResource.overlayVisible = true;
@@ -448,8 +445,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
               element.find(c => c.value.UserNamePG.ID === task.AssignedTo.ID).value : task.allocatedResource;
           });
         }
-        this.loaderView.nativeElement.classList.remove('show');
-        this.spannerView.nativeElement.classList.remove('show');
+        this.constants.loader.isWaitDisable= true;
       }, 500);
     }
   }

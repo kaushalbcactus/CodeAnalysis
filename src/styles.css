@@ -496,7 +496,7 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 .loader {
     color: #ffffff;
     font-size: 10px;
-    margin: 80px auto;
+    margin: 30px auto;
     position: relative;
     text-indent: -9999em;
     -webkit-transform: translateZ(0);
@@ -744,6 +744,12 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 .p-calendar-w-btn,
 .p-button.p-button-icon-only {
     height: 38px !important;
+}
+
+.dailyAllocationOverlayComp .p-overlaypanel {
+    top: inherit !important;
+    right: 8vw !important;
+    left: inherit !important;
 }
 
 

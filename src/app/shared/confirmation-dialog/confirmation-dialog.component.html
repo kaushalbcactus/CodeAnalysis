@@ -9,6 +9,6 @@
     <hr style="border-top: 1.2px solid #cdcdcd;">
 
     <div class="ui-dialog-footer footer-buttons p-grid p-jc-end" style="border: none;">
-        <button *ngFor="let bName of buttons" class="p-mx-1" type="button" pButton [icon]="bName === 'Yes' ? 'pi pi-check' : (bName ==='No' || bName ==='Cancel') ? 'pi pi-times' : ''" [label]="bName" (click)="Confirm(bName)"></button>
+        <button *ngFor="let bName of buttons" class="p-mx-1 p-button-raised p-button-danger" type="button" pButton [icon]="bName === 'Yes' ? 'pi pi-check' : (bName ==='No' || bName ==='Cancel') ? 'pi pi-times' : ''" [label]="bName" (click)="Confirm(bName)"></button>
     </div>
 </div>

@@ -1,16 +1,18 @@
-<div id="dailyAllocation" [hidden]="hideLoader">
-    <div id="dailyAllocationLoader"></div>
-    <div id="dailyAllocationLoaderText">Loading...</div>
+<div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="!hideLoader">
+    <div id="modalInnerLoader"></div>
+    <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
-<div id="mainContent" [hidden]="hideTable">
-    <div class='footer' fxLayout="row" fxLayoutAlign="end center">
-        <button type="button" pButton icon="pi pi-save" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="saveAllocation()" label="Save" class="saveTaskButton"></button>
-        <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
 
+<div id="mainContent" [hidden]="hideTable">
+    <div class="pdialogButton p-col-12 p-grid p-jc-end">
+        <button type="button " pButton icon="pi pi-save" class="p-mx-1 p-button-raised p-button-danger saveTaskButton" (click)="saveTimeSpent() " label="Save"></button>
+        <button type="button" pButton icon="pi pi-times " (click)="cancel(); " label="Cancel" class="p-button-raised p-button-danger"></button>
     </div>
+
+
     <div class="table">
-        <p-table [value]="allocationSplit">
+        <p-table [value]="allocationSplit" styleClass="p-datatable-cactus p-datatable-gridlines">
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="dateCol">
@@ -32,7 +34,7 @@
             </ng-template>
             <ng-template pTemplate="body" let-rowData let-columns="columns">
                 <tr>
-                    <td (click)="showTasks(rowData)" class="allocationDate"  [style.background]="rowData.leave ? '#808080': '#FFFFFF'" [title]="rowData.leave ? 'On Leave' : ''">
+                    <td (click)="showTasks(rowData)" class="allocationDate" [style.background]="rowData.leave ? '#808080': '#FFFFFF'" [title]="rowData.leave ? 'On Leave' : ''">
                         {{ rowData.Date | date: " d MMM, y" }}
                     </td>
                     <td>

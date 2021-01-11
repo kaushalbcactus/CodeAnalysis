@@ -29,6 +29,15 @@
     </div>
 </div>
 
+<div>
+    <div #loader [ngClass]="constantsService.loader.isWaitDisable ? 'overlay' : 'overlay show'"></div>
+    <div #spanner [ngClass]="constantsService.loader.isWaitDisable ? 'spanner' : 'spanner show'">
+        <div class="loader"></div>
+        <p>Please wait...</p>
+    </div>
+</div>
+
+
 <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="cls_toastrMessage" [hideTransitionOptions]="'0ms'" position="top-center" preventOpenDuplicates="true"> </p-toast>
 <!-- 
 <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="cls_ModaltoastrMessage" [hideTransitionOptions]="'0ms'" position="top-center" [modal]="true" [baseZIndex]="5000" preventOpenDuplicates="true"> -->
