@@ -1,6 +1,6 @@
-<link rel="stylesheet" href="https://jqueryui.com/jquery-wp-content/themes/jqueryui.com/style.css">
+<!-- <link rel="stylesheet" href="https://jqueryui.com/jquery-wp-content/themes/jqueryui.com/style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"> -->
 <!-- <div class="custom-table-container" [hidden]="isUserAllowed">
     <input type="hidden" id="isLinkHidden" value="{{isUserAllowed}}" />
     <ul class="custabs">
@@ -16,20 +16,34 @@
         </div>
     </div>
 </div> -->
-<div class="tableLoader" [hidden]='pmObject.isMainLoaderHidden'>
+<!-- <div class="tableLoader" [hidden]='pmObject.isMainLoaderHidden'>
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div> -->
+
+<div class="p-d-flex p-flex-column" style="padding: 10vw;width: 100%;" *ngIf='!pmObject.isMainLoaderHidden'>
     <div id="scInnerLoader"></div>
     <div id="scInnerLoaderText">Loading...</div>
 </div>
-<div class="custom-table-container">
-    <p-splitButton label="Add Project" icon="pi pi-plus-circle" (onClick)="displayAddProject()" [model]="buttons">
-    </p-splitButton>
-    <p-tabMenu [model]="pmObject.tabMenuItems"></p-tabMenu>
-    <div class="cs-dashboard">
+
+
+<div class="p-grid  p-jc-between">
+    <p-tabMenu class="p-col-10 p-pb-0 p-pr-0" [model]="pmObject.tabMenuItems" [activeItem]="activeItem"></p-tabMenu>
+    <div class="p-col p-pb-0 p-pt-3" style="border-bottom: 1px solid #e0e0e0;">
+        <div class=" p-grid p-jc-end ">
+            <p-splitButton *ngIf="pmObject.userRights.isHaveSOWBudgetManager;else AddProjectButton" label="Add Project" icon="pi pi-plus" (onClick)="displayAddProject()" [model]="buttons" styleClass="p-mx-2 p-button-danger"></p-splitButton>
+            <ng-template #AddProjectButton>
+                <button pButton pRipple type="button" label="Add Project" icon="pi pi-plus" class="p-button-raised p-button-danger" (click)="displayAddProject()"></button>
+            </ng-template>
+        </div>
+    </div>
+    <div class="p-col-12">
         <router-outlet></router-outlet>
     </div>
 </div>
+
 <div class="project-section">
-    <p-dialog #pDialog [(visible)]="pmObject.isAddProjectVisible" [modal]="true" (onHide)="pmService.resetAddProject();" [style]="{'width': '1350px'}" [positionTop]="15" [responsive]="true" [blockScroll]="true" [contentStyle]="{'max-height':'550px', 'top':'0px'}">
+    <p-dialog #pDialog [(visible)]="pmObject.isAddProjectVisible" [modal]="true" (onHide)="pmService.resetAddProject();" [style]="{'width': '1350px'}" [positionTop]="15" [responsive]="true" [blockScroll]="true" [contentStyle]="{'max-height':'700px', 'top':'0px'}">
         <p-header>
             Add Project
         </p-header>

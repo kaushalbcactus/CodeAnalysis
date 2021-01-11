@@ -327,11 +327,17 @@ export class SOWComponent implements OnInit, OnDestroy {
       if (this.pmObject.tabMenuItems.length) {
         this.pmObject.tabMenuItems[1].label = 'All SOW (' + this.pmObject.countObj.allSOWCount + ')';
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
+        const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
+        
+         tabMenuInk.style.width= this.pmObject.countObj.allSOWCount && this.pmObject.countObj.allSOWCount < 10 ? '120px' : '131px';
       }
     } else {
       if (this.pmObject.tabMenuItems.length) {
         this.pmObject.tabMenuItems[1].label = 'All SOW (' + this.pmObject.countObj.allSOWCount + ')';
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
+        
+        const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
+        tabMenuInk.style.width= this.pmObject.countObj.allSOWCount && this.pmObject.countObj.allSOWCount < 10 ? '120px' : '131px';
       }
     }
     if (this.pmObject.allSOWItems && this.pmObject.allSOWItems.length) {
@@ -436,7 +442,6 @@ export class SOWComponent implements OnInit, OnDestroy {
       }
 
     }
-
     this.isAllSOWLoaderHidden = true;
     this.isAllSOWTableHidden = false;
 
@@ -683,53 +688,30 @@ export class SOWComponent implements OnInit, OnDestroy {
     window.open(allProjects, '_blank');
   }
 
-  @HostListener('document:click', ['$event'])
-  clickout(event) {
-    if (event.target.className === 'pi pi-ellipsis-v') {
-      if (this.tempClick) {
-        this.tempClick.style.display = 'none';
-        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
-          this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = '';
-        } else {
-          this.tempClick = undefined;
-        }
-      } else {
-        this.tempClick = event.target.parentElement.children[0].children[0];
-        this.tempClick.style.display = '';
-      }
 
-    } else {
-      if (this.tempClick) {
-        this.tempClick.style.display = 'none';
-        this.tempClick = undefined;
-      }
-    }
-  }
+  // isOptionFilter: boolean;
+  // optionFilter(event: any) {
+  //   if (event.target.value) {
+  //     this.isOptionFilter = false;
+  //   }
+  // }
 
-  isOptionFilter: boolean;
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
-
-  ngAfterViewChecked() {
-    if (this.pmObject.allSOWArray.length && this.isOptionFilter) {
-      let obj = {
-        tableData: this.allProjectRef,
-        colFields: this.allSOW
-        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
-      }
-      if (obj.tableData.filteredValue) {
-        this.commonService.updateOptionValues(obj);
-      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-        this.createColFieldValues(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-    }
-    this.cdr.detectChanges();
-  }
+  // ngAfterViewChecked() {
+  //   if (this.pmObject.allSOWArray.length && this.isOptionFilter) {
+  //     let obj = {
+  //       tableData: this.allProjectRef,
+  //       colFields: this.allSOW
+  //       // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+  //     }
+  //     if (obj.tableData.filteredValue) {
+  //       this.commonService.updateOptionValues(obj);
+  //     } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+  //       this.createColFieldValues(obj.tableData.value);
+  //       this.isOptionFilter = false;
+  //     }
+  //   }
+  //   this.cdr.detectChanges();
+  // }
 
 
 

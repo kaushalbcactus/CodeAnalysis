@@ -8,10 +8,12 @@ import { PrimengModule } from '../primeng/primeng.module';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { FileUploadProgressDialogComponent } from './file-upload-progress-dialog/file-upload-progress-dialog.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { HideShowMenuDirective } from './directives/menu-showhide.directive';
 @NgModule({
   declarations: [
     NumberOnlyDirective,
     InputPatterenDirective,
+    HideShowMenuDirective,
     ConfirmationDialogComponent,
     FileUploadProgressDialogComponent
   ],
@@ -27,6 +29,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     ReactiveFormsModule,
     NumberOnlyDirective,
     InputPatterenDirective,
+    HideShowMenuDirective,
     CommonModule,
     FormsModule,
   ]

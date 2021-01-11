@@ -1026,9 +1026,9 @@ export class MyDashboardConstantsService {
       tempDate = new Date(tempDate.setDate(tempDate.getDate() - 1));
       if (tempDate.getDay() !== 6 && tempDate.getDay() !== 0) {
         days -= 1;
-        if (dayCount - 3 <= days) {
+        // if (dayCount - 3 <= days) {
           tempminDateValue = tempDate;
-        }
+        // }
       }
     }
     return tempminDateValue;

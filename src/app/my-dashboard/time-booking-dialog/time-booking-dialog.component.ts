@@ -84,7 +84,7 @@ export class TimeBookingDialogComponent implements OnInit {
     this.modalloaderenable = true;
     this.getAllClients();
     this.getweekDates(null);
-    this.MainminDate = await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 3);
+    this.MainminDate = await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 6);
   }
 
 

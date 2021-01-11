@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { SelectItemGroup  } from 'primeng/api';
 import { FormGroup, Validators, FormControl, FormBuilder } from '@angular/forms';
 import { SelectItem } from 'primeng/api';
@@ -20,6 +20,7 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ['./project-attributes.component.css']
 })
 export class ProjectAttributesComponent implements OnInit {
+  @ViewChild("fileuploderView", { static: false }) fileuploderView: ElementRef;
   groupedCars: SelectItemGroup[];
   addProjectAttributesForm: FormGroup;
   addMolecule: FormGroup;
@@ -620,6 +621,12 @@ export class ProjectAttributesComponent implements OnInit {
     this.selectedFile = null;
     if (event.target.files && event.target.files.length > 0) {
       this.selectedFile = event.target.files[0];
+      this.fileuploderView.nativeElement.getElementsByClassName('file-select-name')[0].innerText = this.selectedFile.name;
+      this.fileuploderView.nativeElement.classList.add('active');
+    }
+    else{
+      this.fileuploderView.nativeElement.classList.remove('active');
+      this.fileuploderView.nativeElement.getElementsByClassName('file-select-name')[0].innerText = 'No file chosen...';
     }
   }
 

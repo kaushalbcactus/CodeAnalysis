@@ -192,6 +192,8 @@ export class ProjectBudgetBreakupComponent implements OnInit {
     this.PBBFilters.CommentsMT = this.common.sortData(
       this.uniqueArrayObj(colData,'CommentsMT')
     );
+
+    debugger
   }
 
   colFiltersForSOW(colData) {
@@ -260,16 +262,15 @@ export class ProjectBudgetBreakupComponent implements OnInit {
   }
 
   uniqueArrayObj(array: any,field, date?) {
-    // let column = field;
-
-    debugger
-    // return [...new Set(array.map(element => element[field]))].map(a => {
-    //   const b = date == 'Date' ? { label: this.datePipe.transform(a,"MMM dd, yyyy"), value: a } : { label: a, value: a }
-    //   // const b = { label: a, value: a };
-    //   return b;
-    // })
-    // .filter(ele => ele.label)
+    return [...new Set(array.map(element => element[field]))].map((a) => {
+      const b = date == 'Date'  ? { label: this.datePipe.transform( a instanceof Date ? a : new Date(a.toString()),"MMM dd, yyyy"), value: a } : { label: a, value: a }
+      return b;
+    })
+    .filter(ele => ele.label)
   }
+
+
+  
 
   sortData(arr, field) {
     let column = field;

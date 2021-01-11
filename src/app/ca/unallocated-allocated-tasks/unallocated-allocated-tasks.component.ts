@@ -169,10 +169,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   }
 
-  // ****************************************************************************************************
+  // **************************************************************************************
   // Get Data based on tab selection
-  // *****************************************************************************************************
-
+  // **************************************************************************************
 
 
   async getProperties() {
@@ -258,9 +257,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     this.caCommonService.lazyLoadTask(event, this.completeTaskArray, this.filterColumns);
   }
 
-  // ****************************************************************************************************
+  // ***************************************************************************************
   // show menu option of task on 3 dots
-  // *****************************************************************************************************
+  // ***************************************************************************************
 
 
   openPopup(data, Slot) {
@@ -351,14 +350,16 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   //  fetch resources on select resource feild
   // *****************************************************************************************************
 
-  fetchResources(task) {
+  fetchResources(task, allocateResource) {
     if (!this.selectOpened) {
 
 
-      // this.commonService.showToastrMessage(this.constants.MessageType.warn, 'Fetching available resources...', true, true);
+
       this.loaderView.nativeElement.classList.add('show');
       this.spannerView.nativeElement.classList.add('show');
       setTimeout(async () => { 
+
+        allocateResource.overlayVisible = true;
         const setResourcesExtn = $.extend(true, [], task.resources);
         const startTime = new Date(new Date(task.StartTime).setHours(0, 0, 0, 0));
         const endTime = new Date(new Date(task.EndTime).setHours(23, 59, 59, 0));
@@ -516,10 +517,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     });
     // tslint:disable-next-line: no-shadowed-variable
     ref.onClose.subscribe((task: any) => {
-      this.commonService.showToastrMessage(this.constants.MessageType.info, 'Please wait..', true, true);
+      // this.commonService.showToastrMessage(this.constants.MessageType.info, 'Please wait..', true, true);
       this.selectedUser = item;
       this.openedTask.allocatedResource = '';
-      this.commonService.clearToastrMessage();
+      // this.commonService.clearToastrMessage();
       this.openedSelect.show();
       this.selectOpened = false;
     });
@@ -1690,7 +1691,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     if (unt) {
       this.caGlobal.loading = true;
-      this.caCommonService.filterAction(unt.multiSortMeta, unt.sortOrder, unt.filters.hasOwnProperty('global') ?
+      this.caCommonService.filterAction(unt.multiSortMeta, unt.filters.hasOwnProperty('global') ?
         unt.filters.global.value : null, unt.filters, unt.first, unt.rows,
         this.completeTaskArray, this.filterColumns);
     }

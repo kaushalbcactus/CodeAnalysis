@@ -38,7 +38,7 @@
                                                           Table View Data
      ************************************************************************************ -->
 
-    <div *ngIf="!loaderenable && tableviewenable" class="SearchProjectTable" style="padding-top: 5px;">
+    <div *ngIf="!loaderenable && tableviewenable" class="SearchProjectTable" style="padding-top: 5px;" hideshowMenu>
         <p-table #project [columns]="cols" [value]="ProjectList" [exportFilename]="ProjectList" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
             [style]="{'font-size':'13px','min-height': '500px'}" styleClass="p-datatable-cactus p-datatable-gridlines">
 
@@ -77,8 +77,9 @@
                     </td>
                     <td>
                         <div>
-                            <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);" appendTo="body"></i>
                             <p-menu #popupMenu [style]="{'right' : '0px !important' ,'left' : 'inherit !important'}" [popup]="true" [model]="projectMenu"></p-menu>
+                            <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);" appendTo="body"></i>
+
                         </div>
                     </td>
                 </tr>

@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Input, Output, ViewEncapsulation, ɵConsole } from '@angular/core';
+import { Component, OnInit, EventEmitter, Input, Output, ViewEncapsulation, ɵConsole, ViewChild, ElementRef } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
@@ -22,8 +22,12 @@ declare var $;
   encapsulation: ViewEncapsulation.None
 })
 export class ManageFinanceComponent implements OnInit {
+  @ViewChild("loader", { static: false }) loaderView: ElementRef;
+  @ViewChild("spanner", { static: false }) spannerView: ElementRef;
   @Input() billedBy: any;
   @Output() budgetOutputData = new EventEmitter<any>();
+  @Output() closepopup = new EventEmitter<any>();
+  
   addPOForm: FormGroup;
   reasonsArray = [];
   existBudgetArray: any = [];
@@ -215,6 +219,7 @@ export class ManageFinanceComponent implements OnInit {
       { label: 'Yes', value: 'Yes' },
       { label: 'No', value: 'No' }
     ];
+    debugger
     if (this.config && this.config.hasOwnProperty('data')) {
       setTimeout(async () => {
         this.projObj = this.config.data.projectObj;
@@ -222,7 +227,6 @@ export class ManageFinanceComponent implements OnInit {
           this.disableAddBudget = true;
         }
         this.isPOEdit = true;
-        // this.setBudget();
         this.projectType = this.projObj.ProjectType;
         this.hideMoveLineItem = this.projectType === this.pmConstant.PROJECT_TYPE.HOURLY.value ? true: false;
         this.projectStatus = this.projObj.Status;
@@ -1425,7 +1429,8 @@ export class ManageFinanceComponent implements OnInit {
   }
   async editManageFinances(projObj) {
     this.hideRemoveButton = false;
-    this.pmObject.isMainLoaderHidden = false;
+    this.loaderView.nativeElement.classList.add('show');
+    this.spannerView.nativeElement.classList.add('show');
     this.poData = [];
     this.isBudgetHoursDisabled = false;
     this.sowNumber = projObj.SOWCode;
@@ -1770,7 +1775,8 @@ export class ManageFinanceComponent implements OnInit {
       }
       this.existPODataArray = this.poData;
       this.showPo = true;
-      this.pmObject.isMainLoaderHidden = true;
+      this.loaderView.nativeElement.classList.remove('show');
+      this.spannerView.nativeElement.classList.remove('show');
     }
   }
   async getInvoiceProformaNumber(invoiceItems) {
@@ -1965,7 +1971,8 @@ export class ManageFinanceComponent implements OnInit {
 
     console.log(budgetType);
     this.updateInvoices = [];
-    this.pmObject.isMainLoaderHidden = false;
+    this.loaderView.nativeElement.classList.add('show');
+    this.spannerView.nativeElement.classList.add('show');
     const batchURL = [];
     const options = {
       data: null,
@@ -2368,7 +2375,8 @@ export class ManageFinanceComponent implements OnInit {
         await this.pmCommonService.moveMilestoneAndTask(Schedules, this.projObj.ProjectCode);
       }
     }
-    this.pmObject.isMainLoaderHidden = true;
+    this.loaderView.nativeElement.classList.remove('show');
+    this.spannerView.nativeElement.classList.remove('show');
 
     this.commonService.showToastrMessage(this.constant.MessageType.success, 'Budget Updated Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode, true);
     setTimeout(() => {
@@ -2759,7 +2767,8 @@ export class ManageFinanceComponent implements OnInit {
       });
       ref.onClose.subscribe(async (data) => {
         if (data) {
-          this.pmObject.isMainLoaderHidden = false;
+          this.loaderView.nativeElement.classList.show('show');
+          this.spannerView.nativeElement.classList.show('show');
           console.log("selected data");
           console.log(data);  //LineItems
 
@@ -2917,4 +2926,15 @@ export class ManageFinanceComponent implements OnInit {
        }
     }
   }
+
+  
+cancel(){
+   if(this.config && this.config.hasOwnProperty('data')){
+    this.dynamicDialogRef.close();
+   } else{
+     this.closepopup.emit(false);
+   }
+  
 }
+}
+

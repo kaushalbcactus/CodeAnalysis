@@ -48,7 +48,7 @@ import { JournalConferenceDetailsComponent } from '../shared/journal-conference-
 import { ProjectBudgetBreakupComponent } from './projectmanagement/all-projects/project-budget-breakup/project-budget-breakup.component';
 import { CmDeliveyViewComponent } from './projectmanagement/add-projects/addtimeline/cm-delivey-view/cm-delivey-view.component';
 import { PoChangeDialogComponent } from './projectmanagement/add-projects/manage-finance/po-change-dialog/po-change-dialog.component';
-import { SharedModule } from 'primeng/api';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [

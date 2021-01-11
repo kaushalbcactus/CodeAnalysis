@@ -43,7 +43,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   addSowForm: FormGroup;
   addAdditionalBudgetForm: FormGroup;
   selectedFile: any;
-
+  activeItem: MenuItem;
   filePathUrl: any;
   subscription;
   FolderName: string;
@@ -62,10 +62,29 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     private dataService: DataService,
     private commonService: CommonService,
     public dialogService: DialogService,
-  ) { }
+  ) { 
+
+    this.pmObject.tabMenuItems = [
+      { label: 'All Projects', routerLink: 'allProjects' , command: (event) => {this.activeItem = event.item}},
+      { label: 'All SOW', routerLink: 'allSOW', routerLinkActiveOptions: { exact: true }, command: (event) => {this.activeItem = event.item} },
+      // tslint:disable-next-line:max-line-length
+      { label: 'Send to Client', routerLink: 'sendToClient', command: (event) => {this.activeItem = event.item} },
+      { label: 'Client Review', routerLink: 'clientReview' , command: (event) => {this.activeItem = event.item} },
+      // tslint:disable-next-line:max-line-length
+      { label: 'Pending Allocation', routerLink: 'pendingAllocation' , command: (event) => {this.activeItem = event.item} },
+      { label: 'Inactive Projects', routerLink: 'inActive' , command: (event) => {this.activeItem = event.item} }
+    ];
+
+  }
   ngOnInit() {
-    this.globalObject.currentTitle = 'Project Management';
+    localStorage.clear();
+    setTimeout(() => {
+      this.globalObject.currentTitle = 'Project Management';
+    }, 200);
+
+    this.activeItem = this.pmObject.tabMenuItems.find(c=>c.routerLink === this.router.url.substring(this.router.url.lastIndexOf('/')+1)) ? this.pmObject.tabMenuItems.find(c=>c.routerLink === this.router.url.substring(this.router.url.lastIndexOf('/')+1)) :  this.pmObject.tabMenuItems[2];
     this.loadProjectManagementInit();
+
   }
   /**
    * This method is used to load project management.
@@ -100,16 +119,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * This method is used to bind all the menu items.
    */
   bindMenuItems() {
-    this.pmObject.tabMenuItems = [
-      { label: 'All Projects', routerLink: 'allProjects' },
-      { label: 'All SOW', routerLink: 'allSOW', routerLinkActiveOptions: { exact: true } },
-      // tslint:disable-next-line:max-line-length
-      { label: 'Send to Client', routerLink: 'sendToClient' },
-      { label: 'Client Review', routerLink: 'clientReview' },
-      // tslint:disable-next-line:max-line-length
-      { label: 'Pending Allocation', routerLink: 'pendingAllocation' },
-      { label: 'Inactive Projects', routerLink: 'inActive' }
-    ];
     if (this.pmObject.userRights.isHaveSOWBudgetManager) {
       this.buttons = [
         {
@@ -118,12 +127,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           }
         }
       ];
-    } else {
-      const arrowButton: any = document.querySelector('.ui-splitbutton-menubutton');
-      arrowButton.style.display = 'none';
-    }
-
-
+    } 
   }
   /**
    * This method will display the add project section.

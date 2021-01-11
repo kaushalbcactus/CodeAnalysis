@@ -9,7 +9,7 @@
    ************************************************************************************** -->
 
 
-<div class="MyCurrentCompletedTable p-mt-2" *ngIf="allTasks.length > 0 && !loaderenable">
+<div class="MyCurrentCompletedTable p-mt-2" *ngIf="allTasks.length > 0 && !loaderenable" hideshowMenu>
 
     <p-table #TasksTable [columns]="cols" [value]="allTasks" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [style]="{'font-size':'13px','min-height': '400px'}"
         styleClass="p-datatable-cactus p-datatable-gridlines" [exportFilename]="TabName ==='MyCompletedTask' ? 'My Completed Tasks':'My Current Tasks'" stateStorage="local" [stateKey]="config.data ? 'popupTaskTable' : TabName ==='MyCompletedTask' ? 'MyCompletedTasks':'MyCurrentTasks'">
@@ -39,7 +39,7 @@
                         </p-columnFilter>
                     </div>
                 </th>
-                <th class="lastColumnWidth"></th>
+                <th style="width: 2em !important;"></th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
@@ -72,10 +72,11 @@
                         </span>
                     </span>
                 </td>
-                <td>
+                <td style="padding: 0px !important;">
                     <div *ngIf="rowData.MainStatus !=='Planned'">
-                        <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);" appendTo="body"></i>
                         <p-menu #popupMenu [style]="{'width': '16em' , 'right' : hideIcon ? '0px !important':'','left' :  hideIcon ? 'inherit !important':''  }" [popup]="true" [model]="taskMenu"></p-menu>
+                        <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);" appendTo="body"></i>
+
 
                     </div>
                 </td>

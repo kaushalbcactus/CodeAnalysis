@@ -419,13 +419,12 @@ export class CACommonService {
    * @param filterColumns
    */
   lazyLoadTask(event, completeTaskArray, filterColumns) {
-    this.filterAction(event.multiSortMeta, event.sortOrder, event.globalFilter, event.filters, event.first, event.rows, completeTaskArray, filterColumns);
+    this.filterAction(event.multiSortMeta, event.globalFilter, event.filters, event.first, event.rows, completeTaskArray, filterColumns);
   }
 
   /**
    * This method is used filter the task based on selected filter.
    * @param sortField
-   * @param sortOrder
    * @param globalFilter
    * @param localFilter
    * @param first
@@ -433,7 +432,7 @@ export class CACommonService {
    * @param completeTaskArray
    * @param filterColumns
    */
-  filterAction(sortField, sortOrder, globalFilter, localFilter, first, rows, completeTaskArray, filterColumns) {
+  filterAction(sortField, globalFilter, localFilter, first, rows, completeTaskArray, filterColumns) {
     this.caGlobalService.loading = true;
     let data = completeTaskArray;
     setTimeout(() => {
@@ -452,6 +451,7 @@ export class CACommonService {
         }
         debugger
         if (!$.isEmptyObject(localFilter)) {
+          debugger;
           data = data.filter(row => this.filterLocal(row, localFilter));
         }
         let items = data.slice(first, (first + rows));
@@ -490,23 +490,23 @@ export class CACommonService {
     let isInFilter = false;
     let noFilter = true;
     for (var columnName in filter) {
-      // if (columnName != 'global') {
-      //   if (row[columnName] == null) {
-      //     return;
-      //   }
-      //   noFilter = false;
-      //   let rowValue: String = row[columnName].toString().toLowerCase();
-      //   let filterMatchMode: String = filter[columnName] && filter[columnName].length > 0 ? filter[columnName][0].matchMode:'';
-      //   if (filterMatchMode.includes("contains") && rowValue.includes(filter[columnName].value.toLowerCase())) {
-      //     isInFilter = true;
-      //   } else if (filterMatchMode.includes("startsWith") && rowValue.startsWith(filter[columnName].value.toLowerCase())) {
-      //     isInFilter = true;
-      //   } else if (filterMatchMode.includes("in") && filter[columnName] &&  filter[columnName][0].value && filter[columnName][0].value.includes(row[columnName])) {
-      //     isInFilter = true;
-      //   }
-      //    else
-      //      return false;
-      // }
+      if (columnName != 'global' && filter[columnName] &&  filter[columnName][0].value) {
+        if (row[columnName] == null) {
+          return;
+        }
+        noFilter = false;
+        let rowValue: String = row[columnName].toString().toLowerCase();
+        let filterMatchMode: String = filter[columnName] && filter[columnName].length > 0 ? filter[columnName][0].matchMode:'';
+        if (filterMatchMode.includes("contains") && rowValue.includes(filter[columnName].value.toLowerCase())) {
+          isInFilter = true;
+        } else if (filterMatchMode.includes("startsWith") && rowValue.startsWith(filter[columnName].value.toLowerCase())) {
+          isInFilter = true;
+        } else if (filterMatchMode.includes("in")  && filter[columnName][0].value.includes(row[columnName])) {
+          isInFilter = true;
+        }
+         else
+           return false;
+      }
     }
     if (noFilter) { isInFilter = true; }
     return isInFilter;

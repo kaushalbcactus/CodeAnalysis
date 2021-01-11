@@ -1,4 +1,4 @@
-::ng-deep body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active,
+/* ::ng-deep body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active,
  ::ng-deep body .ui-table .ui-sortable-column.ui-state-highlight,
 ::ng-deep body .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight,
 ::ng-deep body .ui-chkbox .ui-chkbox-box.ui-state-active {
@@ -8,17 +8,20 @@
 
 ::ng-deep body .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover {
     background-color: #e28080 !important;
-}
+} */
 
-::ng-deep .ng-dropdown-panel {
+
+/* ::ng-deep .ng-dropdown-panel {
     width: 400px !important;
     left: 0px !important;
     right: 0px !important;
-}
+} */
 
+
+/* 
 ::ng-deep .ui-dropdown-item {
     padding: 10px 10px 20px 10px !important;
-}
+} */
 
 ::ng-deep .allocate-btn {
     float: right !important;
@@ -32,18 +35,23 @@
     border: 1px solid #f1cdcd;
 }
 
-::ng-deep .allocatedUnallocatedTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child div.ui-menu {
+
+/* ::ng-deep .allocatedUnallocatedTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child div.ui-menu {
     top: inherit !important;
     left: inherit !important;
     right: 50px !important;
-}
+} */
 
+
+/* 
 ::ng-deep .allocatedUnallocatedTable .ui-dropdown-panel {
     left: inherit !important;
     right: 0px !important;
     top: 35px !important;
-}
+} */
 
+
+/* 
 ::ng-deep body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight,
 ::ng-deep body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item-group.ui-state-highlight {
     background-color: #C53E3E !important;
@@ -63,14 +71,16 @@
 
 ::ng-deep .subtaskTable>div {
     margin: 0px !important;
-}
+} */
 
+
+/* 
 ::ng-deep .ui-datepicker-trigger.ui-calendar-button {
     width: 2.357em !important;
     padding: 2px !important;
     background-color: #c53e3e !important;
     border: 1px solid #c53e3e !important;
-}
+} */
 
 ::ng-deep .timePicker {
     width: 30% !important;
@@ -83,11 +93,13 @@
     background-color: #c53e3e !important;
 }
 
-::ng-deep .ui-table.ui-widget {
-    margin-top: 0px !important;
-}
 
-::ng-deep .mainPage {
+/* ::ng-deep .ui-table.ui-widget {
+    margin-top: 0px !important;
+} */
+
+
+/* ::ng-deep .mainPage {
     margin: 0px !important;
     padding: 0px 0px 5px 0px !important;
     position: sticky !important;
@@ -95,23 +107,46 @@
     background-color: white !important;
     z-index: 990 !important;
     top: 0 !important;
-}
+} */
 
 :host ::ng-deep .slotTableTr>th {
-    position: -webkit-sticky;
     position: sticky;
-    top: 40px !important;
+    top: 11.5vh !important;
     z-index: 99 !important;
+    border: 1px solid #e4e4e4 !important;
+}
+
+::ng-deep .slotTable .p-datatable .p-sortable-column:not(.p-highlight):hover {
+    background: #e4e4e4;
+    color: #000001;
+    border: 1px solid #cdcdcd !important;
+}
+
+ ::ng-deep .slotTable .p-datatable-header {
+    position: sticky;
+    top: 4.2vh !important;
+    z-index: 99 !important;
+}
+
+:host ::ng-deep .unallocated-allocated-dropdown {
+    margin: 0!important;
+    padding: 0 0 5px!important;
+    position: -webkit-sticky!important;
+    position: sticky!important;
+    overflow: visible!important;
+    background-color: #fff!important;
+    z-index: 990!important;
+    top: 0!important;
 }
 
 .overlayIcon {
     float: right !important;
-    font-size: 0.75em !important;
-    margin-top: 1px !important;
-    padding-left: 5px!important;
-    padding-top: 20px!important;
+    font-size: 1.5em !important;
+    padding-top: 6px!important;
 }
 
+
+/* 
 .ui-overlaypanel-close-icon {
     background-color: #db1721 !important;
 }
@@ -119,7 +154,7 @@
 ::ng-deep .budgetHr {
     width: 80%!important;
     display: inline-block!important;
-}
+} */
 
 #allocationTypeLoader {
     border: 3px solid #f3f3f3;
@@ -134,4 +169,8 @@
     position: relative;
     top: 50%;
     transform: translateY(-50%);
+}
+
+.mainfilter .p-dropdown-open .p-dropdown-panel {
+    z-index: 10000 !important;
 }

@@ -515,6 +515,7 @@ export class TimelineHistoryComponent implements OnInit {
     const ifDone = this.checkifAllDone(this.timelineBaseObj);
     if (ifDone) {
       this.totalRecords = this.timelineData.length;
+      debugger
       setTimeout(() => {
         this.setTableHeight('down', 0);
       }, 500);
@@ -1141,7 +1142,7 @@ export class TimelineHistoryComponent implements OnInit {
    * @param scrollDirection - up/down
    */
   setTableHeight(scrollDirection, buffer) {
-    const ifDone = this.checkifAllDone(this.timelineBaseObj);
+     const ifDone = this.checkifAllDone(this.timelineBaseObj);
     // It is used to remove empty whitespace from top by setting it to 0
     const table: any = this.elemRef.nativeElement.querySelector('#tblTimeline .ui-table-scrollable-body-table');
     if (ifDone) {
@@ -1155,6 +1156,15 @@ export class TimelineHistoryComponent implements OnInit {
       table.style.top = '0px';
       table2.scrollTo(0, 0);
     }
+
+    // const table: any = this.elemRef.nativeElement.querySelector('#tblTimeline .p-datatable-virtual-scrollable-body');
+    // if (ifDone) {
+    //   // It is used to reset height of table based on data to remove empty white space when all data received
+    //   const table1: any = this.elemRef.nativeElement.querySelector('#tblTimeline .cdk-virtual-scroll-spacer');
+    //   table1.style.height = table.clientHeight + 1 + buffer + 'px';
+    // }
+    // // It is used to set scroller to top position
+    // const table2: any = this.elemRef.nativeElement.querySelector('#tblTimeline .cdk-virtual-scroll-content-wrapper');
   }
 
   getDataFromObj(obj, arrData) {
@@ -1191,10 +1201,10 @@ export class TimelineHistoryComponent implements OnInit {
   }
 
   setHeader() {
-    const headerMaxHeight = this.elemRef.nativeElement.querySelector('.ui-table-scrollable-header').clientHeight;
-    const headertableHeight = this.elemRef.nativeElement.querySelector('.ui-table-scrollable-header-box').clientHeight;
+    const headerMaxHeight = this.elemRef.nativeElement.querySelector('.p-datatable-scrollable-header').clientHeight;
+    const headertableHeight = this.elemRef.nativeElement.querySelector('.p-datatable-scrollable-header-box').clientHeight;
     const diffHeight = headerMaxHeight - headertableHeight;
-    this.elemRef.nativeElement.querySelector('.ui-table-scrollable-body').style.marginTop = -diffHeight + 'px';
+    this.elemRef.nativeElement.querySelector('.p-datatable-virtual-scrollable-body').style.marginTop = -diffHeight + 'px';
   }
 
   reset() {

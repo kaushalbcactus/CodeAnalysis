@@ -495,6 +495,9 @@ export class SendToClientComponent implements OnInit {
       this.isSCInnerLoaderHidden = true;
       this.isSCFilterHidden = false;
     }
+    const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
+    tabMenuInk.style.width='164px';
+    
     // this.commonService.setIframeHeight();
   }
 

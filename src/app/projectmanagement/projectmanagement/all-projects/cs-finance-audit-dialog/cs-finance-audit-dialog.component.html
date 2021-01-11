@@ -1,32 +1,52 @@
-<div class='UserButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="modalloaderenable">
-
-    <button type="button" pButton [icon]="buttonloader ? 'pi  pi-spin pi-spinner' : 'pi pi-save'" id="saveUser" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" [disabled]="selectedProjects.length === 0 || (AuditType ==='Finance'  &&  selectedProjects.length > 10) || buttonloader"
-        (click)="AuditProjects(AuditType)" label="Audit"></button>
-
-    <button type="button" pButton icon="pi pi-times" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;" (click)="cancel();"></button>
-
-</div>
-
-<div fxLayout="column" style="padding: 12vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+<div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="modalloaderenable">
     <div id="modalInnerLoader"></div>
     <div id="modalInnerLoaderText">Loading...</div>
+</div>
+
+<div class="pdialogButton p-col-12 p-grid p-jc-end" [hidden]="modalloaderenable">
+    <button type="button " pButton [icon]="buttonloader ? 'pi  pi-spin pi-spinner' : 'pi pi-save' " id="saveUser " class="p-mx-1 p-button-raised p-button-danger " (click)="AuditProjects(AuditType)" [disabled]="selectedProjects.length === 0 || (AuditType ==='Finance'  &&  selectedProjects.length > 10) || buttonloader
+    " label="Audit"></button>
+    <button type="button " pButton icon="pi pi-times " (click)="cancel(); " label="Cancel " class="p-button-raised p-button-danger "></button>
 </div>
 
 <div class="p-col-12" style="color: #ff0000;" *ngIf="!modalloaderenable && AuditType ==='Finance'">*Note : Multiselect checkbox can select first 10 rows of current page.</div>
 
 <p-table #allProjectRef [hidden]="modalloaderenable" [columns]="displayedColumns" [(selection)]="selectedProjects" dataKey="ProjectCode" [value]="projectList" (onRowSelect)='onRowSelect()' (onRowUnselect)="onRowUnselect()" [paginator]="true" [rows]="10"
-    [style]="{'font-size':'13px'}" (onHeaderCheckboxToggle)="MultipleSelectRows(AuditType)">
+    (onHeaderCheckboxToggle)="MultipleSelectRows(AuditType)" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [style]="{'font-size':'13px','min-height': '400px'}"
+    styleClass="p-datatable-cactus p-datatable-gridlines p-pt-3">
     <ng-template pTemplate="header" let-columns>
         <tr class="mainHeader">
-            <th style="top: 0px !important;">
+            <th class="firstColumnWidth" style="top: 0px !important;">
                 <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
             </th>
             <th style="top: 0px !important;" *ngFor="let col of columns" [pSortableColumn]="col.field">
-                {{ col.header }}
-                <p-sortIcon [field]="col.field"></p-sortIcon>
+                <div class="p-d-flex p-jc-between p-ai-center">
+                    {{col.header}}
+                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                    <p-columnFilter *ngIf="col.header != ''  && col.field !='PrimaryResources' " [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                        <ng-template pTemplate="header">
+                            <div class="p-px-3 p-pt-3 p-pb-0">
+                                <span class="p-text-bold"> {{col.header}} Picker</span>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+
+                            <p-multiSelect [ngModel]="value" [options]="allProjects[col.field]" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                                <ng-template let-option pTemplate="item">
+                                    <div class="p-multiselect-representative-option">
+                                        <span class="p-ml-1">{{option.label}}</span>
+                                    </div>
+                                </ng-template>
+                            </p-multiSelect>
+                        </ng-template>
+                    </p-columnFilter>
+
+                    <p-columnFilter *ngIf="col.header != ''  && col.field ==='PrimaryResources' " type="text" [field]="col.field" matchMode="contains" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"></p-columnFilter>
+                </div>
+
             </th>
         </tr>
-        <tr>
+        <!-- <tr>
             <th></th>
             <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
 
@@ -62,7 +82,7 @@
                     resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
             </th>
-        </tr>
+        </tr> -->
     </ng-template>
     <ng-template pTemplate="body" let-rowData let-task let-rowIndex="rowIndex">
         <tr>

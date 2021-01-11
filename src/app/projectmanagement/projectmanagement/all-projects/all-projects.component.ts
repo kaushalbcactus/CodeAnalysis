@@ -29,7 +29,7 @@ declare var $;
   selector: 'app-all-projects',
   templateUrl: './all-projects.component.html',
   styleUrls: ['./all-projects.component.css'],
-  encapsulation: ViewEncapsulation.None
+  // encapsulation: ViewEncapsulation.None
 })
 
 export class AllProjectsComponent implements OnInit {
@@ -281,7 +281,8 @@ export class AllProjectsComponent implements OnInit {
 
   async convertToExcelFile(data) {
     this.showTable = true;
-    this.ExcelDownloadenable = true;
+    this.loaderView.nativeElement.classList.add('show');
+    this.spannerView.nativeElement.classList.add('show');
     console.log(data);
     const budgets = await this.pmCommonService.getAllBudget(this.allProjectRef.filteredValue ?
       this.allProjectRef.filteredValue : this.pmObject.allProjectsArray);
@@ -297,7 +298,8 @@ export class AllProjectsComponent implements OnInit {
     });
     data._values = this.pmObject.allProjectsArray;
     this.pmCommonService.convertToExcelFile(data);
-    this.ExcelDownloadenable = false;
+    this.loaderView.nativeElement.classList.remove('show');
+    this.spannerView.nativeElement.classList.remove('show');
   }
 
 
@@ -417,6 +419,8 @@ export class AllProjectsComponent implements OnInit {
       if (this.pmObject.tabMenuItems.length) {
         this.pmObject.tabMenuItems[0].label = 'All Projects (' + this.pmObject.countObj.allProjectCount + ')';
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
+        const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
+        tabMenuInk.style.width='165px';
       }
       if (this.route.snapshot.queryParams) {
         this.params.ProjectCode = this.route.snapshot.queryParams.ProjectCode;
@@ -492,6 +496,9 @@ export class AllProjectsComponent implements OnInit {
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       }
     }
+
+  
+
     if (this.pmObject.allProjectItems && this.pmObject.allProjectItems.length) {
       const tempAllProjectArray = [];
       for (const task of this.pmObject.allProjectItems) {
@@ -2545,7 +2552,8 @@ export class AllProjectsComponent implements OnInit {
       },
       header: 'Manage Finance - ' + selectedProjectObj.ProjectCode + '(' + selectedProjectObj.Title + ')',
       contentStyle: { width: '100%', height: '100% !important' },
-      width: '100%'
+      width: '98%',
+      closable:false
     });
     ref.onClose.subscribe(element => {
       this.pmCommonService.resetAddProject();
@@ -2736,22 +2744,9 @@ export class AllProjectsComponent implements OnInit {
    */
   async moveSOW(projObj) {
     this.sowDropDownArray = [];
-    this.pmObject.isMainLoaderHidden = false;
-    // this.newSelectedSOW = projObj.SOWCode;
-    //if (this.pmObject.allSOWItems.length === 0) {
+    this.loaderView.nativeElement.classList.add('show');
+    this.spannerView.nativeElement.classList.add('show');
     let arrResults = [];
-    // if (this.pmObject.userRights.isMangers
-    //   || this.pmObject.userRights.isHaveSOWFullAccess
-    //   || this.pmObject.userRights.isHaveSOWBudgetManager) {
-    //   const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.ALL_SOW);
-    //   this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSow');
-    //   arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
-    // } else {
-    //   const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
-    //   sowFilter.filter = sowFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
-    //   this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSow');
-    //   arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
-    // }
     const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.ALL_SOW_Client);
     sowFilter.filter = sowFilter.filter.replace('{Client}', this.selectedProjectObj.ClientLegalEntity);
     this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSow');
@@ -2768,7 +2763,9 @@ export class AllProjectsComponent implements OnInit {
         this.sowDropDownArray.push({ label: element.SOWCode, value: element.SOWCode });
       });
     }
-    this.pmObject.isMainLoaderHidden = true;
+
+    this.loaderView.nativeElement.classList.remove('show');
+    this.spannerView.nativeElement.classList.remove('show');
     this.newSelectedSOW = undefined;
     this.pmObject.isMoveProjectToSOWVisible = true;
   }
@@ -3139,7 +3136,7 @@ export class AllProjectsComponent implements OnInit {
   }
 
   onChangeSelect(event) {
-    if (this.selectedOption.name === 'Open') {
+    if (this.selectedOption === 'Open') {
       this.showTable = false;
       this.showProjectInput = false;
       this.callReloadProject();
@@ -3153,6 +3150,8 @@ export class AllProjectsComponent implements OnInit {
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       this.createColFieldValues([]);
     }
+
+
   }
 
   async searchClosedProject(event) {
@@ -3186,10 +3185,12 @@ export class AllProjectsComponent implements OnInit {
       this.pmObject.allProjectsArray = [...emptyProjects];
       this.pmObject.tabMenuItems[0].label = 'All Projects (0)';
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
+
     }
     this.isAllProjectLoaderHidden = true;
     this.isAllProjectTableHidden = false;
     this.showFilterOptions = true;
+   
   }
   /**
    * This method is used to close the dialog box.
@@ -3202,31 +3203,6 @@ export class AllProjectsComponent implements OnInit {
    */
   closeMoveSOW() {
     this.pmObject.isMoveProjectToSOWVisible = false;
-  }
-
-  @HostListener('document:click', ['$event'])
-  clickout(event) {
-
-    if (event.target.className === 'pi pi-ellipsis-v') {
-      if (this.tempClick) {
-        this.tempClick.style.display = 'none';
-        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
-          this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = '';
-        } else {
-          this.tempClick = undefined;
-        }
-      } else {
-        this.tempClick = event.target.parentElement.children[0].children[0];
-        this.tempClick.style.display = '';
-      }
-
-    } else {
-      if (this.tempClick) {
-        this.tempClick.style.display = 'none';
-        this.tempClick = undefined;
-      }
-    }
   }
 
   isOptionFilter: boolean;
@@ -3349,7 +3325,8 @@ export class AllProjectsComponent implements OnInit {
   }
 
   async editDeliverable() {
-    this.pmObject.isMainLoaderHidden = false;
+    this.loaderView.nativeElement.classList.add('show');
+    this.spannerView.nativeElement.classList.add('show');
     this.deliverableTypeOptions = [];
     const result = await this.spServices.readItems(this.constants.listNames.DeliverableType.name, this.pmConstant.TIMELINE_QUERY.DELIVERY_TYPE)
     if(result.length) {
@@ -3357,7 +3334,8 @@ export class AllProjectsComponent implements OnInit {
         this.deliverableTypeOptions.push({ label: element.Title, value: element.Title });
       });
     }
-    this.pmObject.isMainLoaderHidden = true;
+    this.loaderView.nativeElement.classList.remove('show');
+    this.spannerView.nativeElement.classList.remove('show');
     this.changeDeliverable = true;
   }
 
@@ -3406,6 +3384,8 @@ export class AllProjectsComponent implements OnInit {
 
   async editProjectDate() {
     this.scheduledTasks = [];
+    this.loaderView.nativeElement.classList.add('show');
+    this.spannerView.nativeElement.classList.add('show');
     if(this.selectedProjectObj.Status == this.constants.projectStatus.InProgress) {
       this.disableStartDate = true;
       this.minDateValue = this.selectedProjectObj.ProposedStartDate;
@@ -3428,8 +3408,11 @@ export class AllProjectsComponent implements OnInit {
     }, this.pmConstant.TIME_OUT);
     this.scheduledTasks = await this.commonService.getScheduleTasks(this.selectedProjectObj.ProjectCode);
     this.resources = this.selectedProjectObj.PrimaryResourcesId.length ? await this.getResources() : [];
-    this.proposedStartDate = this.selectedProjectObj.ProposedStartDate
-    this.proposedEndDate = this.selectedProjectObj.ProposedEndDate
+    this.proposedStartDate = this.selectedProjectObj.ProposedStartDate;
+    this.proposedEndDate = this.selectedProjectObj.ProposedEndDate;
+
+    this.loaderView.nativeElement.classList.remove('show');
+    this.spannerView.nativeElement.classList.remove('show');
     this.updateProjectDate = true;
   }
 

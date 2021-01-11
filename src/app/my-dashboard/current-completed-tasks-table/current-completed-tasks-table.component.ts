@@ -42,7 +42,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
   selectedType: any;
   tableloaderenable: boolean;
   selectedindex: any;
-  tempClick: any;
+  
   hideIcon: boolean = false;
   renameSub: boolean = false;
   public queryConfig = {
@@ -175,34 +175,6 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     this.TasksTable.exportCSV();
   }
 
-
-  // ********************************************************************************************************
-  // hide popup menu on production
-  // ********************************************************************************************************
-
-  @HostListener('document:click', ['$event'])
-  clickout(event) {
-    if (event.target.className === 'pi pi-ellipsis-v') {
-      if (this.tempClick) {
-        this.tempClick.style.display = 'none';
-        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
-          this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = '';
-        } else {
-          this.tempClick = undefined;
-        }
-      } else {
-        this.tempClick = event.target.parentElement.children[0].children[0];
-        this.tempClick.style.display = '';
-      }
-
-    } else {
-      if (this.tempClick) {
-        this.tempClick.style.display = 'none';
-        this.tempClick = undefined;
-      }
-    }
-  }
 
   // *****************************************************************************************
   // Dialog to display task and time spent

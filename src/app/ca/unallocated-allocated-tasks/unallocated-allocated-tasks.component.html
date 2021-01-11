@@ -1,14 +1,13 @@
 <!-- ****************************************************************************************
                                                         Table View Data
 ***************************************************************************************** -->
-<div class="p-grid p-justify-between mainPage">
+<div class="p-col p-grid p-justify-between mainPage unallocated-allocated-dropdown">
     <p-dropdown [options]="DropdownOptions" class="mainfilter" [(ngModel)]="selectedTab" (onChange)="getProperties()"></p-dropdown>
 
     <button mat-raised-button type="button" [disabled]="disableSave" (click)="saveTasks(taskTable)">
     <mat-icon>save</mat-icon> Save
 </button>
 </div>
-
 
 
 <div #loader class="overlay"></div>
@@ -38,9 +37,9 @@
         </ng-template>
         <ng-template pTemplate="header" let-columns>
             <tr class="slotTableTr">
-                <th class="lastColumnWidth"></th>
+                <th class="firstColumnWidth"></th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field">
-                    <div class="p-d-flex p-jc-between p-ai-center">
+                    <div class="p-jc-between p-ai-center">
                         {{col.header}}
                         <p-sortIcon [field]="col.field"></p-sortIcon>
                         <p-columnFilter *ngIf="col.header != ''" [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
@@ -65,7 +64,7 @@
                 <th>Last Task End </th>
                 <th>SC Date</th>
 
-                <th class="lastColumnWidth"></th>
+                <th style="width: 2em !important;"></th>
             </tr>
             <!-- <tr class="slotTableTr1">
                 <th></th>
@@ -106,10 +105,12 @@
                 <td>{{task.LastTaskEndDateText}}</td>
                 <td>{{task.SendToClientDateText}}</td>
 
-                <td style="width: 3%;">
-                    <p-menu #popupMenu [style]="{'width': '16em'}" [popup]="true" [model]="taskMenu"></p-menu>
+                <td style="padding: 0px !important;">
+                    <div>
+                        <p-menu #popupMenu [style]="{'width': '16em'}" [popup]="true" [model]="taskMenu"></p-menu>
 
-                    <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(task, Slot);popupMenu.show($event);"></i>
+                        <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(task, Slot);popupMenu.show($event);" appendTo="body"></i>
+                    </div>
                 </td>
             </tr>
         </ng-template>
@@ -135,7 +136,7 @@
                                 <th style="width:4%">Type</th>
                                 <!-- <th style="width:4%">Allow Start</th> -->
                                 <th style="width:6%">Disable Cascade</th>
-                                <th style="width:1.95%"> </th>
+                                <th class="lastColumnWidth"> </th>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
@@ -191,10 +192,10 @@
                                     </span>
                                 </td>
                                 <!-- Budget Hrs -->
-                                <td style="text-align: center;">
+                                <td class="p-d-flex" style="text-align: center;">
                                     <span *ngIf="!rowData.editMode">{{rowData.EstimatedTime}}</span>
                                     <input type="number" class="form-control budgetHr" required="required" min="0" value="0" onchange="validity.valid||(value='0');" step="0.25" *ngIf=" rowData.editMode" required="required" [id]="rowData.ID" (change)="modelChanged(rowData,Slot)" [(ngModel)]="rowData.EstimatedTime">
-                                    <span class='overlayIcon' (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)" style="float: right;cursor: pointer;" title="Click to see allocation split" *ngIf="rowData.showAllocationSplit">
+                                    <span class='p-ml-1 overlayIcon' (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)" style="float: right;cursor: pointer;" title="Click to see allocation split" *ngIf="rowData.showAllocationSplit">
                                       <i class="fa fa-info-circle" aria-hidden="true"></i>
                                 </span>
                                 </td>
@@ -252,8 +253,10 @@
             </tr>
         </ng-template>
     </p-table>
-    <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
+    <app-allocation-overlay appendTo="body" #dailyAllocateOP></app-allocation-overlay>
 </div>
+
+
 
 
 <!-- **************************************************************************************************

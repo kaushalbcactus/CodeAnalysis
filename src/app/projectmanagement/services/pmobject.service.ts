@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { MenuItem } from "primeng/api";
 import { GlobalService } from "src/app/Services/global.service";
 
 @Injectable({
@@ -7,6 +8,8 @@ import { GlobalService } from "src/app/Services/global.service";
 export class PMObjectService {
   constructor(private globalObject: GlobalService) {}
   public tabMenuItems: any = [];
+ 
+  
   public totalRecords = {
     SendToClient: 0,
     ClientReview: 0,

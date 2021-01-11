@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, Input, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Output, Input, EventEmitter, OnChanges, SimpleChanges, ElementRef, ViewChild } from '@angular/core';
 import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
@@ -11,6 +11,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
   styleUrls: ['./finance-management.component.css']
 })
 export class FinanceManagementComponent implements OnInit, OnChanges {
+  @ViewChild("fileuploderView", { static: false }) fileuploderView: ElementRef;
   @Output() dataEvent = new EventEmitter<string>();
   @Input() manageData: any;
   clientLegalEntity;
@@ -176,6 +177,12 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
     this.pmObject.addProject.FinanceManagement.selectedFile = null;
     if (event.target.files && event.target.files.length > 0) {
       this.pmObject.addProject.FinanceManagement.selectedFile = event.target.files[0];
+      this.fileuploderView.nativeElement.getElementsByClassName('file-select-name')[0].innerText = this.pmObject.addProject.FinanceManagement.selectedFile.name;
+      this.fileuploderView.nativeElement.classList.add('active');
+    }
+    else{
+      this.fileuploderView.nativeElement.classList.remove('active');
+      this.fileuploderView.nativeElement.getElementsByClassName('file-select-name')[0].innerText = 'No file chosen...';
     }
   }
   onBilledByChanged() {

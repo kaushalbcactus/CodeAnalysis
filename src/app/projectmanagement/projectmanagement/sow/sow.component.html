@@ -20,7 +20,7 @@
         [style]="{'font-size':'14px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" [stateKey]="showProjectLink ? 'MyDashboardSowTable' : 'SowTable'" selectionMode="" exportFilename="All SOW">
         <ng-template pTemplate="header" let-columns>
             <tr>
-                <th class="lastColumnWidth">S.No</th>
+                <th class="firstColumnWidth">S.No</th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                     <!-- {{ col.header }}
                     <p-sortIcon [field]="col.field"></p-sortIcon> -->
@@ -113,7 +113,7 @@
                 <td>{{task.OOPBudget}}</td>
                 <td>{{task.ModifiedBy}}</td>
                 <td>{{task.ModifiedDate | date:'MMM dd, yyyy, h:mm a'}}</td>
-                <td>
+                <td style="padding:0px !important">
                     <div>
                         <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems" [popup]="true">
                         </p-menu>

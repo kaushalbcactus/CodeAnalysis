@@ -17,52 +17,9 @@
 
 /* } */
 
-*/ body {
+body {
     font-family: Helvetica;
     font-size: 14px;
-}
-
-.ui-dialog-footer>button {
-    background-color: #b90707 !important;
-    border: 1px solid #b90707 !important;
-}
-
-body .ui-inputtext {
-    padding: 0.426em !important;
-}
-
-button.ui-datepicker-trigger.ui-calendar-button {
-    width: 30px !important;
-    min-width: 30px !important;
-}
-
-button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable {
-    padding: 5px !important;
-}
-
-
-/* P-dialog Footer button  */
-
-.ui-dialog-footer .ui-button {
-    background-color: #c53e3e !important;
-    border: 1px solid #C53E3D !important;
-}
-
-body .ui-radiobutton .ui-radiobutton-box.ui-state-active {
-    border-color: #c53e3e !important;
-    background-color: #c53e3e !important;
-    color: #ffffff !important;
-}
-
-body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
-    background-color: #c53e3e !important;
-}
-
-body .ui-datepicker table td.ui-datepicker-today>a.ui-state-active,
-body .ui-datepicker table td.ui-datepicker-today>span.ui-state-active,
-body .ui-datepicker table td>a.ui-state-active,
-body .ui-datepicker table td>span.ui-state-active {
-    background-color: #c53e3e !important;
 }
 
 
@@ -84,16 +41,6 @@ body .ui-datepicker table td>span.ui-state-active {
     100% {
         transform: rotate(360deg);
     }
-}
-
-.tableLoader {
-    position: fixed;
-    /* or absolute */
-    /* top: 20%; */
-    width: 100% !important;
-    z-index: 9999;
-    background-color: rgba(255, 255, 255, 0.7);
-    height: 100% !important;
 }
 
 #scInnerLoader {
@@ -127,61 +74,6 @@ body .ui-datepicker table td>span.ui-state-active {
     position: relative;
 }
 
-
-/* Added for timeline */
-
-.ui-table-scrollable-header {
-    overflow: visible!important;
-}
-
-::ng-deep .ui-table.ui-widget {
-    margin-top: 20px;
-}
-
-
-/* You can add global styles to this file, and also import other style files */
-
-.floatLeft {
-    float: left;
-}
-
-.floatRight {
-    float: right;
-}
-
-#mainLoader {
-    border: 10px solid #f3f3f3;
-    border-radius: 50%;
-    border-top: 10px solid red;
-    border-bottom: 10px solid red;
-    width: 100px;
-    height: 100px;
-    -webkit-animation: spin 2s linear infinite;
-    animation: spin 2s linear infinite;
-    margin: 0 auto;
-    position: relative;
-    top: 27%;
-    transform: translateY(-50%);
-    margin-top: 1%;
-}
-
-#mainLoaderText {
-    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
-    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
-    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
-    animation: loading-text-opacity 2s linear 0s infinite normal;
-    color: black;
-    font-family: "Helvetica Neue, "Helvetica", ""arial";
-    font-size: 10px;
-    font-weight: bold;
-    opacity: 0.5;
-    text-align: center;
-    text-transform: uppercase;
-    margin-top: 14%;
-    /* top: 0;
-    margin-bottom: 1%; */
-}
-
 body .ui-table .ui-sortable-column.ui-state-highlight,
 body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active,
 body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
@@ -190,29 +82,6 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 
 .ui-toast-detail {
     white-space: pre-line;
-}
-
-
-/* Dynamic Dialog common Css  */
-
-.dialogSaveCancel {
-    text-align: right !important;
-}
-
-.dynamicDialogSave {
-    margin: -55px 0px 0px -160px !important;
-    position: fixed !important;
-    cursor: pointer !important;
-    background-color: #C53E3E !important;
-    border-color: #C53E3E !important;
-}
-
-.dynamicDialogCancel {
-    margin: -55px 0px 0px -75px !important;
-    position: fixed !important;
-    cursor: pointer !important;
-    background-color: #C53E3E !important;
-    border-color: #C53E3E !important;
 }
 
 #modalInnerLoader {
@@ -245,27 +114,6 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     top: 0;
 }
 
-.textfeildClass {
-    width: 100% !important;
-}
-
-.pCalendarBtn {
-    width: 100% !important;
-}
-
-.pCalendarBtn>input {
-    width: calc(100% - 30px) !important;
-}
-
-.ui-toast {
-    width: 25em !important;
-}
-
-.dynamic-dialog-buttons {
-    margin: -57px 0px 0px -205px;
-    position: absolute;
-}
-
 
 /* new for angular 11  */
 
@@ -273,8 +121,25 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     display: flex !important;
 }
 
+.p-accordion .p-accordion-header .p-accordion-header-link {
+    padding: 0.2em 0.5em !important;
+    text-decoration: none !important;
+}
+
+.p-accordion .p-accordion-header:not(.p-disabled).p-highlight .p-accordion-header-link {
+    background: #c53e3e !important;
+    color: #ffffff !important;
+}
+
+.p-accordion .p-accordion-header:not(.p-disabled).p-highlight:hover .p-accordion-header-link {
+    background: #e4e4e4 !important;
+    color: #c05252 !important;
+    text-decoration: none !important;
+}
+
 .p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link,
-.p-calendar-w-btn .p-datepicker-trigger.p-button span {
+.p-calendar-w-btn .p-datepicker-trigger.p-button span,
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
     color: #c53e3e !important;
 }
 
@@ -345,7 +210,8 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 .p-calendar-w-btn:not(.p-disabled):hover,
 .p-dropdown:not(.p-disabled):hover,
 .p-multiselect:not(.p-disabled):hover,
-.p-inputtext:enabled:hover {
+.p-inputtext:enabled:hover,
+.p-radiobutton .p-radiobutton-box.p-highlight {
     border-color: #c53e3e !important;
 }
 
@@ -354,8 +220,17 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 }
 
 .p-tabmenu .p-tabmenu-nav .p-tabmenu-ink-bar,
-.p-column-filter-buttonbar>button {
+.p-column-filter-buttonbar>button,
+.p-tabview .p-tabview-nav .p-tabview-ink-bar,
+.p-steps .p-steps-item.p-highlight .p-steps-number,
+.p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
     background-color: #c53e3e !important;
+}
+
+.p-steps .p-steps-item.p-highlight .p-steps-title {
+    color: #9a1111 !important;
+    background: white !important;
+    padding: 0px 6px !important;
 }
 
 .p-dialog-header {
@@ -364,7 +239,7 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 }
 
 .p-overlaypanel .p-overlaypanel-content {
-    padding: 0.1rem !important;
+    padding: 1rem 0rem 0rem !important;
 }
 
 .p-button.p-button-outlined {
@@ -404,7 +279,7 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 
 .p-fileupload .p-fileupload-buttonbar .p-button,
 .p-fileupload-row>div>.p-button {
-    background: #c53e3e;
+    background: #c53e3e !important;
 }
 
 .p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
@@ -417,13 +292,24 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     left: 2px !important;
 }
 
-.lastColumnWidth {
-    width: 3em !important;
+.firstColumnWidth {
+    width: 4em !important;
+    padding: 12px !important;
 }
 
-.p-menu.p-menu-overlay,
-.dailyAllocationOverlayComp>.p-overlaypanel {
-    top: revert !important;
+.lastColumnWidth {
+    width: 2em !important;
+}
+
+
+/* .MyCurrentCompletedTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu
+ */
+
+.p-datatable.p-datatable-cactus .p-datatable-wrapper tbody.p-datatable-tbody>tr>td:last-child>div div.p-menu,
+.p-datatable.p-datatable-cactus .p-datatable-wrapper tbody.p-datatable-tbody>tr>td:last-child>div div.p-tieredmenu {
+    top: inherit !important;
+    left: inherit !important;
+    right: 25px !important;
 }
 
 .p-calendar-w-btn .p-datepicker-trigger.p-button:enabled:hover {
@@ -449,6 +335,8 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 
 /** Please wait Loader **/
 
+
+/* 
 @-webkit-keyframes spin {
     0% {
         -webkit-transform: rotate(0deg);
@@ -469,8 +357,7 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 
 .spanner {
     position: absolute;
-    /* top: calc( 100vh - 35vh); */
-    padding: 50% 0% 35% 0%;
+    padding: 55vh 0vw;
     left: 0;
     background: #2a2a2a55;
     width: 100%;
@@ -570,10 +457,294 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 .overlay.show {
     opacity: 1;
     z-index: 10000;
+} */
+
+.spanner {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    display: block;
+    text-align: center;
+    height: 300px;
+    color: #FFF;
+    transform: translateY(-50%);
+    z-index: 1000;
+    visibility: hidden;
+}
+
+.overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    visibility: hidden;
+}
+
+.loader,
+.loader:before,
+.loader:after {
+    border-radius: 50%;
+    width: 2.5em;
+    height: 2.5em;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    -webkit-animation: load7 1.8s infinite ease-in-out;
+    animation: load7 1.8s infinite ease-in-out;
+}
+
+.loader {
+    color: #ffffff;
+    font-size: 10px;
+    margin: 80px auto;
+    position: relative;
+    text-indent: -9999em;
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-animation-delay: -0.16s;
+    animation-delay: -0.16s;
+}
+
+.loader:before,
+.loader:after {
+    content: '';
+    position: absolute;
+    top: 0;
+}
+
+.loader:before {
+    left: -3.5em;
+    -webkit-animation-delay: -0.32s;
+    animation-delay: -0.32s;
+}
+
+.loader:after {
+    left: 3.5em;
+}
+
+@-webkit-keyframes load7 {
+    0%,
+    80%,
+    100% {
+        box-shadow: 0 2.5em 0 -1.3em;
+    }
+    40% {
+        box-shadow: 0 2.5em 0 0;
+    }
+}
+
+@keyframes load7 {
+    0%,
+    80%,
+    100% {
+        box-shadow: 0 2.5em 0 -1.3em;
+    }
+    40% {
+        box-shadow: 0 2.5em 0 0;
+    }
+}
+
+.show {
+    visibility: visible;
+}
+
+.spanner,
+.overlay {
+    opacity: 0;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
+}
+
+.spanner.show,
+.overlay.show {
+    opacity: 1;
+    position: fixed;
+    z-index: 9999;
+    overflow: show;
+    margin: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
 }
 
 
 /** Please wait Loader  end **/
+
+.p-submenu-list {
+    left: -200px!important;
+}
+
+.p-dialog-content .p-inputtextarea {
+    width: 100% !important;
+}
+
+.compulsory {
+    display: inline;
+    padding-right: 2px;
+    color: #c53e3e;
+}
+
+.error {
+    color: #c53e3e;
+}
+
+.p-checkbox-label {
+    margin-bottom: 0px !important;
+}
+
+.p-datatable-tbody>tr>td {
+    word-break: break-word !important;
+}
+
+
+/* file upload new ui  */
+
+.file-upload {
+    display: block;
+    text-align: center;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12px;
+}
+
+.file-upload .file-select {
+    display: block;
+    border: 2px solid #dce4ec;
+    color: #34495e;
+    cursor: pointer;
+    height: 36px;
+    line-height: 36px;
+    text-align: left;
+    background: #FFFFFF;
+    overflow: hidden;
+    position: relative;
+    border-radius: 4px;
+}
+
+.file-upload .file-select .file-select-button {
+    background: #dce4ec;
+    padding: 0 10px;
+    display: inline-block;
+    height: 36px;
+    line-height: 36px;
+}
+
+.file-upload .file-select .file-select-name {
+    line-height: 36px;
+    display: inline-block;
+    padding: 0 10px;
+}
+
+.file-upload .file-select:hover {
+    border-color: #34495e;
+    transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    -webkit-transition: all .2s ease-in-out;
+    -o-transition: all .2s ease-in-out;
+}
+
+.file-upload .file-select:hover .file-select-button {
+    background: #34495e;
+    color: #FFFFFF;
+    transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    -webkit-transition: all .2s ease-in-out;
+    -o-transition: all .2s ease-in-out;
+}
+
+.file-upload.active .file-select {
+    border-color: #3fa46a;
+    transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    -webkit-transition: all .2s ease-in-out;
+    -o-transition: all .2s ease-in-out;
+}
+
+.file-upload.active .file-select .file-select-button {
+    background: #3fa46a;
+    color: #FFFFFF;
+    transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    -webkit-transition: all .2s ease-in-out;
+    -o-transition: all .2s ease-in-out;
+}
+
+.file-upload .file-select input[type=file] {
+    z-index: 100;
+    cursor: pointer;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+.file-upload .file-select.file-select-disabled {
+    opacity: 0.65;
+}
+
+.file-upload .file-select.file-select-disabled:hover {
+    cursor: default;
+    display: block;
+    border: 2px solid #dce4ec;
+    color: #34495e;
+    cursor: pointer;
+    height: 36px;
+    line-height: 36px;
+    margin-top: 5px;
+    text-align: left;
+    background: #FFFFFF;
+    overflow: hidden;
+    position: relative;
+}
+
+.file-upload .file-select.file-select-disabled:hover .file-select-button {
+    background: #dce4ec;
+    color: #666666;
+    padding: 0 10px;
+    display: inline-block;
+    height: 36px;
+    line-height: 36px;
+}
+
+.file-upload .file-select.file-select-disabled:hover .file-select-name {
+    line-height: 36px;
+    display: inline-block;
+    padding: 0 10px;
+}
+
+.panellargeText {
+    font-size: 16px !important;
+}
+
+.cardViewDisplay {
+    background: #ffffff !important;
+    color: #000001 !important;
+    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12) !important;
+    border-radius: 4px !important;
+    padding: 1em 1em 0em 1em !important;
+}
+
+.overlaypanel>.p-overlaypanel {
+    top: 90px!important;
+    left: inherit!important;
+    right: 0!important;
+    width: 450px!important;
+}
+
+.p-sidebar-close {
+    float: right !important;
+}
+
+.p-splitbutton,
+.p-calendar-w-btn,
+.p-button.p-button-icon-only {
+    height: 38px !important;
+}
 
 
 /* Dynamic Dialog common Css end  */

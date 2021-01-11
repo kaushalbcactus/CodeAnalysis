@@ -1,13 +1,12 @@
-<div class='UserButton' fxLayout="row" fxLayoutAlign="end center">
-    <button type="button" pButton icon="pi pi-save" id="saveUser" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="ConfirmAudit()" [disabled]="!enableConfirm" label="Confirm"></button>
-
-    <button type="button" pButton icon="pi pi-times" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;" (click)="close();"></button>
+<div class="pdialogButton p-col-12 p-grid p-jc-end">
+    <button type="button " pButton icon="pi pi-save" class="p-mx-1 p-button-raised p-button-danger " (click)="ConfirmAudit()" [disabled]="!enableConfirm" label="Confirm"></button>
+    <button type="button " pButton icon="pi pi-times " (click)="close(); " label="Cancel " class="p-button-raised p-button-danger "></button>
 </div>
 <span style="color: #ff0000;">* Please select checkbox or enter comment for each parmater.</span>
 <p-table [value]="addRollingProjectArray" class="audit-rolling-section" [(selection)]="selectedOptions" dataKey="parameter" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" (onHeaderCheckboxToggle)="enableDisableConfirmButton()">
     <ng-template pTemplate="header">
         <tr>
-            <th style="width:10px;">
+            <th class="firstColumnWidth">
                 <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
             </th>
             <th style="width:300px;">Parameters</th>
@@ -22,7 +21,9 @@
             <td style="word-break:break-word;">{{task.parameter}}</td>
             <td [hidden]="task.hideCheckBox"><textarea style="width: 100%;border-radius: 4px;" [(ngModel)]="task.comments" (keyup)="keyPress($event)"></textarea></td>
             <td [hidden]="!task.hideCheckBox">
-                <select [(ngModel)]="task.comments" (change)="keyPress($event)">
+                <select [(ngModel)]="task.comments" (change)="keyPress($event)" style="padding: 4px;
+                border-radius: 4px;
+                width: 100%;">
                     <option value="Select One">Select One</option>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>

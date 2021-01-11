@@ -1,4 +1,4 @@
-#scInnerLoader {
+/* #scInnerLoader {
     border: 10px solid #f3f3f3;
     border-radius: 50%;
     border-top: 10px solid red;
@@ -54,4 +54,4 @@
  ::ng-deep body .ui-tabmenu .ui-tabmenu-nav,
  ::ng-deep .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem {
     border-bottom: 1px solid #C53E3E !important;
-}
+} */

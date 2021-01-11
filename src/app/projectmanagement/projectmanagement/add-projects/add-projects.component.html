@@ -7,6 +7,6 @@
     <p-header>
         Project Finance Management
     </p-header>
-    <app-manage-finance *ngIf="isMangageFinanceVisible" (budgetOutputData)="getBudgetOutputData($event)" (maximizeDialog)="showDialogMaximized()">
+    <app-manage-finance *ngIf="isMangageFinanceVisible" (closepopup)="closePopupData($event)" (budgetOutputData)="getBudgetOutputData($event)" (maximizeDialog)="showDialogMaximized()">
     </app-manage-finance>
 </p-dialog>
