@@ -59,7 +59,7 @@ export class TaskAllocationConstantsService {
             top: 4500
         },
         checkAccess: {
-            select: 'Title,ProjectCode,AllOperationresources/ID,AllOperationresources/Title',
+            select: 'Title,ProjectCode,AllOperationresources/ID,AllOperationresources/Title,BusinessVertical',
             expand: 'AllOperationresources/ID,AllOperationresources/Title',
             filter: "ProjectCode eq '{{code}}'",
             top: 4500
@@ -131,7 +131,12 @@ export class TaskAllocationConstantsService {
             filter: 'ProjectCode eq \'{{ProjectCode}}\'',
             top: 4900
         },
-    };
+        PROJECT_INFORMATION_BY_PROJECTCODE: {
+            select: 'ID,Title,ProjectCode, BusinessVertical,SlideCount,PageCount,ReferenceCount,AnnotationBinder',
+            filter: 'ProjectCode eq \'{{ProjectCode}}\'',
+            top: 1
+        }
+    }
     myDashboardComponent = {
     //   SubmissionPkg: {
     //     select: 'ID,Title,JCID,SubmissionDate,SubmissionURL,SubmissionPkgURL,DecisionURL,DecisionDate,Decision,Status',

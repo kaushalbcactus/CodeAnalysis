@@ -1,0 +1,29 @@
+<div fxLayout="column" style="padding: 2vw;width: 100%;" fxLayoutAlign="center center" *ngIf="loaderEnable">
+    <div id="modalInnerLoader"></div>
+    <div id="modalInnerLoaderText">Loading...</div>
+</div>
+
+<div *ngIf="!loaderEnable" class="ui-grid-row mt-20">
+    <form [formGroup]="countFieldsForm">
+        <div class="ui-grid-col-1">Reference Count</div>
+        <div class="ui-grid-col-2">
+            <input formControlName="ReferenceCount" type="number" placeholder="Reference Count" pInputText>
+        </div>
+        <div class="ui-grid-col-1">Slide Count</div>
+        <div class="ui-grid-col-2">
+            <input formControlName="SlideCount" type="number" placeholder="Slide Count" pInputText>
+        </div>
+        <div class="ui-grid-col-1">Page Count</div>
+        <div class="ui-grid-col-2">
+            <input formControlName="PageCount" type="number" placeholder="Page Count" pInputText>
+        </div>
+        <div class="ui-grid-col-1" style="width:12%">Annotation/Binder</div>
+        <div class="ui-grid-col-1" style="width: 7%;">
+            <p-checkbox formControlName="AnnotationBinder" binary="true" label="Yes" inputId="y"></p-checkbox>
+        </div>
+
+        <button *ngIf="projectDetails.status !== 'Closed' && projectDetails.status !== 'Cancelled' && projectDetails.status !== 'Pending Closure'" mat-raised-button type="button"  (click)="saveCounts()">
+            <mat-icon>save</mat-icon> Save
+        </button>
+    </form>
+</div>

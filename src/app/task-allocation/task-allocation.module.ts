@@ -28,9 +28,11 @@ import { PreStackAllocationComponent } from '../shared/pre-stack-allocation/pre-
 import { ResourceSelectionComponent } from './resource-selection/resource-selection.component';
 import { ConflictAllocationsModule } from '../shared/conflict-allocations/conflict-allocations.module';
 import { ConflictAllocationComponent } from '../shared/conflict-allocations/conflict-allocation.component';
+import { MCMICountFieldsComponent } from './mc-mi-count-fields/mc-mi-count-fields.component';
+
 @NgModule({
   declarations: [TaskAllocationComponent, TimelineComponent, DragDropComponent,
-    TaskDetailsDialogComponent, ResourcesComponent, GanttEdittaskComponent, ResourceSelectionComponent],
+    TaskDetailsDialogComponent, ResourcesComponent, GanttEdittaskComponent, ResourceSelectionComponent, MCMICountFieldsComponent],
   imports: [
     CommonModule,
     TaskAllocationRoutingModule,
