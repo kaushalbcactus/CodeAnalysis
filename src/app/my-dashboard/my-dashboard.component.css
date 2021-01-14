@@ -2,6 +2,13 @@
     padding-top: 1em !important;
 }
 
+.users-dropdown {
+    padding: 4px;
+    border-bottom: 1px solid rgb(197, 62, 62);
+    box-sizing: border-box;
+    margin-bottom: 5px;
+}
+
 
 /*  
 

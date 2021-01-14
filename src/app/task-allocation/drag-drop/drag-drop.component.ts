@@ -789,7 +789,7 @@ export class DragDropComponent implements OnInit {
       this.taskAllocationService.taskallocationComponent.submilestonesList);
     this.commonService.setBatchObject(batchUrl, submilestoneUrl.replace(/{{status}}/gi, 'Yes'), null, this.constants.Method.GET, this.constants.listNames.SubMilestones.name);
 
-    this.commonService.SetNewrelic('TaskAllocation', 'Drag-Drop', 'GetMilestoneSubmilestoneAndTasks');
+    this.commonService.SetNewrelic('TaskAllocation', 'Drag-Drop', 'GetMilestoneSubmilestoneAndTasks', "GET-BATCH");
     const arrResult = await this.spServices.executeBatch(batchUrl);
 
 

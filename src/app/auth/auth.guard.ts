@@ -39,10 +39,6 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
         state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
         if (this._authService.isUserManager || this._authService.isUserExpenseApprovers) {
             console.log(this._router.url);
-            // if (this._authService.isUserExpenseApprovers) {
-            //     this._router.navigate[''];
-            // }
-            // this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
             return true;
         } else {
             alert('You dont have access.Please contact to admin')
@@ -51,8 +47,6 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
     }
 
     async canLoad(route: Route, segments: UrlSegment[]) {
-        // this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
-        // const res = await this._authService.getUserInfo();
         if (true) {
             return true;
         } else {

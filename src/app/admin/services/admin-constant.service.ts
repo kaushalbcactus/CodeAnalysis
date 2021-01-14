@@ -108,7 +108,7 @@ export class AdminConstantService {
         "SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title," +
         "TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail,Author/ID,Author/Title," +
         "Editor/ID,Editor/Title,WorkingSunday,WorkingMonday,WorkingTuesday,WorkingWednesday,WorkingThursday,WorkingFriday," +
-        "WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate",
+        "WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate,PlaceholderUser",
       expand:
         "Account/ID,Account/Title,DeliverableExclusion/ID,DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title," +
         "Manager/ID,Manager/Title,Manager/EMail,SkillLevel/ID,SkillLevel/Title,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID," +
@@ -127,7 +127,7 @@ export class AdminConstantService {
         "SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title," +
         "TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail,Author/ID,Author/Title," +
         "Editor/ID,Editor/Title,WorkingSunday,WorkingMonday,WorkingTuesday,WorkingWednesday,WorkingThursday,WorkingFriday," +
-        "WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate",
+        "WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate,PlaceholderUser",
       expand:
         "Account/ID,Account/Title,DeliverableExclusion/ID,DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title," +
         "Manager/ID,Manager/Title,Manager/EMail,SkillLevel/ID,SkillLevel/Title,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID," +
@@ -146,7 +146,7 @@ export class AdminConstantService {
         "SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title," +
         "TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail,Author/ID,Author/Title," +
         "Editor/ID,Editor/Title,WorkingSunday,WorkingMonday,WorkingTuesday,WorkingWednesday,WorkingThursday,WorkingFriday," +
-        "WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate",
+        "WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate,PlaceholderUser",
       expand:
         "Account/ID,Account/Title,DeliverableExclusion/ID,DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title," +
         "Manager/ID,Manager/Title,Manager/EMail,SkillLevel/ID,SkillLevel/Title,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID," +
@@ -422,7 +422,7 @@ export class AdminConstantService {
     },
     GET_PROJECT_INFO: {
       select:
-        "ID,Title,SOWCode,BusinessVertical,WBJID,ProjectCode,SubDivision,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title," +
+        "ID,Title,SOWCode,BusinessVertical,WBJID,ProjectCode,DeliverableType,SubDivision,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title," +
         "DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title,AllOperationresources/ID,AllOperationresources/Title,Status,CSRule,DeliveryRule",
       expand:
         "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title," +
@@ -461,7 +461,7 @@ export class AdminConstantService {
         "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title," +
         "DeliveryLevel2/ID,DeliveryLevel2/Title",
       filter:
-        "Status ne 'Closed'",
+        "Status eq 'Approved'",
       top: 4900,
     },
     GET_All_QUALITY_COMPLAINTS: {
@@ -479,7 +479,7 @@ export class AdminConstantService {
       top: 4900,
     },
   };
-  
+
   public LOGICAL_FIELD = {
     YES: "Yes",
     NO: "No",
@@ -500,6 +500,7 @@ export class AdminConstantService {
     TAVISIBILITY: "TAVisibility",
     CAVISIBILITY: "CAVisibility",
     ISFTE: "IsFTE",
+    PlaceholderUser: "PlaceholderUser"
   };
   public ACTION = {
     COPY: "Copy",
@@ -528,7 +529,7 @@ export class AdminConstantService {
     APLHA_NUMERIC: /^[a-zA-Z0-9]+$/,
     ALPHA_SPECIAL_NUMERIC: /^([a-zA-Z0-9])+((?:[-_](?![-_]))*([a-zA-Z0-9]))*$/,
     THREE_UPPERCASE_TWO_NUMBER: /^[A-Z]{3}[0-9]{2}$/,
-    ALPHA_SPECIAL_WITHSPACE: /^([a-z A-Z])+((?:[-_](?![-_]))*([a-z A-Z]))*$/,
+    ALPHA_SPECIAL_WITHSPACE: /^([a-z A-Z])+((?:[-_](?![-_]))*([a-z A-Z]))*$/
   };
   public RESOURCE_CATEGORY_CONSTANT = {
     CMLevel1: "CM L1",

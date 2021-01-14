@@ -160,14 +160,12 @@ export class ClientMasterdataComponent implements OnInit {
   pocItems = [];
   poItems = [];
   poValue;
-
   buttonLabel;
 
   currClientObj: any;
   currSubDivisionObj: any;
   currPOCObj: any;
   currPOObj: any;
-
   filePathUrl: any;
   showaddClientModal = false;
   showEditClient = false;
@@ -1339,6 +1337,7 @@ export class ClientMasterdataComponent implements OnInit {
    */
   poMenu(data) {
     this.currPOObj = data;
+    debugger;
     if (this.isUserSPMCA || this.isUserPO) {
       this.poItems = [
         {

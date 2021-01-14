@@ -137,14 +137,7 @@ export class CaDragdropComponent implements OnInit {
         this.initialLoad = false;
       }
     }
-
-
-
-
-
   }
-
-
 
   // *********************************************************************************************************
   // Discard  Graph changes
@@ -189,15 +182,12 @@ export class CaDragdropComponent implements OnInit {
     const Task = this.allConstantTasks.find(c => c.Title === this.draggedTask);
     const originalType = Task.Title;
 
-
     const TaskOfType = this.TempMilestoneAllTasks.find(c => c.type === originalType && c.milestone === this.data.Milestone) ?
       this.TempMilestoneAllTasks.find(c => c.type === originalType && c.milestone === this.data.Milestone).tasks : [];
     // tslint:disable 
     count = TaskOfType.filter((task) => { return new RegExp(Task.Title, 'g').test(task); }).length > 0 ?
       TaskOfType.filter(function (task) { return new RegExp(Task.Title, 'g').test(task) }).filter((v) => { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(Task.Title, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0)).length > 0 ?
         Math.max.apply(null, TaskOfType.filter(function (task) { return new RegExp(Task.Title, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(Task.Title, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0))) : 1 : 0;
-
-
 
     let node = null;
     // tslint:enable
@@ -293,16 +283,11 @@ export class CaDragdropComponent implements OnInit {
     this.GraphResize();
   }
 
-
-
   // *************************************************************************************************************************************
   // To Add Task To milestonesGraph On Restructure
   // *************************************************************************************************************************************
 
-
   onPageLoad(event) {
-
-
     if (!event.TaskName) {
       event.TaskName = $.trim(event.Title.replace(event.ProjectCode + '', '').replace(event.Milestone + '', ''));
     }
@@ -340,9 +325,6 @@ export class CaDragdropComponent implements OnInit {
   }
 
   loadLinks(event, links) {
-
-
-
     const preTasks = event.PrevTasks !== undefined && event.PrevTasks !== null ? event.PrevTasks.split(';') : [];
     const nextTasks = event.NextTasks !== undefined && event.NextTasks !== null ? event.NextTasks.split(';') : [];
 
@@ -401,7 +383,6 @@ export class CaDragdropComponent implements OnInit {
     }
     return itemID;
   }
-
 
   generatePathMatrix() {
     const links = this.links;
@@ -486,8 +467,6 @@ export class CaDragdropComponent implements OnInit {
   // To Remove Link from tasks
   // *********************************************************************************************************
   RemoveLink(event) {
-
-
     this.previousSource = this.nodes.find(e => e.id === event.source);
     this.recentEventNode = this.previousSource.id;
     const RemoveLinkindex = this.links.indexOf(this.links.find(c => c.source === event.source && c.target === event.target));
@@ -495,7 +474,6 @@ export class CaDragdropComponent implements OnInit {
     this.links = [... this.links];
     this.GraphResize();
   }
-
 
   ReloadGraph() {
     this.GraphResize();
@@ -513,8 +491,6 @@ export class CaDragdropComponent implements OnInit {
     this.tasksHoritontal = this.tasksHoritontal ? false : true;
     this.GraphResize();
   }
-
-
 
   // **************************************************************************************************
   // To  link   task
@@ -553,8 +529,6 @@ export class CaDragdropComponent implements OnInit {
       node.color = '#d26767';
       this.taskDown = node;
       this.previousSource = this.taskDown;
-
-
     }
   }
 
@@ -610,17 +584,13 @@ export class CaDragdropComponent implements OnInit {
       event.preventDefault();
     }
 
-
   }
 
 
   ErrorMessage(event, type) {
-
     this.commonService.showToastrMessage(this.constants.MessageType.warn,type + ' can  not be deleted',false);
     event.preventDefault();
   }
-
-
 
   SaveGraph() {
     let errorM = 0;

@@ -69,12 +69,12 @@ export class SelectSOWComponent implements OnInit {
         || this.pmObject.userRights.isHaveSOWFullAccess
         || this.pmObject.userRights.isHaveSOWBudgetManager) {
         const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.ALL_SOW);
-        this.commonService.SetNewrelic('projectManagment', 'addproj-selectSow', 'GetSow');
+        this.commonService.SetNewrelic('projectManagment', 'addproj-selectSow', 'GetSow-FullAccess', "GET");
         arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
       } else {
         const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
         sowFilter.filter = sowFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
-        this.commonService.SetNewrelic('projectManagment', 'addproj-selectSow', 'GetSow');
+        this.commonService.SetNewrelic('projectManagment', 'addproj-selectSow', 'GetSow-Users', "GET");
         arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
       }
       if (arrResults && arrResults.length) {
@@ -133,7 +133,7 @@ export class SelectSOWComponent implements OnInit {
    
     const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.SOW_CODE);
     sowFilter.filter = sowFilter.filter.replace('{{sowcode}}',sow.SOWCode);
-    this.commonService.SetNewrelic('projectManagment', 'addproj-selectSow', 'GetSow');
+    this.commonService.SetNewrelic('projectManagment', 'addproj-selectSow', 'setSelectedSOWObject', "GET");
     const arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
     this.pmObject.addProject.SOWSelect.SOWSelectedItem = {};
     this.pmObject.addProject.SOWSelect.sowTotalBalance = 0;

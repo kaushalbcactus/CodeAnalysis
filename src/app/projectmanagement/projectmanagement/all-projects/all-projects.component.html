@@ -81,7 +81,7 @@
                             <span *ngSwitchDefault>{{task.Status}}</span>
                         </ng-container>
                     </td>
-                    <td style="padding: 0px !important;">
+                    <td class="lastColumnWidthtd">
                         <div>
                             <p-tieredMenu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu class="projectSlider" [model]="popItems" [popup]="true"></p-tieredMenu>
                             <i class="pi pi-ellipsis-v"  style="font-size:2em;cursor: pointer;" (click)="storeRowData(rowData,menu); menu.show($event);"></i>

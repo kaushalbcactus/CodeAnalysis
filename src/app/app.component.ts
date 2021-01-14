@@ -8,7 +8,7 @@ import { MenuItem, MessageService } from 'primeng/api';
 import { Title } from '@angular/platform-browser';
 import { filter, map } from 'rxjs/operators';
 import { CommonService } from './Services/common.service';
-// import { Environment } from '../environments/environment.prod';
+
 declare const _spPageContextInfo;
 declare const newrelic;
 
@@ -79,9 +79,9 @@ export class AppComponent implements OnDestroy {
   initSPPageObject() {
     this.globalService.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
       ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
-    this.globalService.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
+    this.globalService.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomm'
       : _spPageContextInfo.webAbsoluteUrl;
-    this.globalService.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
+    this.globalService.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomm'
       : _spPageContextInfo.siteServerRelativeUrl;
     this.globalService.sharePointPageObject.serverRelativeUrl = this.globalService.sharePointPageObject.webRelativeUrl;
     this.globalService.sharePointPageObject.rootsite = window.origin;
@@ -96,7 +96,8 @@ export class AppComponent implements OnDestroy {
   }
 
   async initSPLoggedInUser() {
-    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 9
+    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 31
+
      : _spPageContextInfo.userId;
     this.globalService.currentUser.email = window.location.href.indexOf('localhost') > -1 ?
       'sneha.danduk@cactusglobal.com' : _spPageContextInfo.userEmail;
@@ -129,9 +130,6 @@ export class AppComponent implements OnDestroy {
       if (currentUserGroups.find(g => g === 'Managers' || g === 'FinanceDashboard Members' || g === 'Invoice_Team')) {
         this.leftNavigation.push({ title: 'Finance Dashboard', href: this.globalService.url + '/financeDashboard', visible: true });
       }
-      // if (currentUserGroups.find(g => g === 'Managers' || g === 'AttributeManagement Members')) {
-      //   this.leftNavigation.push({ title: 'Attr Management', href: this.globalService.sharePointPageObject.webRelativeUrl + '/attribute', visible: true });
-      // }
       if (currentUserGroups.find(g => g === 'Managers' || g === 'AttributeManagement Members')) {
         this.leftNavigation.push({ title: 'Admin', href: this.globalService.url + '/admin', visible: true });
       }
@@ -140,94 +138,10 @@ export class AppComponent implements OnDestroy {
 
   initSPComponentRedirection() {
     // tslint:disable:no-string-literal
-    window['pubSupportComponentReference'] = { component: this, zone: this._ngZone, loadPubSupport: () => this.goToPubSupport(), };
-    window['qmsComponentReference'] = { component: this, zone: this._ngZone, loadQMS: () => this.goToQMS(), };
-    window['fdComponentReference'] = { component: this, zone: this._ngZone, loadFD: () => this.goToFD(), };
-    window['pmComponentReference'] = { component: this, zone: this._ngZone, loadPM: () => this.goToPM(), };
-    window['myDashboardComponentReference'] = { component: this, zone: this._ngZone, loadMyDashboard: () => this.goToMyDashboard(), };
-    window['adminComponentReference'] = { component: this, zone: this._ngZone, loadAdmin: () => this.goToAdmin(), };
-    window['taskAllocationComponentReference'] = {
-      component: this, zone: this._ngZone,
-      loadTaskAllocation: () => this.goToTaskAllocation(),
-    };
-    window['accessLevelDashboardComponentReference'] = {
-      component: this, zone: this._ngZone,
-      loadAccessLevelDashboard: () => this.goToAccessLevelDashboard(),
-    };
-    window['caComponentReference'] = {
-      component: this, zone: this._ngZone,
-      loadCA: () => this.goToCA(),
-    };
-    window['capacityComponentReference'] = {
-      component: this, zone: this._ngZone,
-      loadCapacityDashboard: () => this.goToCapacityDashboard(),
-    };
-
-    window['leaveCalendarComponentReference'] = {
-      component: this, zone: this._ngZone,
-      loadLeaveCalendar: () => this.goToLeaveCalendar(),
-    };
-
     window['aldIfNotLinkComponentReference'] = {
       component: this, zone: this._ngZone,
       loadaldInNoLinkDashboard: () => this.goToAccessLevelDashboardIfNoLink(),
     };
-
-    window['pageNotFoundComponentReference'] = {
-      component: this, zone: this._ngZone,
-      loadPageNotFound: () => this.goToPageNotFound(),
-    };
-  }
-
-  goToQMS() {
-    if (!window.location.href.includes('qms')) {
-      this.router.navigate(['/qms']);
-    }
-  }
-
-  goToPubSupport() {
-    this.router.navigate(['/pubSupport']);
-  }
-
-  goToFD() {
-    if (!window.location.href.includes('financeDashboard')) {
-      this.router.navigate(['/financeDashboard']);
-    }
-  }
-
-  goToPM() {
-    if (!window.location.href.includes('projectMgmt')) {
-      this.router.navigate(['/projectMgmt']);
-    }
-  }
-
-  goToMyDashboard() {
-    if (!window.location.href.includes('myDashboard')) {
-      this.router.navigate(['/myDashboard']);
-    }
-  }
-
-  goToAdmin() {
-    if (!window.location.href.includes('admin')) {
-      this.router.navigate(['/admin']);
-    }
-  }
-
-  goToCA() {
-    if (!window.location.href.includes('centralallocation')) {
-      this.router.navigate(['/centralallocation']);
-    }
-  }
-  goToTaskAllocation() {
-    if (!window.location.href.includes('taskAllocation')) {
-      this.router.navigate(['/taskAllocation']);
-    }
-  }
-
-  goToAccessLevelDashboard() {
-    if (!window.location.href.includes('accessleveldashboard')) {
-      this.router.navigate(['/accessleveldashboard']);
-    }
   }
 
   goToAccessLevelDashboardIfNoLink() {
@@ -236,37 +150,7 @@ export class AppComponent implements OnDestroy {
     }
   }
 
-  goToCapacityDashboard() {
-    if (!window.location.href.includes('capacityDashboard')) {
-      this.router.navigate(['/capacityDashboard']);
-    }
-  }
-
-  goToLeaveCalendar() {
-    if (!window.location.href.includes('leaveCalendar')) {
-      this.router.navigate(['/leaveCalendar']);
-    }
-  }
-
-  goToPageNotFound() {
-    if (!window.location.href.includes('pageNotFound')) {
-      this.router.navigate(['/pageNotFound']);
-    }
-  }
-
   ngOnDestroy() {
-    window['pubSupportComponentReference'] = null;
-    window['fdComponentReference'] = null;
-    window['pmComponentReference'] = null;
-    window['myDashboardComponentReference'] = null;
-    window['adminComponentReference'] = null;
-    window['taskAllocationComponentReference'] = null;
-    window['qmsComponentReference'] = null;
-    window['accessLecelDashboardComponentReference'] = null;
-    window['caComponentReference'] = null;
-    window['capacityComponentReference'] = null;
-    window['leaveCalendarComponentReference'] = null;
     window['aldIfNotLinkComponentReference'] = null;
-    window['pageNotFoundComponentReference'] = null;
   }
 }

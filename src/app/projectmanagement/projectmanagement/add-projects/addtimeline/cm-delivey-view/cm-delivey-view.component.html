@@ -1,37 +1,30 @@
-<div class="margin-top25">
-    <div class="row">
-        <div class="col-md-2 col-xs-2 col-lg-2">
-            <div class="floatLeft catHeader"><span class="compulsory">*</span>CM Access</div>
-        </div>
-        <div class="col-md-4 col-xs-4 col-lg-4">
+<div class="p-col p-grid p-p-1">
+    <div class="p-col p-grid p-p-0">
+        <label for="CMAccess" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>CM Access</label>
+        <div class="p-col-12 p-md-8 ">
             <p-multiSelect [style]="{'width':'100%'}" [options]="pmObject.OwnerAccess.cmLevel1" [(ngModel)]="pmObject.OwnerAccess.selectedCMAccess" [filter]="true" defaultLabel="Please Select" resetFilterOnHide="true"></p-multiSelect>
-
         </div>
-        <div class="col-md-2 col-xs-2 col-lg-2">
-            <div class="floatLeft catHeader"><span class="compulsory">*</span>CM Owner</div>
-        </div>
-        <div class="col-md-4 col-xs-4 col-lg-4">
-            <p-dropdown [options]="pmObject.OwnerAccess.cmLevel2" [(ngModel)]="pmObject.OwnerAccess.selectedCMOwner" [filter]="true" [showClear]="true" placeholder="Please Select" resetFilterOnHide="true" [disabled]=true></p-dropdown>
-
+    </div>
+    <div class="p-col p-grid p-p-0">
+        <label for="CMOwner" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>CM Owner</label>
+        <div class="p-col-12 p-md-8 ">
+            <p-dropdown [options]="pmObject.OwnerAccess.cmLevel2" [(ngModel)]="pmObject.OwnerAccess.selectedCMOwner" [filter]="true" [showClear]="true" placeholder="Please Select" resetFilterOnHide="true" [disabled]=true [style]="{'width':'100%'}"></p-dropdown>
         </div>
     </div>
 </div>
 
 
-
-<div class="margin-top25">
-    <div class="row">
-        <div class="col-md-2 col-xs-2 col-lg-2">
-            <div class="floatLeft catHeader"> &nbsp; Delivery Access</div>
-        </div>
-        <div class="col-md-4 col-xs-4 col-lg-4">
+<div class="p-col p-grid p-p-1">
+    <div class="p-col p-grid p-p-0">
+        <label for="DeliveryAccess" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Delivery Access</label>
+        <div class="p-col-12 p-md-8 ">
             <p-multiSelect [style]="{'width':'100%'}" [options]="pmObject.OwnerAccess.deliveryLevel1" [(ngModel)]="pmObject.OwnerAccess.selectedDeliveryAccess" [filter]="true" defaultLabel="Please Select" resetFilterOnHide="true"></p-multiSelect>
         </div>
-        <div class="col-md-2 col-xs-2 col-lg-2">
-            <div class="floatLeft catHeader"><span class="compulsory">*</span>Delivery Owner</div>
-        </div>
-        <div class="col-md-4 col-xs-4 col-lg-4">
-            <p-dropdown [options]="pmObject.OwnerAccess.deliveryLevel2" [(ngModel)]="pmObject.OwnerAccess.selectedDeliveryOwner" [filter]="true" [showClear]="true" placeholder="Please Select" resetFilterOnHide="true" [disabled]=true></p-dropdown>
+    </div>
+    <div class="p-col p-grid p-p-0">
+        <label for="DeliveryOwner" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Delivery Owner</label>
+        <div class="p-col-12 p-md-8 ">
+            <p-dropdown [options]="pmObject.OwnerAccess.deliveryLevel2" [(ngModel)]="pmObject.OwnerAccess.selectedDeliveryOwner" [filter]="true" [showClear]="true" placeholder="Please Select" resetFilterOnHide="true" [disabled]=true [style]="{'width':'100%'}"></p-dropdown>
         </div>
     </div>
 </div>

@@ -1,5 +1,9 @@
 <div class="p-grid  p-jc-between">
     <p-tabMenu class="p-col-11 p-pb-0 p-pr-0" [model]="items" [activeItem]="activeItem"></p-tabMenu>
+    <div *ngIf="enableOtherUsers" class="users-dropdown">
+        <p-dropdown [options]="activeUsers" placeholder="Select User" [showClear]="true" appendTo="body" filter="true" resetFilterOnHide="true" (onChange)="userChange()" [(ngModel)]="selectedUser">
+        </p-dropdown>
+    </div>
     <div class="p-col p-pb-0 p-pt-3" style="border-bottom: 1px solid #e0e0e0;">
         <div class=" p-grid p-jc-end p-mr-3">
             <i title="Manage FTE Work" *ngIf="isUserFTE" (click)="createTask()" style="cursor: pointer; font-size: 2em;" class="p-mr-4 fa fa-user" aria-hidden="true"></i>
@@ -12,4 +16,4 @@
 
 <ng-container #createTaskcontainer></ng-container>
 
-<router-outlet (activate)="onActivate($event) " #myOutlet="outlet"></router-outlet>
+<router-outlet (activate)="onActivate($event)" #myOutlet="outlet"></router-outlet>

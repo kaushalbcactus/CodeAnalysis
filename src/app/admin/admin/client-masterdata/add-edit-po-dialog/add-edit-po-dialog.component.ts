@@ -141,8 +141,8 @@ export class AddEditPoDialogComponent implements OnInit {
       poBuyingEntity: this.currPOObj.BuyingEntity
     });
     this.showeditPO = true;
-    this.modalloaderenable = false;
-
+    this.modalloaderenable=false;
+    
   }
 
 
@@ -390,7 +390,6 @@ export class AddEditPoDialogComponent implements OnInit {
     //   this.changeBudgetForm.get('total').setValue(this.adminObject.po.total);
     // }
   }
-
 
 
 

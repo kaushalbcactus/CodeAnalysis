@@ -1,108 +1,93 @@
-<div [hidden]='isNonStandardLoaderHidden'>
-    <div id="nonStandardLoader"></div>
-    <div id="nonStandardLoaderText">Loading...</div>
+<div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="!isNonStandardLoaderHidden">
+    <div id="modalInnerLoader"></div>
+    <div id="modalInnerLoaderText">Loading...</div>
 </div>
-<div class="timeline-non-standard-section margin-top25 floatLeft" [hidden]='isNonStandardTableHidden'>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-2 col-xs-2 col-lg-2">
-                <div class="floatLeft catHeader"><span class="compulsory">*</span>Deliverable Type</div>
-            </div>
-            <div class="col-md-4 col-xs-4 col-lg-4">
+
+<div class="timeline-non-standard-section cardViewDisplay" [hidden]='isNonStandardTableHidden'>
+
+    <div class="p-col p-grid p-p-1">
+        <div class="p-col p-grid p-p-0">
+            <label for="DeliverableType" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Deliverable Type</label>
+            <div class="p-col-12 p-md-8 ">
                 <p-dropdown *ngIf="!pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [options]="nonStandardDeliverableType" [(ngModel)]="selectedDeliverableType" [filter]="true" placeholder="Select Deliverable Type" [showClear]="true" [disabled]="isDeliveryTypeDisabled"
-                    (onChange)="onDeliverableTypeChange()" resetFilterOnHide="true">
-                </p-dropdown>
-                <p-dropdown *ngIf="pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [disabled]="isDeliveryTypeDisabled" [options]="registerNonStandardDeliverableType">
+                    (onChange)="onDeliverableTypeChange()" resetFilterOnHide="true" [style]="{width:'100%'}"></p-dropdown>
+                <p-dropdown *ngIf="pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [disabled]="isDeliveryTypeDisabled" [options]="registerNonStandardDeliverableType" [style]="{width:'100%'}">
                 </p-dropdown>
             </div>
-            <div class="col-md-2 col-xs-2 col-lg-2">
-                <div class="floatLeft catHeader">Sub Type</div>
-            </div>
-            <div class="col-md-4 col-xs-4 col-lg-4">
+        </div>
+        <div class="p-col p-grid p-p-0">
+            <label for="SubType" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Sub Type</label>
+            <div class="p-col-12 p-md-8 ">
                 <p-dropdown *ngIf="!pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [options]="nonStandardSubType" [(ngModel)]="selectedSubType" [filter]="true" placeholder="Select SubType" [disabled]="isStandardSubTypeDisabled" [showClear]="true" (onChange)="onSubTypeChange()"
-                    resetFilterOnHide="true">
+                    resetFilterOnHide="true" [style]="{width:'100%'}">
                 </p-dropdown>
-                <p-dropdown *ngIf="pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [disabled]="isStandardSubTypeDisabled" [options]="registerNonStandardSubType">
+                <p-dropdown *ngIf="pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [disabled]="isStandardSubTypeDisabled" [options]="registerNonStandardSubType" [style]="{width:'100%'}">
                 </p-dropdown>
             </div>
         </div>
-        <div class="margin-top25">
-            <div class="row">
-                <div class="col-md-2 col-xs-2 col-lg-2">
-                    <div class="floatLeft catHeader"><span class="compulsory">*</span>Service</div>
-                </div>
-                <div class="col-md-4 col-xs-4 col-lg-4">
-                    <p-dropdown *ngIf="!pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [options]="nonStandardService" [(ngModel)]="selectedServices" [filter]="true" placeholder="Select Service" [disabled]="isStandardServiceDisabled" [showClear]="true"
-                        (onChange)="onSelectedServicesChange()" resetFilterOnHide="true">
-                    </p-dropdown>
-                    <p-dropdown *ngIf="pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [disabled]="isStandardServiceDisabled" [options]="registerNonStandardServices">
-                    </p-dropdown>
-                </div>
-                <div class="col-md-2 col-xs-2 col-lg-2">
-                    <div class="floatLeft catHeader"><span class="compulsory" *ngIf="pmObject.addProject.FinanceManagement.BilledBy !== 'FTE-Writing'">*</span>Resource Name</div>
-                </div>
-                <div class="col-md-4 col-xs-4 col-lg-4">
-                    <p-dropdown *ngIf="!pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [options]="nonStandardResourceName" [(ngModel)]="ngModelSelectedResource" [filter]="true" [group]="true" placeholder="Select ResourceName" [disabled]="isStandardResourceNameDisabled"
-                        [showClear]="true" (onChange)="onResourceChange($event)" resetFilterOnHide="true">
-                    </p-dropdown>
-                    <p-dropdown *ngIf="pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [disabled]="isStandardResourceNameDisabled" [options]="registerNonStandardResourceName">
-                    </p-dropdown>
-                </div>
+    </div>
+
+    <div class="p-col p-grid p-p-1">
+        <div class="p-col p-grid p-p-0">
+            <label for="Service" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Service</label>
+            <div class="p-col-12 p-md-8 ">
+                <p-dropdown *ngIf="!pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [options]="nonStandardService" [(ngModel)]="selectedServices" [filter]="true" placeholder="Select Service" [disabled]="isStandardServiceDisabled" [showClear]="true"
+                    (onChange)="onSelectedServicesChange()" resetFilterOnHide="true" [style]="{width:'100%'}">
+                </p-dropdown>
+                <p-dropdown *ngIf="pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [disabled]="isStandardServiceDisabled" [options]="registerNonStandardServices" [style]="{width:'100%'}">
+                </p-dropdown>
             </div>
         </div>
-        <div class="margin-top25">
-            <div class="row">
-                <div class="col-md-2 col-xs-2 col-lg-2">
-                    <div class="floatLeft catHeader"><span class="compulsory">*</span>Proposed Start Date</div>
-                </div>
-                <div class="col-md-4 col-xs-3 col-lg-4">
-                    <p-calendar  class="pcalendarClass" [(ngModel)]="ngNonStandardProposedStartDate"   [disabledDays]="[0,6]"   [readonlyInput]="true"   dateFormat="dd M, yy"   appendTo="body"   hideOnDateTimeSelect="true"   [required]="true"   [stepMinute]="15"   [showIcon]="true"
-                          [showOnFocus]="false"   [monthNavigator]="true"   [yearNavigator]="true"     yearRange="{{yearRange}}" [inputStyle]="{'width': '80%', 'min-width': '80%'}" [disabled]="isNonStandardProposedStartDateDisabled" [minDate]="minDateValue"
-                         inputStyleClass="ngPrime-red">
-                        </p-calendar>
-                </div>
-                <div class="col-md-2 col-xs-2 col-lg-2">
-                    <div class="floatLeft catHeader"><span class="compulsory">*</span>Proposed End Date</div>
-                </div>
-                <div class="col-md-4 col-xs-4 col-lg-4">
-                    <p-calendar  class="pcalendarClass"   [(ngModel)]="ngNonStandardProposedEndDate"   [disabledDays]="[0,6]"   [readonlyInput]="true"   dateFormat="dd M, yy"   appendTo="body"   hideOnDateTimeSelect="true"   [required]="true"   [stepMinute]="15"   [showIcon]="true"
-                          [showOnFocus]="false"   [monthNavigator]="true"   [yearNavigator]="true"     yearRange="{{yearRange}}" [inputStyle]="{'width': '80%', 'min-width': '80%'}" [disabled]="isNonStandardProposedEndDateDisabled"  inputStyleClass="ngPrime-red">
-                        </p-calendar>
-                </div>
-
+        <div class="p-col p-grid p-p-0">
+            <label for="ResourceName" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory" *ngIf="pmObject.addProject.FinanceManagement.BilledBy !== 'FTE-Writing'">*</span>Resource Name</label>
+            <div class="p-col-12 p-md-8 ">
+                <p-dropdown *ngIf="!pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [options]="nonStandardResourceName" [(ngModel)]="ngModelSelectedResource" [filter]="true" [group]="true" placeholder="Select ResourceName" [disabled]="isStandardResourceNameDisabled"
+                    [showClear]="true" (onChange)="onResourceChange($event)" resetFilterOnHide="true" [style]="{width:'100%'}">
+                </p-dropdown>
+                <p-dropdown *ngIf="pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [disabled]="isStandardResourceNameDisabled" [options]="registerNonStandardResourceName" [style]="{width:'100%'}">
+                </p-dropdown>
             </div>
         </div>
-        <div class="margin-top25">
-            <div class="row">
-                <div class="col-md-2 col-xs-2 col-lg-2">
-                    <div class="floatLeft catHeader"><span class="compulsory">*</span>Project Budget Hrs</div>
-                </div>
-                <div class="col-md-4 col-xs-4 col-lg-4">
-                    <input style="width: 100%;" id="nonstandardProjectBudgetHrs" [(ngModel)]="nonstandardProjectBudgetHrs" type="text" />
-                </div>
-                <div class="col-md-6 col-xs-6 col-lg-6">
+    </div>
 
-                </div>
+
+    <div class="p-col p-grid p-p-1">
+        <div class="p-col p-grid p-p-0">
+            <label for="ProposedSD" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Proposed Start Date</label>
+            <div class="p-col-12 p-md-8 ">
+                <p-calendar  class="pcalendarClass" [(ngModel)]="ngNonStandardProposedStartDate"   [disabledDays]="[0,6]"   [readonlyInput]="true"   dateFormat="dd M, yy"   appendTo="body"   hideOnDateTimeSelect="true"   [required]="true"   [stepMinute]="15"   [showIcon]="true"
+                      [showOnFocus]="false"   [monthNavigator]="true"   [yearNavigator]="true"     yearRange="{{yearRange}}" [disabled]="isNonStandardProposedStartDateDisabled" [minDate]="minDateValue" [style]="{width:'100%'}">
+                    </p-calendar>
             </div>
         </div>
-
-        <app-cm-delivey-view></app-cm-delivey-view>
-
-        <div class="margin-top25">
-            <div class="row">
-                <div class="col-md-2 col-xs-2 col-lg-2">
-                    <div>
-                        <p-button type="button" styleClass="pmBtn" class="mr-5" label="Back" (click)="goToProjectAttributes()"></p-button>
-                    </div>
-                </div>
-                <div class="col-md-4 col-xs-4 col-lg-4"></div>
-                <div class="col-md-6 col-xs-6 col-lg-6">
-                    <div>
-                        <button id="nonstandardTimelineConfirm" class="mr-5 btn btn-danger" type="button" styleClass="pmBtn" (click)="nonStandardConfirm()">Save Project</button>
-                        <!-- <p-button type="button" styleClass="pmBtn"  class="mr-5" label="Continue to Finance & Management" (click)="goToFinanceMang()"></p-button> -->
-                    </div>
-                </div>
+        <div class="p-col p-grid p-p-0">
+            <label for="ProposedED" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Proposed Start Date</label>
+            <div class="p-col-12 p-md-8 ">
+                <p-calendar  class="pcalendarClass"   [(ngModel)]="ngNonStandardProposedEndDate"   [disabledDays]="[0,6]"   [readonlyInput]="true"   dateFormat="dd M, yy"   appendTo="body"   hideOnDateTimeSelect="true"   [required]="true"   [stepMinute]="15"   [showIcon]="true"
+                      [showOnFocus]="false"   [monthNavigator]="true"   [yearNavigator]="true"     yearRange="{{yearRange}}" [disabled]="isNonStandardProposedEndDateDisabled" [style]="{width:'100%'}">
+                    </p-calendar>
             </div>
         </div>
+    </div>
+
+
+
+
+    <div class="p-col p-grid p-p-1">
+        <div class="p-col p-grid p-p-0">
+            <label for="BudgetHours" class="p-col-12 p-m-0 p-md-2 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Project Budget Hrs</label>
+            <div class="p-col-12 p-md-10 p-pl-2">
+                <input class="p-col-12" [(ngModel)]="nonstandardProjectBudgetHrs" type="text" size="30" placeholder="Budget Hours" pInputText>
+            </div>
+        </div>
+    </div>
+
+    <app-cm-delivey-view></app-cm-delivey-view>
+
+
+    <div class="p-col p-mt-2 p-grid p-jc-between">
+        <button pButton pRipple type="button" (click)="goToProjectAttributes()" label="Back" class="p-ml-1 p-button-raised p-button-danger"></button>
+
+        <button pButton pRipple type="button" (click)="nonStandardConfirm()" label="Save Project" id="nonstandardTimelineConfirm" class=" p-button-raised p-button-danger"></button>
     </div>
 </div>

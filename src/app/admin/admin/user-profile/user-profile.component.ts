@@ -119,7 +119,6 @@ export class UserProfileComponent implements OnInit {
     router.events.subscribe((uri) => {
       zone.run(() => applicationRef.tick());
     });
-
   }
   /**
    * Construct a method to initialize all the data.
@@ -173,7 +172,6 @@ export class UserProfileComponent implements OnInit {
     ];
     await this.loadUserTable();
     this.colFilters1(this.auditHistoryRows);
-
   }
 
 
@@ -269,6 +267,7 @@ export class UserProfileComponent implements OnInit {
         userObj.WorkingThursday = item.WorkingThursday;
         userObj.WorkingFriday = item.WorkingFriday;
         userObj.WorkingSaturday = item.WorkingSaturday;
+        userObj.PlaceholderUser = item.PlaceholderUser;
         // Add the text of below item.
         if (userObj.Task) {
           const tasks: any = userObj.Task;
@@ -419,6 +418,7 @@ export class UserProfileComponent implements OnInit {
         userObj.WorkingThursday = item.WorkingThursday;
         userObj.WorkingFriday = item.WorkingFriday;
         userObj.WorkingSaturday = item.WorkingSaturday;
+        userObj.PlaceholderUser = item.PlaceholderUser;
         // Add the text of below item.
         if (userObj.Task) {
           const tasks: any = userObj.Task;
@@ -546,7 +546,6 @@ export class UserProfileComponent implements OnInit {
       const b = { label: a.LastModifiedBy, value: a.LastModifiedBy }; return b;
     })));
   }
-
   colFilters1(colData) {
     this.auditHistoryArray.User = this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = { label: a.User, value: a.User }; return b;
@@ -788,6 +787,7 @@ export class UserProfileComponent implements OnInit {
       userObj.WorkingThursday = item.WorkingThursday;
       userObj.WorkingFriday = item.WorkingFriday;
       userObj.WorkingSaturday = item.WorkingSaturday;
+      userObj.PlaceholderUser = item.PlaceholderUser;
       // Add the text of below item.
       if (userObj.Task) {
         const tasks: any = userObj.Task;
@@ -991,7 +991,6 @@ export class UserProfileComponent implements OnInit {
       userText = formObj.username.hasOwnProperty('DisplayText') ? formObj.username.DisplayText : IdResults[0].retItems[0].Title;
       managerText = formObj.manager.hasOwnProperty('DisplayText') ? formObj.manager.DisplayText : IdResults[0].retItems[0].Title;
     }
-
     const data: any = {
       __metadata: { type: this.constants.listNames.ResourceCategorization.type },
       ManagerId: managerId,
@@ -1024,6 +1023,7 @@ export class UserProfileComponent implements OnInit {
       WorkingThursday: formObj.workThursday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
       WorkingFriday: formObj.workFriday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
       WorkingSaturday: formObj.workSaturday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
+      PlaceholderUser: formObj.placeholderUser,
     };
     if (formObj.role) {
       data.RoleCH = formObj.role;

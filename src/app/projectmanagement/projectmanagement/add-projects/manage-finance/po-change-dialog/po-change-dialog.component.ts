@@ -25,7 +25,6 @@ export class PoChangeDialogComponent implements OnInit {
     this.LineItems = this.config.data.LineItems;
   }
 
-
   saveDetails(){
     if(this.selectedPo){
       const Data ={
@@ -41,7 +40,5 @@ export class PoChangeDialogComponent implements OnInit {
   cancel(){
     this.dynamicDialogRef.close();
   }
-
-
 
 }

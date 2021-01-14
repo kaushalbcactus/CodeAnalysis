@@ -373,6 +373,13 @@ export class ConstantsService {
       type: "SP.Data.RuleParametersCTListItem",
       contentTypeId: "0x010080C9A0031AB9AF49B3726642F1BF810600BF72DE562CCD1447BCE552EFF0A4F06B",
     },
+
+    SurveyResponse: {
+      name: "SurveyResponse",
+      type: "SP.Data.SurveyResponseListItem",
+      contentTypeId: "0x01005BD96CAA8E88CC469F259E2270EE1072008AE0A6E96DBCC54198A5F5732A2C48CA",
+    },
+
   };
 
   public projectStatus = {
@@ -832,4 +839,13 @@ export class ConstantsService {
       ],
     },
   ];
+
+  public REG_EXPRESSION = {
+    ALPHA_SPECIAL: /^([a-zA-Z])+((?:[-_](?![-_]))*([a-zA-Z]))*$/,
+    ALPHA: /^[a-zA-Z]+$/,
+    APLHA_NUMERIC: /^[a-zA-Z0-9]+$/,
+    ALPHA_SPECIAL_NUMERIC: /^([a-zA-Z0-9])+((?:[-_](?![-_]))*([a-zA-Z0-9]))*$/,
+    THREE_UPPERCASE_TWO_NUMBER: /^[A-Z]{3}[0-9]{2}$/,
+    ALPHA_SPECIAL_WITHSPACE: /^([a-z A-Z])+((?:[-_](?![-_]))*([a-z A-Z]))*$/
+  };
 }

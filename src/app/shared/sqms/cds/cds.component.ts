@@ -114,7 +114,7 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
    */
   protected async getQCItems(filterObj?): Promise<[]> {
     const qcComponent = JSON.parse(JSON.stringify(this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent));
-    this.commonService.SetNewrelic('QMS', 'CD', 'getGroupInfo');
+    this.commonService.SetNewrelic('QMS', 'SQMS-CD', 'getGroupInfo', "GET");
     const result = await this.spService.getGroupInfo(this.globalConstant.Groups.CDAdmin);
     this.global.cdAdmins = result.results ? result.results : [];
     this.global.currentUser.isCDAdmin = this.global.cdAdmins.find(t => t.Id === this.global.currentUser.userId) ? true : false;
@@ -153,7 +153,7 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
       }
       qcUrl = qcComponent.getQC;
     }
-    this.commonService.SetNewrelic('QMS', 'ClientFeedback-cd-getQCItems', 'readItems');
+    this.commonService.SetNewrelic('QMS', 'SQMS-CD', 'ClientFeedback-cd-getQCItems', "GET");
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.QualityComplaints.name, qcUrl);
     const arrQCs = arrResult.length > 0 ? this.appendPropertyTOObject(arrResult) : [];
     return arrQCs;
@@ -164,7 +164,7 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
     const qcComponent = JSON.parse(JSON.stringify(this.qmsConstant.personalFeedbackComponent.External));
     qcComponent.getQCByProject.top = qcComponent.getQCByProject.top.replace('{{TopCount}}', '' + topCount);
     qcComponent.getQCByProject.filter = qcComponent.getQCByProject.filter.replace('{{projectCode}}', projectCode);
-    this.commonService.SetNewrelic('QMS', 'personalfeedback-getCDItemsByProject', 'readItems');
+    this.commonService.SetNewrelic('QMS', 'SQMS-CD', 'personalfeedback-getCDItemsByProject', "GET");
     let qcs = await this.spService.readItems(this.globalConstant.listNames.QualityComplaints.name,
       qcComponent.getQCByProject);
     qcs = qcs.length > 0 ? qcs.sort((a, b) => new Date(a.SentDate).getTime() - new Date(b.SentDate).getTime()) : [];
@@ -182,7 +182,7 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
     qcComponent.getQC.top = qcComponent.getQC.top.replace('{{TopCount}}', '' + topCount);
     qcComponent.getQC.filter = qcComponent.getQC.filter.replace('{{startDate}}', startDate)
       .replace('{{endDate}}', endDate);
-    this.commonService.SetNewrelic('QMS', 'personalfeedback-external-getQCItems', 'readItems');
+    this.commonService.SetNewrelic('QMS', 'SQMS-CD', 'personalfeedback-external-getQCItems', "GET");
     let qcs = await this.spService.readItems(this.globalConstant.listNames.QualityComplaints.name,
       qcComponent.getQC);
     qcs = qcs.length > 0 ? qcs.sort((a, b) => new Date(a.SentDate).getTime() - new Date(b.SentDate).getTime()) : [];
@@ -231,7 +231,7 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
    */
   bindTable(arrayItems) {
     this.CDRows = [];
-    arrayItems.forEach(element => {
+    arrayItems.forEach(async element => {
       this.CDRows.push({
         ASD: element.ASD,
         CS: element.CS,
@@ -254,7 +254,7 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
         ID: element.ID,
         Title: element.Title,
         SentDate: element.SentDate ? new Date(this.datepipe.transform(element.SentDate, 'MMM d, yyyy')) : '',
-        SentBy: element.SentBy.Title ? element.SentBy.Title : '',
+        SentBy:  element.SurveyResponse.ID  ?  await this.getNameFromPOC(element.EmailAddress)    : element.SentBy.Title ? element.SentBy.Title : '',
         Status: element.Status ? element.Status : '',
         Accountable: element.CategoryST ? element.CategoryST : '',
         SeverityLevel: element.SeverityLevel ? element.SeverityLevel : '',
@@ -262,6 +262,8 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
         BusinessImpact: element.BusinessImpact ? element.BusinessImpact : '',
         FullUrl: element.fullUrl,
         IdentifiedResource: element.IdentifiedResource ? element.IdentifiedResource : '',
+        SurveyResponse : element.SurveyResponse.ID,
+        EmailAddress : element.EmailAddress 
       });
     });
     this.colFilters(this.CDRows);
@@ -323,7 +325,7 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
       { label: 'Mark as valid CD', title: 'Mark as valid CD', id: 'valid', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.cdStatus.ValidationPending && this.global.currentUser.isCDAdmin && !this.readOnly },
       { label: 'Mark as invalid CD', title: 'Mark as invalid CD', id: 'invalid', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.cdStatus.ValidationPending && this.global.currentUser.isCDAdmin && !this.readOnly },
       { label: 'Reject and send for correction', title: 'Reject and send for correction', id: 'reject', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.cdStatus.ValidationPending && this.global.currentUser.isCDAdmin && !this.readOnly },
-      { label: 'View Comments', title: 'View Comments', id: 'viewComments', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status !== this.globalConstant.cdStatus.Created && data.Status !== this.globalConstant.cdStatus.Deleted }
+      { label: 'View Comments', title: 'View Comments', id: 'viewComments', command: (e) => this.openPopup(e.originalEvent, data), visible: (data.Status !== this.globalConstant.cdStatus.Created && data.Status !== this.globalConstant.cdStatus.Deleted) || data.SurveyResponse ? true : false }
     ];
   }
 
@@ -374,18 +376,32 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
     }
   }
 
-  openPopup(event, data) {
+  async openPopup(event, data) {
+
+    const actionClicked = event.currentTarget.id;
+    const actionClickedTitle = event.currentTarget.title; 
+    if(data.SurveyResponse && event.currentTarget.id === 'viewComments')
+    {
+      const getSurveyResInfo = Object.assign({}, this.qmsConstant.ClientFeedback.GET_SURVEYRESPONSE_BY_ID);
+      getSurveyResInfo.filter = getSurveyResInfo.filter.replace(/{{ID}}/gi,
+        data.SurveyResponse);
+      this.common.SetNewrelic('cds', 'shared-module', 'getSurveyResInfo');
+      const results = await this.spService.readItems(this.constants.listNames.SurveyResponse.name, getSurveyResInfo);
+
+      data.ClientComments = results && results.length > 0 ? results[0].CommentsMT : '';
+    }
+   
     const ref = this.dialogService.open(CddetailsComponent, {
       data: {
         ...data,
         allResources: this.common.sharedObject.allResources,
-        actionClicked: event.currentTarget.id,
-        actionClickedTitle: event.currentTarget.title
+        actionClicked: actionClicked,
+        actionClickedTitle: actionClickedTitle
       },
-      width: "60vw",
-      header: event.currentTarget.title,
-      contentStyle: { "max-height": "150vh", "overflow-y": "auto" },
-      closable: true
+      width: "75vw",
+      header: actionClickedTitle,
+      contentStyle: { "max-height": "82vh", "overflow-y": "auto" },
+      closable: false
     });
     ref.onClose.subscribe((qcObj) => {
       if (qcObj.action !== 'Cancel') {
@@ -393,5 +409,20 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
         this.common.showToastrMessage(qcObj.msgType, qcObj.msg, false);
       }
     });
+  }
+
+  async getNameFromPOC(email){
+
+    let response = email;
+    const getPOCInfo = Object.assign({}, this.qmsConstant.ClientFeedback.GET_POC_By_Email);
+    getPOCInfo.filter = getPOCInfo.filter.replace(/{{emailaddress}}/gi,
+      email);
+    this.common.SetNewrelic('cds', 'shared-module', 'getPOCinfo');
+    const results = await this.spService.readItems(this.constants.listNames.ProjectContacts.name, getPOCInfo);
+
+    if(results && results.length > 0 ){
+       response = results[0].FName + ' ' + results[0].LName;
+    }
+    return response;
   }
 }

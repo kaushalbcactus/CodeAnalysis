@@ -8,18 +8,6 @@ const appRoutes: Routes = [
     path: '',
     component: UnallocatedAllocatedTasksComponent,
     runGuardsAndResolvers: 'always',
-    // component: CaComponent,
-    // children: [
-    //   { path: '', redirectTo: 'unallocated', pathMatch: 'prefix' },
-    //   {
-    //     path: 'unallocated', component: UnallocatedAllocatedTasksComponent,
-    //     runGuardsAndResolvers: 'always', data: { type: 'unallocated' }
-    //   },
-    //   {
-    //     path: 'allocated', component: UnallocatedAllocatedTasksComponent,
-    //     runGuardsAndResolvers: 'always', data: { type: 'allocated' }
-    //   },
-    // ]
   }
 ];
 @NgModule({

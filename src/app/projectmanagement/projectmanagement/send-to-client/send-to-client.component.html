@@ -3,104 +3,88 @@
     <ngb-alert *ngIf="errorMessage" type="danger" (close)="errorMessage = null">{{ errorMessage }}</ngb-alert> -->
 </div>
 
+
+
+
+<div class="p-col p-grid p-jc-between">
+    <div class="p-col p-grid p-jc-start">
+        <div *ngFor="let STCType of STCTypes" class="p-field-checkbox">
+            <p-checkbox name="sendToClient" value="STCType" [value]="STCType" [(ngModel)]="selectedSent_To_Client" [inputId]="STCType.key" (onChange)="getCheckedCheckbox()"></p-checkbox>
+            <div class="p-ml-2" [style]="{'background-color': STCType.ColorIndicator, 'width': '1.2rem','height': '1.2rem', 'border-radius':'2px'}"></div>
+            <!-- <p-avatar label="" styleClass="p-ml-2 p-mr-1 p-mt-2" [style]="{'background-color': STCType.ColorIndicator, 'width': '1.2rem','height': '1.2rem'}"></p-avatar> -->
+            <label class="p-m-2" [for]="STCType.key">{{STCType.name}}</label>
+        </div>
+    </div>
+
+    <div class="p-col p-grid p-jc-end" [hidden]='isSCTableHidden'>
+        <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(sendToClientTableRef)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+    </div>
+</div>
+
 <div class="p-d-flex p-flex-column" style="padding: 10vw;width: 100%;" *ngIf="!isSCInnerLoaderHidden">
     <div id="scInnerLoader"></div>
     <div id="scInnerLoaderText">Loading...</div>
 </div>
 
-
-
-<div class="wrap-table100" [hidden]="isSCFilterHidden">
-    <label class="checkbox-container">
-        <div class="floatLeft legendColor smalldot blueColor"></div>
-        Today’s delivery
-        <input id="todayDelivery" type="checkbox" checked="checked" (click)="getCheckedCheckbox()">
-        <span class="checkmark"></span>
-    </label>
-    <label class="checkbox-container ">
-        <div class="floatLeft legendColor smalldot greenColor"></div>
-        Next 5 days
-        <input id="nextFiveDays" type="checkbox" checked="checked" (click)="getCheckedCheckbox()">
-        <span class="checkmark"></span>
-    </label>
-    <label class="checkbox-container">
-        <div class="floatLeft legendColor smalldot redColor"></div>
-        Overdue
-        <input id="overdue" type="checkbox" checked="checked" (click)="getCheckedCheckbox()">
-        <span class="checkmark"></span>
-    </label>
-    <div class="box excelIcon" [hidden]='isSCTableHidden'>
-        <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(sendToClientTableRef)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
-    </div>
-    <div class="noDataMessage" [hidden]='hideNoDataMessage'>
-        No Tasks Found.
-    </div>
-    <div class="table100 slaExist ver4 m-b-110" [hidden]="isSCTableHidden">
-        <p-table #sendToClientTableRef [columns]="displayedColumns" [value]="pmObject.sendToClientArray" [paginator]="true" [rows]="10" selectionMode="" exportFilename="Send to client" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            [style]="{'font-size':'14px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="SendToClientTable">
-            <ng-template pTemplate="header" let-columns>
-                <tr>
-                    <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
-                        {{ col.header }}
-                        <p-sortIcon [field]="col.field"></p-sortIcon>
-                    </th>
-                    <th class="lastColumnWidth"></th>
-                </tr>
-                <tr>
-                    <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
-                        <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="scArrays.ProjectCode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="scArrays.ShortTitle" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="scArrays.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'POC'" [options]="scArrays.POC" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in') " (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)"
-                            (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="scArrays.DeliverableType" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'DueDate'" [options]="scArrays.DueDate" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'displayMilestone'" [options]="scArrays.displayMilestone" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'PreviousTaskUser'" [options]="scArrays.PreviousTaskUser" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'PreviousTaskStatus'" [options]="scArrays.PreviousTaskStatus" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                            (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                    </th>
-                    <th class="lastColumnWidth"></th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-rowData let-task>
-                <tr>
-                    <td>
-                        <span [ngClass]="{dot : true,'blueColor' : task.isBlueIndicator,'redColor': task.isRedIndicator,'greenColor': task.isGreenIndicator}"></span>
-                    </td>
-                    <td>{{task.ProjectCode}}</td>
-                    <td>{{task.ShortTitle}}</td>
-                    <td>{{task.ClientLegalEntity}}</td>
-                    <td>{{task.POC}}</td>
-                    <td>{{task.DeliverableType}}</td>
-                    <td>{{task.DueDate | date:'MMM dd, yyyy, h:mm a'}}</td>
-                    <td>{{task.displayMilestone}}</td>
-                    <td>{{task.PreviousTaskUser}}</td>
-                    <td>{{task.PreviousTaskStatus}}</td>
-                    <!-- <td [style.backgroundColor]="task.backgroundColor"> -->
-                    <td>
-                        <div>
-                            <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems" [popup]="true">
-                            </p-menu>
-                            <i class="pi pi-ellipsis-v"  style="font-size:2em;cursor: pointer;" (click)="storeRowData(rowData,menu); menu.show($event);"></i>
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </div>
+<div class="cls_sendToClient table100 slaExist ver4 m-b-110" [hidden]="isSCTableHidden">
+    <p-table #sendToClientTableRef [columns]="displayedColumns" [value]="pmObject.sendToClientArray" [paginator]="true" [rows]="10" selectionMode="" exportFilename="Send to client" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [style]="{'font-size':'14px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="SendToClientTable">
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th [ngClass]="{'firstColumnWidth': isFirst}" *ngFor="let col of columns; first as isFirst;" [pSortableColumn]="col.field" [hidden]="!col.visibility">
+                    <div class="p-d-flex p-jc-between p-ai-center">
+                        {{col.header}}
+                        <p-sortIcon *ngIf="col.header !== '' && col.header !== 'SLA'" [field]="col.field"></p-sortIcon>
+                        <p-columnFilter *ngIf="col.header !== '' && col.header !== 'SLA'" [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                            <ng-template pTemplate="header">
+                                <div class="p-px-3 p-pt-3 p-pb-0">
+                                    <span class="p-text-bold"> {{col.header}} Picker</span>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-multiSelect [ngModel]="value" [options]="scArrays[col.field]" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                                    <ng-template let-option pTemplate="item">
+                                        <div class="p-multiselect-representative-option">
+                                            <span class="p-ml-1">{{option.label}}</span>
+                                        </div>
+                                    </ng-template>
+                                </p-multiSelect>
+                            </ng-template>
+                        </p-columnFilter>
+                    </div>
+                </th>
+                <th class="lastColumnWidth"></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-task>
+            <tr>
+                <td [ngClass]="{dot : true,'blueColor' : task.isBlueIndicator,'redColor': task.isRedIndicator,'greenColor': task.isGreenIndicator}">
+                </td>
+                <td>{{task.ProjectCode}}</td>
+                <td>{{task.ShortTitle}}</td>
+                <td>{{task.ClientLegalEntity}}</td>
+                <td>{{task.POC}}</td>
+                <td>{{task.DeliverableType}}</td>
+                <td>{{task.DueDate | date:'MMM dd, yyyy, h:mm a'}}</td>
+                <td>{{task.displayMilestone}}</td>
+                <td>{{task.PreviousTaskUser}}</td>
+                <td>{{task.PreviousTaskStatus}}</td>
+                <!-- <td [style.backgroundColor]="task.backgroundColor"> -->
+                <td class="lastColumnWidthtd">
+                    <div>
+                        <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems" [popup]="true">
+                        </p-menu>
+                        <i class="pi pi-ellipsis-v"  style="font-size:2em;cursor: pointer;" (click)="storeRowData(rowData,menu); menu.show($event);"></i>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+                <td [attr.colspan]="columns.length + 1">
+                    No Tasks Found.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
 </div>

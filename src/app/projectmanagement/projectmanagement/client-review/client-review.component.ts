@@ -53,8 +53,9 @@ export class ClientReviewComponent implements OnInit {
     { field: 'DeliveryDate' }];
   @ViewChild('crTableRef', { static: true }) crRef: ElementRef;
   @ViewChild('crTableRef', { static: true }) crTableRef: Table;
-  @ViewChild("loader", { static: false }) loaderView: ElementRef;
-  @ViewChild("spanner", { static: false }) spannerView: ElementRef;
+
+  ClientReviewFilters: any[] = [{name: 'Today’s delivery', key: 'today', ColorIndicator : '#add8e6'}, {name: 'Next 5 days', key: 'next', ColorIndicator : '#90ee90'},
+  {name: 'Overdue', key: 'Overdue', ColorIndicator : '#f08080'}];
 
   public selectedCRTask;
   popItems: MenuItem[];
@@ -151,44 +152,46 @@ export class ClientReviewComponent implements OnInit {
   }
   isFilterchecked() {
     this.pmObject.clientReviewArray = [];
-    const todayDelivery = $('#crTodayDelivery').is(':checked');
-    const nextFiveDays = $('#crNextFiveDays').is(':checked');
-    const pastFiveDays = $('#crOverdue').is(':checked');
-    const todayFilterDate = this.commonService.calcBusinessDate('Today', 1);
+    // const todayDelivery = $('#crTodayDelivery').is(':checked');
+    // const nextFiveDays = $('#crNextFiveDays').is(':checked');
+    // const pastFiveDays = $('#crOverdue').is(':checked');
+    // const todayFilterDate = this.commonService.calcBusinessDate('Today', 1);
     const nextFiveDate = this.commonService.calcBusinessDate('Next', 5);
     const pastFiveFilterDate = this.commonService.calcBusinessDate('Past', 5);
-    if (todayDelivery) {
-      this.queryStartDate = todayFilterDate.startDate;
-      this.queryEndDate = todayFilterDate.endDate;
-      if (nextFiveDays && pastFiveDays) {
-        this.queryStartDate = pastFiveFilterDate.startDate;
-        this.queryEndDate = nextFiveDate.endDate;
-      }
-      if (nextFiveDays && !pastFiveDays) {
-        this.queryEndDate = nextFiveDate.endDate;
-      }
-      if (!nextFiveDays && pastFiveDays) {
-        this.queryStartDate = pastFiveFilterDate.startDate;
-      }
-    }
-    if (!todayDelivery) {
-      if (nextFiveDays && pastFiveDays) {
-        this.queryStartDate = pastFiveFilterDate.startDate;
-        this.queryEndDate = nextFiveDate.endDate;
-      }
-      if (nextFiveDays && !pastFiveDays) {
-        this.queryStartDate = nextFiveDate.startDate;
-        this.queryEndDate = nextFiveDate.endDate;
-      }
-      if (!nextFiveDays && pastFiveDays) {
-        this.queryStartDate = pastFiveFilterDate.startDate;
-        this.queryEndDate = pastFiveFilterDate.endDate;
-      }
-      if (!nextFiveDays && !pastFiveDays) {
-        this.queryStartDate = null;
-        this.queryEndDate = null;
-      }
-    }
+    this.queryStartDate = pastFiveFilterDate.startDate;
+    this.queryEndDate = nextFiveDate.endDate;
+    // if (todayDelivery) {
+    //   this.queryStartDate = todayFilterDate.startDate;
+    //   this.queryEndDate = todayFilterDate.endDate;
+    //   if (nextFiveDays && pastFiveDays) {
+    //     this.queryStartDate = pastFiveFilterDate.startDate;
+    //     this.queryEndDate = nextFiveDate.endDate;
+    //   }
+    //   if (nextFiveDays && !pastFiveDays) {
+    //     this.queryEndDate = nextFiveDate.endDate;
+    //   }
+    //   if (!nextFiveDays && pastFiveDays) {
+    //     this.queryStartDate = pastFiveFilterDate.startDate;
+    //   }
+    // }
+    // if (!todayDelivery) {
+    //   if (nextFiveDays && pastFiveDays) {
+    //     this.queryStartDate = pastFiveFilterDate.startDate;
+    //     this.queryEndDate = nextFiveDate.endDate;
+    //   }
+    //   if (nextFiveDays && !pastFiveDays) {
+    //     this.queryStartDate = nextFiveDate.startDate;
+    //     this.queryEndDate = nextFiveDate.endDate;
+    //   }
+    //   if (!nextFiveDays && pastFiveDays) {
+    //     this.queryStartDate = pastFiveFilterDate.startDate;
+    //     this.queryEndDate = pastFiveFilterDate.endDate;
+    //   }
+    //   if (!nextFiveDays && !pastFiveDays) {
+    //     this.queryStartDate = null;
+    //     this.queryEndDate = null;
+    //   }
+    // }
     if (this.queryStartDate && this.queryStartDate) {
       this.crFilter();
     } else {
@@ -215,7 +218,7 @@ export class ClientReviewComponent implements OnInit {
       filter: currentFilter,
       top: 4200
     };
-    this.commonService.SetNewrelic('projectManagment', 'client-review', 'GetSchedules');
+    this.commonService.SetNewrelic('projectManagment', 'client-review', 'GetSchedules', "GET");
     this.crArrays.taskItems = await this.spServices.readItems(this.Constant.listNames.Schedules.name, queryOptions);
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
@@ -238,8 +241,7 @@ export class ClientReviewComponent implements OnInit {
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       const tempCRArray = [];
       const batchUrl = [];
-      // const batchContents = new Array();
-      // const batchGuid = this.spServices.generateUUID();
+     
       // Iterate each CR Task
       let taskCount = 0;
       let arrResults = [];
@@ -309,10 +311,8 @@ export class ClientReviewComponent implements OnInit {
           batchUrl.length = 0;
         }
       }
-      // batchContents.push('--batch_' + batchGuid + '--');
-      // const userBatchBody = batchContents.join('\r\n');
-      // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
-      this.commonService.SetNewrelic('projectManagment', 'client-review', 'GetSchedules');
+      
+      this.commonService.SetNewrelic('projectManagment', 'client-review', 'GetSchedules', "GET-BATCH");
 
       // let arrResults = await this.spServices.executeBatch(batchUrl);
       const remainingResults = await this.spServices.executeBatch(batchUrl);
@@ -340,19 +340,20 @@ export class ClientReviewComponent implements OnInit {
       this.pmObject.clientReviewArray = tempCRArray;
       this.pmObject.countObj.crCount = tempCRArray.length;
       this.pmObject.clientReviewArray_copy = tempCRArray.slice(0, 5);
-      this.isCRTableHidden = false;
-      this.isCRInnerLoaderHidden = true;
-      this.isCRTableHidden = false;
+    
+     
     } else {
       if (this.crArrays.taskItems.length !== this.pmObject.countObj.crCount) {
         this.pmObject.countObj.crCount = this.crArrays.taskItems.length;
       }
       this.pmObject.tabMenuItems[3].label = 'Client Review (' + this.pmObject.countObj.crCount + ')';
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
-      this.crHideNoDataMessage = false;
-      this.isCRInnerLoaderHidden = true;
-      this.isCRTableHidden = true;
     }
+
+    this.isCRTableHidden = false;
+    this.isCRInnerLoaderHidden = true;
+    const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');    
+    tabMenuInk.style.width= this.pmObject.countObj.crCount && this.pmObject.countObj.crCount > 10 ? '167px' : '161px';
     this.commonService.setIframeHeight();
   }
 
@@ -410,8 +411,7 @@ export class ClientReviewComponent implements OnInit {
   }
   closeTask(task) {
     if (task.PreviousTaskStatus === 'Completed') {
-      this.loaderView.nativeElement.classList.add('show');
-      this.spannerView.nativeElement.classList.add('show');
+      this.Constant.loader.isWaitDisable = true;
       this.closeTaskWithStatus(task, this.crRef);
     } else {
 
@@ -453,7 +453,7 @@ export class ClientReviewComponent implements OnInit {
           const objMilestone = Object.assign({}, this.pmConstant.milestoneTaskOptions);
           objMilestone.filter = objMilestone.filter.replace(/{{projectCode}}/gi, task.ProjectCode)
           .replace(/{{milestone}}/gi, task.Milestone);
-          this.commonService.SetNewrelic('projectManagment', 'client-review', 'fetchMilestone');
+          this.commonService.SetNewrelic('projectManagment', 'client-review', 'fetchMilestone', "GET");
           const response = await this.spServices.readItems(this.Constant.listNames.Schedules.name, objMilestone);
           const milestone = response.find(t => t.ContentTypeCH === 'Milestone');
           // update Milestone
@@ -490,7 +490,7 @@ export class ClientReviewComponent implements OnInit {
           projectInfoObj.listName = this.Constant.listNames.ProjectInformation.name;
           projectInfoObj.type = 'PATCH';
           batchUrl.push(projectInfoObj);
-          this.commonService.SetNewrelic('projectManagment', 'client-review', 'UpdateSchedules&PM');
+          this.commonService.SetNewrelic('projectManagment', 'client-review', 'UpdateSchedules&PM', "POST-BATCH");
           await this.spServices.executeBatch(batchUrl);
 
           this.isCRInnerLoaderHidden = true;
@@ -499,20 +499,17 @@ export class ClientReviewComponent implements OnInit {
 
           const index = this.pmObject.clientReviewArray.findIndex(item => item.ID === task.ID);
           this.pmObject.clientReviewArray.splice(index, 1);
-          this.loaderView.nativeElement.classList.remove('show');
-          this.spannerView.nativeElement.classList.remove('show');
+          this.Constant.loader.isWaitDisable = false;
           this.pmObject.loading.ClientReview = true;
           this.pmObject.countObj.crCount = this.pmObject.countObj.crCount - 1;
           this.pmObject.clientReviewArray = [...this.pmObject.clientReviewArray];
         }
         else {
-          this.loaderView.nativeElement.classList.remove('show');
-          this.spannerView.nativeElement.classList.remove('show');
+          this.Constant.loader.isWaitDisable = false;
         }
       });
     } else {
-      this.loaderView.nativeElement.classList.remove('show');
-      this.spannerView.nativeElement.classList.remove('show');
+      this.Constant.loader.isWaitDisable = false;
 
       this.commonService.showToastrMessage(this.Constant.MessageType.info, task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.', true);
       setTimeout(() => {

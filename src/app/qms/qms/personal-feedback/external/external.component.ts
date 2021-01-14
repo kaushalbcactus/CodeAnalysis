@@ -66,6 +66,6 @@ export class ExternalComponent implements OnInit, OnDestroy, DoCheck {
     }
   }
   downloadExcel(qc) {
-    qc.exportCSV();
+    qc.cdTable.exportCSV();
   }
 }

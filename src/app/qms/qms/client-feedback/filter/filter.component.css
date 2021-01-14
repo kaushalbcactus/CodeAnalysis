@@ -1,42 +1,63 @@
 .filter-wrapper .resource {
     border-right: 1px solid #E0E0E0;
     border-left: none;
-  }
-  .searchText{
+}
+
+.searchText {
     padding-left: 13px;
     display: inline-block;
-  }
-  .resourceSelect{
+}
+
+.resourceSelect {
     width: 200px;
-  }
-  
-  div.filter-wrapper {
-    margin-top:10px;
+}
+
+div.filter-wrapper {
+    margin-top: 10px;
     color: #787878;
     height: 50px;
-  }
-  div.filter-wrapper .ng-select {
+}
+
+div.filter-wrapper .ng-select {
     display: inline-block;
-  }
-  
-  
-  div.filter-wrapper > div {
+}
+
+div.filter-wrapper>div {
     float: left;
     font-size: 14px;
     padding-right: 13px;
-    padding-left: 10px;
-  }
-  
-  
-   /* div.filter-wrapper .daterange {
+}
+
+
+/* div.filter-wrapper .daterange {
     height: 55px;
   } */
-  
-   div.filter-wrapper .daterange .dateRangePicker  {
-      display: inline-block;
-  }
-  
-  .taskStatus {
+
+div.filter-wrapper .daterange .dateRangePicker {
+    display: inline-block;
+}
+
+.taskStatus {
     width: 275px;
-  }
-  
+}
+
+::ng-deep .input-color {
+    position: relative;
+    float: left;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+::ng-deep .input-color label {
+    padding: 2px 5px 0px 50px;
+    margin-bottom: 0px;
+}
+
+::ng-deep .input-color .color-box {
+    width: 40px;
+    height: 30px;
+    display: inline-block;
+    background-color: #ccc;
+    position: absolute;
+    left: 5px;
+}

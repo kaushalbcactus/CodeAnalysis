@@ -105,7 +105,7 @@
             </ng-template>
         </p-autoComplete>
     </div>
-    <div *ngIf="oProjectDetails.status !== 'On Hold' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType == 'FTE-Writing'"
+    <div *ngIf="(oProjectDetails.status !== 'On Hold' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType === 'FTE-Writing') || oProjectDetails.projectType !== 'FTE-Writing'"
         class="ui-fluid" fxLayout="column" fxFlex="7" style="align-items: flex-end;margin-right: 0px;">
         <button style="margin: 18px 0px 0px 0px;" mat-raised-button type="button" (click)="saveResources()">
           <!-- [disabled]="disableSave" -->

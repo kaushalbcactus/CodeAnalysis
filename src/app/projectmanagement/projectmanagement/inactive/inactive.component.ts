@@ -205,16 +205,15 @@ export class InactiveComponent implements OnInit {
       // this.iapArrays.milestoneArray = this.commonService.unique(milestoneTempArray, 'value');
       // this.iapArrays.statusArray = this.commonService.unique(statusTempArray, 'value');
       this.pmObject.inActiveProjectArray = tempPAArray;
-      this.isIAPTableHidden = false;
-      this.isIAPInnerLoaderHidden = true;
-      this.isIAPTableHidden = false;
+     
     } else {
       this.pmObject.tabMenuItems[5].label = 'Inactive Projects (' + this.pmObject.countObj.iapCount + ')';
-      this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
-      this.iapHideNoDataMessage = false;
-      this.isIAPInnerLoaderHidden = true;
-      this.isIAPTableHidden = true;
+      this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems]; 
     }
+    this.isIAPTableHidden = false;
+    this.isIAPInnerLoaderHidden = true;
+    const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
+    tabMenuInk.style.width= this.pmObject.countObj.iapCount && this.pmObject.countObj.iapCount > 10 ? '193px' : '185px';
     this.commonService.setIframeHeight();
   }
 

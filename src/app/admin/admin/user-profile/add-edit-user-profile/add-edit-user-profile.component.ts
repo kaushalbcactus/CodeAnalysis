@@ -159,6 +159,7 @@ export class AddEditUserProfileComponent implements OnInit {
       workThursday: ['', null],
       workFriday: ['', null],
       workSaturday: [{ value: '', disabled: true }, null],
+      placeholderUser: ['No', null],
     });
   }
 
@@ -186,7 +187,7 @@ export class AddEditUserProfileComponent implements OnInit {
     isActiveArray: [],
     taVisibilityArray: [],
     caVisibilityArray: [],
-
+    placeholderUserArray: []
   };
   /**
   * Construct a method to initialize the dropdown array to null.
@@ -208,6 +209,7 @@ export class AddEditUserProfileComponent implements OnInit {
     this.adminDropDown.caVisibilityArray = [];
     this.adminDropDown.taVisibilityArray = [];
     this.adminDropDown.isFTEArray = [];
+    this.adminDropDown.placeholderUserArray = [];
   }
 
   /**
@@ -487,6 +489,7 @@ export class AddEditUserProfileComponent implements OnInit {
       skillLevel: userObj.SkillLevel.ID,
       role: userObj.Role,
       readyTo: userObj.ReadyTo,
+      placeholderUser: userObj.PlaceholderUser ? userObj.PlaceholderUser : 'No'
     });
 
     // Convert Practice area(;#) to array
@@ -872,6 +875,15 @@ export class AddEditUserProfileComponent implements OnInit {
           this.adminDropDown.isFTEArray.push({ label: element, value: element });
         });
       }
+
+      // load placeholderUser dropdown
+      let placeholderUserResults = dropdownResults[15].retItems;
+      if (placeholderUserResults && placeholderUserResults.length) {
+        placeholderUserResults = placeholderUserResults[0].Choices.results;
+        placeholderUserResults.forEach(element => {
+          this.adminDropDown.placeholderUserArray.push({ label: element, value: element });
+        });
+      }
     }
   }
 
@@ -1065,6 +1077,16 @@ export class AddEditUserProfileComponent implements OnInit {
     isFTEGet.listName = this.constants.listNames.ResourceCategorization.name;
     batchURL.push(isFTEGet);
 
+    // Get PlaceholderUser from ResourceCategorization list ##15
+    const PlaceholderUserGet = Object.assign({}, options);
+    const PlaceholderUserFilter = Object.assign({}, this.adminConstants.QUERY.GET_CHOICEFIELD);
+    PlaceholderUserFilter.filter = PlaceholderUserFilter.filter.replace(/{{choiceField}}/gi,
+      this.adminConstants.CHOICE_FIELD_NAME.PlaceholderUser);
+    PlaceholderUserGet.url = this.spServices.getChoiceFieldUrl(this.constants.listNames.ResourceCategorization.name,
+      PlaceholderUserFilter);
+    PlaceholderUserGet.type = 'GET';
+    PlaceholderUserGet.listName = this.constants.listNames.ResourceCategorization.name;
+    batchURL.push(PlaceholderUserGet);
 
 
 

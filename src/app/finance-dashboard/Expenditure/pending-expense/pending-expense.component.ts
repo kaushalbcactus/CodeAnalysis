@@ -254,11 +254,11 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         // Check PI list
         await this.fdDataShareServie.checkProjectsAvailable();
-        this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
+        this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe(async (res) => {
             if (res) {
                 this.projectInfoData = res;
                 console.log('PI Data ', this.projectInfoData);
-                this.getRequiredData();
+                await this.getRequiredData();
             }
         }));
     }
@@ -406,19 +406,8 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 .replace('{{UserID}}', this.globalService.currentUser.userId.toString());
             speInfoObj.orderby = speInfoObj.orderby.replace('{{Status}}', 'Created');
         }
-        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'GetSpendingInfo');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'GetSpendingInfo', 'GET');
         const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
-        // const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
-        // let endPoints = [sinfoEndpoint];
-        // let userBatchBody;
-        // for (let i = 0; i < endPoints.length; i++) {
-        //     const element = endPoints[i];
-        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        // }
-        // batchContents.push('--batch_' + batchGuid + '--');
-        // userBatchBody = batchContents.join('\r\n');
-
-        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
         const arrResults = res.length ? res : [];
         // console.log('--oo ', arrResults);
         this.formatData(arrResults);
@@ -670,14 +659,14 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
               if(expense) {
                 this.expenseForm = expense.form;
                 this.mailContentRes = expense.mailContent;
-                if(expense.event)  { 
+                if(expense.event)  {
                     await this.onFileChange(expense.event, expense.folderName);
                 }
                 await this.onSubmit(expense.type, expense.form);
               }
           })
     }
-    
+
 
     //*************************************************************************************************
     // new File uplad function updated by Maxwell
@@ -702,7 +691,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     async uploadFileData(type: string) {
         const date = new Date();
-        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure-PendingExpense', 'UploadFiles');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'UploadFiles', 'POST-BATCH');
 
         this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
@@ -825,7 +814,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     }
 
     async submitForm(batchUrl, type: string) {
-        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'submitform');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'submitform', 'POST-BATCH');
         await this.spServices.executeBatch(batchUrl);
         if (type === 'Approve Expense') {
 
@@ -862,7 +851,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             type: 'GET',
             listName: this.constantService.listNames.MailContent.name
         }];
-        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'getApproveExpenseMailContent');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'getApproveExpenseMailContent', 'GET');
         const res = await this.spServices.executeBatch(obj);
         this.mailContentRes = res;
         console.log('Approve Mail Content res ', this.mailContentRes);
@@ -877,9 +866,10 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             this.getResCatByCMLevel();
             this.cleForselectedPI = this.getCleByPC(pc);
         } else {
-            this.cleForselectedPI = this.getCleByPC(rowItem.ProjectCode);
+            // this.cleForselectedPI = this.getCleByPC(rowItem.ProjectCode);
+            this.cleForselectedPI = this.cleData.find(project => project.Title === rowItem.ProjectCode);
             console.log('this.cleForselectedPI ', this.cleForselectedPI);
-            this.getResCatByCMLevel();
+            // this.getResCatByCMLevel();
         }
     }
 
@@ -989,19 +979,19 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 mailContent = this.replaceContent(mailContent, '@@Val8@@', this.expenseForm.value.PaymentMode.value);
                 mailContent = this.replaceContent(mailContent, '@@Val9@@', this.datePipe.transform(this.expenseForm.value.DateSpend, 'dd MMMM yyyy, hh:mm a'));
                 mailContent = this.replaceContent(mailContent, '@@Val11@@', this.expenseForm.value.Number);
-                mailContent = this.replaceContent(mailContent, '@@Val12@@', this.globalService.sharePointPageObject.rootsite + '' + this.fileUploadedUrl);
+                mailContent = this.replaceContent(mailContent, '@@Val12@@', '<a download target="_blank" href="' + this.globalService.sharePointPageObject.rootsite + '' + this.fileUploadedUrl +'">Click here</a>');
             } else {
                 mailContent = this.replaceContent(mailContent, '@@Val8@@', '');
                 mailContent = this.replaceContent(mailContent, '@@Val9@@', '');
                 mailContent = this.replaceContent(mailContent, '@@Val11@@', expense.Number);
-                mailContent = this.replaceContent(mailContent, '@@Val12@@', '');
+                mailContent = this.replaceContent(mailContent, '@@Val12@@', 'NA');
             }
         }
 
         const ccUser = this.getCCList(type, expense);
         // ccUser.push(this.currentUserInfoData.Email);
         const tos = this.getTosList(type, expense);
-        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'sendMail');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'sendMail', 'POST');
         this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.isPSInnerLoaderHidden = false;
         this.reFetchData();
