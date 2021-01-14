@@ -1,11 +1,9 @@
 <!-- Loadder -->
 <div></div>
-
 <div class="tableLoader" [hidden]='pubsupportService.pubsupportComponent.isPSInnerLoaderHidden'>
     <div id="scInnerLoader"></div>
     <div id="scInnerLoaderText">Loading...</div>
 </div>
-
 <div class="ui-g">
     <div class="ui-g-12 ui-md-6 ui-lg-6 top-left-title">
         <span>PROJECT LISTING </span>
@@ -16,37 +14,27 @@
         <a href="https://tableau.cactusmum.com/#/views/PublishPaper/PublishPaperDump?:iid=1 " style="color: red;float: right;padding: 5px 20px;" target="_blank">Published paper report</a>
     </div>
 </div>
-
-<!-- <div class="top-title-bottom">
-    <div class="top-left-title">
-        <span>PROJECT LISTING </span>
-    </div>
-    <div class="top-right-title">
-        <p-dropdown [options]="overAllValues" [(ngModel)]="selectedOption" styleClass="custom-dropDown"
-            optionLabel="name" (onChange)="onChangeSelect($event)"></p-dropdown>
-        <input type="text" (change)="searchClosedProject($event)" *ngIf="showProjectInput" id="projectCodeSelect"
-            placeholder="Project Code" pInputText [(ngModel)]="providedProjectCode" />
-    </div>
-    <div>
-        <a href="https://tableau.cactusmum.com/#/views/PublishPaper/PublishPaperDump?:iid=1 " target="_blank">Publish
-            paper report</a>
-    </div>
-    <div class="clear">
-    </div>
-</div> -->
 <div class="pubsuppotTable">
     <p-table [value]="pubSupportProjectInfoData" dataKey="Id" [columns]="pubsupportCols" expandableRows="true" #dt [expandedRowKeys]="expandedRows" rowExpandMode="single" (onRowExpand)="onRowExpand($event)" [paginator]="true" [rows]="10" expandedIcon="fas fa-angle-down"
-        collapsedIcon="fas fa-angle-right" styleClass="custom-pdatatable">
+        collapsedIcon="fas fa-angle-right"  [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="pubsupportTable">
         <ng-template pTemplate="header" let-columns>
             <tr>
-                <th style="width: 3%;"></th>
+                <th class="firstColumnWidth"></th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field">
-                    {{ col.header }}
-                    <p-sortIcon *ngIf="col.field" [field]="col.field"></p-sortIcon>
+                    <!-- {{ col.header }}
+                    <p-sortIcon *ngIf="col.field" [field]="col.field"></p-sortIcon> -->
+                    <div class="p-d-flex p-jc-between p-ai-center">
+                        {{col.header}}
+                        <p-sortIcon *ngIf="col.header !== ''" [field]="col.field"></p-sortIcon>
+                        <p-columnFilter *ngIf="col.header != '' && col.field !== 'ProjectCode'" type="text" [field]="col.field" matchMode="contains" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"></p-columnFilter>
+                        <p-columnFilter *ngIf="col.header != '' && col.field === 'ProjectCode'" type="text" [field]="col.field" matchMode="contains" display="menu" [(ngModel)]="projectCode"  [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"></p-columnFilter>
+                    </div>
+
                 </th>
-                <th style="width: 3%;"></th>
+                <th class="lastColumnWidth"></th>
             </tr>
-            <tr>
+            <!-- <tr>
                 <th style="width: 3%;"></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field">
                     <ng-container *ngIf="col.field == 'ProjectCode'">
@@ -57,7 +45,7 @@
                     </ng-container>
                 </th>
                 <th style="width: 3%;"></th>
-            </tr>
+            </tr> -->
         </ng-template>
         <ng-template pTemplate="body" let-projectItem let-expanded="expanded" let-columns="columns" let-rowIndex="rowIndex">
             <tr>
@@ -72,9 +60,9 @@
                 <td>{{projectItem.ClientLegalEntity}}</td>
                 <td>{{projectItem.DeliverableType}}</td>
                 <td>{{projectItem.PrimaryPOC}}</td>
-                <td>
+                <td [ngClass]="{'lightgreen': projectItem.Status =='In Progress', 'lightblue': projectItem.Status =='Unallocated',  'lightcoral': projectItem.Status =='In Discussion'}">
                     <ng-container>
-                        <div [ngClass]="{'lightgreen': projectItem.Status =='In Progress', 'lightblue': projectItem.Status =='Unallocated',  'lightcoral': projectItem.Status =='In Discussion'}" style="height: 45px;padding: 7px 0px 0px 2px;" [ngStyle]="{'height':projectItem.Status.length > 15 ? '55px': projectItem.Status.length > 25 ? '75px':'45px'}">
+                        <div  style="height: 45px;padding: 7px 0px 0px 2px;" [ngStyle]="{'height':projectItem.Status.length > 15 ? '55px': projectItem.Status.length > 25 ? '75px':'45px'}">
                             {{projectItem.Status }}
                         </div>
                     </ng-container>
@@ -90,7 +78,7 @@
                         <a style="color:#d7181f" (click)="openAuthorModal(projectItem)">Author Details</a>
                     </ng-container>
                 </td>
-                <td>
+                <td class="lastColumnWidthtd">
                     <div>
                         <p-menu #popupMenu [style]="{'width': '20em'}" [popup]="true" [model]="items"></p-menu>
                         <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(projectItem, popupMenu);popupMenu.show($event);"></i>
@@ -162,20 +150,7 @@
         </ng-template>
     </p-table>
 </div>
-
-<!-- Modal  -->
-
-<!-- Add author Component Start-->
 <ng-template #addAuthorcontainer></ng-template>
-<!-- <ng-template [ngIf]="ref">
-        <app-add-author (messageEvent)="destroyAddAuthorModal($event)"></app-add-author>
-    </ng-template> -->
-<!-- Add author Component End -->
-
-<!-- Add author Component Start-->
-<!-- <ng-container #authorDetailscontainer></ng-container> -->
-<!-- Add author Component End -->
-
 <!-- Update author forms & emails -->
 <p-dialog header="Update Author forms & emails" [(visible)]="updateAuthorModal_1" [modal]="true" [draggable]="false" [style]="{'width': '50%'}" [maximizable]="false" [contentStyle]="{'height': '250px'}" (onHide)="cancelFormSub('updateAuthorModal')">
     <form [formGroup]="update_author_form">
@@ -333,7 +308,6 @@
 
 </p-dialog>
 
-
 <!-- Galley Form -->
 <p-dialog header="Override Galley" [(visible)]="overrideGalleyModal" [modal]="true" [draggable]="false" [style]="{'width': '30%'}" [maximizable]="false" [contentStyle]="{'height': '150px'}" (onHide)="cancelFormSub('overrideGalleyModal')">
     <form [formGroup]="galley_form">
@@ -367,7 +341,6 @@
 
 </p-dialog>
 <!-- End -->
-
 
 <!-- Add Journal & Conference Modal -->
 <p-dialog header="Add Journal conference details" [(visible)]="addJCDetailsModal" [modal]="true" [draggable]="false" [contentStyle]="{'min-height':'350px','max-height':'450px'}" [responsive]="true" [style]="{'width': '75%'}" (onHide)="cancelFormSub('addJCDetailsModal')">
@@ -820,7 +793,6 @@
 </p-dialog>
 
 <!-- Update Journal Requirement Modal -->
-
 <p-dialog header="Update journal requirement details" [(visible)]="updateJCRequirementModal" [modal]="true" [draggable]="false" [contentStyle]="{'min-height':'150px','max-height':'450px'}" [responsive]="true" [style]="{'width': '45%'}" (onHide)="cancelFormSub('updateJCRequirementModal')">
 
     <form id="myform" [formGroup]="update_Journal_Requirement_form">

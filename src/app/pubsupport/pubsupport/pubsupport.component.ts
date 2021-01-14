@@ -297,7 +297,9 @@ export class PubsupportComponent implements OnInit {
     }
 
     async ngOnInit() {
-        this.globalObject.currentTitle = 'Publication Support';
+        setTimeout(() => {
+            this.globalObject.currentTitle = 'Publication Support';
+        }, 200);
         this.currentUserInfo();
         this.todayDate = new Date();
         this.isSubmisssionDetails = false;
