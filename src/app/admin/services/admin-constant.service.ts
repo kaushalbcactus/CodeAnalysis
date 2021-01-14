@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { filter } from 'rxjs/operators';
 
 @Injectable({
   providedIn: "root",
@@ -6,6 +7,46 @@ import { Injectable } from "@angular/core";
 export class AdminConstantService {
   constructor() {}
   public QUERY = {
+    GET_PROJECT_INFO_BY_USERROLE: {
+      select:
+        "ID,Title,SOWCode,BusinessVertical,WBJID,ProjectCode,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title," +
+        "DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title,AllOperationresources/ID,AllOperationresources/Title,Status,CSRule,DeliveryRule",
+      expand:
+        "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title," +
+        "DeliveryLevel2/ID,DeliveryLevel2/Title,AllOperationresources/ID,AllOperationresources/Title",
+      filter:
+        "Status ne 'Closed' and Status ne 'Cancelled' and {{userRole}}",
+      top: 4900,
+    },
+    GET_SOW_BY_USERROLE: {
+      select:
+        "ID,Title,SOWCode,BusinessVertical,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title," +
+        "DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title,AllResources/ID,AllResources/Title,Status,CSRule,DeliveryRule",
+      expand:
+        "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title," +
+        "DeliveryLevel2/ID,DeliveryLevel2/Title,AllResources/ID,AllResources/Title",
+      filter:
+        "Status eq 'Approved' and {{userRole}}",
+      top: 4900,
+    },
+    GET_QC_BY_USERROLE:{
+      select:"ID,Title,Status,ASD/ID,ASD/Title,CS/ID,CS/Title,TL/ID,TL/Title,CSRule,DeliveryRule",
+      expand:"ASD,CS,TL",
+      filter:"Status ne 'Closed' and {{userRole}}",
+      top: 4900
+    },
+    GET_POSITIVE_FEEDBACKS_BY_USERROLE: {
+      select:"ID,Title,Status,DeliveryLeads/ID,DeliveryLeads/Title,CSRule,DeliveryRule",
+      expand:"DeliveryLeads",
+      filter:"Status eq 'Accepted' and {{userRole}} and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
+      top: 4900
+    },
+    GET_ALL_ACTIVE_RULES:{
+      select:"ID,Title,TypeST,ResourceType,OwnerPG/ID,OwnerPG/Title,Access/ID,Access/Title,DisplayOrder,IsActiveCH,Rule",
+      expand:"OwnerPG,Access",
+      filter: "IsActiveCH eq '{{isActive}}'",
+      top: 4900
+    },
     GET_BUCKET: {
       select: "ID,Title",
       filter: "IsActiveCH eq 'Yes'",
@@ -67,7 +108,7 @@ export class AdminConstantService {
         "SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title," +
         "TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail,Author/ID,Author/Title," +
         "Editor/ID,Editor/Title,WorkingSunday,WorkingMonday,WorkingTuesday,WorkingWednesday,WorkingThursday,WorkingFriday," +
-        "WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate",
+        "WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate,PlaceholderUser",
       expand:
         "Account/ID,Account/Title,DeliverableExclusion/ID,DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title," +
         "Manager/ID,Manager/Title,Manager/EMail,SkillLevel/ID,SkillLevel/Title,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID," +
@@ -86,7 +127,7 @@ export class AdminConstantService {
         "SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title," +
         "TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail,Author/ID,Author/Title," +
         "Editor/ID,Editor/Title,WorkingSunday,WorkingMonday,WorkingTuesday,WorkingWednesday,WorkingThursday,WorkingFriday," +
-        "WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate",
+        "WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate,PlaceholderUser",
       expand:
         "Account/ID,Account/Title,DeliverableExclusion/ID,DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title," +
         "Manager/ID,Manager/Title,Manager/EMail,SkillLevel/ID,SkillLevel/Title,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID," +
@@ -105,7 +146,7 @@ export class AdminConstantService {
         "SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title," +
         "TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserNamePG/ID,UserNamePG/Title,UserNamePG/EMail,Author/ID,Author/Title," +
         "Editor/ID,Editor/Title,WorkingSunday,WorkingMonday,WorkingTuesday,WorkingWednesday,WorkingThursday,WorkingFriday," +
-        "WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate",
+        "WorkingSaturday,CAVisibility,TAVisibility,IsFTE,FTEEffectiveDate, BucketEffectiveDate, MaxHrsEffectiveDate,PlaceholderUser",
       expand:
         "Account/ID,Account/Title,DeliverableExclusion/ID,DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title," +
         "Manager/ID,Manager/Title,Manager/EMail,SkillLevel/ID,SkillLevel/Title,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID," +
@@ -357,10 +398,88 @@ export class AdminConstantService {
       top: 4900,
     },
     CONTENT_QUERY: {
-      select: 'ContentMT',
-      filter: 'Title eq \'{{templateName}}\''
+      select: "ContentMT",
+      filter: "Title eq '{{templateName}}'",
+    },
+    GET_SUB_DIVISION_BY_ACTIVEONLY: {
+      select: "ID,Title,ClientLegalEntity",
+      filter: "IsActiveCH eq '{{isActive}}'",
+      orderby: "Modified desc",
+      top: 4900,
+    },
+    GET_RULES_BY_ACTIVE: {
+      select: "ID,Title,OwnerPG/ID,OwnerPG/Title,DisplayOrder,ResourceType,Rule,IsActiveCH, Access/ID,Access/Title",
+      filter: "IsActiveCH eq '{{isActive}}' and TypeST eq '{{type}}'",
+      expand: "OwnerPG, Access",
+      orderby: "DisplayOrder desc",
+      top: 4900,
+    },
+    GET_RULES_PARAMETER_BY_ACTIVE: {
+      select: "ID,Title,NameST,ListName,Query,Dependency,DisplayOrder,InternalName",
+      filter: "IsActiveCH eq '{{isActive}}' and TypeST eq '{{type}}'",
+      orderby: "DisplayOrder asc",
+      top: 4900,
+    },
+    GET_PROJECT_INFO: {
+      select:
+        "ID,Title,SOWCode,BusinessVertical,WBJID,ProjectCode,DeliverableType,SubDivision,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title," +
+        "DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title,AllOperationresources/ID,AllOperationresources/Title,Status,CSRule,DeliveryRule",
+      expand:
+        "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title," +
+        "DeliveryLevel2/ID,DeliveryLevel2/Title,AllOperationresources/ID,AllOperationresources/Title",
+      filter:
+        "Status ne 'Closed' and Status ne 'Cancelled'",
+      top: 4900,
+    },
+    GET_PROJECT_INFO_bY_PROJECTCODE:{
+      select:
+      "ID,Title,BusinessVertical,ProjectCode,DeliverableType,ClientLegalEntity,SubDivision,Status,CSRule,DeliveryRule,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title," +
+      "DeliveryLevel2/ID,DeliveryLevel2/Title",
+    expand:
+      "CMLevel1,CMLevel2,DeliveryLevel1,DeliveryLevel2",
+    filter:
+      "ProjectCode eq '{{projectcode}}'",
+    top: 4900,
+    },
+    GET_INACTIVE_PROJECT: {
+      select:
+        "ID,Title,ProjectCode,Status",
+      filter:
+        "Status eq 'Closed' or Status eq 'Cancelled'",
+      top: 4900,
+    },
+    GET_PROJECT_FINANCE_BY_CURRENCY: {
+      select: 'ID, Title, Currency',
+      filter: 'Currency eq \'{{currency}}\''
+    },
+
+    GET_All_SOW: {
+      select:
+        "ID,Title,SOWCode,BusinessVertical,Currency,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title," +
+        "DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title,Status,CSRule,DeliveryRule",
+      expand:
+        "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title," +
+        "DeliveryLevel2/ID,DeliveryLevel2/Title",
+      filter:
+        "Status eq 'Approved'",
+      top: 4900,
+    },
+    GET_All_QUALITY_COMPLAINTS: {
+      select:"ID,Title,Status,ASD/ID,ASD/Title,TL/ID,TL/Title,CSRule,DeliveryRule,CSId",
+      expand:"ASD,TL",
+      filter:
+        "Status eq 'Created' or Status eq 'Rejected'",
+      top: 4900,
+    },
+    GET_All_POSITIVE_FEEDBACK: {
+      select:"ID,Title,Status,DeliveryLeads/ID,DeliveryLeads/Title,CSRule,DeliveryRule",
+      expand:"DeliveryLeads",
+      filter:
+        "Status eq 'Accepted'",
+      top: 4900,
     },
   };
+
   public LOGICAL_FIELD = {
     YES: "Yes",
     NO: "No",
@@ -381,6 +500,7 @@ export class AdminConstantService {
     TAVISIBILITY: "TAVisibility",
     CAVISIBILITY: "CAVisibility",
     ISFTE: "IsFTE",
+    PlaceholderUser: "PlaceholderUser"
   };
   public ACTION = {
     COPY: "Copy",
@@ -396,6 +516,7 @@ export class AdminConstantService {
     CM_LEVEL_2: "CM L2",
     DELIVERY_LEVEL_1: "Delivery L1",
     DELIVERY_LEVEL_2: "Delivery L2",
+    DELIVERY: "Delivery"
   };
   public ACCESS_TYPE = {
     ACCESS: "Access",
@@ -408,7 +529,7 @@ export class AdminConstantService {
     APLHA_NUMERIC: /^[a-zA-Z0-9]+$/,
     ALPHA_SPECIAL_NUMERIC: /^([a-zA-Z0-9])+((?:[-_](?![-_]))*([a-zA-Z0-9]))*$/,
     THREE_UPPERCASE_TWO_NUMBER: /^[A-Z]{3}[0-9]{2}$/,
-    ALPHA_SPECIAL_WITHSPACE: /^([a-z A-Z])+((?:[-_](?![-_]))*([a-z A-Z]))*$/,
+    ALPHA_SPECIAL_WITHSPACE: /^([a-z A-Z])+((?:[-_](?![-_]))*([a-z A-Z]))*$/
   };
   public RESOURCE_CATEGORY_CONSTANT = {
     CMLevel1: "CM L1",
@@ -459,4 +580,10 @@ export class AdminConstantService {
     EAPA: false,
     EA: false,
   };
+  public ATTRIBUTES = {
+    PROJECTCODE:"Project",
+    SOWCODE: "SOW",
+    CLIENTDISSATISFACTION:"Client Dissatisfaction",
+    POSITIVEFEEDBACK: "Positive Feedback"
+  }
 }

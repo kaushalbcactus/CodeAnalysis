@@ -8,8 +8,7 @@ import { QMSConstantsService } from 'src/app/qms/qms/services/qmsconstants.servi
 import { GlobalService } from 'src/app/Services/global.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { QMSCommonService } from 'src/app/qms/qms/services/qmscommon.service';
-import { MenuItem, DialogService } from 'primeng';
-import { PfdetailsComponent } from './pfdetails/pfdetails.component';
+import { MenuItem} from 'primeng';
 
 @Component({
   selector: 'app-pfs',
@@ -20,6 +19,8 @@ export class PfsComponent implements OnInit, AfterViewChecked {
   @Input() filterObj;
   @Input() parentComponent;
   isOptionFilter: boolean;
+  viewComments: boolean = false;
+  comments: any = null;
   constructor(
     private globalConstant: ConstantsService,
     private global: GlobalService,
@@ -29,7 +30,6 @@ export class PfsComponent implements OnInit, AfterViewChecked {
     private qmsCommon: QMSCommonService,
     private commonService: CommonService,
     private cdr: ChangeDetectorRef,
-    public pfDialogService: DialogService,
     public common: CommonService,
     public constants: ConstantsService
   ) {
@@ -38,9 +38,6 @@ export class PfsComponent implements OnInit, AfterViewChecked {
   CFColumns = [];
   CFRows = [];
   items: MenuItem[];
-
-  // @ViewChild('positveFilter', { static: false }) filter: FilterComponent;
-  // @ViewChild('PFPopup', { static: false }) PFPopup: PfdetailsComponent;
   @ViewChild('cfp', { static: false }) cfpositiveTable: Table;
 
   public hideLoader = true;
@@ -74,8 +71,6 @@ export class PfsComponent implements OnInit, AfterViewChecked {
       this.CFColumns.splice(2, 0, { field: 'Status', header: 'Status' });
     }
     setTimeout(async () => {
-      // this.pfs = await this.getPFItems();
-      // this.bindTable(this.pfs);
       await this.applyFilters(this.filterObj);
       this.showTable();
     }, 500);
@@ -113,7 +108,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
    */
   protected async getPFItems(filterObj?): Promise<[]> {
     const pfComponent = JSON.parse(JSON.stringify(this.qmsConstant.ClientFeedback.PositiveFeedbackComponent));
-    this.commonService.SetNewrelic('QMS', 'cfpositive-feedback', 'getGroupInfo');
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'cfpositive-feedback', "GET");
     const result = await this.spService.getGroupInfo(this.globalConstant.Groups.PFAdmin);
     this.global.pfAdmins = result.results ? result.results : [];
     this.global.currentUser.isPFAdmin = this.global.pfAdmins.find(t => t.Id === this.global.currentUser.userId) ? true : false;
@@ -139,7 +134,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
       pfUrl = pfComponent.getPF;
     }
 
-    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'getPFItems');
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'getPFItems-ClientFeedBack-cfposition', "GET");
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.PositiveFeedbacks.name, pfUrl);
     const arrPFs = arrResult.length > 0 ? this.appendPropertyTOObject(arrResult) : [];
     return arrPFs;
@@ -157,7 +152,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
     pfComponent.getPF.top = pfComponent.getPF.top.replace('{{TopCount}}', '' + topCount);
     pfComponent.getPF.filter = pfComponent.getPF.filter.replace('{{startDate}}', startDate)
       .replace('{{endDate}}', endDate);
-    this.commonService.SetNewrelic('QMS', 'personalFeedback-positiveFeedback', 'getPFItems');
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'getPFItems-personalFeedback-positiveFeedback', "GET");
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.PositiveFeedbacks.name, pfComponent.getPF);
     this.global.templateMatrix.templates = arrResult.length > 0 ? arrResult : [];
     const arrPFs = arrResult.length > 0 ? this.appendPropertyTOObject(arrResult) : [];
@@ -197,9 +192,8 @@ export class PfsComponent implements OnInit, AfterViewChecked {
    * @param arrayItems -  array of PF Items
    */
   bindTable(arrayItems) {
-
     this.CFRows = [];
-    arrayItems.forEach(element => {
+    arrayItems.forEach(async element => {
       this.CFRows.push({
         DeliveryLeads: element.DeliveryLeads,
         FileID: element.FileID,
@@ -212,12 +206,14 @@ export class PfsComponent implements OnInit, AfterViewChecked {
         SentDate: element.SentDate ? new Date(this.datepipe.transform(element.SentDate, 'MMM d, yyyy')) : '',
         Title: element.Title ? element.Title : '',
         AssignedTo: element.AssignedTo ? element.AssignedTo : '',
-        SentBy: element.SentBy.Title,
+        SentBy:  element.SurveyResponse.ID  ?  await this.getNameFromPOC(element.EmailAddress)    : element.SentBy.Title ? element.SentBy.Title : '',
         Resources: element.resources,
         FileUrl: element.FileURL,
         IsActive: element.IsActiveCH,
         isLoggedInDeliveryLead: element.isLoggedInDeliveryLead,
-        fullUrl: element.fullUrl
+        fullUrl: element.fullUrl,
+        EmailAddress: element.EmailAddress,
+        SurveyResponse : element.SurveyResponse.ID
       });
     });
     this.colFilters(this.CFRows);
@@ -246,9 +242,8 @@ export class PfsComponent implements OnInit, AfterViewChecked {
    */
   savePF(pfDetails, pf) {
 
-    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'savePF');
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'savePF-ClientFeedBack-cfposition', "POST");
     this.spService.updateItem(this.globalConstant.listNames.PositiveFeedbacks.name, pf.ID, pfDetails);
-
     this.showToastMsg({ type: 'success', msg: 'Success', detail: 'Positive Feedback sent by ' + pf.SentBy.Title + ' is ' + pf.Status + '.' });
   }
 
@@ -260,26 +255,29 @@ export class PfsComponent implements OnInit, AfterViewChecked {
     return this.global.currentUser.isPFAdmin ? null : 'hidden-row';
   }
 
-  /**
-   * update PF table after accountable resource identified in actions popup component
-   *
-   */
-  updatePFTable(pf) {
-    const pfItem = this.pfs.filter(p => p.ID === +pf.pfID);
-    if (pfItem.length > 0) {
-      pfItem[0].Title = pf.projectCode ? pf.projectCode : pfItem[0].Title;
-      pfItem[0].resources = pf.resources.results ? pf.resources.results.map(a => a.Title).join(',') : pf.resources ? pf.resources : '';
-      pfItem[0].Status = pf.Status ? pf.Status : pfItem[0].Status;
-    }
-    this.bindTable(this.pfs);
-  }
-
   openMenuPopup(data) {
     this.items = [
-      { label: 'Tag to Project / Client', title: 'Tag to Project / Client', id: 'tag', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.pfStatus.Pending && data.Title === 'TBD' && this.global.currentUser.isPFAdmin },
-      { label: 'Accept', title: 'Accept', id: 'accept', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.pfStatus.Pending && data.Title !== 'TBD' && (data.isLoggedInDeliveryLead || this.global.currentUser.isPFAdmin) },
-      { label: 'Reject', title: 'Reject', id: 'reject', command: (e) => this.openPopup(e.originalEvent, data), visible: data.Status === this.globalConstant.pfStatus.Pending && data.Title !== 'TBD' && (data.isLoggedInDeliveryLead || this.global.currentUser.isPFAdmin) }
+      { label: 'Reject', title: 'Reject', id: 'reject', command: (e) => this.rejectPF(data), visible: data.Status === this.globalConstant.pfStatus.Accepted && (data.isLoggedInDeliveryLead || this.global.currentUser.isPFAdmin) },
+      { label: 'View Comments', title: 'View Comments', id: 'viewComments', command: (e) => this.showComments(data), visible: data.SurveyResponse ? true : false }
+
     ];
+  }
+
+  async showComments(data){
+    const getSurveyResInfo = Object.assign({}, this.qmsConstant.ClientFeedback.GET_SURVEYRESPONSE_BY_ID);
+    getSurveyResInfo.filter = getSurveyResInfo.filter.replace(/{{ID}}/gi,
+      data.SurveyResponse);
+    this.common.SetNewrelic('pfs', 'shared-module', 'getSurveyResInfo');
+    const results = await this.spService.readItems(this.constants.listNames.SurveyResponse.name, getSurveyResInfo);
+
+    if(results && results.length > 0 ){
+      this.comments = results[0].CommentsMT;
+    }
+    this.viewComments = this.comments ? true : false;
+
+    if(!this.viewComments){
+      this.commonService.showToastrMessage(this.constants.MessageType.info,'Comments not added.',false);
+    }
   }
 
   downloadExcel(cfp) {
@@ -321,7 +319,6 @@ export class PfsComponent implements OnInit, AfterViewChecked {
       const obj = {
         tableData: this.cfpositiveTable,
         colFields: this.CFPositiveColArray,
-        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
       };
       if (obj.tableData.filteredValue) {
         this.commonService.updateOptionValues(obj);
@@ -337,31 +334,48 @@ export class PfsComponent implements OnInit, AfterViewChecked {
     const qcComponent = JSON.parse(JSON.stringify(this.qmsConstant.personalFeedbackComponent.PositiveFeedbacks));
     qcComponent.getPFByProject.top = qcComponent.getPFByProject.top.replace('{{TopCount}}', '' + topCount);
     qcComponent.getPFByProject.filter = qcComponent.getPFByProject.filter.replace('{{projectCode}}', projectCode);
-    this.commonService.SetNewrelic('QMS', 'personalfeedback-getPFItemsByProject', 'readItems');
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'readItems-personalfeedback-getPFItemsByProject', "GET");
     let qcs = await this.spService.readItems(this.globalConstant.listNames.PositiveFeedbacks.name,
       qcComponent.getPFByProject);
     qcs = qcs.length > 0 ? qcs.sort((a, b) => new Date(a.SentDate).getTime() - new Date(b.SentDate).getTime()) : [];
     return this.appendPropertyTOObject(qcs);
   }
 
-  openPopup(event, data) {
-    const ref = this.pfDialogService.open(PfdetailsComponent, {
-      data: {
-        ...data,
-        actionClicked: event.currentTarget.id,
-        actionClickedTitle: event.currentTarget.title,
-        status: event.Status ? event.Status : ''
-      },
-      width: '50vw',
-      header: event.currentTarget.title,
-      contentStyle: { 'max-height': '100vh', 'overflow-y': 'auto' },
-      closable: true
-    });
-    ref.onClose.subscribe((pfObj) => {
-      if (pfObj.action !== 'Cancel') {
-        this.updatePFTable(pfObj.pf);
-        this.common.showToastrMessage(pfObj.msgType, pfObj.msg, false);
+  rejectPF(data) {
+    this.commonService.confirmMessageDialog('Confirmation', 'Are you sure you want to reject positive feedback ?', null, ['Yes', 'No'], false).then(async Confirmation => {
+      if (Confirmation === 'Yes') {
+        let pfDetails = {};
+        pfDetails = {
+          __metadata: { type: this.globalConstant.listNames.PositiveFeedbacks.type },
+          Status: this.globalConstant.pfStatus.Rejected
+        };
+        this.update(pfDetails, data.ID);
+        data.Status = this.globalConstant.pfStatus.Rejected;
+        const msg = 'Positive feedback rejected.';
       }
     });
   }
+
+  update(pfDetails, pfID) {
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'updatepf-ClientFeedBack-cfposition', "POST");
+    this.spService.updateItem(this.globalConstant.listNames.PositiveFeedbacks.name, pfID, pfDetails);
+  }
+
+
+  async getNameFromPOC(email){
+
+    let response = email;
+    const getPOCInfo = Object.assign({}, this.qmsConstant.ClientFeedback.GET_POC_By_Email);
+    getPOCInfo.filter = getPOCInfo.filter.replace(/{{emailaddress}}/gi,
+      email);
+    this.common.SetNewrelic('pfs', 'shared-module', 'getPOCinfo');
+    const results = await this.spService.readItems(this.constants.listNames.ProjectContacts.name, getPOCInfo);
+
+    if(results && results.length > 0 ){
+       response = results[0].FName + ' ' + results[0].LName;
+    }
+    return response;
+  }
+
+
 }

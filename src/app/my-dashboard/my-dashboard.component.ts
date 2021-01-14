@@ -14,6 +14,8 @@ import { CreateTaskComponent } from './fte/create-task/create-task.component';
 import { CommonService } from '../Services/common.service';
 import { DatePipe } from '@angular/common';
 import { CurrentCompletedTasksTableComponent } from './current-completed-tasks-table/current-completed-tasks-table.component';
+import { MyCurrentCompletedTasksComponent } from './my-current-completed-tasks/my-current-completed-tasks.component';
+import { MyTimelineComponent } from './my-timeline/my-timeline.component';
 
 @Component({
   selector: 'app-my-dashboard',
@@ -42,6 +44,9 @@ export class MyDashboardComponent implements OnInit {
 
   @ViewChild('createTaskcontainer', { read: ViewContainerRef, static: true }) createTaskcontainer: ViewContainerRef;
   allTasks: any = [];
+  activeUsers = [];
+  selectedUser: any;
+  enableOtherUsers: any;
 
   constructor(
     private constants: ConstantsService,
@@ -55,7 +60,7 @@ export class MyDashboardComponent implements OnInit {
     private datePipe: DatePipe
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.sharedObject.currentTitle = 'My Dashboard';
 
     this.items = [
@@ -67,9 +72,11 @@ export class MyDashboardComponent implements OnInit {
       { label: 'Search Projects', routerLink: ['search-projects'] }
     ];
     this.GetCurrentUser();
+    await this.getAllActiveUsers();
   }
 
   async onActivate(componentRef) {
+    this.myDashboardConstantsService.mydashboardComponent.componentRef = componentRef;
     if (this.firstload) {
       if (this.router.url.indexOf('my-current-tasks') > -1) {
         this.checkTaskAvailable();
@@ -85,7 +92,7 @@ export class MyDashboardComponent implements OnInit {
 
   async GetCurrentUser() {
 
-    this.commonService.SetNewrelic('MyDashboard', 'MyDashboard', 'GetCurrentUserDetails');
+    this.commonService.SetNewrelic('MyDashboard', 'MyDashboard', 'GetCurrentUserDetails', "GET");
     const currentUser = await this.spServices.getUserInfo(this.sharedObject.currentUser.userId);
     this.sharedObject.currentUser.userId = currentUser.Id;
     this.sharedObject.currentUser.email = currentUser.Email;
@@ -135,7 +142,7 @@ export class MyDashboardComponent implements OnInit {
 
   async executeCommonCalls() {
 
-    this.commonService.SetNewrelic('MyDashboard', 'MyDashboard', 'GetCLERCPIPC');
+    
     this.firstload = false;
     const batchUrl = [];
     // ****************************************************************************************************
@@ -177,7 +184,7 @@ export class MyDashboardComponent implements OnInit {
     piObj.listName = this.constants.listNames.ProjectInformation.name;
     piObj.type = 'GET';
     batchUrl.push(piObj);
-
+    this.commonService.SetNewrelic('MyDashboard', 'MyDashboard', 'GetCLERCPIPC', "GET-BATCH");
     this.response = await this.spServices.executeBatch(batchUrl);
     this.sharedObject.DashboardData.ClientLegalEntity = this.response.length > 0 ? this.response[0].retItems : [];
     this.sharedObject.DashboardData.ResourceCategorization = this.response.length > 0 ? this.response[1].retItems : [];
@@ -186,6 +193,7 @@ export class MyDashboardComponent implements OnInit {
 
     if (currentUserResCat.length) {
       this.isUserFTE = currentUserResCat[0].IsFTE && currentUserResCat[0].IsFTE === 'Yes' ? true : false;
+      this.enableOtherUsers = (currentUserResCat[0].RoleCH === "CM L1" || currentUserResCat[0].RoleCH === "CM L2") ? true : false  
       this.myDashboardConstantsService.mydashboardComponent.user.isUserFTE = this.isUserFTE;
     }
     console.log(this.isUserFTE);
@@ -201,6 +209,38 @@ export class MyDashboardComponent implements OnInit {
     componentRef.instance.formType = 'createTask';
     componentRef.instance.currentUserInfo = this.currentUserInfo;
     // this.ref = componentRef;
+  }
+
+  async getAllActiveUsers() {
+    this.activeUsers = [];
+    let resCatFilter: any = {};
+    resCatFilter = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ResourceCategorization);
+    const sResult = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, resCatFilter);
+    if(sResult && sResult.length > 0) {
+      for(const item of sResult) {
+        if(item.PlaceholderUser === 'Yes') {
+          this.activeUsers.push({label: item.UserNamePG.Title, value: item.UserNamePG });
+        }
+      }
+    }
+  }
+
+  async userChange() {
+    if(this.selectedUser) {
+    this.sharedObject.selectedUser = this.selectedUser.ID;
+      if (this.router.url.includes('my-current-tasks') || this.router.url.includes('my-completed-tasks')) {
+      await this.onActivate(this.myDashboardConstantsService.mydashboardComponent.componentRef);
+      } else if(this.router.url.includes('my-timeline')) {
+        await this.myDashboardConstantsService.mydashboardComponent.componentRef.getEvents(false, this.myDashboardConstantsService.mydashboardComponent.startDate, this.myDashboardConstantsService.mydashboardComponent.endDate);
+      }
+    } else {
+      this.sharedObject.selectedUser = '';
+      if (this.router.url.includes('my-current-tasks') || this.router.url.includes('my-completed-tasks')) {
+        await this.onActivate(this.myDashboardConstantsService.mydashboardComponent.componentRef);
+      } else if(this.router.url.includes('my-timeline')) {
+        await this.myDashboardConstantsService.mydashboardComponent.componentRef.getEvents(false, this.myDashboardConstantsService.mydashboardComponent.startDate, this.myDashboardConstantsService.mydashboardComponent.endDate);
+      }
+    }
   }
 
 }

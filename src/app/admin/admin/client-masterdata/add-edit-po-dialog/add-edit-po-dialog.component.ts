@@ -61,11 +61,19 @@ export class AddEditPoDialogComponent implements OnInit {
     this.PORows = this.config.data.poRows;
     if (this.config.data.poObject) {
       this.showEditPOModal();
+      this.removeValidators(this.PoForm);
     } else {
       this.showAddPO();
     }
   }
 
+
+  removeValidators(form: FormGroup) {
+    for (const key in form.controls) {
+        form.get(key).clearValidators();
+        form.get(key).updateValueAndValidity();
+    }
+  }
 
   /**
     * Construct a method show the form to add new Purchase Order.
@@ -391,7 +399,6 @@ export class AddEditPoDialogComponent implements OnInit {
 
   async SavePODetails() {
     if (this.PoForm.valid) {
-      if (this.selectedFile[0].size > 0) {
         if (!this.showeditPO) {
           if (this.PORows.some(a =>
             a.PoNumber.toLowerCase() === this.PoForm.value.poNumber.toLowerCase())) {
@@ -399,18 +406,17 @@ export class AddEditPoDialogComponent implements OnInit {
             return false;
           }
         }
+        if(this.selectedFile) {
+          if (this.selectedFile[0].size <= 0) {
+            this.common.showToastrMessage(this.constantsService.MessageType.warn, 'Unable to upload file, size of ' + this.selectedFile[0].name + ' is 0 KB.', false);
+            return false;
+          }
+        }
         const data = {
           poDetails: this.PoForm,
-          selectedFile: this.selectedFile
+          selectedFile: this.selectedFile ? this.selectedFile : '',
         }
         this.ref.close(data);
-      }
-      else {
-
-        this.common.showToastrMessage(this.constantsService.MessageType.warn, 'Unable to upload file, size of ' + this.selectedFile[0].name + ' is 0 KB.', false);
-        return false;
-      }
-
     } else {
       this.isPOFormSubmit = true;
     }

@@ -105,3 +105,10 @@ body .ui-button {
   top: 0 ;
  
 }
+
+.users-dropdown {
+  padding: 4px;
+  border-bottom: 1px solid rgb(197, 62, 62);
+  box-sizing: border-box;
+  margin-bottom: 5px;
+}

@@ -21,7 +21,7 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { CaComponent } from './ca.component';
 import { PreStackAllocationModule } from '../shared/pre-stack-allocation/pre-stack-allocation.module';
 import { PreStackAllocationComponent } from '../shared/pre-stack-allocation/pre-stack-allocation.component';
-import { ConflictAllocationsModule } from '../Shared/conflict-allocations/conflict-allocations.module';
+import { ConflictAllocationsModule } from '../shared/conflict-allocations/conflict-allocations.module';
 import { ConflictAllocationComponent } from '../shared/conflict-allocations/conflict-allocation.component';
 
 @NgModule({

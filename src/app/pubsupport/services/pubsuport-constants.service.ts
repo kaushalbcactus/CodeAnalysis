@@ -105,6 +105,13 @@ export class PubsuportConstantsService {
             top: 4500,
             filter: "IsActiveCH eq 'Yes'",
             orderby: "Created desc"
-        }
+        },
+        GET_DELIVERABLE_TYPE_BY_ACTIVE: {
+            select: "ID,Title,Acronym,Modified,IsActiveCH,Editor/ID,Editor/Title,EntryType,NameST",
+            expand: "Editor/ID,Editor/Title",
+            filter: "IsActiveCH eq \'Yes\' and Title eq '{{DeliveryType}}'",
+            orderby: "Modified desc",
+            top: 1,
+        },
     }
 }

@@ -299,7 +299,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         if (!isManager) {
             obj.filter = obj.filter.replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
-        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'GetInvoiceLineItem');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'getRequiredData', 'GET');
         const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, obj);
         const arrResults = res.length ? res : [];
         this.formatData(arrResults);
@@ -544,7 +544,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             ref.onClose.subscribe((editInvoice: any) => {
                 if (editInvoice) {
                     const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess('revenue',this.selectedRowItem, editInvoice)
-                    this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem');
+                    this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem', 'POST');
                     this.submitForm(batchURL, 'editInvoice');
                 }
             });
@@ -580,7 +580,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             iliObj.data = iliData;
             batchUrl.push(iliObj);
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem');
+            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem', 'POST');
             this.submitForm(batchUrl, type);
 
         }
@@ -604,7 +604,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     async getApproveExpenseMailContent(type) {
         const objMail = Object.assign({}, this.fdConstantsService.fdComponent.mailContent);
         objMail.filter = objMail.filter.replace('{{MailType}}', type);
-        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'GetEmailTemplate');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'GetEmailTemplate', 'GET');
         const res = await this.spServices.readItems(this.constantService.listNames.MailContent.name, objMail);
         this.mailContentRes = res.length ? res : [];
     }
@@ -676,7 +676,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         const ccUser = this.getCCList();
         // ccUser.push(this.currentUserInfoData.Email);
         const tos = this.getTosList();
-        this.commonService.SetNewrelic('Finance-Dashboard', 'deliverableBased-invoiceConfirmMail', 'SendMail');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'invoiceConfirmMail', 'POST');
         this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.reFetchData();
     }

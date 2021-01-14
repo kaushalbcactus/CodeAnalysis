@@ -304,6 +304,7 @@ export class ClientMasterdataComponent implements OnInit {
         groups.indexOf("SPTeam") > -1 ||
         groups.indexOf("Managers") > -1 ||
         groups.indexOf("Client_Admin") > -1
+        
       ) {
         this.isUserSPMCA = true;
         getClientLegalInfo = Object.assign(
@@ -314,7 +315,18 @@ export class ClientMasterdataComponent implements OnInit {
           /{{isActive}}/gi,
           this.adminConstants.LOGICAL_FIELD.YES
         );
-      } else {
+      }
+       else if(groups.indexOf("FinanceMembers") > -1) {
+        getClientLegalInfo = Object.assign(
+          {},
+          this.adminConstants.QUERY.GET_ALL_CLIENT_LEGAL_ENTITY_BY_ACTIVE
+        );
+        getClientLegalInfo.filter = getClientLegalInfo.filter.replace(
+          /{{isActive}}/gi,
+          this.adminConstants.LOGICAL_FIELD.YES
+        );
+       }
+       else {
         this.isUserSPMCA = false;
         getClientLegalInfo = Object.assign(
           {},
@@ -1006,7 +1018,7 @@ export class ClientMasterdataComponent implements OnInit {
    */
   pocMenu(data) {
     this.currPOCObj = data;
-    if (this.isUserSPMCA) {
+    //if (this.isUserSPMCA) {
       this.pocItems = [
         {
           label: "Edit",
@@ -1014,14 +1026,14 @@ export class ClientMasterdataComponent implements OnInit {
         },
         { label: "Delete", command: (e) => this.deletePOC() },
       ];
-    } else {
-      this.pocItems = [
-        {
-          label: "Edit",
-          command: (e) => this.addEditPOC("Edit Point Of Contact", data),
-        },
-      ];
-    }
+    // } else {
+    //   this.pocItems = [
+    //     {
+    //       label: "Edit",
+    //       command: (e) => this.addEditPOC("Edit Point Of Contact", data),
+    //     },
+    //   ];
+    // }
   }
   /**
    * Construct a method to remove the item from table.
@@ -2182,10 +2194,11 @@ export class ClientMasterdataComponent implements OnInit {
    */
 
   async savePO(poDetails, selectedFile) {
+    if(selectedFile) {
     const tempFiles = [
       new Object({ name: selectedFile[0].name, file: selectedFile[0] }),
     ];
-    this.common.SetNewrelic("Admin-ClientMasterData", "SavePO", "UploadFile");
+    this.common.SetNewrelic("admin", "SavePO", "UploadFile");
     this.common
       .UploadFilesProgress(
         tempFiles,
@@ -2288,6 +2301,33 @@ export class ClientMasterdataComponent implements OnInit {
           false
         );
       });
+    } else {
+      if (this.showeditPO) {
+        const poData = await this.getPOData(poDetails,'');
+        this.common.SetNewrelic(
+          "admin",
+          "admin-clientMaster",
+          "updatePO"
+        );
+        const results = await this.spServices.updateItem(
+          this.constantsService.listNames.PO.name,
+          this.currPOObj.ID,
+          poData,
+          this.constantsService.listNames.PO.type
+        );
+        this.common.showToastrMessage(
+          this.constantsService.MessageType.success,
+          "The Po " +
+            this.currPOObj.PoNumber +
+            " is updated successfully.",
+          false
+        );
+        await this.loadRecentPORecords(
+          this.currPOObj.ID,
+          this.adminConstants.ACTION.EDIT
+        );
+      }
+    }
   }
 
   /**
@@ -2308,8 +2348,10 @@ export class ClientMasterdataComponent implements OnInit {
       Molecule: poDetails.value.molecule,
       CMLevel2Id: poDetails.value.cmLevel2,
       BuyingEntity: poDetails.value.poBuyingEntity,
-      Link: selectedFile.name,
     };
+    if(selectedFile) {
+      data['Link'] = selectedFile.name;
+    }
     if (!this.showeditPO) {
       data.Currency = poDetails.value.currency;
       data.CreateDate = new Date();

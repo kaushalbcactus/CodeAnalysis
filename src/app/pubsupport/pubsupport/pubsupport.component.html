@@ -246,14 +246,14 @@
                 <select id="type" name="Decision" class="form-control" formControlName="Decision">
                     <option value="">Select</option>
                     <option value="Accepted"
-                        *ngIf="selectedProject.DeliverableType != 'Poster' && selectedProject.DeliverableType != 'Oral Presentation' && selectedProject.DeliverableType != 'Slide Deck' ">
+                        *ngIf="deliverableDetails.length && deliverableDetails[0].NameST == 'Accepted'">
                         Accepted</option>
                     <option value="Presented"
-                        *ngIf="selectedProject.DeliverableType== 'Poster' || selectedProject.DeliverableType== 'Oral Presentation' && selectedProject.DeliverableType != 'Slide Deck' ">
+                        *ngIf="deliverableDetails.length && deliverableDetails[0].NameST == 'Presented'">
                         Presented</option>
                     <option value="Rejected">Rejected</option>
                     <option value="Resubmit to same journal"
-                        *ngIf="selectedProject.DeliverableType != 'Poster' && selectedProject.DeliverableType != 'Oral Presentation' && selectedProject.DeliverableType != 'Abstract' && selectedProject.DeliverableType != 'Slide Deck'  ">
+                        *ngIf="deliverableDetails.length && deliverableDetails[0].EntryType == 'Journal'">
                         Resubmit to same journal</option>
                 </select>
                 <div *ngIf="formSubmit.isSubmit && isValidDecisionForm.Decision.errors">
@@ -383,6 +383,10 @@
                 <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.EntryType.errors">
                     <div *ngIf="isValidAddUpdateJCDetailsForm.EntryType.errors.required" style="color:red;">
                         Please select one of type & try again.</div>
+                </div>
+                <div *ngIf="deliverableDetails.length && !deliverableDetails[0].EntryType">
+                    <div style="color:red;">
+                        There is no document type for this deliverable type.</div>
                 </div>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-1">

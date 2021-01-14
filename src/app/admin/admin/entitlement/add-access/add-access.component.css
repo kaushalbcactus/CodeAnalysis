@@ -1,0 +1,111 @@
+body .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active a {
+    background-color: #c53e3e !important;
+    border: 1px solid #c53e3e !important;
+}
+
+.p-button-rounded {
+    border-radius: 50% !important;
+    height: 2.3rem !important;
+    width: 2.357rem !important;
+    padding: 0.5rem 0 !important;
+    float: right !important;
+    background-color: transparent !important;
+    color: #2196F3 !important;
+    border: 1px solid !important;
+}
+
+.p-button-rounded:hover {
+    background: rgba(33, 150, 243, 0.04) !important;
+    color: #2196F3 !important;
+    border: 1px solid !important;
+}
+
+.p-button-rounded-delete {
+    border-radius: 50% !important;
+    height: 2rem !important;
+    width: 2rem !important;
+    background-color: transparent !important;
+    color: #a22c2c !important;
+    border: 1px solid !important;
+}
+
+.p-button-rounded-delete:hover {
+    background: #efd8d8 !important;
+    color: #a22c2c !important;
+    border: 1px solid !important;
+}
+
+.p-button-rounded-recover {
+    border-radius: 50% !important;
+    height: 2rem !important;
+    width: 2rem !important;
+    background-color: transparent !important;
+    color: #565656 !important;
+    border: 1px solid !important;
+}
+
+.p-button-rounded-recover:hover {
+    background: #a9a8a8 !important;
+    color: #565656 !important;
+    border: 1px solid !important;
+}
+
+.p-button:focus {
+    outline: 0 none !important;
+    outline-offset: 0 !important;
+    box-shadow: 0 0 0 0.2rem #a6d5fa !important;
+}
+
+.p-button-secondary {
+    background-color: transparent !important;
+    color: #607D8B !important;
+    border: 1px solid !important;
+}
+
+.p-button-secondary:hover {
+    background: rgba(96, 125, 139, 0.04) !important;
+    color: #607D8B !important;
+    border: 1px solid !important;
+}
+
+.p-button-secondary:focus {
+    box-shadow: 0 0 0 0.2rem #beccd2 !important;
+}
+
+body .ui-panel .ui-panel-content,
+body .ui-panel .ui-panel-titlebar {
+    border: none !important;
+    /* background-color: #f4f4f4 !important; */
+}
+
+.ui-tooltip .ui-tooltip-text {
+    background-color: #353434 !important;
+}
+
+.ui-tooltip.ui-tooltip-bottom .ui-tooltip-arrow {
+    border-bottom-color: #353434 !important;
+}
+
+.AddRules>.ui-accordion-content-wrapper>.ui-accordion-content {
+    padding: 0px !important;
+}
+
+.dropAccesscard {
+    padding: 10px 0px 0px 0px !important;
+}
+
+.accesslevelcard,
+.accesslevelcardview {
+    padding: 10px 0px 0px 10px !important;
+}
+
+.selectionType {
+    float: right !important;
+    margin: 2px 10px 0px 0px !important;
+}
+
+body .ui-selectbutton .ui-button.ui-state-active,
+.projectFilters>p-button>button {
+    background-color: #c53e3e !important;
+    border-color: #c53e3e !important;
+}

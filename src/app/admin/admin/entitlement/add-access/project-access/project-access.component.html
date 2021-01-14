@@ -1,0 +1,307 @@
+<!-- main filters for rules  -->
+
+
+<!-- <div [hidden]="!loaderenable"> -->
+<div [hidden]="!loaderenable" style="padding: 5vw;">
+    <div id="modalInnerLoader"></div>
+    <div id="modalInnerLoaderText">Loading...</div>
+</div>
+<div *ngIf="!loaderenable">
+    <form class="p-grid" #searchProjectForm="ngForm" [formGroup]="searchRulesForm" (ngSubmit)="onSubmit()">
+        <div class="p-col projectFilters">
+            <p-multiSelect [options]="filterData.PRACTICEAREA" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Practice Area" formControlName="practiceArea" [filter]="true" filterBy="label" maxSelectedLabels="2"></p-multiSelect>
+
+            <p-multiSelect [options]="filterData.CLE" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Client Legal Entity" formControlName="cle" [filter]="true" filterBy="label" maxSelectedLabels="2"></p-multiSelect>
+
+            <p-multiSelect *ngIf="RuleType !== constant.RulesType.SOW" [options]="filterData.SUBDIVISION" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Sub-Division" formControlName="subDivision" [filter]="true" filterBy="label"
+                maxSelectedLabels="2"></p-multiSelect>
+
+            <p-multiSelect *ngIf="RuleType !== constant.RulesType.SOW" [options]="filterData.DELIVERYTYPE" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Delivery Type" formControlName="deliveryType" [filter]="true" filterBy="label"
+                maxSelectedLabels="2"></p-multiSelect>
+
+
+            <p-button pTooltip="Search" tooltipPosition="bottom" class="p-button-danger" icon="pi pi-search" type="submit"></p-button>
+
+            <p-button pTooltip="Refresh" tooltipPosition="bottom" class="p-button-danger" icon="pi pi-refresh" (click)="resetProjectFilters()" type="button"></p-button>
+        </div>
+    </form>
+
+    <!-- expansion panel for add or view project rules  -->
+    <p-accordion [activeIndex]="index" (onClose)="onTabClose($event)" (onOpen)="onTabOpen($event)">
+
+        <!-- Add project Rules  -->
+        <p-accordionTab [header]="headerName" class="AddRules">
+            <p-panel>
+                <p-header>
+                    <div class="ui-helper-clearfix">
+                        <span class="ui-panel-title" style="font-size:14px;display:inline-block;margin-top:8px">ADD ACCESS</span>
+
+
+                        <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded p-button-secondary p-button-outlined" pTooltip="Refresh" tooltipPosition="bottom" (click)="cleanData()" style=" min-width: 2em !important;"></button>
+                        <button pButton pRipple style="margin-right:5px;cursor: pointer; min-width: 2em !important;" type="button" icon="pi pi-save" class="p-button-rounded p-button-outlined" pTooltip="Save" tooltipPosition="bottom" (click)="addRule()"></button>
+                        <p-selectButton *ngIf="RuleType === this.constant.RulesType.PROJECT || RuleType === this.constant.RulesType.SOW" class="selectionType" [options]="AddAccessType" [(ngModel)]="selectedAccessType" (onChange)="CheckDataOnAccessType()"></p-selectButton>
+
+
+                    </div>
+                </p-header>
+
+                <div [hidden]="!subloaderenable" style="padding: 5vw;">
+                    <div id="modalInnerLoader"></div>
+                    <div id="modalInnerLoaderText">Loading...</div>
+                </div>
+                <div class="" *ngIf="!subloaderenable">
+
+                    <!-- // Drag option Projet parameter -->
+                    <p-card class="p-grid p-dir-col" [style]="{'margin-top':'.5em'}">
+                        <div class="p-grid p-justify-start">
+                            <div *ngFor="let parameter of filterData.RULEPARAMETERSDISPLAY" class="ui-helper-clearfix" pDraggable="attributes" (onDragStart)="dragStart($event,parameter)" (onDragEnd)="dragEnd($event)" style="margin: .5em">
+                                <button pButton class="p-col" type="button" [label]="parameter.label" class="ui-button-secondary" [value]="parameter.value"></button>
+                            </div>
+
+                        </div>
+                    </p-card>
+                    <div class="p-grid">
+                        <!-- // drop option for parameters -->
+                        <p-card class="p-col-7  dropAccesscard" [style]="{'margin-top':'.5em', 'height':'200px'}" pDroppable="attributes" (onDrop)="drop($event)">
+
+                            <div class="p-grid p-justify-start" style="padding: 40px 0px 0px 0px;">
+                                <div *ngFor='let selected of selectedOption;let i=index;first as isFirst;last as isLast' style="padding: 2px;
+                                border: 1px solid #CDCDCF;
+                                background-color: #cdcdcd;
+                                border-radius: 4px;margin: 0px 2px;">
+                                    <p-dropdown [options]="selected.value" [style]="{'width':'150px'}" resetFilterOnHide="true" [(ngModel)]="selected.selectedValue" [placeholder]="selected.placeholder" [filter]="true" (keydown.enter)="$event.preventDefault()" (onChange)="checkNext(selected,i)"></p-dropdown>
+                                    <button style="vertical-align:bottom" pButton type="button" icon="pi pi-times" class="ui-button-danger" (click)="removeOption(selected)"></button>
+                                </div>
+                            </div>
+                        </p-card>
+
+                        <!-- /// Owner and User Access dropdown  -->
+                        <p-card class="p-col-5 accesslevelcard" [style]="{'margin-top':'.5em','height':'200px'}">
+
+                            <div [ngClass]="selectedAccessType === constant.RulesType.DELIVERY ? 'p-col' : 'p-col flipped'">
+                                <div class="front">
+                                    <div class="p-grid p-justify-start" *ngIf="selectedAccessType === constant.RulesType.DELIVERY && selectedOption.length > 0" style="padding: 15px 0px;">
+                                        <div class="p-col" *ngFor='let delivery of filterData.DELIVERY;let i=index;first as isFirst;' [ngStyle]="{'padding':isFirst ? '5px 0px 0px 5px' : '5px 5px 0px 5px'}">
+                                            <h1 class="first" style="font-size: 20px;" *ngIf="isFirst">Owner</h1>
+                                            <p-dropdown *ngIf="isFirst" [options]="delivery.values" [style]="{'width':'100%'}" resetFilterOnHide="true" [(ngModel)]="delivery.selectedValue" placeholder="Select owner" [filter]="true" (keydown.enter)="$event.preventDefault()"></p-dropdown>
+                                            <h1 class="first" style="font-size: 20px;" *ngIf="!isFirst">Access</h1>
+                                            <p-multiSelect *ngIf="!isFirst" [options]="delivery.values" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select User" [(ngModel)]="delivery.selectedValue" [style]="{'width':'100%','z-index':'99999'}" [filter]="true"
+                                                filterBy="label"></p-multiSelect>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="back">
+                                    <div class="p-grid p-justify-start" *ngIf="selectedAccessType === constant.RulesType.CM && selectedOption.length > 0">
+                                        <div class="p-col" *ngFor='let cm of filterData.CM;let i=index;first as isFirst;' [ngStyle]="{'padding':isFirst ? '5px 0px 0px 5px' : '5px 5px 0px 5px'}">
+                                            <h1 class="first" style="    font-size: 20px;" *ngIf="isFirst">Owner</h1>
+                                            <p-dropdown *ngIf="isFirst" [options]="cm.values" [style]="{'width':'100%'}" resetFilterOnHide="true" [(ngModel)]="cm.selectedValue" placeholder="Select owner" [filter]="true" (keydown.enter)="$event.preventDefault()"></p-dropdown>
+                                            <h1 class="first" style="font-size: 20px;" *ngIf="!isFirst">Access</h1>
+                                            <p-multiSelect *ngIf="!isFirst" [options]="cm.values" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select User" [(ngModel)]="cm.selectedValue" [style]="{'width':'100%','z-index':'99999'}" [filter]="true" filterBy="label"></p-multiSelect>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </p-card>
+                    </div>
+
+                    <div class="p-grid">
+
+                        <!-- selected parameters display  -->
+                        <p-card class="p-col-7 dropAccesscard" [style]="{'margin-top':'.5em','display':'flex' ,'min-height':'200px', 'padding':'20px 0px 20px 0px'}">
+
+                            <div class="p-grid p-justify-start">
+                                <div class="p-col" *ngFor='let selected of selectedOption;let i=index;' style="display: contents;">
+                                    <div class="p-gird" *ngIf="selected.selectedValue !==''" style="padding: 8px 15px 8px 15px;
+                                    border: 1px solid #cdcdcd;
+                                    background-color: #cdcdcd;
+                                    text-align: center;
+                                    font-weight: bold;">
+                                        {{selected.selectedValue}}
+                                    </div>
+
+
+                                    <div style="font-size: 10px;margin: 3px;" class="p-grid">
+                                        <i *ngIf="selectedOption[i + 1] && selectedOption[i + 1].selectedValue !=='' && selected.selectedValue !=='' && selectedOption.length - 1 > i " class="pi pi-chevron-right" style="font-size: 3em"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </p-card>
+
+                        <!-- /// Owner and User Access Display  -->
+                        <p-card class="p-col-5 accesslevelcardview" [style]="{'margin-top':'.5em', 'display':'flex', 'min-height':'200px'}">
+                            <div *ngIf="selectedAccessType === constant.RulesType.DELIVERY && selectedOption.length > 0">
+                                <div class="p-grid" style="padding: 20px 0px 0px 0px;" *ngFor='let delivery of filterData.DELIVERY;let i=index;first as isFirst;'>
+                                    <span class="first" style="font-size: 20px;padding: 0px 20px 0px 15px;" *ngIf="isFirst && delivery.selectedValue !==''"> Owner :</span>
+                                    <span class="first" style="font-size: 20px;padding: 0px 20px 0px 15px;" *ngIf="!isFirst && delivery.selectedValue !==''"> Access :</span>
+
+                                    <div *ngIf="delivery.selectedValue !==''  && isFirst" style="padding: 5px 20px;
+                                    border: 1px solid #cdcdcd;
+                                    background-color: #cdcdcd;
+                                    text-align: center;
+                                    font-weight: bold;">
+                                        {{delivery.selectedValue}}
+                                    </div>
+
+                                    <div class="p-col p-grid" style="padding: 0px;" *ngIf="delivery.selectedValue !==''  && !isFirst">
+                                        <div *ngFor='let selected of delivery.selectedValue;' style="padding: 5px 20px;
+                                        border: 1px solid #cdcdcd;
+                                        background-color: #cdcdcd;
+                                        text-align: center;
+                                        font-weight: bold; margin: 5px 5px 0px 8px;">
+                                            {{selected}}
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                            <div *ngIf="selectedAccessType === constant.RulesType.CM && selectedOption.length > 0">
+                                <div class="p-grid" style="padding: 20px 0px 0px 0px;" *ngFor='let cm of filterData.CM;let i=index;first as isFirst;'>
+                                    <span class="first" style="font-size: 20px;padding: 0px 20px 0px 15px;" *ngIf="isFirst && cm.selectedValue !==''"> Owner :</span>
+                                    <span class="first" style="font-size: 20px;padding: 0px 20px 0px 15px;" *ngIf="!isFirst && cm.selectedValue !==''"> Access :</span>
+
+                                    <div *ngIf="cm.selectedValue !=='' && isFirst" style="padding: 5px 20px;
+                                    border: 1px solid #cdcdcd;
+                                    background-color: #cdcdcd;
+                                    text-align: center;
+                                    font-weight: bold;">
+                                        {{cm.selectedValue}}
+                                    </div>
+
+                                    <div class="p-col p-grid" style="padding: 0px;" *ngIf="cm.selectedValue !==''  && !isFirst">
+                                        <div *ngFor='let selected of cm.selectedValue;' style="padding: 5px 20px;
+                                        border: 1px solid #cdcdcd;
+                                        background-color: #cdcdcd;
+                                        text-align: center;
+                                        font-weight: bold;
+                                         margin: 5px 5px 0px 8px;">
+                                            {{selected}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </p-card>
+                    </div>
+                </div>
+            </p-panel>
+        </p-accordionTab>
+
+        <!-- Display rules  -->
+        <p-accordionTab header="Rules">
+
+            <div class="ui-helper-clearfix">
+                <!-- <span class="ui-panel-title" style="font-size:14px;display:inline-block;margin-top:8px">
+                
+                </span> -->
+
+                <div style="float: left;">
+
+                    <span class="p-col" style="float: left;font-size: 14px;padding-right: 10px; font-weight: 700;"> Rules : </span>
+                    <div class="p-col input-color">
+                        <label>Active / Existing </label>
+                        <div class="color-box" style="background-color: #cdcdcd;left: 0px;"></div>
+                    </div>
+                    <div class="p-col input-color">
+                        <label>Edited Active / Existing</label>
+                        <div class="color-box" style="background-color: #ecfbd0;"></div>
+                    </div>
+                    <div class="p-col input-color">
+                        <label>Deleted</label>
+                        <div class="color-box" style="background-color: #f1caca;"></div>
+                    </div>
+                    <div class="p-col input-color">
+                        <label>New </label>
+                        <div class="color-box" style="background-color: #f1e5ca;"></div>
+                    </div>
+                </div>
+
+                <p-selectButton *ngIf="RuleType === this.constant.RulesType.PROJECT || RuleType === this.constant.RulesType.SOW" [style]="{'margin': '0px 0px 0px 50px'}" [options]="ViewAccessType" [(ngModel)]="selectedViewAccessType" (onChange)="filterRules()"></p-selectButton>
+
+                <button [disabled]="filterData.TEMPRULES.length === 0 ? true : false" pButton pRipple style="margin-right:5px;cursor: pointer; min-width: 2em !important;" type="button" icon="pi pi-save" class="p-button-rounded p-button-secondary p-button-outlined" pTooltip="Save Rules"
+                    tooltipPosition="bottom" (click)="SaveRules()"></button>
+
+            </div>
+
+            <p-scrollPanel class="p-col" [style]="{'width': '100%','height':'400px'}">
+                <p-table [columns]="cols" [value]="filterData.TEMPRULES" [reorderableColumns]="true" (onRowReorder)="onRowReorder($event)">
+
+                    <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                        <tr [ngStyle]="{'background-color' : rowData.RuleType === 'existing' && rowData.edited.IsActiveCH === false  && rowData.edited.UserEdited === false ?  '#cdcdcd' : rowData.RuleType === 'new' ? '#f1e5ca' : rowData.RuleType === 'existing' && rowData.IsActiveCH === 'No' ?  '#f1caca' : '#ecfbd0' ,'margin': index === 0 ? '0px' : '15px 0px', 'cursor':'pointer'}"
+                            [pReorderableRow]="index" class="p-grid Rules_tr">
+                            <td style="font-size: 16px;">
+                                <!-- {{index}} {{rowData |json}} -->
+
+                                <i style="vertical-align: middle;" class="pi pi-bars" pReorderableRowHandle [pTooltip]="rowData.ResourceType" tooltipPosition="bottom"></i>
+                            </td>
+                            <td *ngFor='let Rule of rowData.DisplayRules;let j= index;' class="p-grid ruleNames">
+                                <div class="p-grid" style="margin:5px;font-size:18px;width:80%;">
+                                    <p [pTooltip]="Rule.DisplayName" tooltipPosition="bottom" style="margin: 3px 0px 0px 0px ;"> {{Rule.Value}}</p>
+                                </div>
+                                <div class="p-col" style="font-size:20px;padding:7px;width: 10%;">
+                                    <i *ngIf="rowData.DisplayRules[j + 1] &&  rowData.DisplayRules.length - 1 > j " style="vertical-align: middle;" class="pi pi-chevron-right"></i>
+                                </div>
+
+                            </td>
+
+                            <td class="p-col closeButton" style="text-align: right;padding: 3px;">
+                                <div style="display: inline-block;font-size:25px;vertical-align: top;margin: 0px 10px;">
+                                    <i pTooltip="View Details" tooltipPosition="bottom" class="pi pi-info-circle" (click)="showDetails($event,rowData)" style="vertical-align: bottom;cursor: pointer;"></i>
+                                </div>
+                                <button pButton pRipple type="button" icon="pi pi-user-edit" class="p-button-rounded p-button-secondary p-button-outlined editButton" pTooltip="Edit Rule Users" tooltipPosition="bottom" (click)="EditRule(rowData)" style=" min-width: 2em !important;"></button>
+
+
+                                <button pButton pRipple style="margin-right:5px;cursor: pointer;vertical-align: bottom; min-width: 2em !important;" type="button" [icon]="rowData.IsActiveCH === 'Yes' ? 'pi pi-times' : 'pi pi-undo'" [ngClass]=" rowData.IsActiveCH === 'Yes' ? 'p-button-rounded-delete p-button-outlined' : 'p-button-rounded-recover p-button-outlined'"
+                                    [pTooltip]="rowData.IsActiveCH === 'Yes' ? 'Delete Rule' : 'Recover Rule'" tooltipPosition="bottom" (click)="RemoveRule(rowData)"></button>
+
+
+                            </td>
+
+
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="emptymessage" let-columns>
+                        <tr>
+                            <td [attr.colspan]="columns.length" style="border: none;
+                            font-size: 2em;
+                            text-align: center;
+                            padding: 6vw;">
+                                No rules found.
+                            </td>
+                        </tr>
+                    </ng-template>
+
+                </p-table>
+            </p-scrollPanel>
+
+
+        </p-accordionTab>
+    </p-accordion>
+</div>
+
+<p-overlayPanel class="overlaypanel" #showRuleDetails [style]="{'max-width':'500px','background-color':'#fff6f6'}">
+
+    <div *ngIf="PanelDetails" class="p-grid p-dir-col" style="padding: 5px 0px 0px 0px;font-size: 15px;">
+        <div class="p-col" style="display: flex;">
+            <span style="padding: 0px 10px;"> Owner :</span>
+            <div style="font-weight: bold;">
+                {{PanelDetails.OwnerPG.Title}}
+            </div>
+        </div>
+        <div class="p-col" style="display: flex;" *ngIf="PanelDetails.Access">
+            <span style="padding: 0px 10px;"> Access :</span>
+
+            <div class="p-col p-grid">
+                <div style="font-weight: bold;">
+                    {{PanelDetails.Access}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</p-overlayPanel>

@@ -132,6 +132,7 @@ export class StandardprojectComponent implements OnInit {
       this.setFieldProperties();
       this.isStandardLoaderHidden = true;
       this.isStandardTableHidden = false;
+      this.getProjectRules();
     }, 100);
   }
   onSeviceClear() {
@@ -145,11 +146,7 @@ export class StandardprojectComponent implements OnInit {
     this.selectedResourceObject = null;
   }
   async loadStandardTimeline() {
-    // $('.timeline-top-section').hide();
-    // $('#standardTimelineConfirm').attr('disabled', 'true');
     this.confirmDisabled = true;
-    // $('.standardMilestoneByType').hide();
-    // $('.initialUserCapacity-section').hide();
     this.hideCapacity = true;
     const currentYear = new Date().getFullYear();
     const next10Year = currentYear + 10;
@@ -161,13 +158,11 @@ export class StandardprojectComponent implements OnInit {
       this.standardServices = [];
       await this.getProjectManagement();
       await this.getStandardTemplate();
-      this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetUserInfo');
+      this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetUserInfo', "GET");
       this.userProperties = await this.spService.getUserInfo(this.sharedObject.currentUser.userId);
     } else {
       this.setDropdownField();
     }
-    // $('.iframe-spinner-section', window.parent.document).hide();
-    // $('.timeline-top-section').show();
   }
   public async getProjectManagement() {
     const batchURL = [];
@@ -204,7 +199,7 @@ export class StandardprojectComponent implements OnInit {
     deliveryTypeGet.listName = this.constants.listNames.DeliverableType.name;
     batchURL.push(deliveryTypeGet);
 
-    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetProjPYearCLERCDelType');
+    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetProjPYearCLERCDelType', "GET-BATCH");
     this.pmObject.standardPMResponse = await this.spService.executeBatch(batchURL);
 
     if (this.pmObject.standardPMResponse && this.pmObject.standardPMResponse.length) {
@@ -246,7 +241,7 @@ export class StandardprojectComponent implements OnInit {
       select: 'BudgetHrs',
       filter: 'Title eq \'' + projectCode + '\''
     };
-    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetBudgetHours');
+    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetBudgetHours', "GET");
     const result = await this.spService.readItems(this.constants.listNames.ProjectFinances.name, prjFinanceOptions);
     return result.length ? result : [];
   }
@@ -262,7 +257,7 @@ export class StandardprojectComponent implements OnInit {
       expand: 'Writers/ID,Writers/Name,Writers/Title,Reviewers/ID,Reviewers/Name,Reviewers/Title,QC/ID,QC/Name,QC/Title,Editors/ID,Editors/Name,Editors/Title,PSMembers/ID,PSMembers/Name,PSMembers/Title,GraphicsMembers/ID,GraphicsMembers/Name,GraphicsMembers/Title,PrimaryResMembers/ID,PrimaryResMembers/Name,PrimaryResMembers/Title,CMLevel1/ID,CMLevel1/Title,AllDeliveryResources/ID,AllDeliveryResources/Name,AllDeliveryResources/Title',
       filter: 'ProjectCode eq \'' + projectCode + '\''
     };
-    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetProjectInfo');
+    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetProjectInfo', "GET");
     const project = await this.spService.readItems(this.constants.listNames.ProjectInformation.name, projectResourceOptions);
     // const project = this.spService.getListItem(projectResourceUrl);
     const oPrjFinance = await this.getBudgetHours(projectCode);
@@ -303,7 +298,7 @@ export class StandardprojectComponent implements OnInit {
       expand: 'StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
       filter: 'StandardService/Title eq \'' + selectedServices + '\' and LegalEntity/Title eq \'' + clientLegalEntity + '\' and IsActiveCH eq \'Yes\''
     };
-    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStdTemplateBasedOnDeliverables');
+    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStdTemplateBasedOnDeliverables', "GET");
     standardTemplate = await this.spService.readItems(this.constants.listNames.StandardTemplates.name, standardTemplateOptions)
     if (standardTemplate.length > 0) {
       return standardTemplate;
@@ -321,7 +316,7 @@ export class StandardprojectComponent implements OnInit {
       expand: 'StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
       filter: 'LegalEntity/Title eq \'' + clientLegalEntity + '\' and IsActiveCH eq \'Yes \''
     };
-    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStdTemplate');
+    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStdTemplate', "GET");
     standardTemplate = await this.spService.readItems(this.constants.listNames.StandardTemplates.name, standardTemplateOptions);
     if (standardTemplate && standardTemplate.length) {
       this.loadServiceDropDown(standardTemplate);
@@ -344,7 +339,7 @@ export class StandardprojectComponent implements OnInit {
       expand: 'Template/ID,Template/Title',
       filter: 'Template/Title eq \'' + templateName + '\''
     }
-    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetMilestonMatrix');
+    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetMilestonMatrix', "GET");
     standardMilestone = await this.spService.readItems(this.constants.listNames.MilestoneMatrix.name, standardMilestoneOptions);
     if (standardMilestone.length > 0) {
       standardMilestone = standardMilestone.sort(function (a, b) {
@@ -423,7 +418,7 @@ export class StandardprojectComponent implements OnInit {
       milestoneTaskGet.listName = this.constants.listNames.MilestoneTaskMatrix.name;
       batchURL.push(milestoneTaskGet);
     }
-    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetMilestoneTasks');
+    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetMilestoneTasks', "GET-BATCH");
     this.allMilestoneTask = await this.spService.executeBatch(batchURL);
   }
   /**
@@ -444,7 +439,7 @@ export class StandardprojectComponent implements OnInit {
       orderby: 'Title',
       top: 4900
     };
-    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStandardServiceName');
+    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStandardServiceName', 'GET');
     const result = await this.spService.readItems(this.constants.listNames.StandardServices.name, standardServiceOptions);
     if (result && result.length) {
       for (const element of result) {
@@ -469,11 +464,21 @@ export class StandardprojectComponent implements OnInit {
       let tempskillTypes = {};
       let temSkillArray = [];
       let tempReviewArray = [];
-      let selectedVal = event.value.BaseSkill;
-      let selectedService = event.value.Title;
+      let selectedVal = event.value ? event.value.BaseSkill : null;
+      let selectedService = event.value ? event.value.Title: null;
       this.sharedTaskAllocateObj.oStandardTemplateForDeliverable = await this.getStandardTemplateBasedOnDeliverable(selectedService);
-      this.deliverableType = event.value.Deliverable.Title;
+      this.deliverableType =event.value ?  event.value.Deliverable.Title : null;
       this.selectedService = selectedService;
+
+
+      this.constants.RuleParamterArray.find(
+        (c) => c.parameterName === "DeliverableType"
+      ).value = this.deliverableType ? this.deliverableType:'';
+  
+   
+      this.getProjectRules();
+
+
       this.changedProjectCode(this.deliverableType);
       // save the deliverable type and subDeliverable in global variable to save the project.
       this.pmObject.addProject.Timeline.Standard.DeliverableType = this.deliverableType;
@@ -484,7 +489,7 @@ export class StandardprojectComponent implements OnInit {
         expand: 'Tasks/ID,Tasks/Title',
         filter: 'NameCH eq \'' + selectedVal + '\''
       };
-      this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetSkillMaster');
+      this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetSkillMaster', "GET");
       let skillMaster = await this.spService.readItems(this.constants.listNames.SkillMaster.name, skillMasterOptions);
       for (const skill of skillMaster) {
         let tempSkill = skill.NameCH;
@@ -2046,6 +2051,26 @@ export class StandardprojectComponent implements OnInit {
         return false;
       }
     }
+
+    if (!this.pmObject.OwnerAccess.selectedDeliveryOwner || !this.pmObject.OwnerAccess.selectedCMOwner
+    ) {
+      const Message = !this.pmObject.OwnerAccess.selectedCMOwner ? 'CM' : 'Delivery';
+        this.commonService.showToastrMessage(this.constants.MessageType.warn,Message + ' Owner is required.Project rule not defined for '+Message+'. Please define at-least one '+ Message +' rule to create project.',false);
+      return false;
+    }
+
+
+    if (
+      this.pmObject.OwnerAccess.selectedCMAccess &&
+      this.pmObject.OwnerAccess.selectedCMAccess.length === 0
+    ) {
+      this.commonService.showToastrMessage(
+        this.constants.MessageType.error,
+        " CM Access is required.",
+        false
+      );
+      return false;
+    }
     if (isRegisterClick && this.standardMilestone.milestones && this.standardMilestone.milestones.length) {
       for (const milestone of this.standardMilestone.milestones) {
         if (milestone.MilestoneDeviation > 0) {
@@ -2144,6 +2169,23 @@ export class StandardprojectComponent implements OnInit {
       this.pmObject.addProject.Timeline.Standard.StandardBudgetHrs = this.standardBudgetHrs;
       this.pmObject.addProject.Timeline.Standard.standardArray = this.standardFiles;
       this.pmObject.addProject.FinanceManagement.BudgetHours = this.pmObject.addProject.Timeline.Standard.StandardProjectBugetHours;
+      this.pmObject.addProject.ProjectAttributes.ActiveCM1 = this.pmObject.OwnerAccess.selectedCMAccess;
+      this.pmObject.addProject.ProjectAttributes.ActiveCM2 = this.pmObject.OwnerAccess.selectedCMOwner;
+
+      this.pmObject.addProject.ProjectAttributes.ActiveDelivery1 = this.pmObject.OwnerAccess.selectedDeliveryAccess;
+      this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = this.pmObject.OwnerAccess.selectedDeliveryOwner;
+     
+      if(this.pmObject.addProject.ProjectAttributes.ActiveCM1.find(c=> c !== this.sharedObject.currentUser.userId) && this.pmObject.OwnerAccess.cmLevel1.find(c=>c.value === this.sharedObject.currentUser.userId)){
+
+        this.pmObject.addProject.ProjectAttributes.ActiveCM1.push(this.sharedObject.currentUser.userId);
+      }
+
+      if(this.pmObject.addProject.ProjectAttributes.ActiveDelivery1.find(c=> c !== this.sharedObject.currentUser.userId) && this.pmObject.OwnerAccess.deliveryLevel1.find(c=>c.value === this.sharedObject.currentUser.userId)){
+
+        this.pmObject.addProject.ProjectAttributes.ActiveDelivery1.push(this.sharedObject.currentUser.userId);
+      }
+
+
       // await this.pmCommonService.validateAndSave();
       // new code by maxwell file upload progress bar
 
@@ -2154,7 +2196,7 @@ export class StandardprojectComponent implements OnInit {
         if (this.pmObject.addProject.FinanceManagement.selectedFile) {
           let SelectedFile = [];
           this.pmObject.isMainLoaderHidden = true;
-          this.commonService.SetNewrelic('projectManagment', 'nonStdConfirm', 'UploadFiles');
+          this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'UploadFiles', "POST-BATCH");
 
           const FolderName = await this.pmCommonService.getFolderName();
           SelectedFile.push(new Object({ name: this.pmObject.addProject.FinanceManagement.selectedFile.name, file: this.pmObject.addProject.FinanceManagement.selectedFile }));
@@ -2181,7 +2223,6 @@ export class StandardprojectComponent implements OnInit {
   async CallAddUpdateProject() {
     this.pmObject.isMainLoaderHidden = false;
     await this.pmCommonService.addUpdateProject();
-
     this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode, true);
     this.pmCommonService.reloadPMPage();
   }
@@ -2396,5 +2437,10 @@ export class StandardprojectComponent implements OnInit {
 
   hideOverlayPanel() {
     this.dailyAllocateOP.hideOverlay();
+  }
+
+
+  async getProjectRules(){
+    await this.pmCommonService.FilterRules();   
   }
 }

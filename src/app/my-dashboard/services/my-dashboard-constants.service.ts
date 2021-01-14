@@ -43,7 +43,9 @@ export class MyDashboardConstantsService {
   };
 
   mydashboardComponent = {
-
+    componentRef: null,
+    startDate: null,
+    endDate: null,
     user: {
       isUserFTE: false,
     },
@@ -80,7 +82,7 @@ export class MyDashboardConstantsService {
       top: 4500
     },
     ResourceCategorization: {
-      select: 'ID,UserNamePG/ID,UserNamePG/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,Designation,PrimarySkill,SkillLevel/ID,SkillLevel/Title,TimeZone/ID,TimeZone/Title,IsActiveCH,IsFTE',
+      select: 'ID,UserNamePG/ID,UserNamePG/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,Designation,PrimarySkill,SkillLevel/ID,SkillLevel/Title,TimeZone/ID,TimeZone/Title,IsActiveCH,IsFTE,RoleCH,PlaceholderUser',
       expand: 'UserNamePG/ID,UserNamePG/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,SkillLevel,TimeZone/ID,TimeZone/Title',
       filter: 'IsActiveCH eq \'Yes\'',
       orderby: 'UserNamePG/Title',
@@ -263,11 +265,9 @@ export class MyDashboardConstantsService {
       expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
       filter: 'ID eq {{projectId}}',
     },
-
-
     ClientReviewSchedules: {
       select: 'ID,Title,Status,Task,Milestone,ProjectCode',
-      filter: 'ProjectCode eq \'{{projectCode}}\' and Task eq \'Client Review\' and (Status eq \'Completed\' or (Status eq \'Not Started\' and PreviousTaskClosureDate ne null))'
+      filter: 'ProjectCode eq \'{{projectCode}}\' and Task eq \'Client Review\' and (Status eq \'Completed\' or Status eq \'Not Started\')'
     }
 
   };
@@ -314,7 +314,7 @@ export class MyDashboardConstantsService {
     if (task.ParentSlot) {
       const parentPreviousNextTask = Object.assign({}, this.mydashboardComponent.previousNextTaskParent);
       parentPreviousNextTask.filter = parentPreviousNextTask.filter.replace('{{ParentSlotId}}', task.ParentSlot);
-      this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasks');
+      this.common.SetNewrelic('MyDashboard','MyDashboardConstantService',  'GetNextPreviousTasks');
       const parentNPTasks = await this.spServices.readItems(this.constants.listNames.Schedules.name, parentPreviousNextTask);
       console.log(parentNPTasks);
       const parentNPTask = parentNPTasks.length ? parentNPTasks[0] : [];
@@ -351,7 +351,7 @@ export class MyDashboardConstantsService {
     }
     const previousNextTask = Object.assign({}, this.mydashboardComponent.previousNextTask);
     previousNextTask.filter = taskFilter;
-    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromSchedules');
+    this.common.SetNewrelic('MyDashboard', 'MyDashboardConstantService', 'GetNextPreviousTasksFromSchedules');
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTask);
 
     this.tasks = this.response.length ? this.response : [];
@@ -370,7 +370,7 @@ export class MyDashboardConstantsService {
         let previousNextTaskChild: any = [];
         previousNextTaskChild = Object.assign({}, this.mydashboardComponent.nextPreviousTaskChild);
         previousNextTaskChild.filter = previousNextTaskChild.filter.replace('{{ParentSlotId}}', ele.ID.toString());
-        this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromParentSlot');
+        this.common.SetNewrelic('MyDashboard', 'MyDashboardConstantService', 'GetNextPreviousTasksFromParentSlot');
         let res: any = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTaskChild);
         if (res.hasError) {
           this.common.showToastrMessage(this.constants.MessageType.error,res.message.value,false);
@@ -438,7 +438,7 @@ export class MyDashboardConstantsService {
     const currentTask = Object.assign({}, this.mydashboardComponent.previousTaskStatus);
     currentTask.filter = currentTask.filter.replace(/{{taskId}}/gi, task.ID)
       .replace(/{{userID}}/gi, this.sharedObject.currentUser.userId.toString());
-    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksStatus');
+    this.common.SetNewrelic('MyDashboard', 'MyDashboardConstantService', 'GetNextPreviousTasksStatus');
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, currentTask);
     for (const element of this.response) {
       // if (element.AllowCompletion === 'No') {
@@ -538,7 +538,7 @@ export class MyDashboardConstantsService {
 
     }
 
-    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'getCurrentAndParentTask');
+    this.common.SetNewrelic('MyDashboard', 'MyDashboardConstantService', 'getCurrentAndParentTask');
     const currentParentTasks = await this.spServices.executeBatch(batchURL);
     const parentTaskProp = { Status: 'In Progress', ActiveCA: 'Yes', __metadata: { type: this.constants.listNames.Schedules.type } };
     const parentTaskRes = currentParentTasks.length ? currentParentTasks[0].retItems[0] : null;
@@ -568,7 +568,7 @@ export class MyDashboardConstantsService {
               type: 'POST',
               listName: this.constants.listNames.EarlyTaskCompleteNotifications.name
             });
-            this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'EarlyTaskNotification');
+            this.common.SetNewrelic('MyDashboard', 'MyDashboardConstantService', 'EarlyTaskNotification');
             const res = await this.spServices.executeBatch(batchURL);
           }
           parentTaskProp.Status = 'Completed';
@@ -603,7 +603,7 @@ export class MyDashboardConstantsService {
       type: 'PATCH',
       listName: this.constants.listNames.Schedules.name
     });
-    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'UpdateSlot');
+    this.common.SetNewrelic('MyDashboard', 'MyDashboardConstantService', 'UpdateSlot');
     await this.spServices.executeBatch(postbatchURL);
   }
 
@@ -632,7 +632,7 @@ export class MyDashboardConstantsService {
     // const batchGuid = this.spServices.generateUUID();
     const project = Object.assign({}, this.mydashboardComponent.projectInfo);
     project.filter = project.filter.replace(/{{projectCode}}/gi, ProjectCode);
-    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'getCurrentTaskProjectInformation');
+    this.common.SetNewrelic('MyDashboard', 'MyDashboardConstantService', 'getCurrentTaskProjectInformation');
     this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, project);
     return this.response.length > 0 ? this.response[0] : {};
   }
@@ -690,7 +690,7 @@ export class MyDashboardConstantsService {
       jcReqObj.type = 'GET';
       batchUrl.push(jcReqObj);
     }
-    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'ckeckSubmissionDetails');
+    this.common.SetNewrelic('MyDashboard', 'MyDashboardConstantService', 'ckeckSubmissionDetails');
     const arrResult = await this.spServices.executeBatch(batchUrl);
     this.response = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
     this.jcSubId = undefined;
@@ -973,7 +973,7 @@ export class MyDashboardConstantsService {
 
     });
 
-    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'SaveTask');
+    this.common.SetNewrelic('MyDashboard', 'MyDashboardConstantService', 'SaveTask');
     await this.spServices.executeBatch(batchUrl);
     return undefined;
   }
@@ -1094,7 +1094,7 @@ export class MyDashboardConstantsService {
       getDocuments.type = 'GET';
       batchUrl.push(getDocuments);
 
-      this.common.SetNewrelic('MyDashboard', 'MyDashboardConstants-callQMSPopup', 'readItems');
+      this.common.SetNewrelic('MyDashboard', 'MyDashboardConstants', 'readItems-callQMSPopup');
       const arrResults = await this.spServices.executeBatch(batchUrl);
       const milestoneTasks = arrResults.length > 0 ? arrResults[0].retItems : [];
       const documents = arrResults.length > 1 ? arrResults[1].retItems : [];
@@ -1103,6 +1103,7 @@ export class MyDashboardConstantsService {
       currentTask.isEQGTask = arrEQGTasks.indexOf(currentTask.Task) > -1 ? true : false;
       currentTask.isFinalizeTask = !currentTask.isEQGTask ? arrFinalizeTasks.indexOf(currentTask.Task) > -1 ? true : false : false;
       currentTask.isReviewTask = !currentTask.isEQGTask && !currentTask.isFinalizeTask ? currentTask.Task.indexOf('Review-') > -1 ? true : false : false;
+      currentTask.isReviewWriteTask = currentTask.Task.indexOf('Review-Write') > -1 ? true : false;
       const milestoneTask = milestoneTasks.find(t => t.Title === currentTask.Task);
       currentTask.defaultSkill = currentTask.isReviewTask ? 'Review' : milestoneTask.DefaultSkill ? milestoneTask.DefaultSkill : '';
       currentTask.scorecardRatingAllowed = milestoneTask.ScorecardRatingAllowed ? milestoneTask.ScorecardRatingAllowed : '';
@@ -1120,6 +1121,10 @@ export class MyDashboardConstantsService {
           previousTask.isWriter = !previousTask.isResourceEQG ? previousTask.skill.includes(writer) : false;
           previousTask.isReviewer = !previousTask.isResourceEQG && !previousTask.isWriter ? previousTask.skill.includes(reviewer) : false;
           previousTask.isReviewTask = previousTask.Task.indexOf('Review-') > -1 ? true : false;
+
+          if (currentTask.isReviewWriteTask && previousTask.isResourceEQG ) {
+            currentTask.defaultSkill = 'Write';
+          }
           if (currentTask.isReviewTask || (!previousTask.isReviewTask && arrPrevTaskDocUrl.length > 0 &&
             ((currentTask.isEQGTask && previousTask.isWriter) ||
               (currentTask.isFinalizeTask && previousTask.isResourceEQG)

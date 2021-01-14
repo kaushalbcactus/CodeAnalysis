@@ -1,0 +1,28 @@
+<p-table [value]="files">
+  <ng-template pTemplate="header">
+      <tr>
+          <th>Document Name</th>
+          <th>Milestone</th>
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-row>
+      <tr>
+        <td>
+          <input pInputText type="text" (blur)="updateFileName(row)" class="fileName" [(ngModel)]="row.filenamewithoutExt">
+          <span>&nbsp; {{row.extension}}</span>
+        </td>
+          <!-- <td>{{row.file.name}}</td> -->
+          <td> <p-dropdown [options]="milestones" [(ngModel)]="row.selectedMilestone"></p-dropdown></td>
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="footer" >
+    <tr> <td colspan="2">
+      <div class="footer">
+          <button type="button" class="btn btn-light button cancelbtn" (click)="popupConfig.close()">Cancel</button>
+          <button type="button" id='saveBtn' class="btn btn-light button savebtn" (click)="tagMilestone($event)">
+             Save </button>
+      </div>
+    </td>
+    </tr>
+  </ng-template>
+</p-table>

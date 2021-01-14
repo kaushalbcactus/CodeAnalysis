@@ -15,10 +15,12 @@ import { ClientMasterdataComponent } from './admin/client-masterdata/client-mast
 import { RulesComponent } from './admin/rules/rules.component';
 import { ReferenceDataComponent } from './admin/reference-data/reference-data.component';
 import { CopyPermissionComponent } from './admin/entitlement/copy-permission/copy-permission.component';
-import { AddUserToProjectsComponent } from './admin/entitlement/add-user-to-projects/add-user-to-projects.component';
-import { AddUserToSowComponent } from './admin/entitlement/add-user-to-sow/add-user-to-sow.component';
+// import { AddUserToProjectsComponent } from './admin/entitlement/add-user-to-projects/add-user-to-projects.component';
+// import { AddUserToSowComponent } from './admin/entitlement/add-user-to-sow/add-user-to-sow.component';
 import { GroupDescriptionComponent } from './admin/entitlement/group-description/group-description.component';
 import { AdminAuthGuard } from './auth/admin-auth.guard';
+import { AddAccessComponent } from './admin/entitlement/add-access/add-access.component';
+import { RemoveAccessComponent } from './admin/entitlement/remove-access/remove-access.component';
 
 const routes: Routes = [
   {
@@ -49,8 +51,13 @@ const routes: Routes = [
           { path: 'userRoleMapping', component: UserRoleMappingComponent },
           { path: 'roleUserMapping', component: RoleUserMappingComponent },
           { path: 'copyPermission', component: CopyPermissionComponent },
-          { path: 'addUserToSow', component: AddUserToSowComponent },
-          { path: 'addUserToProjects', component: AddUserToProjectsComponent },
+          { path: 'addAccess', component: AddAccessComponent },
+          { path: 'removeAccess', component: RemoveAccessComponent },
+
+          // { path: 'addUserToSow', component: AddUserToSowComponent },
+          // { path: 'addUserToProjects', component: AddUserToProjectsComponent },
+
+
           { path: 'addGroupDescription', component: GroupDescriptionComponent }
         ]
       },
@@ -67,3 +74,5 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AdminRoutingModule { }
+
+

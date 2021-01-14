@@ -206,7 +206,7 @@ export class LeaveCalendarComponent implements OnInit {
     leavesGet.type = 'GET';
     leavesGet.listName = this.constants.listNames.LeaveCalendar.name;
     batchURL.push(leavesGet);
-    this.commonService.SetNewrelic('LeaveCalendar', 'leaveCalendar', 'GetLevaesBasedOnSDED');
+    this.commonService.SetNewrelic('LeaveCalendar', 'leaveCalendar', 'GetLevaesBasedOnSDED', "GET");
     const arrResults = await this.spServices.executeBatch(batchURL);
 
     if (arrResults) {

@@ -89,7 +89,34 @@
     vertical-align: sub !important;
 }
 
+.ui-treetable .ui-widget {
+  margin-top: 5px;
+}
 
-/* ::ng-deep .ui-table-scrollable-header-box {
-  margin-right: 17px !important !important;
-  } */
+body .ui-button {
+  color: #333333;
+  background-color: #c53e3e !important;
+  border: 1px solid #C53E3D !important;
+}
+
+.fileName {
+  width: 80%;
+}
+
+.pointer {
+  cursor: pointer;
+  font-size: 22px;
+  vertical-align: text-bottom;
+}
+.docHeader1 {
+  margin-left: 30px;
+}
+.docHeader2 {
+  margin-left: 5px;
+}
+.nodata {
+  padding: 30px 0px 0px 0px!important;
+  color: #c53e3e!important;
+  font-size: 1.2em!important;
+  margin-left: 42px!important;
+}

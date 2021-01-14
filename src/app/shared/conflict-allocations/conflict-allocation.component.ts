@@ -271,7 +271,7 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
         batchUrl.push(projObj);
       }
     });
-    this.commonService.SetNewrelic('Allocation', 'Conflict Check component', 'GetProjectShortTitle');
+    this.commonService.SetNewrelic('TaskAllocation', 'Conflict Check component', 'GetProjectShortTitle', "GET-BATCH");
     const arrResults = await this.spServices.executeBatch(batchUrl);
     const projects = arrResults.length > 0 ? arrResults.map(a => a.retItems.length ? a.retItems[0] : []) : [];
     projectInformation = [...projectInformation, ...projects];

@@ -267,6 +267,7 @@ export class UserProfileComponent implements OnInit {
         userObj.WorkingThursday = item.WorkingThursday;
         userObj.WorkingFriday = item.WorkingFriday;
         userObj.WorkingSaturday = item.WorkingSaturday;
+        userObj.PlaceholderUser = item.PlaceholderUser;
         // Add the text of below item.
         if (userObj.Task) {
           const tasks: any = userObj.Task;
@@ -417,6 +418,7 @@ export class UserProfileComponent implements OnInit {
         userObj.WorkingThursday = item.WorkingThursday;
         userObj.WorkingFriday = item.WorkingFriday;
         userObj.WorkingSaturday = item.WorkingSaturday;
+        userObj.PlaceholderUser = item.PlaceholderUser;
         // Add the text of below item.
         if (userObj.Task) {
           const tasks: any = userObj.Task;
@@ -785,6 +787,7 @@ export class UserProfileComponent implements OnInit {
       userObj.WorkingThursday = item.WorkingThursday;
       userObj.WorkingFriday = item.WorkingFriday;
       userObj.WorkingSaturday = item.WorkingSaturday;
+      userObj.PlaceholderUser = item.PlaceholderUser;
       // Add the text of below item.
       if (userObj.Task) {
         const tasks: any = userObj.Task;
@@ -1020,6 +1023,7 @@ export class UserProfileComponent implements OnInit {
       WorkingThursday: formObj.workThursday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
       WorkingFriday: formObj.workFriday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
       WorkingSaturday: formObj.workSaturday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
+      PlaceholderUser: formObj.placeholderUser,
     };
     if (formObj.role) {
       data.RoleCH = formObj.role;
@@ -1050,8 +1054,12 @@ export class UserProfileComponent implements OnInit {
           const todayDate = this.datePipe.transform(new Date(), 'MMM dd yyyy');
           if (dateOfExit <= todayDate) {
             data.IsActiveCH = this.adminConstants.LOGICAL_FIELD.NO;
+          } else {
+            data.IsActiveCH = this.adminConstants.LOGICAL_FIELD.YES;
           }
           data.DateofExit = formObj.dateofexit;
+        } else {
+          data.IsActiveCH = this.adminConstants.LOGICAL_FIELD.YES;
         }
       }
     }
@@ -1090,8 +1098,10 @@ export class UserProfileComponent implements OnInit {
 
       if (date.isFTEEffectiveDateActive && formObj.fTEEffectiveDate && formObj.isFTE === this.adminConstants.LOGICAL_FIELD.YES) {
         data.FTEEffectiveDate = formObj.fTEEffectiveDate;
-      } else if (formObj.isFTE === this.adminConstants.LOGICAL_FIELD.NO) {
+        data.DueDateDT = null;
+      } else if (date.isFTENo && formObj.fTeDueDate && formObj.isFTE === this.adminConstants.LOGICAL_FIELD.NO) {
         data.FTEEffectiveDate = null;
+        data.DueDateDT = formObj.fTeDueDate;
       }
     }
     return data;

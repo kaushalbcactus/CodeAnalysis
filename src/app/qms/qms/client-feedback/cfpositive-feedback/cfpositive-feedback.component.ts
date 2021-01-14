@@ -1,18 +1,8 @@
-import { QMSCommonService } from './../../services/qmscommon.service';
-import { Component, OnInit, ViewChild, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
-import { ConstantsService } from '../../../../Services/constants.service';
-import { Router, NavigationEnd } from '@angular/router';
-import { debounceTime } from 'rxjs/operators';
-import { SPCommonService } from '../../../../Services/spcommon.service';
-import { GlobalService } from '../../../../Services/global.service';
-import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
-import { Subject } from 'rxjs/internal/Subject';
-import { SPOperationService } from '../../../../Services/spoperation.service';
-import { FilterComponent } from '../filter/filter.component';
+
+import { Component, OnInit, ViewChild, OnDestroy, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
+import {PlatformLocation, LocationStrategy } from '@angular/common';
 import { MenuItem } from 'primeng/api';
-import { QMSConstantsService } from '../../services/qmsconstants.service';
-import { Table } from 'primeng/table';
-import { CommonService } from 'src/app/Services/common.service';
 import { PfsComponent } from 'src/app/shared/sqms/pfs/pfs.component';
 @Component({
   selector: 'app-cfpositive-feedback',
@@ -44,7 +34,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
   CFRows = [];
   items: MenuItem[];
   private cfPFNavigationSubscription;
-  @ViewChild('cfp', { static: false }) cfpositive: PfsComponent;
+  @ViewChild('cfp1', { static: false }) cfpositive: PfsComponent;
 
   public hideLoader = true;
   public hideTable = false;
@@ -79,6 +69,6 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
   }
 
   downloadExcel(cfp) {
-    cfp.exportCSV();
+    cfp.cfpositiveTable.exportCSV();
   }
 }

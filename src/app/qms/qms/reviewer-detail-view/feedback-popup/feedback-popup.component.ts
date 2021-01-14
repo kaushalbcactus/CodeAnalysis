@@ -214,6 +214,11 @@ export class FeedbackPopupComponent implements OnInit {
     const batchURL = [];
     let scorecardDetails: {};
     previousTasks.forEach(taskDetail => {
+      const arrEQGSkills = ['Editor', 'QC', 'Graphics'];
+      const isPrevTaskEQGResource = arrEQGSkills.findIndex(t => taskDetail.assignedToSkill.includes(t)) > -1 ? true : false;
+      const isCurrentReviewWriteTask = taskDetail.reviewTask.Task === 'Review-Write' ? true : false;
+      const taskEvaluatorSkill = isPrevTaskEQGResource && isCurrentReviewWriteTask ? 'Write' : taskDetail.reviewTask.defaultSkill ?
+                                  taskDetail.reviewTask.defaultSkill : '';
       scorecardDetails = {
         __metadata: { type: this.constantsService.listNames.Scorecard.type },
         Title: taskDetail.task,
@@ -225,7 +230,7 @@ export class FeedbackPopupComponent implements OnInit {
         DocumentsUrl: taskDetail.documentUrl,
         ReviewerDocsUrl: taskDetail.reviewTaskDocUrl,
         TemplateName: taskDetail.selectedTemplate.Title,
-        EvaluatorSkill: taskDetail.reviewTask ? taskDetail.reviewTask.defaultSkill ? taskDetail.reviewTask.defaultSkill : '' : ''
+        EvaluatorSkill: taskDetail.reviewTask ? taskEvaluatorSkill : ''
       };
       if (taskDetail.taskCompletionDate) {
         scorecardDetails = {
@@ -375,7 +380,7 @@ export class FeedbackPopupComponent implements OnInit {
     if (task.ParentSlot) {
       const parentPreviousNextTask = Object.assign({}, this.dashbaordService.mydashboardComponent.previousNextTaskParent);
       parentPreviousNextTask.filter = parentPreviousNextTask.filter.replace('{{ParentSlotId}}', task.ParentSlot);
-      this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasks');
+      this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'GetNextPreviousTasks');
       let parentTask = await this.spService.readItems(this.constantsService.listNames.Schedules.name, parentPreviousNextTask);
       parentTask = parentTask.length ? parentTask[0] : [];
       if (!currentTaskPrevTask) {
@@ -397,7 +402,7 @@ export class FeedbackPopupComponent implements OnInit {
     }
     const previousNextTask = Object.assign({}, this.dashbaordService.mydashboardComponent.previousNextTask);
     previousNextTask.filter = taskFilter;
-    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromSchedules');
+    this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'GetNextPreviousTasksFromSchedules');
     const response = await this.spService.readItems(this.constantsService.listNames.Schedules.name, previousNextTask);
 
     tasks = response.length ? response : [];
@@ -411,7 +416,7 @@ export class FeedbackPopupComponent implements OnInit {
         let previousNextTaskChild: any = [];
         previousNextTaskChild = Object.assign({}, this.dashbaordService.mydashboardComponent.nextPreviousTaskChild);
         previousNextTaskChild.filter = previousNextTaskChild.filter.replace('{{ParentSlotId}}', ele.ID.toString());
-        this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'GetNextPreviousTasksFromParentSlot');
+        this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'GetNextPreviousTasksFromParentSlot');
         let res: any = await this.spService.readItems(this.constantsService.listNames.Schedules.name, previousNextTaskChild);
         if (res.hasError) {
           this.common.showToastrMessage(this.constantsService.MessageType.error,res.message.value,false);
@@ -503,6 +508,7 @@ export class FeedbackPopupComponent implements OnInit {
     this.scorecardTasks.currentTask = reviewTask;
     this.scorecardTemplates.templates = await this.getTemplates();
     for (const element of tasks) {
+      const previousTaskSkill = this.getResourceSkill(element);
       const scorecard: IScorecard = {
         task: element.title ? element.title : element.taskTitle,
         milestone: element.milestone,
@@ -510,6 +516,7 @@ export class FeedbackPopupComponent implements OnInit {
         taskID: element.taskID,
         assignedToID: element.resourceID,
         assignedTo: element.resource,
+        assignedToSkill: previousTaskSkill,
         taskCompletionDate: element.taskCompletionDate,
         documentUrl: element.documentURL.length > 0 ? element.documentURL.join(';#') : '',
         reviewTaskDocUrl: element.reviewTaskDocUrl.length > 0 ? element.reviewTaskDocUrl.join(';#') : '',
@@ -534,6 +541,14 @@ export class FeedbackPopupComponent implements OnInit {
     this.scorecardTasks.tasks = [...previousTasks];
     this.activeIndex = 0;
     this.cdr.detectChanges();
+  }
+
+  getResourceSkill(task) {
+    const assignedTo = task.resourceID ? task.resourceID : -1;
+    const allRes = this.global.DashboardData.ResourceCategorization.length ? this.global.DashboardData.ResourceCategorization : this.global.allResources;
+    const resource = allRes.find(res => res.UserNamePG.ID === assignedTo);
+    const skill = resource ? resource.SkillLevel.Title ? resource.SkillLevel.Title : '' : '';
+    return skill;
   }
 
   onIgnoreClicked(task, e) {

@@ -250,5 +250,9 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     width: calc(100% - 30px) !important;
 }
 
+.ui-toast {
+    width: 25em !important;
+}
+
 
 /* Dynamic Dialog common Css end  */

@@ -75,7 +75,7 @@ export class AddEditUserProfileComponent implements OnInit {
     private common: CommonService, ) { }
 
   async ngOnInit() {
-    this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 30));
+    this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 60));
     const currentYear = new Date();
     this.yearRange = this.common.getyearRange();
     this.initialAddUserForm();
@@ -104,7 +104,8 @@ export class AddEditUserProfileComponent implements OnInit {
     isDateExit: false,
     isBucketDateActive: false,
     isMaxHrsDateActive: false,
-    isFTEEffectiveDateActive: false
+    isFTEEffectiveDateActive: false,
+    isFTENo: false
   };
 
   cancel() {
@@ -150,6 +151,7 @@ export class AddEditUserProfileComponent implements OnInit {
       primarySkillEffectiveDate: [new Date(), null],
       skillLevelEffectiveDate: [new Date(), null],
       fTEEffectiveDate: [new Date(), null],
+      fTeDueDate: [new Date(), null],
       workSunday: [{ value: '', disabled: true }, null],
       workMonday: ['', null],
       workTuesday: ['', null],
@@ -157,6 +159,7 @@ export class AddEditUserProfileComponent implements OnInit {
       workThursday: ['', null],
       workFriday: ['', null],
       workSaturday: [{ value: '', disabled: true }, null],
+      placeholderUser: ['No', null],
     });
   }
 
@@ -184,7 +187,7 @@ export class AddEditUserProfileComponent implements OnInit {
     isActiveArray: [],
     taVisibilityArray: [],
     caVisibilityArray: [],
-
+    placeholderUserArray: []
   };
   /**
   * Construct a method to initialize the dropdown array to null.
@@ -206,6 +209,7 @@ export class AddEditUserProfileComponent implements OnInit {
     this.adminDropDown.caVisibilityArray = [];
     this.adminDropDown.taVisibilityArray = [];
     this.adminDropDown.isFTEArray = [];
+    this.adminDropDown.placeholderUserArray = [];
   }
 
   /**
@@ -345,11 +349,16 @@ export class AddEditUserProfileComponent implements OnInit {
 
   onFTEChange() {
     const isFTEEffectiveDateControl = this.addUser.get('fTEEffectiveDate');
+    const isFTEDueDateControl = this.addUser.get('fTeDueDate');
     const accountControl = this.addUser.get('account');
     if (this.showeditUser && this.addUser.value.isFTE === 'Yes') {
+      isFTEDueDateControl.setValue(null);
+      isFTEDueDateControl.clearValidators();
+      isFTEDueDateControl.updateValueAndValidity();
       isFTEEffectiveDateControl.setValidators([Validators.required]);
       isFTEEffectiveDateControl.updateValueAndValidity();
       this.date.isFTEEffectiveDateActive = true;
+      this.date.isFTENo = false;
       this.addUser.get('fTEEffectiveDate').setValue(null);
       this.addUser.get('fTEEffectiveDate').enable();
       accountControl.setValidators([Validators.required]);
@@ -362,13 +371,18 @@ export class AddEditUserProfileComponent implements OnInit {
       isFTEEffectiveDateControl.clearValidators();
       isFTEEffectiveDateControl.updateValueAndValidity();
       this.date.isFTEEffectiveDateActive = false;
+      this.date.isFTENo = true;
       accountControl.clearValidators();
       accountControl.updateValueAndValidity();
       this.addUser.get('account').setValue(null);
     }  else if (!this.showeditUser && this.addUser.value.isFTE === 'Yes') {
+      isFTEDueDateControl.setValue(null);
+      isFTEDueDateControl.clearValidators();
+      isFTEDueDateControl.updateValueAndValidity();
       isFTEEffectiveDateControl.setValidators([Validators.required]);
       isFTEEffectiveDateControl.updateValueAndValidity();
       this.date.isFTEEffectiveDateActive = true;
+      this.date.isFTENo = false;
       this.addUser.get('fTEEffectiveDate').setValue(null);
       this.addUser.get('fTEEffectiveDate').enable();
       this.addUser.get('account').setValue(null);
@@ -380,6 +394,7 @@ export class AddEditUserProfileComponent implements OnInit {
       isFTEEffectiveDateControl.clearValidators();
       isFTEEffectiveDateControl.updateValueAndValidity();
       this.date.isFTEEffectiveDateActive = false;
+      this.date.isFTENo = true;
       this.addUser.get('account').setValue(null);
       accountControl.clearValidators();
       accountControl.updateValueAndValidity();
@@ -474,6 +489,7 @@ export class AddEditUserProfileComponent implements OnInit {
       skillLevel: userObj.SkillLevel.ID,
       role: userObj.Role,
       readyTo: userObj.ReadyTo,
+      placeholderUser: userObj.PlaceholderUser ? userObj.PlaceholderUser : 'No'
     });
 
     // Convert Practice area(;#) to array
@@ -859,6 +875,15 @@ export class AddEditUserProfileComponent implements OnInit {
           this.adminDropDown.isFTEArray.push({ label: element, value: element });
         });
       }
+
+      // load placeholderUser dropdown
+      let placeholderUserResults = dropdownResults[15].retItems;
+      if (placeholderUserResults && placeholderUserResults.length) {
+        placeholderUserResults = placeholderUserResults[0].Choices.results;
+        placeholderUserResults.forEach(element => {
+          this.adminDropDown.placeholderUserArray.push({ label: element, value: element });
+        });
+      }
     }
   }
 
@@ -1052,6 +1077,16 @@ export class AddEditUserProfileComponent implements OnInit {
     isFTEGet.listName = this.constants.listNames.ResourceCategorization.name;
     batchURL.push(isFTEGet);
 
+    // Get PlaceholderUser from ResourceCategorization list ##15
+    const PlaceholderUserGet = Object.assign({}, options);
+    const PlaceholderUserFilter = Object.assign({}, this.adminConstants.QUERY.GET_CHOICEFIELD);
+    PlaceholderUserFilter.filter = PlaceholderUserFilter.filter.replace(/{{choiceField}}/gi,
+      this.adminConstants.CHOICE_FIELD_NAME.PlaceholderUser);
+    PlaceholderUserGet.url = this.spServices.getChoiceFieldUrl(this.constants.listNames.ResourceCategorization.name,
+      PlaceholderUserFilter);
+    PlaceholderUserGet.type = 'GET';
+    PlaceholderUserGet.listName = this.constants.listNames.ResourceCategorization.name;
+    batchURL.push(PlaceholderUserGet);
 
 
 

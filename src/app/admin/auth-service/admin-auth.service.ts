@@ -20,7 +20,7 @@ export class AdminAuthService {
 
   async getUserRole() {
     this.constantsService.loader.isPSInnerLoaderHidden = false;
-    this.commonService.SetNewrelic('Admin', 'admin-auth', 'getUserInfo');
+    this.commonService.SetNewrelic('admin', 'admin-auth', 'getUserRole', "GET");
     this.globalObject.userInfo = await this.spOperationsServices.getUserInfo(this.globalObject.currentUser.userId);
     console.log('this.globalObject.userInfo ', this.globalObject.userInfo);
     if (this.globalObject.userInfo.Groups.results.length) {
@@ -57,8 +57,12 @@ export class AdminAuthService {
         if (groups.indexOf('Permission_Admin') > -1) {
           this.adminConstantService.userRole.SPMPA = true;
           this.adminConstantService.EntitleMentMenu.List.push(
-            { label: 'Add User To SOW', routerLink: ['addUserToSow'] },
-            { label: 'Add User To Projects', routerLink: ['addUserToProjects'] },
+            { label: 'Add Access', routerLink: ['addAccess'] },
+            { label: 'Remove Access', routerLink: ['removeAccess'] },
+
+            // { label: 'Add User To SOW', routerLink: ['addUserToSow'] },
+            // { label: 'Add User To Projects', routerLink: ['addUserToProjects'] },
+
           )
         }
 
@@ -71,8 +75,13 @@ export class AdminAuthService {
             { label: 'User to Role Mapping', routerLink: ['userRoleMapping'] },
             { label: 'Role to User Mapping', routerLink: ['roleUserMapping'] },
             { label: 'Copy Permission', routerLink: ['copyPermission'] },
-            { label: 'Add User To SOW', routerLink: ['addUserToSow'] },
-            { label: 'Add User To Projects', routerLink: ['addUserToProjects'] },
+
+            { label: 'Add Access', routerLink: ['addAccess'] },
+            { label: 'Remove Access', routerLink: ['removeAccess'] },
+
+
+            // { label: 'Add User To SOW', routerLink: ['addUserToSow'] },
+            // { label: 'Add User To Projects', routerLink: ['addUserToProjects'] },
           )
           if (groups.indexOf('SPTeam') > -1) {
             this.adminConstantService.userRole.SPTeam = true;

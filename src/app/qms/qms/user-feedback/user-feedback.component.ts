@@ -98,8 +98,10 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
   async getScorecardItems(filterObj, startDate, endDate) {
     const assignedToID = filterObj.userId;
     const topCount = filterObj.count;
+    let tempScorecardData = [];
     // 1st  REST API request
-    const batchURL = [];
+    let batchURL = [];
+    let i = 0;
     // REST API url in contants file
     // const previousYear = new Date().getFullYear() - 2;
     startDate = startDate ? startDate : new Date(new Date().setMonth(new Date().getMonth() - 6)).toISOString();
@@ -119,21 +121,27 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
       // tslint:disable-next-line: quotemark
       personalFeedbackComponent.getScorecard.filter.replace("{{FeedbackTypeFilter}}", "and FeedbackType eq '" + this.globalConstant.FeedbackType.taskRating + "'") :
       personalFeedbackComponent.getScorecard.filter.replace('{{FeedbackTypeFilter}}', '');
-    this.commonService.SetNewrelic('QMS', 'Userfeedback-getScorecardItems', 'readItems');
+    this.commonService.SetNewrelic('QMS', 'Userfeedback', 'readItems-getScorecardItems', "GET");
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.Scorecard.name, personalFeedbackComponent.getScorecard);
     // If Last.. Filter used then fetch top Task Feedback only ( Rating) and Qualitative feedback based on rating item dates
     const arrScoreCards = arrResult.length > 0 ? arrResult : [];
     // 2nd REST API request
     // Get parameter of scorecard rating
-    arrScoreCards.forEach(element => {
-      // 1st Query
-      const getRatingData = Object.assign({}, this.options);
-      getRatingData.url = this.spService.getReadURL(this.globalConstant.listNames.ScorecardRatings.name, personalFeedbackComponent.getRatings);
-      getRatingData.url = getRatingData.url.replace('{{ID}}', element.ID);
-      getRatingData.listName = this.globalConstant.listNames.ProjectInformation.name;
-      getRatingData.type = 'GET';
-      batchURL.push(getRatingData);
-    });
+    for (const scoreCard of arrScoreCards) {
+       // 1st Query
+       const getRatingData = Object.assign({}, this.options);
+       getRatingData.url = this.spService.getReadURL(this.globalConstant.listNames.ScorecardRatings.name, personalFeedbackComponent.getRatings);
+       getRatingData.url = getRatingData.url.replace('{{ID}}', scoreCard.ID);
+       getRatingData.listName = this.globalConstant.listNames.ProjectInformation.name;
+       getRatingData.type = 'GET';
+       batchURL.push(getRatingData);
+       i++;
+       if (i % 100 === 0) {
+         let bresult = await this.spService.executeBatch(batchURL);
+         tempScorecardData = [...tempScorecardData, ...bresult];
+         batchURL = [];
+       }
+    }
     // Fetch Qualitative feedback if filter is based on Last 10,20,... or it will fetch in date range filter itself
     if (topCount < 4500) {
       const past3MonthDate = new Date();
@@ -149,12 +157,13 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
         .replace('{{startDate}}', qfStartDate)
         .replace('{{endDate}}', qfEndDate)
         .replace('{{FeedbackTypeFilter}}', 'and FeedbackType eq "' + this.globalConstant.FeedbackType.qualitative + '"');
-      getScorecardData.listName = this.globalConstant.listNames.ProjectInformation.name;
+      getScorecardData.listName = this.globalConstant.listNames.Scorecard.name;
       getScorecardData.type = 'GET';
       batchURL.push(getScorecardData);
     }
-    let arrRatings = await this.spService.executeBatch(batchURL);
-    arrRatings = arrRatings.length > 0 ? arrRatings : [];
+    let tempArrRatings = await this.spService.executeBatch(batchURL);
+    tempArrRatings = tempArrRatings.length > 0 ? tempArrRatings : [];
+    const arrRatings = [...tempScorecardData, ...tempArrRatings];
     for (const i in arrRatings) {
       // Feedback Type condition is added to avoid execution of below statement on Qualitative feedback
       if (arrRatings.hasOwnProperty(i)) {

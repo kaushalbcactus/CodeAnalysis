@@ -291,8 +291,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         }));
     }
 
-
-
     createAddToProformaFormField() {
         this.addToProforma_form = this.fb.group({
             ClientLegalEntity: [{ value: '', disabled: true }],
@@ -354,7 +352,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.selectedAllRowData = [];
         this.selectedTotalAmt = 0;
         const invoiceObj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItems);
-        this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed-GetInvoiceLineItem', 'readItems');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'getRequiredData','GET');
         const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, invoiceObj);
         const arrResults = res.length ? res : [];
         if (arrResults.length) {
@@ -471,16 +469,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 sowcn = sowCode + ' / ' + sowName;
             }
             const poItem = await this.getPONumber(element);
-            // let pnumber = poItem.Number ? poItem.Number : '';
-            // const pname = poItem.Name ? poItem.Name : '';
-            // if (pnumber === 'NA') {
-            //     pnumber = '';
-            // }
-            // let ponn = pnumber + ' ' + pname;
-            // if (pname && pnumber) {
-            //     ponn = pnumber + ' / ' + pname;
-            // }
-            // const POValues = ponn;
 
             this.confirmedRes.push({
                 Id: element.ID,
@@ -609,9 +597,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         });
     }
     onRowSelect(event) {
-        // console.log('Event ', event);
-        // console.log('this.selectedAllRowData ', this.selectedAllRowData);
-        // this.selectedRowItemData.push(event.data);
         this.calculateData();
     }
     calculateData() {
@@ -629,9 +614,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     onRowUnselect(event) {
-        // console.log(event);
-        // console.log('this.selectedAllRowData ', this.selectedAllRowData);
-
         const rowUnselectIndex = this.selectedRowItemData.indexOf(event.data);
         this.selectedRowItemData.splice(rowUnselectIndex, 1);
         // console.log(this.selectedRowItemData);
@@ -713,7 +695,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             ref.onClose.subscribe((editInvoice: any) => {
                 if (editInvoice) {
                     const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess(this.selectedRowItem.ScheduleType,this.selectedRowItem, editInvoice)
-                    this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'updateInvoiceLineItem');
+                    this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'updateInvoiceLineItem','POST');
                     this.submitForm(batchURL, 'editInvoice');
                 }
             });
@@ -873,15 +855,9 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     async getPFByPC() {
         const pfobj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
         pfobj.filter = pfobj.filter.replace('{{ProjectCode}}', this.selectedRowItem.ProjectCode);
-        this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed-GetPFbyPC', 'readItems');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed-GetPFbyPC', 'getPFByPC', 'GET');
         let response = await this.spServices.readItems(this.constantService.listNames.ProjectFinances.name, pfobj);
         response = response.length ? response[0] : {};
-        // let obj = [{
-        //     url: this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name, pfobj),
-        //     type: 'GET',
-        //     listName: this.constantService.listNames.ProjectFinances
-        // }]
-        // const res = await this.spServices.executeBatch(obj);
         return response;
     }
 
@@ -964,7 +940,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 this.commonService.setBatchObject(innerBatchUrl, this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, element.Id),prfData,this.constantService.Method.PATCH,this.constantService.listNames.InvoiceLineItems.name);
             });
 
-            this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'AddProforma');
+            this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'AddProforma','POST');
             await this.spServices.executeBatch(innerBatchUrl);
             const projectAppendix = await this.createProjectAppendix(this.selectedAllRowData);
             await this.fdDataShareServie.callProformaCreation(retCall[0], this.cleData, this.projectContactsData,
@@ -1025,7 +1001,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 getPIData.type = 'GET';
                 batchURL.push(getPIData);
             });
-            this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'GetPIbyProjectCode');
+            this.commonService.SetNewrelic('Finance-Dashboard', 'confirmed', 'GetPIbyProjectCode', 'GET-BATCH');
 
             retProjects = await this.spServices.executeBatch(batchURL);
             const mappedProjects = retProjects.map(obj => obj.retItems.length ? obj.retItems[0] : []);

@@ -338,7 +338,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     this.commonService.SetNewrelic(
       "Finance-Dashboard",
       "Schedule-hourlyBased",
-      "getPFbyProjectCode"
+      "getRequiredData",
+      "GET"
     );
     const res = await this.spServices.executeBatch(batchUrl);
     const arrResults = res.length ? res.map((a) => a.retItems) : [];
@@ -487,7 +488,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     this.commonService.SetNewrelic(
       "Finance-Dashboard",
       "Schedule-hourlyBased",
-      "GetPoNO"
+      "GetPoNO",
+      "GET"
     );
     const res = await this.spServices.readItems(
       this.constantService.listNames.ProjectFinanceBreakup.name,
@@ -752,7 +754,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
           this.commonService.SetNewrelic(
             "Finance-Dashboard",
             "Schedule-hourlyBased",
-            "updatePFLItem"
+            "updatePFLItem",
+            "POST"
           );
           this.submitForm(null, batchURL, "editInvoice");
         }
@@ -816,7 +819,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     this.commonService.SetNewrelic(
       "Finance-Dashboard",
       "Schedule-hourlyBased",
-      "getPFBPFBBSow"
+      "getPFBPFBBSow",
+      "GET-BATCH"
     );
 
     const res = await this.spServices.executeBatch(batchUrl);
@@ -921,7 +925,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     let pendingAmount = 0;
     // let pendingHrs = 0;
 
-    if(Invoiceform.getRawValue().InvoiceAmount < (rate * hrs)) {
+    if(Invoiceform.getRawValue().InvoiceAmount != 0 && Invoiceform.getRawValue().InvoiceAmount < (rate * hrs)) {
       totalVal = Invoiceform.getRawValue().InvoiceAmount;
       finalHrs = totalVal/rate;
       pendingAmount =  totalAmount - totalVal;
@@ -1124,7 +1128,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     this.commonService.SetNewrelic(
       "Finance-Dashboard",
       "Schedule-hourlyBased",
-      "updatePOPBBPFBSow"
+      "updatePOPBBPFBSow",
+      "POST-BATCH"
     );
     console.log(batchUrl);
     this.submitForm(Invoiceform, batchUrl, "confirmInvoice");
@@ -1196,6 +1201,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     if (InvoiceType !== "new") {
       iliData["ProformaLookup"] = Invoice.ProformaLookup;
       iliData["InvoiceLookup"] = Invoiceform.value.InvoiceId;
+      iliData["TaggedDate"] = new Date();
     }
     return iliData;
   }
@@ -1328,7 +1334,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     this.commonService.SetNewrelic(
       "Finance-Dashboard",
       "Schedule-hourlyBased",
-      "getEmailTemplates"
+      "getEmailTemplates",
+      "GET"
     );
     const res = await this.spServices.executeBatch(obj);
     this.mailContentRes = res;
@@ -1468,8 +1475,9 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
     this.commonService.SetNewrelic(
       "Finance-Dashboard",
-      "HourlyBased-invoiceTeam",
-      "SendMail"
+      "Schedule-hourlyBased",
+      "SendMail-invoiceTeam",
+      "POST"
     );
     this.spServices.sendMail(
       this.getTosList("i").join(","),
@@ -1480,8 +1488,9 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     );
     this.commonService.SetNewrelic(
       "Finance-Dashboard",
-      "HourlyBased-proposeClosure",
-      "SendMail"
+      "Schedule-hourlyBased",
+      "SendMail-proposeClosure",
+      "POST"
     );
     this.spServices.sendMail(
       this.getTosList("pc").join(","),

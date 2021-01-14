@@ -14,15 +14,10 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng';
 })
 export class CddetailsComponent implements OnInit {
 
-  // Html for popup
-  // @ViewChild('popupContent', { static: true }) popupContent: ElementRef;
-
   // This property emits data to parent (CD) component to reflect changes done in popup
   @Output() bindTableEvent = new EventEmitter<{}>();
   @Output() setSuccessMessage = new EventEmitter<{}>();
   display = false;
-  // public successMessage: string;
-  // private success = new Subject<string>();
   public loading = false;
   public hidePopupLoader = false;
   public hidePopupTable = true;
@@ -37,7 +32,6 @@ export class CddetailsComponent implements OnInit {
     { label: 'EQG', value: 'EQG' },
     { label: 'CS / PM / RM / Others', value: 'CS / PM / RM / Others' }
     ],
-    // resources: [],
     businessImpact: [{ label: 'High', value: 'High' }, { label: 'Low', value: 'Low' }],
     cdCategories: [{ label: 'ATD issues', value: 'ATD issues' }, { label: 'Content issues', value: 'Content issues' },
     { label: 'Missed deadlines', value: 'Missed deadlines' }, { label: 'Communication issues', value: 'Communication issues' }],
@@ -48,7 +42,6 @@ export class CddetailsComponent implements OnInit {
     selectedGroup: null,
     selectedTaggedItem: null,
     selectedAccountableGroup: null,
-    // selectedResource: null,
     selectedBusinessImpact: null,
     selectedCDCategory: null,
     resourceIdentifiedComments: '',
@@ -57,6 +50,7 @@ export class CddetailsComponent implements OnInit {
     paComments: '',
     rejectionComments: '',
     newRejectionComments: '',
+    clientComments :'',
     isActive: '',
     ASD: {
       results: []
@@ -91,7 +85,10 @@ export class CddetailsComponent implements OnInit {
       ID: '',
       EMail: '',
       Title: ''
-    }
+    },
+    selectedDeliveryAccess: null,
+    selectedDeliveryOwner: null,
+    selectedCS: null,
   };
   public cdDelete = {
     reasons: [{ label: 'Duplicate Entry', value: 'Duplicate Entry' },
@@ -104,7 +101,15 @@ export class CddetailsComponent implements OnInit {
     type: '',
     listName: ''
   };
+  public allResources = [];
+  public showPrjLoader = false;
+  public showAccepted = false;
+  public showRejected = false;
   public hideResourceLoader = true;
+  public csRes = [];
+  public deliveryAccess = [];
+  public deliveryOwner = [];
+  disableSegregation: boolean = false;
   constructor(private globalConstant: ConstantsService, private spService: SPOperationService,
     private global: GlobalService,
     private qmsConstant: QMSConstantsService,
@@ -136,19 +141,9 @@ export class CddetailsComponent implements OnInit {
     getPrjItemData.listName = this.globalConstant.listNames.ProjectInformation.name;
     getPrjItemData.type = 'GET';
     batchURL.push(getPrjItemData);
-
-    // Rest API to check if code is client code
-    const getClientItemData = Object.assign({}, this.options);
-    getClientItemData.url = this.spService.getReadURL(this.globalConstant.listNames.ClientLegalEntity.name,
-      this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent.getClient);
-    getClientItemData.url = getClientItemData.url.replace('{{Title}}', code);
-    getClientItemData.listName = this.globalConstant.listNames.ClientLegalEntity.name;
-    getClientItemData.type = 'GET';
-    batchURL.push(getClientItemData);
     let arrResult = await this.spService.executeBatch(batchURL);
     arrResult = arrResult.map(d => d.retItems);
-    const detail = arrResult && arrResult.length > 0 && arrResult[0].length > 0 ? arrResult[0][0] : arrResult[1].length > 0 ?
-      arrResult[1][0] : [];
+    const detail = arrResult && arrResult.length ? arrResult[0] : [];
     return detail;
   }
 
@@ -158,6 +153,7 @@ export class CddetailsComponent implements OnInit {
    * @param content-cd row
    */
   setQCObject(content, codeDetails) {
+    this.allResources = content.allResources;
     this.qc.qcID = '' + content.ID;
     this.qc.projectCode = content.Title;
     this.qc.actionClicked = content.actionClicked;
@@ -172,6 +168,7 @@ export class CddetailsComponent implements OnInit {
     this.qc.caComments = content.PreventiveActions ? content.PreventiveActions : '';
     this.qc.otherResources = content.Resources.results ? content.Resources.results : [];
     this.qc.rejectionComments = content.RejectionComments ? content.RejectionComments : '';
+    this.qc.clientComments = content.ClientComments;
     this.qc.deliveryLevel2 = this.getResourceEmail(content.ASD);
     this.qc.deliveryLevel1 = this.getResourceEmail(content.TL);
     this.qc.cm = this.getResourceEmail(content.CS);
@@ -186,6 +183,9 @@ export class CddetailsComponent implements OnInit {
       this.qc.cm = codeDetails.CMLevel1 && codeDetails.CMLevel1.results ?
         this.getResourceEmail([...codeDetails.CMLevel1.results, ...[codeDetails.CMLevel2]]) : this.qc.cm;
     }
+
+    content.Segregation = content.SurveyResponse ? 'External' : null;
+    this.disableSegregation = content.SurveyResponse ? true : false;
     this.qc.selectedSegregation = content.Segregation ? content.Segregation : null;
     this.qc.allDeliveryResources = codeDetails.AllDeliveryResources && codeDetails.AllDeliveryResources.results ?
       this.getResourceEmail(codeDetails.AllDeliveryResources.results) : this.qc.allDeliveryResources;
@@ -205,27 +205,14 @@ export class CddetailsComponent implements OnInit {
       msgType: '',
       msg: ''
     });
-    // this.resetAccountableResource();
-    // this.display = false;
   }
-
-  /**
-   * resets accountable resources
-   */
-  resetAccountableResource() {
-    this.qc.selectedAccountableGroup = this.qc.selectedBusinessImpact = this.qc.selectedCDCategory = null;
-    this.qc.rcaComments = this.qc.caComments = this.qc.paComments = this.qc.resourceIdentifiedComments = '';
-    this.qc.selectedGroup = this.qc.selectedTaggedItem = this.qc.selectedSegregation = null;
-    this.qc.deliveryLevel2 = this.qc.deliveryLevel1 = this.qc.cm = this.cdDelete.selectedReason = null;
-  }
-
 
   /**
    * updates CD
    * @param cdDetails- detals that needs to be updated
    */
   updateCD(cdDetails) {
-    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cdposition', 'updatecd');
+    this.commonService.SetNewrelic('QMS', 'SQMS-CDDetails', 'updatecd', "POST");
     this.spService.updateItem(this.globalConstant.listNames.QualityComplaints.name, this.qc.qcID, cdDetails);
   }
 
@@ -305,7 +292,7 @@ export class CddetailsComponent implements OnInit {
           validityMailContent = this.replaceContent(validityMailContent, '@@Val1@@',
             this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/clientFeedback/clientDissatisfaction');
           // tslint:disable: max-line-length
-          this.commonService.SetNewrelic('QMS', 'CD-Popup-closeCD-Admin', 'SendMail');
+          this.commonService.SetNewrelic('QMS', 'SQMS-CDDetails', 'CD-Popup-closeCD-Admin-SendMail', "POST");
           this.spService.sendMail(strCDdAdminsEmail, this.global.currentUser.email, validityMailSubject, validityMailContent, this.global.currentUser.email);
         }
         if (oldStatus === this.globalConstant.cdStatus.Created) {
@@ -314,7 +301,7 @@ export class CddetailsComponent implements OnInit {
             const notifyMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction';
             const strTo = resources.resourcesEmail ? resources.resourcesEmail.join(',') : '';
             notifyMailContent = this.replaceContent(notifyMailContent, '@@Val1@@', this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/personalFeedback/externalFeedback');
-            this.commonService.SetNewrelic('QMS', 'CD-Popup-closeCD', 'SendMail');
+            this.commonService.SetNewrelic('QMS', 'SQMS-CDDetails', 'CD-Popup-closeCD-SendMail', "POST");
             this.spService.sendMail(strTo, this.global.currentUser.email, notifyMailSubject, notifyMailContent, this.global.currentUser.email);
           }
         }
@@ -380,7 +367,6 @@ export class CddetailsComponent implements OnInit {
         cdDetails.Status + ' - ' + this.globalConstant.cdStatus.Valid : cdDetails.Status + ' - ' + this.globalConstant.cdStatus.InValid;
       this.qc.isActive = cdDetails.IsActiveCH;
       this.qc.rejectionComments = this.qc.rejectionComments + '\n' + this.qc.newRejectionComments;
-      // this.bindTableEvent.emit(this.qc);
       if (actionClicked === 'reject') {
         const rejectTemplate = await this.getMailContent(this.qmsConstant.EmailTemplates.CD.RejectQualityComplaint);
         if (rejectTemplate.length > 0) {
@@ -388,20 +374,12 @@ export class CddetailsComponent implements OnInit {
           const rejectMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction rejected';
           const strTo = this.qc.deliveryLevel2.emailIDs.join(',');
           rejectMailContent = this.replaceContent(rejectMailContent, "@@Val1@@", this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/clientFeedback/clientDissatisfaction');
-          this.commonService.SetNewrelic('QMS', 'CD-updateValidity', 'SendMail');
+          this.commonService.SetNewrelic('QMS', 'SQMS-CDDetails', 'CD-updateValidity-SendMail', "POST");
           this.spService.sendMail(strTo, this.global.currentUser.email, rejectMailSubject, rejectMailContent, this.global.currentUser.email);
         }
-        msg = 'CD rejected for ' + this.qc.projectCode + '.';
-        // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD rejected for ' + this.qc.projectCode + '.' });
-      } else if (actionClicked === 'valid') {
-        msg = 'CD marked as valid and closed for ' + this.qc.projectCode + '.';
-        // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD marked as valid and closed for ' + this.qc.projectCode + '.' });
-      } else if (actionClicked === 'invalid') {
-        msg = 'CD marked as invalid and closed for ' + this.qc.projectCode + '.';
-        // this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD marked as invalid and closed for ' + this.qc.projectCode + '.' });
-      }
-      // emit success message to CD component
-      // this.resetAccountableResource();
+        msg = 'CD rejected for ' + this.qc.projectCode + '.';} else if (actionClicked === 'valid') {
+        msg = 'CD marked as valid and closed for ' + this.qc.projectCode + '.';} else if (actionClicked === 'invalid') {
+        msg = 'CD marked as invalid and closed for ' + this.qc.projectCode + '.';}
       this.hidePopupLoader = true;
       this.hidePopupTable = false;
       this.popupConfig.close({
@@ -410,7 +388,6 @@ export class CddetailsComponent implements OnInit {
         msgType: this.globalConstant.MessageType.success,
         msg
       });
-      // this.close();
     }, 300);
   }
 
@@ -442,56 +419,6 @@ export class CddetailsComponent implements OnInit {
     };
   }
 
-  /**
-   * tag CD to project or client
-   */
-  tag() {
-    let msg = '';
-    this.showLoader();
-    setTimeout(async () => {
-      const cm = [...this.qc.selectedTaggedItem.CMLevel1.results.map(u => u.ID), this.qc.selectedTaggedItem.CMLevel2.ID ? this.qc.selectedTaggedItem.CMLevel2.ID : ''];
-      const delivery1 = this.qc.selectedTaggedItem.DeliveryLevel1.results ? this.qc.selectedTaggedItem.DeliveryLevel1.results : [];
-      const delivery2 = [this.qc.selectedTaggedItem.DeliveryLevel2.ID ? this.qc.selectedTaggedItem.DeliveryLevel2.ID : ''];
-      const delivery2EMail = [this.qc.selectedTaggedItem.DeliveryLevel2.EMail ? this.qc.selectedTaggedItem.DeliveryLevel2.EMail : ''];
-      const primaryResources = this.qc.selectedTaggedItem.PrimaryResMembers && this.qc.selectedTaggedItem.PrimaryResMembers.results ?
-        this.qc.selectedTaggedItem.PrimaryResMembers.results.map(u => u.ID) : [];
-      // update quality complaint line item
-      const cdDetails = {
-        __metadata: { type: this.globalConstant.listNames.QualityComplaints.type },
-        Title: this.qc.selectedTaggedItem.Title,
-        TLId: { 'results': delivery1.map(u => u.ID) },
-        ASDId: { 'results': delivery2 },
-        PrimaryResId: { 'results': primaryResources },
-        CSId: { 'results': cm },
-        ResourcesId: { 'results': delivery2 }
-      };
-      // update projectcode property to bind cd component
-      this.qc.projectCode = this.qc.selectedTaggedItem.Title;
-      this.qc.ASD = this.qc.selectedTaggedItem.DeliveryLevel1;
-      this.qc.TL.results.push(this.qc.selectedTaggedItem.DeliveryLevel2);
-      const cm1 = this.qc.selectedTaggedItem.CMLevel1.results ? this.qc.selectedTaggedItem.CMLevel1.results : [];
-      this.qc.CS.results = [...cm1, this.qc.selectedTaggedItem.CMLevel2];
-      this.updateCD(cdDetails);
-      const createCDTemplate = await this.getMailContent(this.qmsConstant.EmailTemplates.CD.CreateQualityComplaint);
-      if (createCDTemplate.length > 0) {
-        let createMailContent = createCDTemplate[0].ContentMT;
-        const createMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction';
-        const strTo = delivery2EMail.toString();
-        createMailContent = this.replaceContent(createMailContent, "@@Val1@@", this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/clientFeedback/clientDissatisfaction');
-        this.commonService.SetNewrelic('QMS', 'CD-actions-popup-tag', 'SendMail');
-        this.spService.sendMail(strTo, this.global.currentUser.email, createMailSubject, createMailContent, this.global.currentUser.email);
-      }
-      msg = 'CD Tagged Successfully.'
-      this.showTable();
-      this.popupConfig.close({
-        qc: this.qc,
-        action: 'updateValidity',
-        msgType: this.globalConstant.MessageType.success,
-        msg
-      });
-    });
-  }
-
   async getMailContent(arrTemplateName) {
     const batchURL = [];
     let arrResult = [];
@@ -509,49 +436,12 @@ export class CddetailsComponent implements OnInit {
     } else {
       const common = this.qmsConstant.common;
       common.getMailTemplate.filter = common.getMailTemplate.filter.replace('{{templateName}}', arrTemplateName);
-      this.commonService.SetNewrelic('QMS', 'cd-actionpopup-getMailContent', 'readItems');
+      this.commonService.SetNewrelic('QMS', 'SQMS-CDDetails', 'cd-actionpopup-getMailContent', "GET");
       const templateData = await this.spService.readItems(this.globalConstant.listNames.MailContent.name,
         common.getMailTemplate);
       arrResult = templateData.length > 0 ? templateData : [];
     }
     return arrResult.length > 0 ? arrResult : [];;
-  }
-
-  /**
-   * fetches resources based on accountable group
-   */
-  getSelectedGroupItems() {
-    this.qc.tagGroupItems = [];
-    this.hideResourceLoader = false;
-    setTimeout(async () => {
-      const cdComponent = this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent;
-      const group = this.qc.selectedGroup;
-      const tagItemsUrl = group.value === 'Project' ? cdComponent.getOpenProjects : cdComponent.getClients;
-      const tagListName = group.value === 'Project' ? this.globalConstant.listNames.ProjectInformation.name : this.globalConstant.listNames.ClientLegalEntity.name;
-      this.commonService.SetNewrelic('QMS', 'cd-actionpopup-getSelectedGroupItems', 'readItems');
-      let items = await this.spService.readItems(tagListName, tagItemsUrl);
-      items = items.length > 0 ? items : [];
-      this.qc.tagGroupItems = [...items];
-
-      this.qc.tagGroupItems.map((obj) => {
-        if (group.value === 'Project') {
-          obj.Title = obj.ProjectCode;
-          if (obj.AllDeliveryResources.results) {
-            this.updateResourceEmail(obj.AllDeliveryResources.results);
-          }
-          if (obj.PrimaryResMembers.results) {
-            this.updateResourceEmail(obj.PrimaryResMembers.results);
-          }
-        }
-        if (obj.DeliveryLevel1.results) {
-          this.updateResourceEmail(obj.DeliveryLevel1.results);
-        }
-        if (obj.CMLevel1.results) {
-          this.updateResourceEmail(obj.CMLevel1.results);
-        }
-      });
-      this.hideResourceLoader = true;
-    }, 300);
   }
 
   showTable() {
@@ -562,19 +452,5 @@ export class CddetailsComponent implements OnInit {
   showLoader() {
     this.hidePopupLoader = false;
     this.hidePopupTable = true;
-  }
-
-  /**
-   *
-   * @param obj - QC item
-   * @param array - array of resources
-   * @param includeInEMail - should resources email to be added in email
-   */
-  updateResourceEmail(array) {
-    array = array.map(res => {
-      var resource = this.global.allResources.filter(u => u.UserNamePG.ID === res.ID);
-      res.EMail = resource.length > 0 ? resource[0].UserNamePG.EMail : '';
-      return res;
-    });
   }
 }

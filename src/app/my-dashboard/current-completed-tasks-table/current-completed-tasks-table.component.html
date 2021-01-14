@@ -88,5 +88,33 @@
 <div *ngIf="allTasks.length === 0 && !loaderenable"><span style="font-size: 2em;color:#C53E3E;">No Tasks
         Available.</span></div>
 
+<p-dialog header="Rename SubMilestone" [(visible)]="renameSub" [modal]="true" [draggable]="false" [style]="{'width': '50%'}" [maximizable]="false" [contentStyle]="{'max-height':'350px'}">
+
+    <div class="ui-g">
+        <div class="ui-g-12 ui-md-6 ui-lg-2">
+            Sub milestones:
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+            <p-dropdown #dd editable="true" [options]="subMilestonesList" [style]="{'width':'100%'}" appendTo="body" [(ngModel)]="subMilestone" optionLabel="label" (onChange)="onChangeDD($event.value)" (click)="clearFilter(dd)">
+            </p-dropdown>
+            <div *ngIf="errorMsg">
+                <div style="color: red;">{{errorMsg}}</div>
+            </div>
+            <!-- <div *ngIf="subMilestone.length > 30">
+                <div style="color: red;">Maximum Sub Milestone character length is 30 only.</div>
+            </div> -->
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-4">
+            <div style="color: #C53E3E;">Preferably PUB ID </div>
+            <div>{{enteredSubMile ? enteredSubMile.length : '0'}} / 30</div>
+        </div>
+    </div>   
+
+    <p-footer>
+        <button pButton type="button" label="Update" class="redLight" (click)="onUpdate()"></button>
+        <button pButton type="button" label="Cancel" class="redLight" (click)="cancelSub()"></button>
+    </p-footer>
+
+</p-dialog>
 
 <!-- <app-feedback-popup #feedbackPopup (popupClosed)='saveTask($event)'></app-feedback-popup> -->

@@ -1,0 +1,34 @@
+<div *ngIf="ruleTableArray.length != 0">
+    <p-table class="ruleTable" [columns]="rulesCols" [value]="ruleTableArray" [paginator]="true" [rows]="10">
+        <ng-template pTemplate="header" let-columns let-rowData="rowData">
+            <tr>
+                <th>S.No</th>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
+                    {{col.header}}
+                    <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+            <tr>
+                <td>{{rowIndex+1}}</td>
+                <!-- <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility"
+                    [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
+                    {{rowData[col.field]}}
+                </td> -->
+                <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility"
+                [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
+                    <ng-container *ngIf="col.field !== 'RuleText'">
+                        {{ rowData[col.field] }}
+                    </ng-container>
+                    <ng-container *ngIf="col.field == 'RuleText'">
+                        <span [innerHTML]="rowData[col.field]"></span>
+                    </ng-container>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<div *ngIf="ruleTableArray.length == 0" style=" color:red;text-align: center;padding-top: 20px;">
+    No Rule available.
+</div>

@@ -9,7 +9,7 @@
 
     <div class="ui-fluid" fxLayout="column" fxFlex="18">
         <span class="header">Primary Resources</span>
-        <p-autoComplete [(ngModel)]="primaryResoucesusers" [suggestions]="filterPrimaryResources" (completeMethod)="filterUsers($event)" [minLength]="1" placeholder="Select Resources" field="UserName" [multiple]="true" scrollHeight="135px" [dropdown]="true" class="primaryResource">
+        <p-autoComplete [(ngModel)]="primaryResoucesusers" appendTo="body" [suggestions]="filterPrimaryResources" (completeMethod)="filterUsers($event)" [minLength]="1" placeholder="Select Resources" field="UserName" [multiple]="!forFTE" scrollHeight="135px" [dropdown]="true" class="primaryResource">
             <ng-template let-primaryResoucesusers pTemplate="item">
                 <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                     <div class="user-name">
@@ -104,7 +104,7 @@
             </ng-template>
         </p-autoComplete>
     </div>
-    <div class="ui-fluid" fxLayout="column" fxFlex="7" style="align-items: flex-end;margin-right: 0px;">
+    <div *ngIf="(oProjectDetails.status !== 'On Hold' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType === 'FTE-Writing') || oProjectDetails.projectType !== 'FTE-Writing'" class="ui-fluid" fxLayout="column" fxFlex="7" style="align-items: flex-end;margin-right: 0px;">
         <button style="margin: 18px 0px 0px 0px;" mat-raised-button type="button"  (click)="saveResources()">
           <!-- [disabled]="disableSave" -->
             <mat-icon>save</mat-icon> Save

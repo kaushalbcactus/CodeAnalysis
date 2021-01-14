@@ -136,7 +136,7 @@ export class TimeBookingDialogComponent implements OnInit {
     const projectInfoFilter = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
     projectInfoFilter.filter += " and (ClientLegalEntity eq '" + client + "')";
 
-    this.commonService.SetNewrelic('MyDashboard', 'timeBooking-dialog', 'GetProjectInfoByClient');
+    this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'GetProjectInfoByClient', "GET");
     this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInfoFilter);
 
     const dbProjectInformations = this.response.length > 0 ?
@@ -162,7 +162,7 @@ export class TimeBookingDialogComponent implements OnInit {
       (this.MainminDate.getDate() < 10 ? '0' + this.MainminDate.getDate() : this.MainminDate.getDate()) + 'T23:59:00.000Z';
 
     AllMilestones.filter = AllMilestones.filter.replace(/{{projectCode}}/gi, projectCode).replace(/{{DateString}}/gi, EndDate);
-    this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'GetMilestoneByRpojectCode');
+    this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'GetMilestoneByRpojectCode', "GET");
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, AllMilestones);
 
     const dbAllMilestones = this.response.length > 0 ? await this.getSubMilestoneMilestones(this.response) : [];
@@ -272,18 +272,18 @@ export class TimeBookingDialogComponent implements OnInit {
     // const batchGuid = this.spServices.generateUUID();
     const AllMilestones = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimelineForBooking);
     const minDate = await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 4);
-    AllMilestones.filter = AllMilestones.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString());
+    AllMilestones.filter = AllMilestones.filter.replace(/{{userId}}/gi, this.sharedObject.selectedUser ? this.sharedObject.selectedUser.toString() : this.sharedObject.currentUser.userId.toString());
     AllMilestones.filter += AllMilestones.filterNotCompleted;
 
     AllMilestones.filter += AllMilestones.filterDate.replace(/{{startDateString}}/gi, startDate).replace(/{{endDateString}}/gi, endDate);
 
-    this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'GetSchedulesByUserId');
+    this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'GetSchedulesByUserId', "GET");
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, AllMilestones);
     this.allTasks = this.response.length > 0 ? this.response : [];
 
     let MyAdhocTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.AdhocTasks);
 
-    MyAdhocTask.filter = MyAdhocTask.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi, startDate).replace(/{{endDateString}}/gi, endDate);
+    MyAdhocTask.filter = MyAdhocTask.filter.replace(/{{userId}}/gi, this.sharedObject.selectedUser ? this.sharedObject.selectedUser.toString() : this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi, startDate).replace(/{{endDateString}}/gi, endDate);
 
     const resAdhoc = await this.spServices.readItems(this.constants.listNames.AdhocTask.name, MyAdhocTask);
 
@@ -379,14 +379,14 @@ export class TimeBookingDialogComponent implements OnInit {
       projectInfoGet.listName = this.constants.listNames.ProjectInformation.name;
       batchURL.push(projectInfoGet);
       if (batchURL.length === 99) {
-        this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'GetProjectInfoByProjectCodes');
+        this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'GetProjectInfoByProjectCodes', "GET-BATCH");
         const batchResults = await this.spServices.executeBatch(batchURL);
         finalArray = [...finalArray, ...batchResults];
         batchURL = [];
       }
     });
     if (batchURL.length) {
-      this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'GetProjectInfoByProjectCodes');
+      this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'GetProjectInfoByProjectCodes', "GET-BATCH");
       const batchResults = await this.spServices.executeBatch(batchURL);
       finalArray = [...finalArray, ...batchResults];
       // console.log(updateResults);
@@ -506,9 +506,14 @@ export class TimeBookingDialogComponent implements OnInit {
 
       const timeSpentHours1 = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
       const totalTimeSpent = timeSpentMin < 10 ? timeSpentHours1 + '.' + '0' + timeSpentMin : timeSpentHours1 + '.' + timeSpentMin;
-
-      const existingObjItem = this.allTasks.filter(c => c.ProjectCode === dbTasks[i].ProjectCode &&
-        c.Milestone === dbTasks[i].Milestone && c.SubMilestone === dbTasks[i].SubMilestones && c.Task === 'Time Booking');
+      let existingObjItem;
+      if(dbTasks[i].SubMilestone) {
+         existingObjItem = this.allTasks.filter(c => c.ProjectCode === dbTasks[i].ProjectCode &&
+          c.Milestone === dbTasks[i].Milestone && c.SubMilestones === dbTasks[i].SubMilestone && c.Task === 'Time Booking');
+      } else {
+         existingObjItem = this.allTasks.filter(c => c.ProjectCode === dbTasks[i].ProjectCode &&
+          c.Milestone === dbTasks[i].Milestone && c.Task === 'Time Booking');
+      }
 
       if (existingObjItem.length) {
         const existingObj = existingObjItem[0];
@@ -518,7 +523,7 @@ export class TimeBookingDialogComponent implements OnInit {
           existingObj.TaskComments = dbTasks[i].CommentsMT;
           count++;
 
-          this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'updateSchedule');
+          this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'updateSchedule', "POST");
           await this.spOperations.updateItem(this.constants.listNames.Schedules.name, existingObj.ID, existingObj,
             this.constants.listNames.Schedules.type);
         }
@@ -557,11 +562,11 @@ export class TimeBookingDialogComponent implements OnInit {
                 TimeSpentPerDay: timeSpentString,
                 TaskComments: dbTasks[i].CommentsMT,
                 Title: dbTasks[i].ProjectCode + ' ' + dbTasks[i].Milestone + ' TB ' + this.sharedObject.currentUser.title,
-                AssignedToId: this.sharedObject.currentUser.userId,
+                AssignedToId: this.sharedObject.selectedUser ? this.sharedObject.selectedUser.toString() : this.sharedObject.currentUser.userId.toString(),
                 ContentTypeCH : this.constants.CONTENT_TYPE.TASK
               };
               count++;
-              this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'CreateAndMoveSchedule');
+              this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'CreateAndMoveSchedule', "POST");
               // tslint:disable: max-line-length
               await this.spServices.createItem(this.constants.listNames.Schedules.name, obj, this.constants.listNames.Schedules.type);
             }

@@ -57,11 +57,10 @@ export class FdConstantsService {
             top: 4500
         },
         clientLegalEntity: {
-            select: "ID,Title,Acronym,ProformaCounter,InvoiceCounter,TimeZoneNM,APEmail,APAddress,InvoiceName,ListName, CMLevel1/ID, CMLevel2/ID, Currency",
+            select: "ID,Title,Acronym,ProformaCounter,InvoiceCounter,TimeZoneNM,APEmail,APAddress,InvoiceName,ListName, Currency",
             filter: "IsActiveCH eq 'Yes'",
             orderby: "Title",
             top: 4500,
-            expand: "CMLevel1, CMLevel2"
         },
         usStates: {
             select: 'ID,Title',

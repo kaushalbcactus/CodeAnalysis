@@ -134,38 +134,33 @@ export class UserCapacitycommonService {
                 let allocationPerDay = oUser.tasks[j].AllocationPerDay.split(
                   /\n/
                 );
-                allocationPerDay = allocationPerDay.forEach((allocation) => {
+                for (const allocation of allocationPerDay) {
                   const arrAllocation = allocation.split(":");
-                  const allocationDate =
-                    arrAllocation.length &&
-                      new Date(arrAllocation[0]) instanceof Date
-                      ? new Date(arrAllocation[0])
-                      : new Date();
-                  let allocationTime =
-                    arrAllocation.length > 0 ? arrAllocation[1] : "0";
-                  allocationTime =
-                    arrAllocation.length > 1
-                      ? arrAllocation[1] + ":" + arrAllocation[2]
-                      : "0";
-                  if (
-                    allocationDate.getTime() ===
-                    new Date(oUser.dates[i].date).getTime()
-                  ) {
+                  const allocationDate = arrAllocation.length && new Date(arrAllocation[0]) instanceof Date ?
+                  new Date(arrAllocation[0]) : new Date();
+                  let allocationTime = arrAllocation.length > 0 ? arrAllocation[1] : "0";
+                  allocationTime = arrAllocation.length > 1 ? arrAllocation[1] + ":" + arrAllocation[2] : "0";
+                  if (allocationDate.getTime() === new Date(oUser.dates[i].date).getTime()) {
                     oUser.tasks[j].timeAllocatedPerDay = allocationTime;
                   }
-                });
+                }
+                // allocationPerDay = allocationPerDay.forEach((allocation) => {
+                //   const arrAllocation = allocation.split(":");
+                //   const allocationDate = arrAllocation.length && new Date(arrAllocation[0]) instanceof Date
+                //       ? new Date(arrAllocation[0]) : new Date();
+                //   let allocationTime = arrAllocation.length > 0 ? arrAllocation[1] : "0";
+                //   allocationTime = arrAllocation.length > 1 ? arrAllocation[1] + ":" + arrAllocation[2] : "0";
+                //   if (
+                //     allocationDate.getTime() ===
+                //     new Date(oUser.dates[i].date).getTime()
+                //   ) {
+                //     oUser.tasks[j].timeAllocatedPerDay = allocationTime;
+                //   }
+                // });
                 if (!oUser.tasks[j].timeAllocatedPerDay) {
-                  oUser.tasks[
-                    j
-                  ].timeAllocatedPerDay = this.commonservice.convertToHrsMins(
-                    "" +
-                    this.getPerDayTime(
-                      oUser.tasks[j].ExpectedTime !== null
-                        ? '' + oUser.tasks[j].ExpectedTime
-                        : "0",
-                      taskBusinessDays - arrLeaveDays.length
-                    )
-                  );
+                  oUser.tasks[j].timeAllocatedPerDay = this.commonservice.convertToHrsMins("" +
+                    this.getPerDayTime(oUser.tasks[j].ExpectedTime !== null ? '' + oUser.tasks[j].ExpectedTime
+                        : "0", taskBusinessDays - arrLeaveDays.length));
                 }
               } else {
                 oUser.tasks[
@@ -514,8 +509,10 @@ export class UserCapacitycommonService {
       this.datepipe.transform(startDate, "yyyy-MM-dd") + "T00:00:01.000Z";
     let endDateString =
       this.datepipe.transform(endDate, "yyyy-MM-dd") + "T23:59:00.000Z";
-    const sTopStartDate = new Date(startDate);
-    const sTopEndDate = new Date(endDate);
+    let sTopStartDate = new Date(startDate);
+    sTopStartDate = new Date(sTopStartDate.setDate(sTopStartDate.getDate() - 1));
+    let sTopEndDate = new Date(endDate);
+    sTopEndDate = new Date(sTopEndDate.setDate(sTopEndDate.getDate() + 1));
     const obj = {
       arrDateRange: [],
       arrDateFormat: [],
@@ -583,7 +580,7 @@ export class UserCapacitycommonService {
 
             if (batchUrl.length === 99) {
               this.common.SetNewrelic(
-                "Shared",
+                "CapacityDashboard",
                 "UserCapacity",
                 "fetchTaskByUsers"
               );
@@ -594,7 +591,7 @@ export class UserCapacitycommonService {
             }
             if (adhocTasksBatchUrl.length === 99) {
               this.common.SetNewrelic(
-                "Shared",
+                "CapacityDashboard",
                 "UserCapacity",
                 "fetchAdhocTaskByUsers"
               );
@@ -605,7 +602,7 @@ export class UserCapacitycommonService {
             }
             if (blockResBatchUrl.length === 99) {
               this.common.SetNewrelic(
-                "Shared",
+                "CapacityDashboard",
                 "UserCapacity",
                 "fetchBlockResourceData"
               );
@@ -636,20 +633,20 @@ export class UserCapacitycommonService {
       }
     }
     if (batchUrl.length) {
-      this.common.SetNewrelic("Shared", "UserCapacity", "fetchTaskByUsers");
+      this.common.SetNewrelic("CapacityDashboard", "UserCapacity", "fetchTaskByUsers");
       batchResults = await this.spService.executeBatch(batchUrl);
       tempFinalArray = [...tempFinalArray, ...batchResults];
     }
 
 
     if (adhocTasksBatchUrl.length) {
-      this.common.SetNewrelic("Shared", "UserCapacity", "fetchAdhocTaskByUsers");
+      this.common.SetNewrelic("CapacityDashboard", "UserCapacity", "fetchAdhocTaskByUsers");
       adhocResbatchResults = await this.spService.executeBatch(adhocTasksBatchUrl);
       tempAdhocResFinalArray = [...tempAdhocResFinalArray, ...adhocResbatchResults];
     }
     if (blockResBatchUrl.length) {
       this.common.SetNewrelic(
-        "Shared",
+        "CapacityDashboard",
         "UserCapacity",
         "fetchBlockResourceData"
       );
@@ -663,7 +660,7 @@ export class UserCapacitycommonService {
     }
     if (TimeSpentbatchUrl.length) {
       this.common.SetNewrelic(
-        "Shared",
+        "CapacityDashboard",
         "UserCapacity",
         "fetchSpentTaskByUsers"
       );
@@ -805,7 +802,7 @@ export class UserCapacitycommonService {
         );
 
         if (batchURL.length === 99) {
-          this.common.SetNewrelic("Shared", "UserCapacity", "fetchTaskByUsers");
+          this.common.SetNewrelic("CapacityDashboard", "UserCapacity", "fetchTaskByUsers");
           batchResults = await this.spService.executeBatch(batchURL);
           console.log(batchResults);
           finalArray = [...finalArray, ...batchResults];
@@ -831,7 +828,7 @@ export class UserCapacitycommonService {
 
         if (batchURL.length === 99) {
           this.common.SetNewrelic(
-            "Shared",
+            "CapacityDashboard",
             "UserCapacity",
             "getLeavesbyUserIdAndSDED"
           );
@@ -864,7 +861,7 @@ export class UserCapacitycommonService {
 
     if (batchURL.length) {
       this.common.SetNewrelic(
-        "Shared",
+        "CapacityDashboard",
         "UserCapacity",
         "getLeavesbyUserIdAndSDEDAndAHbyUserID"
       );

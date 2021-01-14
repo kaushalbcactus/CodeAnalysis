@@ -312,3 +312,7 @@ body .ui-table .ui-table-tbody>tr>td {
     border: 1px solid #C53E3E !important;
     color: #ffffff !important;
 }
+
+.mt-20 {
+    margin-top: 20px;
+}

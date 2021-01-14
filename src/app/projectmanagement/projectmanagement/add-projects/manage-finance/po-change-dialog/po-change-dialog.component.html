@@ -1,0 +1,65 @@
+<div class="p-col ChangePOButton">
+
+    <button type="button" class="ui-button-raised ui-button-danger" pButton icon="pi pi-save" id="saveBooking" (click)="saveDetails()" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" label="Save"></button>
+
+    <button type="button" pButton icon="pi pi-times" (click)="cancel()" label="Cancel" class="ui-button-raised ui-button-danger"></button>
+
+</div>
+
+
+
+<div class="ui-grid-row" style="padding-bottom: 20px;">
+    <div class="ui-grid-col-1" style="padding: 6px 0px 0px 0px; font-weight: bold;">
+        PO List
+    </div>
+    <div class="ui-grid-col-11">
+        <p-dropdown filter="true" [options]="POList" placeholder="Select Po" [(ngModel)]="selectedPo" resetFilterOnHide="true"></p-dropdown>
+    </div>
+</div>
+
+
+<p-table [value]="LineItems">
+    <ng-template pTemplate="header">
+        <tr>
+            <th>Inv Number</th>
+            <th>Prf Number</th>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>POC</th>
+            <th>Address</th>
+
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+        <tr>
+
+            <td>
+                <!-- {{rowData | json}} -->
+                <span *ngIf="rowData.LineItem.inv_number && rowData.LineItem.invUrl">
+                    <a [href]="rowData.LineItem.invUrl" target="_blank"> {{rowData.LineItem.inv_number}} <span *ngIf="rowData.LineItem.auxiliaryInvoiceName"> -  {{rowData.LineItem.auxiliaryInvoiceName}}</span></a>
+                </span>
+                <span *ngIf="rowData.LineItem.inv_number && !rowData.LineItem.invUrl">
+                        {{rowData.LineItem.inv_number}}  
+                        <span *ngIf="rowData.LineItem.auxiliaryInvoiceName"> - {{rowData.LineItem.auxiliaryInvoiceName}}</span>
+                </span>
+            </td>
+            <td>
+                <span *ngIf="rowData.LineItem.prf_number && rowData.LineItem.prfUrl">
+                    <a [href]="rowData.LineItem.prfUrl" target="_blank"> {{rowData.LineItem.prf_number}}</a>
+                </span>
+                <span *ngIf="rowData.LineItem.prf_number && !rowData.LineItem.prfUrl">
+                        {{rowData.LineItem.prf_number}}
+                </span>
+            </td>
+            <td>{{rowData.LineItem.date | date:'MMM dd, yyyy'}}</td>
+            <td>{{rowData.LineItem.amount}}</td>
+            <td>{{rowData.LineItem.type}}</td>
+            <td>{{rowData.LineItem.status}}</td>
+            <td>{{rowData.LineItem.pocText}}</td>
+            <td>{{rowData.LineItem.address}}</td>
+
+        </tr>
+    </ng-template>
+</p-table>

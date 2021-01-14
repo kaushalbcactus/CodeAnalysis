@@ -6,6 +6,7 @@ import { IMilestoneTask } from '../interface/allocation';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { TaskAllocationConstantsService } from './task-allocation-constants.service';
 import { PreStackcommonService } from 'src/app/shared/pre-stack-allocation/service/pre-stackcommon.service';
+import { IUserCapacity } from 'src/app/shared/usercapacity/interface/usercapacity';
 
 @Injectable({
   providedIn: 'root'
@@ -129,7 +130,7 @@ export class TaskAllocationCommonService {
           if(!element.OriginalUserID) {
             element.OriginalUserID = element.ID;
           }
-          
+
           element.ID = element.UserNamePG.ID;
           element.Id = element.UserNamePG.ID;
           element.Name = element.UserNamePG.Name;
@@ -175,7 +176,7 @@ export class TaskAllocationCommonService {
     return sortedResources;
   }
 
-  /////// Check this once 
+  /////// Check this once
   getSkillName(sText) {
     let skillName = '';
     if (sText) {
@@ -462,7 +463,7 @@ export class TaskAllocationCommonService {
             return assignedTo.ID === objt.UserNamePG.ID;
           }
         );
-        await this.prestackService.calcPrestackAllocation(
+        const resourceCapacity: IUserCapacity = await this.prestackService.calcPrestackAllocation(
           resource,
           milestoneTask
         );
@@ -479,7 +480,18 @@ export class TaskAllocationCommonService {
           milestoneTask.assignedUserTimeZone
         );
         this.setDatePartAndTimePart(milestoneTask);
-
+        if(resourceCapacity && resourceCapacity.leaves.length) {
+          const leaves = [];
+          for (const leave of resourceCapacity.leaves) {
+            const formattedleave = this.datepipe.transform(new Date(leave), "d MMM y");
+            leaves.push(formattedleave);
+          }
+          this.commonService.showToastrMessage(
+            this.constants.MessageType.info,
+            resourceCapacity.userName + " is on leave on " + leaves.join(','),
+            true
+          );
+        }
         /// Change date as user changed in AssignedTo dropdown
       } else {
         const previousUserTimeZone = milestoneTask.assignedUserTimeZone;
@@ -566,7 +578,7 @@ export class TaskAllocationCommonService {
         newName = milestoneTask.itemType;
         newName = this.getNewTaskName(milestoneTask, newName, allResTasks, allTasks);
       }
-     
+
 
       if (milestoneTask.nextTask) {
         this.changeNextTaskPrevTask(

@@ -26,7 +26,7 @@ import { Ng5SliderModule } from 'ng5-slider';
 import { PreStackAllocationModule } from '../shared/pre-stack-allocation/pre-stack-allocation.module';
 import { PreStackAllocationComponent } from '../shared/pre-stack-allocation/pre-stack-allocation.component';
 import { ResourceSelectionComponent } from './resource-selection/resource-selection.component';
-import { ConflictAllocationsModule } from '../Shared/conflict-allocations/conflict-allocations.module';
+import { ConflictAllocationsModule } from '../shared/conflict-allocations/conflict-allocations.module';
 import { ConflictAllocationComponent } from '../shared/conflict-allocations/conflict-allocation.component';
 @NgModule({
   declarations: [TaskAllocationComponent, TimelineComponent, DragDropComponent,

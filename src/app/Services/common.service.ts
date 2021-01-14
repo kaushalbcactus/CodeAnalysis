@@ -461,7 +461,7 @@ export class CommonService {
   }
 
   async checkTaskStatus(task) {
-    this.SetNewrelic('Service', 'Common-Service', 'readItem');
+    this.SetNewrelic('Services', 'Common-Service', 'readItem');
     const currentTask = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
     let isActionRequired: boolean;
     if (currentTask) {
@@ -753,6 +753,53 @@ export class CommonService {
     }
   }
 
+  //For FTE Projects
+  //Fetch And Update resource name for Tasks
+  async getScheduleTasks(projectCode) {
+    const batchUrl = []
+    let scheduleTaskObj = Object.assign({}, this.queryConfig);
+    scheduleTaskObj.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name, this.taskAllocationService.taskallocationComponent.SCHEDULE_LIST_BY_PROJECTCODE);
+    scheduleTaskObj.url = scheduleTaskObj.url.replace(/{{ProjectCode}}/gi, projectCode);
+    scheduleTaskObj.listName = this.constants.listNames.Schedules.name;
+    scheduleTaskObj.type = 'GET';
+    batchUrl.push(scheduleTaskObj);
+
+    const arrResult = await this.spServices.executeBatch(batchUrl);
+    return arrResult.length > 0 ? arrResult.map(a => a.retItems)[0] : [];
+  }
+
+  async updateTasks(scheduleTasks ,primaryResources) {
+    const batchURL = [];
+    if(scheduleTasks && scheduleTasks.length && this.sharedTaskAllocateObj.oProjectDetails.projectType === 'FTE-Writing') {
+      let fteTasks = ['Training','Blocking','Meeting']
+      let allMilestones = this.sharedTaskAllocateObj.oProjectDetails.allMilestones
+      let currentMilIndex = allMilestones.indexOf(this.sharedTaskAllocateObj.oProjectDetails.currentMilestone);
+      let finalList = currentMilIndex == -1 ? allMilestones : allMilestones.slice(currentMilIndex);
+      for(let i=0;i<scheduleTasks.length;i++) {
+        let element = scheduleTasks[i];
+        const scUpdateData = {
+          __metadata: {
+            type: this.constants.listNames.Schedules.type
+          },
+          AssignedToId: primaryResources ? primaryResources.Id : -1,
+        };
+        if(fteTasks.includes(element.Task) && finalList.length && finalList.includes(element.Milestone)) {
+          const scUpdate = Object.assign({}, this.queryConfig);
+          scUpdate.data = scUpdateData;
+          scUpdate.listName = this.constants.listNames.Schedules.name;
+          scUpdate.type = 'PATCH';
+          scUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scUpdate);
+        }
+      }
+      if(batchURL.length) {
+        await this.spServices.executeBatch(batchURL);
+      }
+    }
+  }
+
+
   // ***********************************************************************************************************************************
   // Get Project Data
   // ***********************************************************************************************************************************
@@ -882,11 +929,12 @@ export class CommonService {
   }
 
 
-  SetNewrelic(moduleType, routeType, value) {
+  SetNewrelic(moduleType, routeType, value, action?) {
     if (typeof newrelic === 'object') {
       newrelic.setCustomAttribute('spModuleType', moduleType);
       newrelic.setCustomAttribute('spRouteType', routeType);
       newrelic.setCustomAttribute('spCallType', value);
+      newrelic.setCustomAttribute('spRESTCall', action);
     }
   }
 
@@ -1092,7 +1140,7 @@ export class CommonService {
     return (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
   }
 
-  showToastrMessage(type: string, message: string, stickyenable: boolean, showmodal?: boolean) {
+  showToastrMessage(type: string, message: string, stickyenable: boolean, showmodal?: boolean, summary?: string) {
     let summaryMessage = '';
     if (type === this.constants.MessageType.warn) {
       summaryMessage = 'Warn Message';
@@ -1102,6 +1150,9 @@ export class CommonService {
       summaryMessage = 'Success Message';
     } else if (type === this.constants.MessageType.info) {
       summaryMessage = 'Info Message';
+    }
+    if (summary) {
+      summaryMessage = summary;
     }
 
     this.messageService.add({ key: showmodal ? 'cls_ModaltoastrMessage' : 'cls_toastrMessage', severity: type, summary: summaryMessage, detail: message, sticky: stickyenable });
@@ -1161,10 +1212,17 @@ export class CommonService {
       const workingDays = this.calcBusinessDays(startDate, endDate);
       if (workingDays > days) {
         errorMsgs = taskName ?
-        errorMsgs + 'Task \'' + taskName + '\' duration is ' + workingDays + ' days. Please select dates within 50 working days.\n' :
-        errorMsgs + 'FTE Task duration is ' + workingDays + ' days. Please select dates within 50 working days.\n';
+          errorMsgs + 'Task \'' + taskName + '\' duration is ' + workingDays + ' days. Please select dates within 50 working days.\n' :
+          errorMsgs + 'FTE Task duration is ' + workingDays + ' days. Please select dates within 50 working days.\n';
       }
     }
     return errorMsgs;
+  }
+
+  groupBy(list, props) {
+    return list.reduce((a, b) => {
+      (a[b[props]] = a[b[props]] || []).push({data: b});
+      return a;
+    }, {});
   }
 }

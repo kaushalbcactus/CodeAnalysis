@@ -53,7 +53,7 @@ export class ReviewerDetailViewComponent implements OnInit {
     private commonService: CommonService,
     private qmsCommon: QMSCommonService,
     private cdr: ChangeDetectorRef,
-    private dialogService : DialogService,
+    private dialogService: DialogService,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
     private readonly _router: Router,
@@ -153,10 +153,7 @@ export class ReviewerDetailViewComponent implements OnInit {
     getReviewerTasks.listName = this.globalConstant.listNames.Schedules.name;
     getReviewerTasks.type = 'GET';
     batchURL.push(getReviewerTasks);
-    // const reviewerComponent = JSON.parse(JSON.stringify(this.qmsConstant.reviewerComponent));
-    // reviewerComponent.reviewerPendingTaskURL.top = reviewerComponent.reviewerPendingTaskURL.top.replace('{{TopCount}}', '' + itemCount);
-    // reviewerComponent.reviewerPendingTaskURL.filter = reviewerComponent.reviewerPendingTaskURL.filter.replace('{{PrevMonthDate}}', lastMonthDateString);
-    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'getPendingRatedTasks');
+    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'getPendingRatedTasks', "GET-BATCH");
     const arrResult = await this.spService.executeBatch(batchURL);
     this.milestoneTasks = arrResult.length > 0 ? arrResult[0].retItems : [];
     const reviewerTasks = arrResult.length > 1 ? arrResult[1].retItems : [];
@@ -214,7 +211,7 @@ export class ReviewerDetailViewComponent implements OnInit {
       IsRated: true
     };
     // Update review task rated 'yes' if this is last previous task not rated
-    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'updateTask');
+    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'updateTask', "POST");
     this.spService.updateItem(this.globalConstant.listNames.Schedules.name, taskDetail.ID, taskUpdateDetail);
   }
 
@@ -241,24 +238,25 @@ export class ReviewerDetailViewComponent implements OnInit {
       }
     });
 
-    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'getProjectInfo');
+    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'getProjectInfo', "GET-BATCH");
     let arrResult = await this.spService.executeBatch(batchURL);
     arrResult = arrResult.length > 0 ? arrResult.map(p => p.retItems.length ? p.retItems[0] : {}) : [];
     return arrResult;
   }
 
   async getPreviousTasks(arrReviewTasks) {
-    const batchURL = [];
+    let batchURL = [];
     let sBatchData = '';
     let i = 0;
     let prevTasksDetail = [];
     const reviewTasks = [];
     const returnObj: any = {};
     const reviewerComponent = JSON.parse(JSON.stringify(this.qmsConstant.reviewerComponent));
-    arrReviewTasks.forEach(task => {
+
+    for (const task of arrReviewTasks) {
       const prevTasks = task.PrevTasks ? task.PrevTasks.split(';#') : [];
       if (prevTasks.length > 0) {
-        prevTasks.forEach(async prevTaskTitle => {
+        for (const prevTaskTitle of prevTasks) {
           // Bind reviewTask to respective previous task
           reviewTasks.push(task);
           // REST API url to check if code is project code
@@ -274,11 +272,13 @@ export class ReviewerDetailViewComponent implements OnInit {
             bresult = bresult.map(t => t.retItems);
             prevTasksDetail = [...prevTasksDetail, ...bresult];
             sBatchData = '';
+            batchURL = [];
           }
-        });
+        }
       }
-    });
-    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'getPreviousTasks');
+    }
+
+    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'getPreviousTasks', "GET-BATCH");
     let result = await this.spService.executeBatch(batchURL);
     result = result.map(t => t.retItems);
     prevTasksDetail = [...prevTasksDetail, ...result];
@@ -303,7 +303,7 @@ export class ReviewerDetailViewComponent implements OnInit {
       for (const prevTaskTitle of prevTasks) {
         let preTasks = tasks.prevTasksDetail.filter(t => t[0] && t[0].Title === prevTaskTitle);
         // check if there are multiple next task of prev tasks
-        preTasks = preTasks.length > 0 ? preTasks[0].length > 0 ?  preTasks[0][0].NextTasks ? preTasks[0][0].NextTasks.split(';#') : []: []: [];
+        preTasks = preTasks.length > 0 ? preTasks[0].length > 0 ? preTasks[0][0].NextTasks ? preTasks[0][0].NextTasks.split(';#') : [] : [] : [];
         if (preTasks.length !== 1) {
           identifyMultipleTasksFlag = true;
         }
@@ -374,7 +374,7 @@ export class ReviewerDetailViewComponent implements OnInit {
   }
 
   showToastMsg(type, msg, detail) {
-    this.commonService.showToastrMessage(type,detail,false);
+    this.commonService.showToastrMessage(type, detail, false);
   }
 
 
@@ -417,7 +417,7 @@ export class ReviewerDetailViewComponent implements OnInit {
   }
 
 
-  openfeedbackpopup(qmsTasks,task){
+  openfeedbackpopup(qmsTasks, task) {
     const ref = this.dialogService.open(FeedbackPopupComponent, {
       data: {
         qmsTasks,
@@ -428,11 +428,11 @@ export class ReviewerDetailViewComponent implements OnInit {
       contentStyle: { 'min-height': '30vh', 'max-height': '90vh', 'overflow-y': 'auto' }
     });
     ref.onClose.subscribe((feedbackdata: any) => {
-      if(feedbackdata){
+      if (feedbackdata) {
         this.bindReviewerTable(feedbackdata.task);
         this.callParentSuccessMsg(feedbackdata.message);
       }
-     });
+    });
   }
 
 }

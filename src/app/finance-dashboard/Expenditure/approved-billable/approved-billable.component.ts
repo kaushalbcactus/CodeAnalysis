@@ -349,8 +349,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     }
     this.commonService.SetNewrelic(
       "Finance-Dashboard",
-      "Expenditure-approvedBillable",
-      "GetSpendingInfo"
+      "approve-billable",
+      "GetSpendingInfo",
+      "GET"
     );
     const res = await this.spServices.readItems(
       this.constantService.listNames.SpendingInfo.name,
@@ -635,10 +636,13 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   openTableAtt(data, popUpData) {
     this.items = [];
     console.log("this.selectedAllRowsItem ", this.selectedAllRowsItem);
-    if(data.Status == 'Approved' || data.Status == 'Approved Payment Pending') {
+    const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
+    if (groups.indexOf('ExpenseApprovers') > -1 || groups.indexOf('Managers') > -1) {
+      if(data.Status == 'Approved' || data.Status == 'Approved Payment Pending') {
         this.items = [
             { label: 'Reject Expense', command: (e) => this.openMenuContent(e, data) }
         ];
+      }
     }
     this.items.push({
       label: "Details",
@@ -1062,7 +1066,8 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     this.commonService.SetNewrelic(
       "Finance-Dashboard",
       "approve-billable",
-      "formSubmitForSelectedRow"
+      "formSubmitForSelectedRow",
+      "POST-BATCH"
     );
     const res = await this.spServices.executeBatch(dataEndpointArray);
 
@@ -1220,7 +1225,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
       const ccUser = this.getCCList(type, expense);
       // ccUser.push(this.currentUserInfoData.Email);
       const tos = this.getTosList(type, expense);
-      this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'sendMail');
+      this.commonService.SetNewrelic('Finance-Dashboard', 'approve-billable', 'sendApproveCanRejExpMail','POST');
       this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
       this.reFetchData();
   }
@@ -1599,6 +1604,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     if (InvoiceType !== "new") {
       Data["ProformaLookup"] = this.invoice.ProformaLookup;
       Data["InvoiceLookup"] = scheduleOopInvoice_form.getRawValue().InvoiceId;
+      Data["TaggedDate"] = new Date();
     }
     return Data;
   }

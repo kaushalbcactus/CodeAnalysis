@@ -22,8 +22,8 @@ export class QMSConstantsService {
   //tslint:disable
   public common = {
     getAllResource: {
-      select: 'ID,UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,UserNamePG/Name,TimeZone/Title,Designation, Manager/ID, Manager/Title, Tasks/ID, Tasks/Title',
-      expand: 'UserNamePG,TimeZone,Manager,Tasks',
+      select: 'ID,UserNamePG/ID,UserNamePG/EMail,UserNamePG/Title,UserNamePG/Name,TimeZone/Title,Designation, Manager/ID, Manager/Title, Tasks/ID, Tasks/Title, RoleCH, SkillLevel/Title',
+      expand: 'UserNamePG,TimeZone,Manager,Tasks,SkillLevel',
       filter: "IsActiveCH eq 'Yes'",
       top: '4500'
     },
@@ -34,6 +34,11 @@ export class QMSConstantsService {
     getMilestoneTasks: {
       select: 'Title, DefaultSkill, ScorecardRatingAllowed',
       filter: "Status eq 'Active'",
+    },
+    getProjectCode: {
+      select: 'ID',
+      filter: 'ProjectCode eq \'{{projectCode}}\' and (Status eq \'Closed\' or Status eq \'Cancelled\')',
+      top: 4500
     }
   };
   public reviewerComponent = {
@@ -103,8 +108,8 @@ export class QMSConstantsService {
       getQC: {
         select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Status, CategoryST,' +
           'Resources/ID, SeverityLevel, BusinessImpact,Segregation, RejectionComments,' +
-          'CommentsMT, RootCauseAnalysis, CorrectiveActions, PreventiveActions, IsActiveCH',
-        expand: 'SentBy, Resources',
+          'CommentsMT, RootCauseAnalysis, CorrectiveActions, PreventiveActions, IsActiveCH,SurveyResponse/ID,EmailAddress',
+        expand: 'SentBy, Resources,SurveyResponse',
         filter: "Status ne 'Deleted' and Resources/ID eq '" + this.global.currentUser.userId + "' and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
         top: '{{TopCount}}',
         orderby: 'SentDate desc'
@@ -121,8 +126,8 @@ export class QMSConstantsService {
       getQCByProject: {
         select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Status, CategoryST,' +
           'Resources/ID, SeverityLevel, BusinessImpact,Segregation, RejectionComments,' +
-          'CommentsMT, RootCauseAnalysis, CorrectiveActions, PreventiveActions, IsActiveCH',
-        expand: 'SentBy, Resources',
+          'CommentsMT, RootCauseAnalysis, CorrectiveActions, PreventiveActions, IsActiveCH,SurveyResponse/ID,EmailAddress',
+        expand: 'SentBy, Resources,SurveyResponse',
         filter: "Status ne 'Deleted' and Title eq '{{projectCode}}'",
         top: '{{TopCount}}',
         orderby: 'SentDate desc'
@@ -130,15 +135,15 @@ export class QMSConstantsService {
     },
     PositiveFeedbacks: {
       getPF: {
-        select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID, Resources/Title, DeliveryLeads/ID',
-        expand: 'SentBy, Resources, DeliveryLeads',
+        select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID, Resources/Title, DeliveryLeads/ID,SurveyResponse/ID,EmailAddress',
+        expand: 'SentBy, Resources, DeliveryLeads,SurveyResponse',
         filter: "IsActiveCH ne 'No' and Status eq 'Accepted' and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
         top: '{{TopCount}}',
         orderby: 'SentDate desc'
       },
       getPFByProject: {
-        select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID, Resources/Title, DeliveryLeads/ID',
-        expand: 'SentBy, Resources, DeliveryLeads',
+        select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID, Resources/Title, DeliveryLeads/ID, SurveyResponse/ID,EmailAddress',
+        expand: 'SentBy, Resources, DeliveryLeads,SurveyResponse',
         filter: "IsActiveCH ne 'No' and Status eq 'Accepted' and Title eq '{{projectCode}}'",
         top: '{{TopCount}}',
         orderby: 'SentDate desc'
@@ -218,17 +223,17 @@ export class QMSConstantsService {
       getQC: {
         select: 'ID, Title, FileID, FileURL, IsActiveCH, SentDate,SentBy/ID, SentBy/Title, Modified, Status, CategoryST, Resources/ID,' +
           'SeverityLevel, BusinessImpact,Segregation,' +
-          'ASD/ID, TL/ID, CS/ID, CommentsMT, RootCauseAnalysis, CorrectiveActions, PreventiveActions, RejectionComments',
-        expand: 'SentBy, Resources, ASD, TL, CS',
-        filter: "{{statusFilter}} SentDate ge '{{startDate}}' and SentDate le '{{endDate}}' and (ASD/ID eq '" + this.global.currentUser.userId + "')",
+          'ASD/ID, TL/ID, CS/ID, CommentsMT, RootCauseAnalysis, CorrectiveActions, PreventiveActions, RejectionComments,SurveyResponse/ID,EmailAddress',
+        expand: 'SentBy, Resources, ASD, TL, CS,SurveyResponse',
+        filter: "{{statusFilter}} SentDate ge '{{startDate}}' and SentDate le '{{endDate}}' and (ASD/ID eq '" + this.global.currentUser.userId + "' or TL/ID eq '" + this.global.currentUser.userId + "')",
         top: '{{TopCount}}',
         orderby: 'SentDate desc'
       },
       getQCAdmin: {
         select: 'ID, Title, FileID, FileURL, IsActiveCH, SentDate,SentBy/ID, SentBy/Title, Modified, Status, CategoryST, Resources/ID,' +
           'SeverityLevel, BusinessImpact,Segregation,' +
-          'ASD/ID, TL/ID, CS/ID, CommentsMT, RootCauseAnalysis, CorrectiveActions, PreventiveActions, RejectionComments',
-        expand: 'SentBy, Resources, ASD, TL, CS',
+          'ASD/ID, TL/ID, CS/ID, CommentsMT, RootCauseAnalysis, CorrectiveActions, PreventiveActions, RejectionComments,SurveyResponse/ID,EmailAddress',
+        expand: 'SentBy, Resources, ASD, TL, CS,SurveyResponse',
         filter: "{{statusFilter}} SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
         top: '{{TopCount}}',
         orderby: 'SentDate desc'
@@ -289,20 +294,33 @@ export class QMSConstantsService {
     },
     PositiveFeedbackComponent: {
       getPF: {
-        select: 'ID, Title, FileID, FileURL, Status, IsActiveCH, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID,Resources/Title, DeliveryLeads/ID',
-        expand: 'SentBy, Resources, DeliveryLeads',
-        filter: "IsActiveCH eq 'Yes' and Status ne 'Accepted' and Status ne 'Rejected' and DeliveryLeads/ID eq '" + this.global.currentUser.userId + "'" +
+        select: 'ID, Title, FileID, FileURL, Status, IsActiveCH, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID,Resources/Title, DeliveryLeads/ID,SurveyResponse/ID,EmailAddress',
+        expand: 'SentBy, Resources, DeliveryLeads,SurveyResponse',
+        filter: "IsActiveCH eq 'Yes' and DeliveryLeads/ID eq '" + this.global.currentUser.userId + "'" +
           " and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
         top: '4900',
         orderby: 'SentDate desc'
       },
       getPFAdmin: {
-        select: 'ID, Title, FileID, FileURL, Status, IsActiveCH, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID,Resources/Title, DeliveryLeads/ID',
-        expand: 'SentBy, Resources, DeliveryLeads',
+        select: 'ID, Title, FileID, FileURL, Status, IsActiveCH, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID,Resources/Title, DeliveryLeads/ID,SurveyResponse/ID,EmailAddress',
+        expand: 'SentBy, Resources, DeliveryLeads,SurveyResponse',
         filter: "SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
         top: '4900',
         orderby: 'SentDate desc'
       }
+    },
+
+    GET_POC_By_Email: {
+      select: "ID,FName,LName,FullNameCC",
+      filter: "Status eq 'Active' and EmailAddress eq '{{emailaddress}}'",
+      orderby: "FName,LName asc",
+      top: 4900,
+    },
+
+    GET_SURVEYRESPONSE_BY_ID:{
+      select: "ID,CommentsMT,Title",
+      filter: "ID eq {{ID}}",
+      top: 4900,
     }
   };
 

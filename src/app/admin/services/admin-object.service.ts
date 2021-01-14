@@ -64,7 +64,8 @@ export class AdminObjectService {
     WorkingSunday: false,
     WorkingThursday: false,
     WorkingTuesday: false,
-    WorkingWednesday: false
+    WorkingWednesday: false,
+    PlaceholderUser: ''
   };
   public isMainLoaderHidden = true;
   public resourceCatArray = [];

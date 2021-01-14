@@ -86,7 +86,7 @@ export class MarkAsPaymentDialogComponent implements OnInit {
         return;
       }
       const date = new Date();
-      this.commonService.SetNewrelic('Finance-Dashboard', 'mark-as-payment', 'UploadFile');
+      this.commonService.SetNewrelic('Finance-Dashboard', 'mark-as-payment', 'UploadFile', 'POST-BATCH');
       this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/ApprovedExpenseFiles/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
         if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
           if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
