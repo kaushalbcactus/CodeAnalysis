@@ -169,6 +169,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     );
     this.loaderenable = false;
     this.tableBlock = this.TasksTable;
+    debugger;
   }
 
   exportTasks() {

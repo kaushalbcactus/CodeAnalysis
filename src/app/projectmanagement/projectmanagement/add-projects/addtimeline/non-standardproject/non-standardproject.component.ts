@@ -74,6 +74,7 @@ export class NonStandardprojectComponent implements OnInit {
       if (
         !this.pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked
       ) {
+        this.constants.loader.isWaitDisable = false;
         this.getProjectManagement();
         this.setFieldProperties();
       } else {
@@ -108,7 +109,8 @@ export class NonStandardprojectComponent implements OnInit {
   }
   // tslint:disable
   private async getProjectManagement() {
-    this.pmObject.isMainLoaderHidden = false;
+    this.constants.loader.isWaitDisable = false;
+  
     const batchUrl = [];
     // const batchContents = new Array();
     // const batchGuid = this.spService.generateUUID();
@@ -247,7 +249,7 @@ export class NonStandardprojectComponent implements OnInit {
         });
       }
     }
-    this.pmObject.isMainLoaderHidden = true;
+    this.constants.loader.isWaitDisable  = true;
   }
   async onDeliverableTypeChange() {
     this.changedProjectCode(this.selectedDeliverableType);
@@ -451,6 +453,7 @@ export class NonStandardprojectComponent implements OnInit {
     $("#nonstandardTimelineConfirm").attr("disabled", "true");
   }
   setFieldProperties() {
+    debugger
     if (this.pmObject.addProject.Timeline.NonStandard.IsStandard) {
       $("#nonStandardTimeline").attr("checked", "checked");
       this.pmObject.isStandardChecked = false;
@@ -548,13 +551,13 @@ export class NonStandardprojectComponent implements OnInit {
         this.pmObject.addProject.ProjectAttributes.ActiveDelivery1.push(this.globalObject.currentUser.userId);
       }
             
-      this.pmObject.isMainLoaderHidden = false;
+      this.constants.loader.isWaitDisable  = false;
       const newProjectCode = await this.pmCommonService.verifyAndUpdateProjectCode();
       this.pmObject.addProject.ProjectAttributes.ProjectCode = newProjectCode;
       if (newProjectCode) {
         if (this.pmObject.addProject.FinanceManagement.selectedFile) {
           let SelectedFile = [];
-          this.pmObject.isMainLoaderHidden = true;
+          this.constants.loader.isWaitDisable  = true;
           this.commonService.SetNewrelic(
             "projectManagment",
             "nonStdConfirm",
@@ -597,7 +600,7 @@ export class NonStandardprojectComponent implements OnInit {
   }
 
   async callAddUpdateProject() {
-    this.pmObject.isMainLoaderHidden = false;
+    this.constants.loader.isWaitDisable  = false;
     await this.pmCommonService.addUpdateProject();
 
     this.commonService.showToastrMessage(

@@ -77,6 +77,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
 
   }
   ngOnInit() {
+
     localStorage.clear();
     setTimeout(() => {
       this.globalObject.currentTitle = 'Project Management';
@@ -85,6 +86,15 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.activeItem = this.pmObject.tabMenuItems.find(c=>c.routerLink === this.router.url.substring(this.router.url.lastIndexOf('/')+1)) ? this.pmObject.tabMenuItems.find(c=>c.routerLink === this.router.url.substring(this.router.url.lastIndexOf('/')+1)) :  this.pmObject.tabMenuItems[2];
     this.loadProjectManagementInit();
 
+  }
+
+  async onActivate(componentRef) {
+      this.activeItem = this.pmObject.tabMenuItems.find(c=>c.routerLink === this.router.url.substring(this.router.url.lastIndexOf('/')+1)) ? this.pmObject.tabMenuItems.find(c=>c.routerLink === this.router.url.substring(this.router.url.lastIndexOf('/')+1)) :  this.pmObject.tabMenuItems[2];
+
+      if(this.activeItem === this.pmObject.tabMenuItems[0]){
+        const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
+        tabMenuInk.style.left='0px';
+      }
   }
   /**
    * This method is used to load project management.

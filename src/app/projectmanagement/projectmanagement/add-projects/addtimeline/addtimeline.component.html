@@ -1,4 +1,4 @@
-<div class="timeline-top-section">
+<!-- <div class="timeline-top-section">
     <div class="col-md-12">
         <div class="">
             <div class="md-col-12 col-xs-12 col-lg-12">
@@ -16,6 +16,22 @@
         </div>
     </div>
     <div class="clearBoth"></div>
+    <div *ngIf="pmObject.isStandardChecked">
+        <app-standardproject></app-standardproject>
+    </div>
+    <div class="clearBoth"></div>
+    <div *ngIf="!pmObject.isStandardChecked">
+        <app-non-standardproject></app-non-standardproject>
+    </div>
+</div> -->
+
+<div class="p-col timeline-top-section">
+    <div class="p-col p-grid">
+        <div *ngFor="let category of categories" class="p-field-checkbox">
+            <p-radioButton [inputId]="category.key" name="category" [value]="category" [(ngModel)]="selectedCategory" [disabled]="category.disabled" (onClick)="isTimelineChecked()"></p-radioButton>
+            <label class="p-m-2" [for]="category.key">{{category.name}}</label>
+        </div>
+    </div>
     <div *ngIf="pmObject.isStandardChecked">
         <app-standardproject></app-standardproject>
     </div>

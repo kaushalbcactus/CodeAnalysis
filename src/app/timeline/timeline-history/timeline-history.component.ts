@@ -1141,20 +1141,20 @@ export class TimelineHistoryComponent implements OnInit {
    * @param scrollDirection - up/down
    */
   setTableHeight(scrollDirection, buffer) {
-     const ifDone = this.checkifAllDone(this.timelineBaseObj);
+    // const ifDone = this.checkifAllDone(this.timelineBaseObj);
     // It is used to remove empty whitespace from top by setting it to 0
-    const table: any = this.elemRef.nativeElement.querySelector('#tblTimeline .ui-table-scrollable-body-table');
-    if (ifDone) {
+//const table: any = this.elemRef.nativeElement.querySelector('#tblTimeline .ui-table-scrollable-body-table');
+  //  if (ifDone) {
       // It is used to reset height of table based on data to remove empty white space when all data received
-      const table1: any = this.elemRef.nativeElement.querySelector('#tblTimeline .ui-table-virtual-scroller');
-      table1.style.height = table.clientHeight + 1 + buffer + 'px';
-    }
+    //  const table1: any = this.elemRef.nativeElement.querySelector('#tblTimeline .ui-table-virtual-scroller');
+     // table1.style.height = table.clientHeight + 1 + buffer + 'px';
+ //   }
     // It is used to set scroller to top position
-    const table2: any = this.elemRef.nativeElement.querySelector('#tblTimeline .ui-table-scrollable-body');
-    if (scrollDirection === 'up') {
-      table.style.top = '0px';
-      table2.scrollTo(0, 0);
-    }
+  //  const table2: any = this.elemRef.nativeElement.querySelector('#tblTimeline .ui-table-scrollable-body');
+  //  if (scrollDirection === 'up') {
+   //   table.style.top = '0px';
+  //    table2.scrollTo(0, 0);
+  //  }
 
     // const table: any = this.elemRef.nativeElement.querySelector('#tblTimeline .p-datatable-virtual-scrollable-body');
     // if (ifDone) {

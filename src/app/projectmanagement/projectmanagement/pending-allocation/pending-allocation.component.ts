@@ -204,16 +204,14 @@ export class PendingAllocationComponent implements OnInit {
       // this.paArrays.milestoneArray = this.commonService.unique(milestoneTempArray, 'value');
       // this.paArrays.statusArray = this.commonService.unique(statusTempArray, 'value');
       this.pmObject.pendingAllocationArray = tempPAArray;
-      this.isPATableHidden = false;
-      this.isPAInnerLoaderHidden = true;
-      this.isPATableHidden = false;
     } else {
       this.pmObject.tabMenuItems[4].label = 'Pending Allocation (' + this.pmObject.countObj.paCount + ')';
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
-      this.paHideNoDataMessage = false;
-      this.isPAInnerLoaderHidden = true;
-      this.isPATableHidden = true;
     }
+    this.isPATableHidden = false;
+    this.isPAInnerLoaderHidden = true;
+    const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');    
+    tabMenuInk.style.width= this.pmObject.countObj.paCount && this.pmObject.countObj.paCount > 10 ? '208px' : '197px';
     this.commonService.setIframeHeight();
   }
 

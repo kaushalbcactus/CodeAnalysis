@@ -38,7 +38,7 @@
         </div>
     </div>
     <div class="p-col-12">
-        <router-outlet></router-outlet>
+        <router-outlet (activate)="onActivate($event)" #myOutlet="outlet"></router-outlet>
     </div>
 </div>
 

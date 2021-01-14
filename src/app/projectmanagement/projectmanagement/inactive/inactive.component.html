@@ -1,44 +1,44 @@
 <div class="wrap-table100" [hidden]="isIAPFilterHidden">
-    <div [hidden]='isIAPInnerLoaderHidden' style="padding: 15vw;">
+
+
+    <div class="p-d-flex p-flex-column" style="padding: 10vw;width: 100%;" *ngIf="!isIAPInnerLoaderHidden">
         <div id="scInnerLoader"></div>
         <div id="scInnerLoaderText">Loading...</div>
     </div>
-    <div class="noDataMessage" [hidden]='iapHideNoDataMessage'>
-        No Project Found.
-    </div>
+
     <div class="inActiveTable table100 projectDataExist ver4 m-b-110" [hidden]="isIAPTableHidden">
-        <div class="box excelIcon">
+        <div class="p-col p-grid p-jc-end">
             <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(iapTableRef)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
         </div>
-        <div class="clear"></div>
-        <p-table #iapTableRef [columns]="displayedColumns" [value]="pmObject.inActiveProjectArray" [paginator]="true" [rows]="10" selectionMode="" exportFilename="Inactive Projects">
+
+        <p-table #iapTableRef [columns]="displayedColumns" [value]="pmObject.inActiveProjectArray" [paginator]="true" [rows]="10" selectionMode="" exportFilename="Inactive Projects" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="InactiveProjects">
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th class="lastColumnWidth">S.No</th>
+                    <th class="firstColumnWidth">S.No</th>
                     <th *ngFor="let col of columns" [pSortableColumn]="col.field">
-                        {{ col.header }}
-                        <p-sortIcon [field]="col.field"></p-sortIcon>
-                    </th>
-                    <th class="lastColumnWidth"></th>
-                </tr>
-                <tr>
-                    <th class="lastColumnWidth"></th>
-                    <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
-                        <input *ngSwitchCase="'PrimaryResourceText'" pInputText type="text" (input)="iapTableRef.filter($event.target.value, col.field, col.filterMatchMode)" (keydown.enter)="$event.preventDefault()">
-                        <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="iapArrays.ProjectCode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="iapArrays.ShortTitle" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="iapArrays.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'POC'" [options]="iapArrays.POC" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="iapArrays.DeliverableType" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'TA'" [options]="iapArrays.TA" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'Molecule'" [options]="iapArrays.Molecule" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'Milestone'" [options]="iapArrays.Milestone" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                        </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'Status'" [options]="iapArrays.Status" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                        <div class="p-d-flex p-jc-between p-ai-center">
+                            {{col.header}}
+                            <p-sortIcon [field]="col.field"></p-sortIcon>
+                            <p-columnFilter *ngIf="col.header != ''  && col.field !='PrimaryResourceText' " [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                                <ng-template pTemplate="header">
+                                    <div class="p-px-3 p-pt-3 p-pb-0">
+                                        <span class="p-text-bold"> {{col.header}} Picker</span>
+                                    </div>
+                                </ng-template>
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-multiSelect [ngModel]="value" [options]="iapArrays[col.field]" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                                        <ng-template let-option pTemplate="item">
+                                            <div class="p-multiselect-representative-option">
+                                                <span class="p-ml-1">{{option.label}}</span>
+                                            </div>
+                                        </ng-template>
+                                    </p-multiSelect>
+                                </ng-template>
+                            </p-columnFilter>
+
+                            <p-columnFilter *ngIf="col.header != ''  && col.field ==='PrimaryResourceText' " type="text" [field]="col.field" matchMode="contains" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"></p-columnFilter>
+                        </div>
                     </th>
                     <th class="lastColumnWidth"></th>
                 </tr>
@@ -56,7 +56,7 @@
                     <td>{{task.PrimaryResourceText}}</td>
                     <td>{{task.Milestone}}</td>
                     <td>{{task.Status}}</td>
-                    <td>
+                    <td class="lastColumnWidthtd">
                         <div>
                             <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems" [popup]="true">
                             </p-menu>
@@ -65,7 +65,13 @@
                     </td>
                 </tr>
             </ng-template>
-
+            <ng-template pTemplate="emptymessage" let-columns>
+                <tr>
+                    <td [attr.colspan]="columns.length + 1">
+                        No Project Found.
+                    </td>
+                </tr>
+            </ng-template>
         </p-table>
         <!-- <p-contextMenu #iapContextMenu [model]="iapContextMenuOptions"></p-contextMenu> -->
     </div>

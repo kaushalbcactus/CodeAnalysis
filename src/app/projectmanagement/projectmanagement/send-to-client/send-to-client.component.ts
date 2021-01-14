@@ -20,14 +20,16 @@ declare var $;
 })
 export class SendToClientComponent implements OnInit {
   tempClick: any;
-  @ViewChild("loader", { static: false }) loaderView: ElementRef;
-  @ViewChild("spanner", { static: false }) spannerView: ElementRef;
   private options = {
     data: null,
     url: '',
     type: '',
     listName: ''
   };
+
+  STCTypes: any[] = [{name: 'Today’s delivery', key: 'today', ColorIndicator : '#add8e6'}, {name: 'Next 5 days', key: 'next', ColorIndicator : '#90ee90'},
+ {name: 'Overdue', key: 'Overdue', ColorIndicator : '#f08080'}];
+ selectedSent_To_Client: any[] = [];
   displayedColumns: any[] = [
     { field: 'SLA', header: 'SLA', visibility: true },
     { field: 'ProjectCode', header: 'Project Code', visibility: true },
@@ -58,7 +60,6 @@ export class SendToClientComponent implements OnInit {
   isSCInnerLoaderHidden = true;
   isSCFilterHidden = true;
   isSCTableHidden = true;
-  hideNoDataMessage = true;
   queryStartDate = new Date();
   queryEndDate = new Date();
   popItems: MenuItem[];
@@ -79,6 +80,7 @@ export class SendToClientComponent implements OnInit {
   ngOnInit() {
     this.isSCInnerLoaderHidden = false;
     this.isSCFilterHidden = true;
+    this.selectedSent_To_Client = this.STCTypes;
     this.popItems = [
       { label: 'Download', command: (event) => this.downloadTask(this.selectedSendToClientTask) },
       {
@@ -160,11 +162,7 @@ export class SendToClientComponent implements OnInit {
   }
   closeTask(task) {
     if (task.PreviousTaskStatus === 'Auto Closed' || task.PreviousTaskStatus === 'Completed') {
-
-      this.loaderView.nativeElement.classList.add('show');
-      this.spannerView.nativeElement.classList.add('show');
-
-
+      this.Constant.loader.isWaitDisable= false;
       const options = { Status: 'Completed', Actual_x0020_Start_x0020_Date: new Date(), Actual_x0020_End_x0020_Date: new Date(), __metadata: { type: this.Constant.listNames.Schedules.type } };
       this.closeTaskWithStatus(task, options, this.sct);
     } else {
@@ -192,12 +190,10 @@ export class SendToClientComponent implements OnInit {
         }
         await this.ContinoueCloseTaskWithStatus(task, project, options, projectStatus, batchUrl);
       } else {
-        this.loaderView.nativeElement.classList.remove('show');
-        this.spannerView.nativeElement.classList.remove('show');
+        this.Constant.loader.isWaitDisable= false;
         this.commonService.confirmMessageDialog('Confirmation', "Do you want to change project status from '" + project.Status + "' to '" + this.Constant.STATUS.AUTHOR_REVIEW + "' or '" + this.Constant.STATUS.IN_PROGRESS + "' ?", null, [this.Constant.STATUS.AUTHOR_REVIEW, this.Constant.STATUS.IN_PROGRESS], true).then(async projectstatus => {
           if (projectstatus) {
-            this.loaderView.nativeElement.classList.add('show');
-            this.spannerView.nativeElement.classList.add('show');
+            this.Constant.loader.isWaitDisable= true;
             projectStatus = projectstatus;
             await this.ContinoueCloseTaskWithStatus(task, project, options, projectStatus, batchUrl);
           }
@@ -205,8 +201,7 @@ export class SendToClientComponent implements OnInit {
       }
     } else {
 
-      this.loaderView.nativeElement.classList.remove('show');
-      this.spannerView.nativeElement.classList.remove('show');
+      this.Constant.loader.isWaitDisable= true;
 
       this.commonService.showToastrMessage(this.Constant.MessageType.info,task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.',true);
       setTimeout(() => {
@@ -268,8 +263,7 @@ export class SendToClientComponent implements OnInit {
     await this.spServices.executeBatch(batchUrl);
 
     this.commonService.showToastrMessage(this.Constant.MessageType.success, task.Title + ' is completed Sucessfully',true);
-    this.loaderView.nativeElement.classList.remove('show');
-    this.spannerView.nativeElement.classList.remove('show');
+    this.Constant.loader.isWaitDisable= true;
     const index = this.pmObject.sendToClientArray.findIndex(item => item.ID === task.ID);
     this.pmObject.sendToClientArray.splice(index, 1);
     this.pmObject.sendToClientArray = [...this.pmObject.sendToClientArray];
@@ -283,55 +277,50 @@ export class SendToClientComponent implements OnInit {
     this.isSCInnerLoaderHidden = false;
     this.isSCTableHidden = true;
     this.isSCFilterHidden = true;
-    this.hideNoDataMessage = true;
     setTimeout(() => {
       this.isFilterchecked();
     }, this.pmConstant.TIME_OUT);
   }
   isFilterchecked() {
     this.pmObject.sendToClientArray = [];
-    const todayDelivery = $('#todayDelivery').is(':checked');
-    const nextFiveDays = $('#nextFiveDays').is(':checked');
-    const pastFiveDays = $('#overdue').is(':checked');
     const todayFilterDate = this.commonService.calcBusinessDate('Today', 1);
     const nextFiveDate = this.commonService.calcBusinessDate('Next', 5);
     const pastFiveFilterDate = this.commonService.calcBusinessDate('Past', 10);
-    if (todayDelivery) {
+    if (this.selectedSent_To_Client.find(c=>c.key ==='today')) {
       this.queryStartDate = todayFilterDate.startDate;
       this.queryEndDate = todayFilterDate.endDate;
-      if (nextFiveDays && pastFiveDays) {
+      if (this.selectedSent_To_Client.find(c=>c.key ==='next') && this.selectedSent_To_Client.find(c=>c.key ==='Overdue')) {
         this.queryStartDate = pastFiveFilterDate.startDate;
         this.queryEndDate = nextFiveDate.endDate;
       }
-      if (nextFiveDays && !pastFiveDays) {
+      if (this.selectedSent_To_Client.find(c=>c.key ==='next') && !this.selectedSent_To_Client.find(c=>c.key ==='Overdue')) {
         this.queryEndDate = nextFiveDate.endDate;
       }
-      if (!nextFiveDays && pastFiveDays) {
+      if (!this.selectedSent_To_Client.find(c=>c.key ==='next') && this.selectedSent_To_Client.find(c=>c.key ==='Overdue')) {
         this.queryStartDate = pastFiveFilterDate.startDate;
       }
-    }
-    if (!todayDelivery) {
-      if (nextFiveDays && pastFiveDays) {
+    } else{
+      if (this.selectedSent_To_Client.find(c=>c.key ==='next') && this.selectedSent_To_Client.find(c=>c.key ==='Overdue')) {
         this.queryStartDate = pastFiveFilterDate.startDate;
         this.queryEndDate = nextFiveDate.endDate;
       }
-      if (nextFiveDays && !pastFiveDays) {
+      if (this.selectedSent_To_Client.find(c=>c.key ==='next') && !this.selectedSent_To_Client.find(c=>c.key ==='Overdue')) {
         this.queryStartDate = nextFiveDate.startDate;
         this.queryEndDate = nextFiveDate.endDate;
       }
-      if (!nextFiveDays && pastFiveDays) {
+      if (!this.selectedSent_To_Client.find(c=>c.key ==='next') && this.selectedSent_To_Client.find(c=>c.key ==='Overdue')) {
         this.queryStartDate = pastFiveFilterDate.startDate;
         this.queryEndDate = pastFiveFilterDate.endDate;
       }
-      if (!nextFiveDays && !pastFiveDays) {
+      if (!this.selectedSent_To_Client.find(c=>c.key ==='next') && !this.selectedSent_To_Client.find(c=>c.key ==='Overdue')) {
         this.queryStartDate = null;
         this.queryEndDate = null;
       }
     }
+   
     if (this.queryStartDate && this.queryStartDate) {
       this.sendToClientFilter();
     } else {
-      this.hideNoDataMessage = false;
       this.isSCInnerLoaderHidden = true;
       this.isSCFilterHidden = false;
     }
@@ -482,19 +471,19 @@ export class SendToClientComponent implements OnInit {
       this.pmObject.sendToClientArray = tempSendToClientArray;
       const tableRef: any = this.sct;
       tableRef.first = 0;
-      this.isSCTableHidden = false;
-      this.isSCInnerLoaderHidden = true;
-      this.isSCFilterHidden = false;
+     
+   
     } else {
+      debugger
       if (this.scArrays.taskItems.length !== this.pmObject.countObj.scCount) {
         this.pmObject.countObj.scCount = this.scArrays.taskItems.length;
       }
       this.pmObject.tabMenuItems[2].label = 'Send to Client (' + this.pmObject.countObj.scCount + ')';
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
-      this.hideNoDataMessage = false;
-      this.isSCInnerLoaderHidden = true;
-      this.isSCFilterHidden = false;
     }
+    this.isSCTableHidden = false;
+    this.isSCInnerLoaderHidden = true;
+    this.isSCFilterHidden = false;
     const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
     tabMenuInk.style.width='164px';
     
