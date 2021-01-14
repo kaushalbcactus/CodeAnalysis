@@ -466,13 +466,13 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     ) {
       this.DisplayInvoiceWithAuxiliaryArray = this.outstandingInvoicesRes.filter(
         (c) =>
-          this.outInvTable.filters.DisplayInvoiceWithAuxiliary.value.includes(
+          this.outInvTable.filters.DisplayInvoiceWithAuxiliary[0].value.includes(
             c.DisplayInvoiceWithAuxiliary
           )
       )
         ? this.outstandingInvoicesRes
             .filter((c) =>
-              this.outInvTable.filters.DisplayInvoiceWithAuxiliary.value.includes(
+              this.outInvTable.filters.DisplayInvoiceWithAuxiliary[0].value.includes(
                 c.DisplayInvoiceWithAuxiliary
               )
             )

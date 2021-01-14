@@ -1976,8 +1976,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
       const element = uniqueTotalArr[i];
       if (colName.toLowerCase().includes("date")) {
         tempArr.push({
-          label: this.datePipe.transform(element, "MMM dd, yyyy"),
-          value: new Date(this.datePipe.transform(element, "MMM dd, yyyy")),
+          label: this.datePipe.transform(element instanceof Date ? element : new Date(element.toString()),"MMM dd, yyyy", "MMM dd, yyyy"),
+          value: new Date(this.datePipe.transform(element instanceof Date ? element : new Date(element.toString()),"MMM dd, yyyy", "MMM dd, yyyy")),
         });
       } else {
         tempArr.push({ label: element, value: element });
