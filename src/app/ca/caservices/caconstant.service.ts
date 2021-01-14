@@ -23,7 +23,6 @@ export class CAConstantService {
     top: 4200
   };
 
-
   public scheduleUnAllocatedQueryOptions = {
     select: 'ID,Title,TimeZoneNM,SkillLevel,Task,Status,NextTasks,PrevTasks,ProjectCode,TimeSpent,Milestone,SubMilestones,ExpectedTime,TaskComments,CommentsMT,StartDate,DueDateDT,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title,DisableCascade,AllowCompletion, AllocationPerDay',
     expand: 'AssignedTo/ID, AssignedTo/Title',
@@ -61,7 +60,6 @@ export class CAConstantService {
     filter: "Title eq '{0}'",
     top: 4200
   };
-
 
   public scheduleQueryOptions = {
     select: 'ID,Title,TimeZoneNM,SkillLevel,TimeSpentPerDay,TimeSpent,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,ExpectedTime,TaskComments,CommentsMT,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,StartDate,DueDateDT,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title, ActiveCA,DisableCascade,AllowCompletion,PreviousAssignedUser/ID,PreviousAssignedUser/Title, AllocationPerDay',

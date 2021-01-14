@@ -119,13 +119,14 @@ export class AdminCommonService {
       this.constants.listNames.ResourceCategorization.name,
       userFilter
     );
-    userGet.type = "GET";
+    userGet.type = this.constants.Method.GET;
     userGet.listName = this.constants.listNames.ResourceCategorization.name;
     batchURL.push(userGet);
     this.commonService.SetNewrelic(
       "admin",
       "admin-commonService",
-      "GetResourceCategorization"
+      "getResourceCatData",
+      "GET"
     );
     const result = await this.spServices.executeBatch(batchURL);
     console.log(result);
@@ -160,9 +161,6 @@ export class AdminCommonService {
         userObj.UserNamePG.ID +
         "";
     }
-    // if (userObj.RoleCH && userObj.RoleCH === this.adminConstants.FILTER.CM_LEVEL_2) {
-    //   cleGet.filter = 'CMLevel2/ID eq ' + userObj.UserName.ID + '';
-    // }
     if (
       userObj.RoleCH &&
       (userObj.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_1 ||
@@ -176,14 +174,12 @@ export class AdminCommonService {
         userObj.UserNamePG.ID +
         "";
     }
-    // if (userObj.RoleCH && userObj.RoleCH === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
-    //   cleGet.filter = 'DeliveryLevel2/ID eq ' + userObj.UserName.ID + '';
-    // }
 
     this.commonService.SetNewrelic(
       "admin",
-      "commonService-GetClientLegalEntity",
-      "readItems"
+      "admin-commonService",
+      "getClients",
+      "GET"
     );
     const results = await this.spServices.readItems(
       this.constants.listNames.ClientLegalEntity.name,
@@ -311,8 +307,9 @@ export class AdminCommonService {
   async getITInfo() {
     this.commonService.SetNewrelic(
       "admin",
-      "adminCommonGetGroup",
-      "getGroupInfo"
+      "admin-commonService",
+      "getITInfo",
+      "GET"
     );
     return await this.spServices.getGroupInfo("Invoice_Team");
   }

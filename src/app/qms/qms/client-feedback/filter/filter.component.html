@@ -1,20 +1,24 @@
 <div class="cdFilters filter-wrapper">
-  <div class="statusFilter" *ngIf="location !== '/qms/clientFeedback/cfpositiveFeedback'">
-      <div >
-        <p-dropdown #taskTypeFilter [options]="filterObj.cdStatus"
-            class="taskStatus"
-            filter="true" 
-            resetFilterOnHide="true"
-            optionLabel='type'
-            placeholder='Filter by CD Status'
-            (onChange)='filterCD()'
-            [(ngModel)]="filterObj.selectedStatus">
-        </p-dropdown>
-      </div>
-  </div>
-  <div>
-    <div class="daterange" >
-        <p-calendar [(ngModel)]="value" placeholder="Filter by date range" selectionMode="range" [readonlyInput]="true" dateFormat="M d, yy" showIcon='true' showButtonBar="true" (onClose)="filterByDateRange()"></p-calendar>
-     </div>
-  </div>
+    <div class="statusFilter" *ngIf="location !== '/qms/clientFeedback/cfpositiveFeedback'">
+        <div>
+            <p-dropdown #taskTypeFilter [options]="filterObj.cdStatus" class="taskStatus" filter="true" resetFilterOnHide="true" optionLabel='type' placeholder='Filter by CD Status' (onChange)='filterCD()' [(ngModel)]="filterObj.selectedStatus">
+            </p-dropdown>
+        </div>
+    </div>
+    <div>
+        <div class="daterange">
+            <p-calendar [(ngModel)]="value" placeholder="Filter by date range" selectionMode="range" [readonlyInput]="true" dateFormat="M d, yy" showIcon='true' showButtonBar="true" (onClose)="filterByDateRange()"></p-calendar>
+        </div>
+    </div>
+    <div>
+        <div class="input-color">
+            <label>Client</label>
+            <div class="color-box" style="background-color: #e04646 ;left: 0px;"></div>
+        </div>
+        <div class="input-color">
+            <label>Cactus</label>
+            <div class="color-box" style="background-color: #fdfd77;"></div>
+        </div>
+
+    </div>
 </div>

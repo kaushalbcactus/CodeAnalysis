@@ -177,6 +177,8 @@ export class GlobalService {
     groups: []
   };
 
+  public selectedUser
+
   /*****************************************************************
  Maxwell
  Task Allocation Object

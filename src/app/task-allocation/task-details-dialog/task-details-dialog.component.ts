@@ -71,7 +71,7 @@ export class TaskDetailsDialogComponent implements OnInit {
   // **************************************************************************************************
   async getComments(taskId) {
 
-    this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'getCommentByTaskId');
+    this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'getCommentByTaskId', "GET");
     const response = await this.spServices.readItem(this.constants.listNames.Schedules.name, taskId);
     this.currentTask = response;
     this.getDocuments(this.currentTask);
@@ -97,7 +97,7 @@ export class TaskDetailsDialogComponent implements OnInit {
   async getCurrentTaskProjectInformation(ProjectCode) {
     const project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);
     project.filter = project.filter.replace(/{{projectCode}}/gi, ProjectCode);
-    this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetProjInfoByProjCode');
+    this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetProjInfoByProjCode', "GET");
     const response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, project);
     this.sharedObject.DashboardData.ProjectInformation = response.length ? response[0] : [];
   }
@@ -117,7 +117,7 @@ export class TaskDetailsDialogComponent implements OnInit {
     const folderUrl = this.ProjectInformation.ProjectFolder;
     completeFolderRelativeUrl = folderUrl + documentsUrl;
 
-    this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetDocumentsByType');
+    this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetDocumentsByType', "GET-BATCH");
     const arrResult = await this.spServices.readFiles(completeFolderRelativeUrl);
     this.response = arrResult.length ? arrResult : [];
     this.allDocuments = this.response;
@@ -160,7 +160,7 @@ export class TaskDetailsDialogComponent implements OnInit {
       batchUrl.push(userObj);
     });
 
-    this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetUsrsbyIds');
+    this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetUsrsbyIds', "GET-BATCH");
     this.response = await this.spServices.executeBatch(batchUrl);
     this.response = this.response.length ? this.response.map(a => a.retItems) : [];
     return this.response;
@@ -171,7 +171,7 @@ export class TaskDetailsDialogComponent implements OnInit {
 
   downloadFile() {
     if (this.selectedDocuments.length > 0) {
-      this.commonService.SetNewrelic('task-allocation', 'downloadFile', 'createZip');
+      this.commonService.SetNewrelic('task-allocation', 'task-detailsDialog', 'createZip-downloadFile', "GET-BATCH");
       this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.currentTask.Title);
     } else {
       this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please Select Files.',false);

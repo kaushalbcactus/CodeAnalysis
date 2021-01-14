@@ -112,11 +112,9 @@ export class NonStandardprojectComponent implements OnInit {
     this.constants.loader.isWaitDisable = false;
   
     const batchUrl = [];
-    // const batchContents = new Array();
-    // const batchGuid = this.spService.generateUUID();
+    
     const oCurrentDate = new Date();
     let sYear = oCurrentDate.getFullYear();
-    //sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
 
     const projectPerYearObj = Object.assign({}, this.queryConfig);
     projectPerYearObj.url = this.spService.getReadURL(
@@ -127,11 +125,7 @@ export class NonStandardprojectComponent implements OnInit {
     projectPerYearObj.listName = this.constants.listNames.ProjectPerYear.name;
     projectPerYearObj.type = "GET";
     batchUrl.push(projectPerYearObj);
-    // const projectYearEndPoint = this.spService.getReadURL('' + this.constants.listNames.ProjectPerYear.name + '',
-    //   this.pmConstant.TIMELINE_QUERY.PROJECT_PER_YEAR);
-    // const projectYearUpdatedEndPoint = projectYearEndPoint.replace('{0}', '' + sYear);
-    // this.spService.getBatchBodyGet(batchContents, batchGuid, projectYearUpdatedEndPoint);
-
+    
     const clientObj = Object.assign({}, this.queryConfig);
     clientObj.url = this.spService.getReadURL(
       this.constants.listNames.ClientLegalEntity.name,
@@ -140,10 +134,6 @@ export class NonStandardprojectComponent implements OnInit {
     clientObj.listName = this.constants.listNames.ClientLegalEntity.name;
     clientObj.type = "GET";
     batchUrl.push(clientObj);
-
-    // const clientEndPoint = this.spService.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '',
-    //   this.pmConstant.TIMELINE_QUERY.CLIENT_LEGAL_ENTITY);
-    // this.spService.getBatchBodyGet(batchContents, batchGuid, clientEndPoint);
 
     const deliveryTypeObj = Object.assign({}, this.queryConfig);
     deliveryTypeObj.url = this.spService.getReadURL(
@@ -154,10 +144,6 @@ export class NonStandardprojectComponent implements OnInit {
     deliveryTypeObj.type = "GET";
     batchUrl.push(deliveryTypeObj);
 
-    // const deliveryTypeEndPoint = this.spService.getReadURL('' + this.constants.listNames.DeliverableType.name + '',
-    //   this.pmConstant.TIMELINE_QUERY.DELIVERY_TYPE);
-    // this.spService.getBatchBodyGet(batchContents, batchGuid, deliveryTypeEndPoint);
-
     const subdeliveryTypeObj = Object.assign({}, this.queryConfig);
     subdeliveryTypeObj.url = this.spService.getReadURL(
       this.constants.listNames.SubDeliverables.name,
@@ -166,10 +152,6 @@ export class NonStandardprojectComponent implements OnInit {
     subdeliveryTypeObj.listName = this.constants.listNames.SubDeliverables.name;
     subdeliveryTypeObj.type = "GET";
     batchUrl.push(subdeliveryTypeObj);
-
-    // const subTypeEndPoint = this.spService.getReadURL('' + this.constants.listNames.SubDeliverables.name + '',
-    //   this.pmConstant.TIMELINE_QUERY.NON_STANDARD_SUB_TYPE);
-    // this.spService.getBatchBodyGet(batchContents, batchGuid, subTypeEndPoint);
 
     const servicesObj = Object.assign({}, this.queryConfig);
     servicesObj.url = this.spService.getReadURL(
@@ -180,10 +162,6 @@ export class NonStandardprojectComponent implements OnInit {
     servicesObj.type = "GET";
     batchUrl.push(servicesObj);
 
-    // const servicesUrlEndPoint = this.spService.getReadURL('' + this.constants.listNames.Services.name + '',
-    //   this.pmConstant.TIMELINE_QUERY.NON_STANDARD_SERVICE);
-    // this.spService.getBatchBodyGet(batchContents, batchGuid, servicesUrlEndPoint);
-
     const resourcesObj = Object.assign({}, this.queryConfig);
     resourcesObj.url = this.spService.getReadURL(
       this.constants.listNames.ResourceCategorization.name,
@@ -193,15 +171,11 @@ export class NonStandardprojectComponent implements OnInit {
     resourcesObj.type = "GET";
     batchUrl.push(resourcesObj);
 
-    // const resoureOptionEndPoint = this.spService.getReadURL('' + this.constants.listNames.ResourceCategorization.name + '',
-    //   this.pmConstant.TIMELINE_QUERY.NON_STANDARD_RESOURCE_CATEGORIZATION);
-    // this.spService.getBatchBodyGet(batchContents, batchGuid, resoureOptionEndPoint);
-    // this.pmObject.nonStandardPMResponse = await this.spService.getDataByApi(batchGuid, batchContents);
-
     this.commonService.SetNewrelic(
       "projectManagment",
       "addproj-addtimeline-nonStd",
-      "GetProjPYearSubDeliverablesRCDelTypeListName"
+      "GetProjPYearSubDeliverablesRCDelTypeListName",
+      "GET-BATCH"
     );
 
     const arrResult = await this.spService.executeBatch(batchUrl);
@@ -560,8 +534,9 @@ export class NonStandardprojectComponent implements OnInit {
           this.constants.loader.isWaitDisable  = true;
           this.commonService.SetNewrelic(
             "projectManagment",
-            "nonStdConfirm",
-            "UploadFiles"
+            "addproj-addtimeline-nonStd",
+            "UploadFiles", 
+            "POST-BATCH"
           );
           const FolderName = await this.pmCommonService.getFolderName();
           SelectedFile.push(

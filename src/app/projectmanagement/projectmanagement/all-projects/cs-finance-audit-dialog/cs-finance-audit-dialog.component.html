@@ -4,12 +4,12 @@
 </div>
 
 <div class="pdialogButton p-col-12 p-grid p-jc-end" [hidden]="modalloaderenable">
-    <button type="button " pButton [icon]="buttonloader ? 'pi  pi-spin pi-spinner' : 'pi pi-save' " id="saveUser " class="p-mx-1 p-button-raised p-button-danger " (click)="AuditProjects(AuditType)" [disabled]="selectedProjects.length === 0 || (AuditType ==='Finance'  &&  selectedProjects.length > 10) || buttonloader
+    <button type="button " pButton [icon]="buttonloader ? 'pi  pi-spin pi-spinner' : 'pi pi-save' " id="saveUser " class="p-mx-1 p-button-raised p-button-danger " (click)="AuditProjects(AuditType)" [disabled]="selectedProjects.length === 0 || (selectedProjects.length > 10) || buttonloader
     " label="Audit"></button>
     <button type="button " pButton icon="pi pi-times " (click)="cancel(); " label="Cancel " class="p-button-raised p-button-danger "></button>
 </div>
 
-<div class="p-col-12" style="color: #ff0000;" *ngIf="!modalloaderenable && AuditType ==='Finance'">*Note : Multiselect checkbox can select first 10 rows of current page.</div>
+<div class="p-col-12" style="color: #ff0000;" *ngIf="!modalloaderenable">*Note : Multiselect checkbox can select first 10 rows of current page.</div>
 
 <p-table #allProjectRef [hidden]="modalloaderenable" [columns]="displayedColumns" [(selection)]="selectedProjects" dataKey="ProjectCode" [value]="projectList" (onRowSelect)='onRowSelect()' (onRowUnselect)="onRowUnselect()" [paginator]="true" [rows]="10"
     (onHeaderCheckboxToggle)="MultipleSelectRows(AuditType)" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [style]="{'font-size':'13px','min-height': '400px'}"

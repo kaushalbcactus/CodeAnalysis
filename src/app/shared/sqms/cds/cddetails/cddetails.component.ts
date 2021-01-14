@@ -50,6 +50,7 @@ export class CddetailsComponent implements OnInit {
     paComments: '',
     rejectionComments: '',
     newRejectionComments: '',
+    clientComments :'',
     isActive: '',
     ASD: {
       results: []
@@ -108,6 +109,7 @@ export class CddetailsComponent implements OnInit {
   public csRes = [];
   public deliveryAccess = [];
   public deliveryOwner = [];
+  disableSegregation: boolean = false;
   constructor(private globalConstant: ConstantsService, private spService: SPOperationService,
     private global: GlobalService,
     private qmsConstant: QMSConstantsService,
@@ -166,6 +168,7 @@ export class CddetailsComponent implements OnInit {
     this.qc.caComments = content.PreventiveActions ? content.PreventiveActions : '';
     this.qc.otherResources = content.Resources.results ? content.Resources.results : [];
     this.qc.rejectionComments = content.RejectionComments ? content.RejectionComments : '';
+    this.qc.clientComments = content.ClientComments;
     this.qc.deliveryLevel2 = this.getResourceEmail(content.ASD);
     this.qc.deliveryLevel1 = this.getResourceEmail(content.TL);
     this.qc.cm = this.getResourceEmail(content.CS);
@@ -180,6 +183,9 @@ export class CddetailsComponent implements OnInit {
       this.qc.cm = codeDetails.CMLevel1 && codeDetails.CMLevel1.results ?
         this.getResourceEmail([...codeDetails.CMLevel1.results, ...[codeDetails.CMLevel2]]) : this.qc.cm;
     }
+
+    content.Segregation = content.SurveyResponse ? 'External' : null;
+    this.disableSegregation = content.SurveyResponse ? true : false;
     this.qc.selectedSegregation = content.Segregation ? content.Segregation : null;
     this.qc.allDeliveryResources = codeDetails.AllDeliveryResources && codeDetails.AllDeliveryResources.results ?
       this.getResourceEmail(codeDetails.AllDeliveryResources.results) : this.qc.allDeliveryResources;
@@ -206,7 +212,7 @@ export class CddetailsComponent implements OnInit {
    * @param cdDetails- detals that needs to be updated
    */
   updateCD(cdDetails) {
-    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cdposition', 'updatecd');
+    this.commonService.SetNewrelic('QMS', 'SQMS-CDDetails', 'updatecd', "POST");
     this.spService.updateItem(this.globalConstant.listNames.QualityComplaints.name, this.qc.qcID, cdDetails);
   }
 
@@ -286,7 +292,7 @@ export class CddetailsComponent implements OnInit {
           validityMailContent = this.replaceContent(validityMailContent, '@@Val1@@',
             this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/clientFeedback/clientDissatisfaction');
           // tslint:disable: max-line-length
-          this.commonService.SetNewrelic('QMS', 'CD-Popup-closeCD-Admin', 'SendMail');
+          this.commonService.SetNewrelic('QMS', 'SQMS-CDDetails', 'CD-Popup-closeCD-Admin-SendMail', "POST");
           this.spService.sendMail(strCDdAdminsEmail, this.global.currentUser.email, validityMailSubject, validityMailContent, this.global.currentUser.email);
         }
         if (oldStatus === this.globalConstant.cdStatus.Created) {
@@ -295,7 +301,7 @@ export class CddetailsComponent implements OnInit {
             const notifyMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction';
             const strTo = resources.resourcesEmail ? resources.resourcesEmail.join(',') : '';
             notifyMailContent = this.replaceContent(notifyMailContent, '@@Val1@@', this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/personalFeedback/externalFeedback');
-            this.commonService.SetNewrelic('QMS', 'CD-Popup-closeCD', 'SendMail');
+            this.commonService.SetNewrelic('QMS', 'SQMS-CDDetails', 'CD-Popup-closeCD-SendMail', "POST");
             this.spService.sendMail(strTo, this.global.currentUser.email, notifyMailSubject, notifyMailContent, this.global.currentUser.email);
           }
         }
@@ -368,7 +374,7 @@ export class CddetailsComponent implements OnInit {
           const rejectMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction rejected';
           const strTo = this.qc.deliveryLevel2.emailIDs.join(',');
           rejectMailContent = this.replaceContent(rejectMailContent, "@@Val1@@", this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/clientFeedback/clientDissatisfaction');
-          this.commonService.SetNewrelic('QMS', 'CD-updateValidity', 'SendMail');
+          this.commonService.SetNewrelic('QMS', 'SQMS-CDDetails', 'CD-updateValidity-SendMail', "POST");
           this.spService.sendMail(strTo, this.global.currentUser.email, rejectMailSubject, rejectMailContent, this.global.currentUser.email);
         }
         msg = 'CD rejected for ' + this.qc.projectCode + '.';} else if (actionClicked === 'valid') {
@@ -430,7 +436,7 @@ export class CddetailsComponent implements OnInit {
     } else {
       const common = this.qmsConstant.common;
       common.getMailTemplate.filter = common.getMailTemplate.filter.replace('{{templateName}}', arrTemplateName);
-      this.commonService.SetNewrelic('QMS', 'cd-actionpopup-getMailContent', 'readItems');
+      this.commonService.SetNewrelic('QMS', 'SQMS-CDDetails', 'cd-actionpopup-getMailContent', "GET");
       const templateData = await this.spService.readItems(this.globalConstant.listNames.MailContent.name,
         common.getMailTemplate);
       arrResult = templateData.length > 0 ? templateData : [];

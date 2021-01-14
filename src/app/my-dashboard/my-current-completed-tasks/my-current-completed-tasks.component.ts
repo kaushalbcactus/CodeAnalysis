@@ -21,17 +21,14 @@ interface DateObj {
 }
 
 @Component({
-  selector: 'app-my-current-completed-tasks',
-  templateUrl: './my-current-completed-tasks.component.html',
-  styleUrls: ['./my-current-completed-tasks.component.css'],
+  selector: "app-my-current-completed-tasks",
+  templateUrl: "./my-current-completed-tasks.component.html",
+  styleUrls: ["./my-current-completed-tasks.component.css"],
 })
-
 export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
-
-
-  @ViewChild('TasksTable', { static: false })
+  @ViewChild("TasksTable", { static: false })
   TasksTable: CurrentCompletedTasksTableComponent;
-  enableTableView: boolean=false;
+  enableTableView: boolean = false;
   thenBlock: CurrentCompletedTasksTableComponent;
   constructor(
     public myDashboardConstantsService: MyDashboardConstantsService,
@@ -47,9 +44,8 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     private locationStrategy: LocationStrategy,
     private readonly _router: Router,
     _applicationRef: ApplicationRef,
-    zone: NgZone,
+    zone: NgZone
   ) {
-
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
     platformLocation.onPopState(() => {
@@ -62,11 +58,14 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     const obj = this.myDashboardConstantsService.openTaskSelectedTab;
     console.log(obj);
 
-    this.subscription.add(this.myDashboardConstantsService.getOpenTaskTabValue().subscribe(data => {
-      console.log('in subscription ', data);
-      this.GetDatabyDateSelection(data.event, data.days);
-    }));
-
+    this.subscription.add(
+      this.myDashboardConstantsService
+        .getOpenTaskTabValue()
+        .subscribe((data) => {
+          console.log("in subscription ", data);
+          this.GetDatabyDateSelection(data.event, data.days);
+        })
+    );
   }
 
   // List of Subscribers
@@ -77,18 +76,15 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   public loderenable = false;
 
-
-
   showCalender: boolean;
   selectedDate: any;
   rangeDates: Date[];
- 
- 
+
   batchContents = new Array();
   public allTasks = [];
   response: any[];
   brands: SelectItem[];
-  selectedStatus = 'Not Completed';
+  selectedStatus = "Not Completed";
   loaderenable = true;
   display = false;
   tasks = [];
@@ -114,17 +110,18 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   tempselectedDate: string;
 
-
   previousNextTaskChildRes: any = [];
 
   ngOnInit() {
     localStorage.clear();
-    this.commonService.SetNewrelic('MyDashboard','MyCurrentCompletedTask' + this.route.snapshot.data.type, 'GetEmailTemplate');
+    this.commonService.SetNewrelic(
+      "MyDashboard",
+      "MyCurrentCompletedTasks",
+      "GetEmailTemplate - " + this.route.snapshot.data.type,
+      "GET"
+    );
     this.myDashboardConstantsService.getEmailTemplate();
   }
-
-
- 
 
   // *****************************************************************************************
   // Get data by dates on button switch
@@ -133,27 +130,43 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
   async GetDatabyDateSelection(event, days) {
     this.loaderenable = true;
     this.enableTableView = false;
-    this.commonService.SetNewrelic('MyDashboard','MyCurrentCompletedTask' + this.route.snapshot.data.type, 'GetTasks');
+    this.commonService.SetNewrelic(
+      "MyDashboard",
+      "MyCurrentCompletedTasks",
+      "GetTasks - " + this.route.snapshot.data.type,
+      "GET"
+    );
     this.TabName = this.route.snapshot.data.type;
     this.days = days;
     this.selectedTab = event;
     this.selectedDate = days > 0 ? event + days : event;
-    this.rangeDates = event === 'Custom' ? this.rangeDates : null;
-    if (event === 'Custom' && this.rangeDates !== null) {
+    this.rangeDates = event === "Custom" ? this.rangeDates : null;
+    if (event === "Custom" && this.rangeDates !== null) {
       this.allTasks = [];
       this.loaderenable = true;
-      this.rangeDates[1] = this.rangeDates[1] === null ? this.rangeDates[0] : this.rangeDates[1];
-      const dates = await this.myDashboardConstantsService.CalculateDatesDiffernce(event, days, this.rangeDates);
+      this.rangeDates[1] =
+        this.rangeDates[1] === null ? this.rangeDates[0] : this.rangeDates[1];
+      const dates = await this.myDashboardConstantsService.CalculateDatesDiffernce(
+        event,
+        days,
+        this.rangeDates
+      );
       this.getStatusFilterDropDownValue(this.TabName, dates);
-    } else if (event !== 'Custom') {
+    } else if (event !== "Custom") {
       this.allTasks = [];
       this.loaderenable = true;
-      const dates = await this.myDashboardConstantsService.CalculateDatesDiffernce(event, days,null);
+      const dates = await this.myDashboardConstantsService.CalculateDatesDiffernce(
+        event,
+        days,
+        null
+      );
       this.getStatusFilterDropDownValue(this.TabName, dates);
-    }
-    else{
-
-      this.commonService.showToastrMessage(this.constants.MessageType.warn,'Please select proper dates for custom search.',false);
+    } else {
+      this.commonService.showToastrMessage(
+        this.constants.MessageType.warn,
+        "Please select proper dates for custom search.",
+        false
+      );
       this.loaderenable = false;
       this.enableTableView = true;
     }
@@ -164,14 +177,32 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
   // **********************************************************************************************
 
   async getStatusFilterDropDownValue(status, filterDates) {
-
-    this.commonService.SetNewrelic('MyDashboard','MyCurrentCompletedTask' + status, 'GetTasks');
-    const mytasks = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTasks);
-    mytasks.filter = mytasks.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString());
-    mytasks.filter += status === 'MyCompletedTask' ? mytasks.filterCompleted : mytasks.filterStatus;
+    this.commonService.SetNewrelic(
+      "MyDashboard",
+      "MyCurrentCompletedTasks",
+      "GetTasks - " + status,
+      "GET"
+    );
+    const mytasks = Object.assign(
+      {},
+      this.myDashboardConstantsService.mydashboardComponent.MyTasks
+    );
+    mytasks.filter = mytasks.filter.replace(
+      /{{userId}}/gi,
+      this.sharedObject.selectedUser ? this.sharedObject.selectedUser.toString() : this.sharedObject.currentUser.userId.toString()
+    );
+    mytasks.filter +=
+      status === "MyCompletedTask"
+        ? mytasks.filterCompleted
+        : mytasks.filterStatus;
     // mytasks.filter += mytasks.filterStatus;
-    mytasks.filter += mytasks.filterDate.replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
-    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, mytasks);
+    mytasks.filter += mytasks.filterDate
+      .replace(/{{startDateString}}/gi, filterDates[0])
+      .replace(/{{endDateString}}/gi, filterDates[1]);
+    this.response = await this.spServices.readItems(
+      this.constants.listNames.Schedules.name,
+      mytasks
+    );
     const res = this.response.length ? this.response : [];
     this.loaderenable = false;
     if (res.length > 0) {
@@ -184,8 +215,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     }
   }
 
-
-  updateTableDetail(event){
+  updateTableDetail(event) {
     this.GetDatabyDateSelection(this.selectedTab, this.days);
   }
 
@@ -195,6 +225,4 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
       this.subscription.unsubscribe();
     }
   }
-
-
 }

@@ -138,7 +138,7 @@ export class CreateTaskComponent implements OnInit {
     pInfoObj.listName = this.constantsService.listNames.ProjectInformation.name;
     pInfoObj.type = 'GET';
     batchUrl.push(pInfoObj);
-    this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'getFTEProjects');
+    this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'getFTEProjects', 'GET');
     const res = await this.spOperationsService.executeBatch(batchUrl);
     this.fteProjectArrayList = res.length ? res[0].retItems : [];
 
@@ -244,7 +244,7 @@ export class CreateTaskComponent implements OnInit {
     taskObj.listName = this.constantsService.listNames.Schedules.name;
     taskObj.type = 'GET';
     batchUrl.push(taskObj);
-    this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'getSubmilestones');
+    this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'getSubmilestones', 'GET-BATCH');
     const res = await this.spOperationsService.executeBatch(batchUrl);
     this.subMilestonesArrayList = res.length ? res[0].retItems : [];
     this.taskArrayList = res.length ? res[1].retItems : [];
@@ -292,6 +292,10 @@ export class CreateTaskComponent implements OnInit {
 
   checkSubMilestone(val) {
     if (val) {
+      const alphaExp = new RegExp(this.constantsService.REG_EXPRESSION.ALPHA_SPECIAL);
+      if (!alphaExp.test(val)) {
+        return false;
+      }
       const item = val + ':1:In Progress';
       const lowerCaseSubMile = this.subMilestonesArrayFormat && this.subMilestonesArrayFormat.length ?
         this.subMilestonesArrayFormat.map((ele) => ele.toLowerCase()) : [];
@@ -302,7 +306,7 @@ export class CreateTaskComponent implements OnInit {
       } else {
         this.createSubMilestone = false;
       }
-      return;
+      return true;
     }
   }
 
@@ -311,7 +315,12 @@ export class CreateTaskComponent implements OnInit {
     this.formSubmit.isSubmit = true;
     this.submitBtn.isClicked = true;
     if (type === 'createTask') {
-      this.checkSubMilestone(this.enteredSubMile);
+      if(!this.checkSubMilestone(this.enteredSubMile)) {
+        this.commonService.showToastrMessage(this.constantsService.MessageType.error,
+          'Special characters are not allowed for submilestone', true);
+        this.submitBtn.isClicked = false;
+        return false;
+      }
       if (this.create_task_form.invalid) {
         this.submitBtn.isClicked = false;
         return false;
@@ -412,6 +421,7 @@ export class CreateTaskComponent implements OnInit {
     // let batchUrl = [];
     // batchUrl.push(data);
     if (batchUrl.length) {
+      this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'CreateTask', 'POST-BATCH');
       const res: any = await this.spOperationsService.executeBatch(batchUrl);
       console.log('res ', res);
       if (res.length) {
@@ -420,24 +430,24 @@ export class CreateTaskComponent implements OnInit {
           this.commonService.showToastrMessage(this.constantsService.MessageType.error,errorMsg,false);
           return false;
         }
-        const response = res[0].retItems;
-        const fileUrl = this.globalService.sharePointPageObject.serverRelativeUrl + '/Lists/'
-          + this.constantsService.listNames.Schedules.name + '/' + response.ID + '_.000';
-        let moveFileUrl = this.globalService.sharePointPageObject.serverRelativeUrl + '/Lists/'
-          + this.constantsService.listNames.Schedules.name + '/' + this.create_task_form.value.ProjectCode.ProjectCode;
-        moveFileUrl = moveFileUrl + '/' + response.Milestone + '/' + response.ID + '_.000';
-        const url = this.globalService.sharePointPageObject.webAbsoluteUrl
-          + "/_api/web/getfilebyserverrelativeurl('" + fileUrl + "')/moveto(newurl='" + moveFileUrl + "',flags=1)";
-        // this.spServices.getChangeSetBodyMove(batchContents, changeSetId, url);
-        const moveItemObj = Object.assign({}, this.queryConfig);
-        moveItemObj.url = url; // this.spServices.getMoveURL(fileUrl, moveFileUrl);
-        moveItemObj.listName = 'Move Item';
-        moveItemObj.type = 'POST';
-        batchUrl = [];
-        batchUrl.push(moveItemObj);
-        this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'CreateTask');
-        const moveToMilestoneRes: any = await this.spOperationsService.executeBatch(batchUrl);
-        console.log('res ', moveToMilestoneRes);
+        // const response = res[0].retItems;
+        // const fileUrl = this.globalService.sharePointPageObject.serverRelativeUrl + '/Lists/'
+        //   + this.constantsService.listNames.Schedules.name + '/' + response.ID + '_.000';
+        // let moveFileUrl = this.globalService.sharePointPageObject.serverRelativeUrl + '/Lists/'
+        //   + this.constantsService.listNames.Schedules.name + '/' + this.create_task_form.value.ProjectCode.ProjectCode;
+        // moveFileUrl = moveFileUrl + '/' + response.Milestone + '/' + response.ID + '_.000';
+        // const url = this.globalService.sharePointPageObject.webAbsoluteUrl
+        //   + "/_api/web/getfilebyserverrelativeurl('" + fileUrl + "')/moveto(newurl='" + moveFileUrl + "',flags=1)";
+        // // this.spServices.getChangeSetBodyMove(batchContents, changeSetId, url);
+        // const moveItemObj = Object.assign({}, this.queryConfig);
+        // moveItemObj.url = url; // this.spServices.getMoveURL(fileUrl, moveFileUrl);
+        // moveItemObj.listName = 'Move Item';
+        // moveItemObj.type = 'POST';
+        // batchUrl = [];
+        // batchUrl.push(moveItemObj);
+
+        // const moveToMilestoneRes: any = await this.spOperationsService.executeBatch(batchUrl);
+        // console.log('res ', moveToMilestoneRes);
 
         this.commonService.showToastrMessage(this.constantsService.MessageType.success,'Task Created',false);
         this.refetchTaskList();

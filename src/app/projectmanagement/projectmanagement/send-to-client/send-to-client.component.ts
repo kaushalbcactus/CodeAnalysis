@@ -147,9 +147,8 @@ export class SendToClientComponent implements OnInit {
 
     const fileName = task.ProjectCode + ' - ' + task.displayMilestone;
     // this.spServices.downloadMultipleFiles(tempArray, fileName);
-    this.commonService.SetNewrelic('projectmanagement', 'sendtoclient', 'createZip');
+    this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'createZip', "GET-BATCH");
     this.spServices.createZip(tempArray.map(c => c.url), fileName);
-
     // }, 500);
   }
   goToAllocationPage(task) {
@@ -223,7 +222,7 @@ export class SendToClientComponent implements OnInit {
       objMilestone.filter = objMilestone.filter.replace(/{{projectCode}}/gi,
         task.ProjectCode).replace(/{{milestone}}/gi,
           task.Milestone);
-      this.commonService.SetNewrelic('projectManagment', 'send to Client', 'fetchMilestone');
+      this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'fetchMilestone', "GET");
       const response = await this.spServices.readItems(this.Constant.listNames.Schedules.name, objMilestone);
 
       if (response.length > 0) {
@@ -344,7 +343,7 @@ export class SendToClientComponent implements OnInit {
       top: 4200
     };
 
-    this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'GetSchedules');
+    this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'GetSchedules', "GET");
     this.scArrays.taskItems = await this.spServices.readItems(this.Constant.listNames.Schedules.name, queryOptions);
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
@@ -431,7 +430,7 @@ export class SendToClientComponent implements OnInit {
         tempSendToClientArray.push(scObj);
       }
       let counter = 0;
-      this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'GetSchedules');
+      this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'GetSchedules', "GET-BATCH");
       let arrResults = await this.spServices.executeBatch(batchUrl);
       arrResults = arrResults.length > 0 ? arrResults.map(a => a.retItems) : [];
       for (const taskItem of tempSendToClientArray) {

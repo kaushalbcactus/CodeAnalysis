@@ -128,7 +128,8 @@ export class AddAccessService {
     this.commonService.SetNewrelic(
       "admin",
       "AddAccessService",
-      "GetDataOnAddAccess"
+      "GetDataOnAddAccess",
+      "GET-BATCH"
     );
     const arrResults = await this.spServices.executeBatch(batchURL);
 
@@ -344,7 +345,8 @@ export class AddAccessService {
     this.commonService.SetNewrelic(
       "admin",
       "AddAccessService",
-      "GetParametersQueryData"
+      "getPrametersDropdownData",
+      "GET-BATCH"
     );
     const arrResults = await this.spServices.executeBatch(batchURL);
 
@@ -436,9 +438,10 @@ export class AddAccessService {
 
       if (batchURL.length === 99) {
         this.commonService.SetNewrelic(
-          "UpdateRuleStore",
+          "admin",
           "AddAccessService",
-          "AddAccess"
+          "saveRules",
+          "POST-BATCH"
         );
         batchResults = await this.spServices.executeBatch(batchURL);
 
@@ -449,9 +452,10 @@ export class AddAccessService {
 
     if (batchURL.length) {
       this.commonService.SetNewrelic(
-        "UpdateRuleStore",
+        "admin",
         "AddAccessService",
-        "AddAccess"
+        "saveRules",
+        "POST-BATCH"
       );
 
       batchResults = await this.spServices.executeBatch(batchURL);
@@ -556,13 +560,13 @@ export class AddAccessService {
       true,
       true
     );
-
-    this.GetRulesByType(batchURL, type);
     this.commonService.SetNewrelic(
-      "getPrjectAndRules",
+      "admin",
       "AddAccessService",
-      "AddAccess"
+      "updateAllDetails",
+      "GET"
     );
+    this.GetRulesByType(batchURL, type);
 
     batchResults = await this.spServices.executeBatch(batchURL);
     filterData = this.processfetchedRules(filterData, batchResults);
@@ -785,6 +789,7 @@ export class AddAccessService {
             if (RuleItems && RuleItems.length > 0) {
               dbItemList = await this.UpdateItemsForRule(
                 RuleTypeObj.listName,
+                RuleTypeObj.DBParameter,
                 oldrule,
                 dbItemList,
                 RuleTypeObj.Level2,
@@ -842,6 +847,7 @@ export class AddAccessService {
             if (RuleItems && RuleItems.length > 0) {
               dbItemList = await this.UpdateItemsForRule(
                 RuleTypeObj.listName,
+                RuleTypeObj.DBParameter,
                 oldRule,
                 dbItemList,
                 RuleTypeObj.Level2,
@@ -888,9 +894,11 @@ export class AddAccessService {
             if (RuleTypeObj) {
               dbItemList = await this.changeOwnerOfItems(
                 RuleTypeObj.listName,
+                RuleTypeObj.DBParameter,
                 dbItemList,
                 rule,
                 RuleTypeObj.Level2,
+                RuleTypeObj.Level1,
                 parameter
               );
             }
@@ -1062,9 +1070,10 @@ export class AddAccessService {
 
       if (batchURL.length === 99) {
         this.commonService.SetNewrelic(
-          "updateAllEditedItems",
+          "admin",
           "AddAccessService",
-          "AddAccess"
+          "updateAllEditedItems",
+          "POST-BATCH"
         );
         await this.spServices.executeBatch(batchURL);
         batchURL = [];
@@ -1073,9 +1082,10 @@ export class AddAccessService {
 
     if (batchURL.length) {
       this.commonService.SetNewrelic(
-        "updateAllEditedItems",
+        "admin",
         "AddAccessService",
-        "AddAccess"
+        "updateAllEditedItems",
+        "POST-BATCH"
       );
 
       await this.spServices.executeBatch(batchURL);
@@ -1113,9 +1123,10 @@ export class AddAccessService {
         );
       });
       this.commonService.SetNewrelic(
-        "GetProjectInformation",
+        "admin",
         "AddAccessService",
-        "AddAccess"
+        "fetchProjectForRule",
+        "GET-BATCH"
       );
 
       batchResults = await this.spServices.executeBatch(batchURL);
@@ -1241,9 +1252,10 @@ export class AddAccessService {
       });
 
       this.commonService.SetNewrelic(
-        "GetProjectFinance",
+        "admin",
         "AddAccessService",
-        "AddAccess"
+        "fetchProjectFinanceForRule",
+        "GET-BATCH"
       );
 
       batchResults = await this.spServices.executeBatch(batchURL);
@@ -1404,20 +1416,40 @@ export class AddAccessService {
         );
     }
 
-    if (Rule.Access && Rule.Access.results) {
-      dbItemList
-        .filter((c) => AllCodeList.includes(c[parameter]))
-        .map((c) =>
-          c[access] &&
-          c[access].hasOwnProperty("results") &&
-          c[access].results.length
-            ? c[access].results.push.apply(
-                c[access].results,
-                Rule.Access.results
-              )
-            : (c[access] = { results: Rule.Access.results })
-        );
-    }
+    dbItemList
+      .filter((c) => AllCodeList.includes(c[parameter]))
+      .map(
+        (c) =>
+          (c[access] =
+            c[arrayName] && c[arrayName].length > 0
+              ? c[access] &&
+                c[access].hasOwnProperty("results") &&
+                c[access].results.length
+                ? {
+                    results: [
+                      ...c[access].results,
+                      ...[
+                        ...c[arrayName].slice(1).map((c) => c.OwnerPG),
+                        ...c[arrayName]
+                          .map((c) => c.Access)
+                          .map((c) => c.results)
+                          .filter((c) => c !== undefined)
+                          .reduce((a, b) => [...a, ...b], []),
+                      ],
+                    ],
+                  }
+                : {
+                    results: [
+                      ...c[arrayName].slice(1).map((c) => c.OwnerPG),
+                      ...c[arrayName]
+                        .map((c) => c.Access)
+                        .map((c) => c.results)
+                        .filter((c) => c !== undefined)
+                        .reduce((a, b) => [...a, ...b], []),
+                    ],
+                  }
+              : c[access])
+      );
 
     dbItemList
       .filter((c) => AllCodeList.includes(c[parameter]))
@@ -1436,6 +1468,7 @@ export class AddAccessService {
 
   UpdateItemsForRule(
     arrayName,
+    dbArrayName,
     oldrule,
     dbItemList,
     owner,
@@ -1484,6 +1517,42 @@ export class AddAccessService {
         }
       }
 
+      // added new to remove owner from access of other rules Maxwell
+      // *-------------------------------------------------------------------------------------*
+      dbItemList
+        .filter((c) => RuleItems.includes(c[parameter]))
+        .map(
+          (c) =>
+            ( c[access] =  c[access] &&
+              c[access].hasOwnProperty("results") &&
+              c[access].results.length &&
+              c[dbArrayName]
+                .split(";#")
+                .map((d) => +d)
+                .indexOf(oldrule.ID) > 0
+                ? {results: c[access].results.filter((e) => e.ID !== oldrule.OwnerPG.ID)}
+                : c[access])
+        );
+
+      if (type == this.constants.RulesType.CD) {
+        dbItemList
+          .filter((c) => RuleItems.includes(c[parameter]))
+          .map(
+            (c) =>  c["CSId"]=
+              ( c["CSId"] &&
+                c["CSId"].hasOwnProperty("results") &&
+                c["CSId"].results.length &&
+                c[dbArrayName]
+                  .split(";#")
+                  .map((d) => +d)
+                  .indexOf(oldrule.ID) > 0
+                  ? { results : c["CSId"].results.filter((e) => e.ID !== oldrule.OwnerPG.ID)}
+                  : c["CSId"])
+          );
+      }
+
+      // *-------------------------------------------------------------------------------------*
+
       // update access user with existing and new (adhoc user)
       if (type == this.constants.RulesType.CD) {
         dbItemList
@@ -1498,12 +1567,19 @@ export class AddAccessService {
                       ...new Set([
                         ...d["CSId"].results,
                         ...[
-                          ...new Set(
-                            d[arrayName]
-                              .filter((e) => e.Access.hasOwnProperty("results"))
-                              .map((f) => f.Access.results.map((i) => i.ID))
-                              .reduce((a, b) => [...a, ...b], [])
-                          ),
+                          ...new Set([
+                            ...d[arrayName].slice(1).map((c) => c.OwnerPG),
+                            ...[
+                              ...new Set(
+                                d[arrayName]
+                                  .filter((e) =>
+                                    e.Access.hasOwnProperty("results")
+                                  )
+                                  .map((f) => f.Access.results.map((i) => i.ID))
+                                  .reduce((a, b) => [...a, ...b], [])
+                              ),
+                            ],
+                          ]),
                         ],
                       ]),
                     ]
@@ -1523,12 +1599,19 @@ export class AddAccessService {
                     ...new Set([
                       ...d[access].results,
                       ...[
-                        ...new Set(
-                          d[arrayName]
-                            .filter((e) => e.Access.hasOwnProperty("results"))
-                            .map((f) => f.Access.results.map((i) => i))
-                            .reduce((a, b) => [...a, ...b], [])
-                        ),
+                        ...new Set([
+                          ...d[arrayName].slice(1).map((c) => c.OwnerPG),
+                          ...[
+                            ...new Set(
+                              d[arrayName]
+                                .filter((e) =>
+                                  e.Access.hasOwnProperty("results")
+                                )
+                                .map((f) => f.Access.results.map((i) => i))
+                                .reduce((a, b) => [...a, ...b], [])
+                            ),
+                          ],
+                        ]),
                       ],
                     ]),
                   ]
@@ -1550,6 +1633,7 @@ export class AddAccessService {
         // remove owner user from delivery leads for pf
         dbItemList
           .filter((c) => RuleItems.includes(c[parameter]))
+          .filter((a) => a[access] && a[access].hasOwnProperty("results"))
           .map(
             (c) =>
               (c[access].results = c[access].results
@@ -1560,6 +1644,7 @@ export class AddAccessService {
         // update access user with existing and new (adhoc user)
         dbItemList
           .filter((c) => RuleItems.includes(c[parameter]))
+          .filter((a) => a[access] && a[access].hasOwnProperty("results"))
           .map(
             (d) =>
               (d[access].results =
@@ -1573,11 +1658,30 @@ export class AddAccessService {
                   : d[access].results)
           );
       }
+
+      dbItemList
+      .filter((c) => RuleItems.includes(c[parameter]))
+      .map(
+        (c) =>
+          ( c[access] =  c[access] &&
+            c[access].hasOwnProperty("results") &&
+            c[access].results.length > 0 
+              ? {results: c[access].results.filter((e) => e.ID !== c[owner].ID)}
+              : c[access])
+      );
     }
     return dbItemList;
   }
 
-  changeOwnerOfItems(arrayName, dbItemList, rule, owner, parameter) {
+  changeOwnerOfItems(
+    arrayName,
+    dbArrayName,
+    dbItemList,
+    rule,
+    owner,
+    access,
+    parameter
+  ) {
     // make edited true for containing current rule
     if (
       dbItemList.filter((c) => c[arrayName].find((d) => d.Id === rule.ID)) &&
@@ -1608,6 +1712,32 @@ export class AddAccessService {
                 ? d[arrayName][0].OwnerPG
                 : d[owner])
         );
+
+      // add rule owner to access Maxwell
+
+      dbItemList
+      .filter((c) => RuleItems.includes(c[parameter]))
+      .map(
+        (d) =>
+         d[access] =   d[dbArrayName]
+         .split(";#")
+         .map((i) => +i)
+         .indexOf(rule.ID) > 0 ?  ( d[access] &&
+         d[access].hasOwnProperty("results") &&
+         d[access].results.length > 0  ? {results : [...d[access].results,...[rule.OwnerPG]]} : { results: [rule.OwnerPG]} ) : d[access]) ;
+
+
+         dbItemList
+         .filter((c) => RuleItems.includes(c[parameter]))
+         .map(
+           (c) =>
+             ( c[access] =  c[access] &&
+               c[access].hasOwnProperty("results") &&
+               c[access].results.length > 0 
+                 ? {results: c[access].results.filter((e) => e.ID !== c[owner].ID)}
+                 : c[access])
+         );
+       
     }
     return dbItemList;
   }

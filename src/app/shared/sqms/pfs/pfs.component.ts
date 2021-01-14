@@ -20,6 +20,8 @@ export class PfsComponent implements OnInit, AfterViewChecked {
   @Input() filterObj;
   @Input() parentComponent;
   isOptionFilter: boolean;
+  viewComments: boolean = false;
+  comments: any = null;
   constructor(
     private globalConstant: ConstantsService,
     private global: GlobalService,
@@ -107,7 +109,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
    */
   protected async getPFItems(filterObj?): Promise<[]> {
     const pfComponent = JSON.parse(JSON.stringify(this.qmsConstant.ClientFeedback.PositiveFeedbackComponent));
-    this.commonService.SetNewrelic('QMS', 'cfpositive-feedback', 'getGroupInfo');
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'cfpositive-feedback', "GET");
     const result = await this.spService.getGroupInfo(this.globalConstant.Groups.PFAdmin);
     this.global.pfAdmins = result.results ? result.results : [];
     this.global.currentUser.isPFAdmin = this.global.pfAdmins.find(t => t.Id === this.global.currentUser.userId) ? true : false;
@@ -133,7 +135,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
       pfUrl = pfComponent.getPF;
     }
 
-    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'getPFItems');
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'getPFItems-ClientFeedBack-cfposition', "GET");
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.PositiveFeedbacks.name, pfUrl);
     const arrPFs = arrResult.length > 0 ? this.appendPropertyTOObject(arrResult) : [];
     return arrPFs;
@@ -151,7 +153,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
     pfComponent.getPF.top = pfComponent.getPF.top.replace('{{TopCount}}', '' + topCount);
     pfComponent.getPF.filter = pfComponent.getPF.filter.replace('{{startDate}}', startDate)
       .replace('{{endDate}}', endDate);
-    this.commonService.SetNewrelic('QMS', 'personalFeedback-positiveFeedback', 'getPFItems');
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'getPFItems-personalFeedback-positiveFeedback', "GET");
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.PositiveFeedbacks.name, pfComponent.getPF);
     this.global.templateMatrix.templates = arrResult.length > 0 ? arrResult : [];
     const arrPFs = arrResult.length > 0 ? this.appendPropertyTOObject(arrResult) : [];
@@ -191,9 +193,8 @@ export class PfsComponent implements OnInit, AfterViewChecked {
    * @param arrayItems -  array of PF Items
    */
   bindTable(arrayItems) {
-
     this.CFRows = [];
-    arrayItems.forEach(element => {
+    arrayItems.forEach(async element => {
       this.CFRows.push({
         DeliveryLeads: element.DeliveryLeads,
         FileID: element.FileID,
@@ -206,12 +207,14 @@ export class PfsComponent implements OnInit, AfterViewChecked {
         SentDate: element.SentDate ? new Date(this.datepipe.transform(element.SentDate, 'MMM d, yyyy')) : '',
         Title: element.Title ? element.Title : '',
         AssignedTo: element.AssignedTo ? element.AssignedTo : '',
-        SentBy: element.SentBy.Title,
+        SentBy:  element.SurveyResponse.ID  ?  await this.getNameFromPOC(element.EmailAddress)    : element.SentBy.Title ? element.SentBy.Title : '',
         Resources: element.resources,
         FileUrl: element.FileURL,
         IsActive: element.IsActiveCH,
         isLoggedInDeliveryLead: element.isLoggedInDeliveryLead,
-        fullUrl: element.fullUrl
+        fullUrl: element.fullUrl,
+        EmailAddress: element.EmailAddress,
+        SurveyResponse : element.SurveyResponse.ID
       });
     });
     this.colFilters(this.CFRows);
@@ -240,7 +243,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
    */
   savePF(pfDetails, pf) {
 
-    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'savePF');
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'savePF-ClientFeedBack-cfposition', "POST");
     this.spService.updateItem(this.globalConstant.listNames.PositiveFeedbacks.name, pf.ID, pfDetails);
     this.showToastMsg({ type: 'success', msg: 'Success', detail: 'Positive Feedback sent by ' + pf.SentBy.Title + ' is ' + pf.Status + '.' });
   }
@@ -255,8 +258,27 @@ export class PfsComponent implements OnInit, AfterViewChecked {
 
   openMenuPopup(data) {
     this.items = [
-      { label: 'Reject', title: 'Reject', id: 'reject', command: (e) => this.rejectPF(data), visible: data.Status === this.globalConstant.pfStatus.Accepted && (data.isLoggedInDeliveryLead || this.global.currentUser.isPFAdmin) }
+      { label: 'Reject', title: 'Reject', id: 'reject', command: (e) => this.rejectPF(data), visible: data.Status === this.globalConstant.pfStatus.Accepted && (data.isLoggedInDeliveryLead || this.global.currentUser.isPFAdmin) },
+      { label: 'View Comments', title: 'View Comments', id: 'viewComments', command: (e) => this.showComments(data), visible: data.SurveyResponse ? true : false }
+
     ];
+  }
+
+  async showComments(data){
+    const getSurveyResInfo = Object.assign({}, this.qmsConstant.ClientFeedback.GET_SURVEYRESPONSE_BY_ID);
+    getSurveyResInfo.filter = getSurveyResInfo.filter.replace(/{{ID}}/gi,
+      data.SurveyResponse);
+    this.common.SetNewrelic('pfs', 'shared-module', 'getSurveyResInfo');
+    const results = await this.spService.readItems(this.constants.listNames.SurveyResponse.name, getSurveyResInfo);
+
+    if(results && results.length > 0 ){
+      this.comments = results[0].CommentsMT;
+    }
+    this.viewComments = this.comments ? true : false;
+
+    if(!this.viewComments){
+      this.commonService.showToastrMessage(this.constants.MessageType.info,'Comments not added.',false);
+    }
   }
 
   downloadExcel(cfp) {
@@ -313,7 +335,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
     const qcComponent = JSON.parse(JSON.stringify(this.qmsConstant.personalFeedbackComponent.PositiveFeedbacks));
     qcComponent.getPFByProject.top = qcComponent.getPFByProject.top.replace('{{TopCount}}', '' + topCount);
     qcComponent.getPFByProject.filter = qcComponent.getPFByProject.filter.replace('{{projectCode}}', projectCode);
-    this.commonService.SetNewrelic('QMS', 'personalfeedback-getPFItemsByProject', 'readItems');
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'readItems-personalfeedback-getPFItemsByProject', "GET");
     let qcs = await this.spService.readItems(this.globalConstant.listNames.PositiveFeedbacks.name,
       qcComponent.getPFByProject);
     qcs = qcs.length > 0 ? qcs.sort((a, b) => new Date(a.SentDate).getTime() - new Date(b.SentDate).getTime()) : [];
@@ -336,7 +358,25 @@ export class PfsComponent implements OnInit, AfterViewChecked {
   }
 
   update(pfDetails, pfID) {
-    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'updatepf');
+    this.commonService.SetNewrelic('QMS', 'SQMS-PFS', 'updatepf-ClientFeedBack-cfposition', "POST");
     this.spService.updateItem(this.globalConstant.listNames.PositiveFeedbacks.name, pfID, pfDetails);
   }
+
+
+  async getNameFromPOC(email){
+
+    let response = email;
+    const getPOCInfo = Object.assign({}, this.qmsConstant.ClientFeedback.GET_POC_By_Email);
+    getPOCInfo.filter = getPOCInfo.filter.replace(/{{emailaddress}}/gi,
+      email);
+    this.common.SetNewrelic('pfs', 'shared-module', 'getPOCinfo');
+    const results = await this.spService.readItems(this.constants.listNames.ProjectContacts.name, getPOCInfo);
+
+    if(results && results.length > 0 ){
+       response = results[0].FName + ' ' + results[0].LName;
+    }
+    return response;
+  }
+
+
 }

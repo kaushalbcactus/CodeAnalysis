@@ -102,14 +102,15 @@ export class CapacityDashboardComponent implements OnInit {
       "" + this.constants.listNames.ResourceCategorization.name + "",
       resourcesQuery
     );
-    resourcesGet.type = "GET";
+    resourcesGet.type = this.constants.Method.GET;
     resourcesGet.listName = this.constants.listNames.ResourceCategorization.name;
     batchURL.push(resourcesGet);
 
     this.commonService.SetNewrelic(
       "CapacityDashboard",
-      "CapacityDashboard",
-      "GetResourceCategorization"
+      "capacity-dashboard",
+      "GetResourceCategorization",
+      "GET"
     );
 
     const arrResults = await this.spServices.executeBatch(batchURL);
@@ -264,11 +265,7 @@ export class CapacityDashboardComponent implements OnInit {
           : [];
 
       const resValues = resources.map(({ value }) => value); // this.Resources.map(o => o.value);
-      // tslint:disable-next-line: no-string-literal
-      //this.searchCapacityForm.controls['practicearea'].setValue(null);
-      // tslint:disable-next-line: no-string-literal
-      //this.searchCapacityForm.controls['skill'].setValue(null);
-      // tslint:disable-next-line: no-string-literal
+     
       this.searchCapacityForm.patchValue({
         practicearea: practiceAreas,
         skill: skills,
@@ -298,11 +295,6 @@ export class CapacityDashboardComponent implements OnInit {
                 (c) => c.UserNamePG.Title !== null
               ).map((o) => new Object({ label: o.UserNamePG.Title, value: o }))
             );
-
-      // tslint:disable-next-line: no-string-literal
-      //this.searchCapacityForm.controls['skill'].setValue(null);
-      // tslint:disable-next-line: no-string-literal
-      //this.searchCapacityForm.controls['resources'].setValue(this.Resources);
 
       const resValues = resources.map(({ value }) => value);
       this.searchCapacityForm.patchValue({
@@ -399,7 +391,7 @@ export class CapacityDashboardComponent implements OnInit {
           return false;
         } else {
           if (this.fetchDataloader) {
-            if(this.capacityDisplayUsers.length > 0){
+            if (this.capacityDisplayUsers.length > 0) {
               this.EnableBlockResourceDialog();
             } else {
               this.commonService.showToastrMessage(
@@ -409,7 +401,6 @@ export class CapacityDashboardComponent implements OnInit {
                 true
               );
             }
-
           } else {
             this.commonService.showToastrMessage(
               this.constants.MessageType.warn,
@@ -422,6 +413,7 @@ export class CapacityDashboardComponent implements OnInit {
       }
     }
   }
+  
   EnableBlockResourceDialog() {
     const resources = this.AlldbResources.filter((c) =>
       this.searchCapacityForm.value.resources.includes(c)
@@ -482,8 +474,9 @@ export class CapacityDashboardComponent implements OnInit {
         console.log(blockResource);
         this.commonService.SetNewrelic(
           "CapacityDashboard",
-          "blockResource",
-          "CreateblockResource"
+          "capacity-dashboard",
+          "CreateblockResource",
+          "POST"
         );
         const result = await this.spServices.createItem(
           this.constants.listNames.Blocking.name,
@@ -573,7 +566,8 @@ export class CapacityDashboardComponent implements OnInit {
     this.commonService.SetNewrelic(
       "CapacityDashboard",
       "capacity-dashboard",
-      "deleteBlocking"
+      "deleteBlocking",
+      "POST"
     );
     const updateResult = await this.spServices.updateItem(
       this.constants.listNames.Blocking.name,
@@ -623,7 +617,8 @@ export class CapacityDashboardComponent implements OnInit {
         this.commonService.SetNewrelic(
           "CapacityDashboard",
           "capacity-dashboard",
-          "updateBlocking"
+          "updateBlocking",
+          "POST"
         );
         const updateResult = await this.spServices.updateItem(
           this.constants.listNames.Blocking.name,
@@ -647,7 +642,7 @@ export class CapacityDashboardComponent implements OnInit {
   }
 
   receiveSelectedUser(event) {
-    this.capacityDisplayUsers=[];
+    this.capacityDisplayUsers = [];
     this.capacityDisplayUsers = event;
   }
 }

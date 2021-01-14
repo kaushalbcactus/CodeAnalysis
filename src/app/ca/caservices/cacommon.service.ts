@@ -185,30 +185,7 @@ export class CACommonService {
     sDate = sDates + ' ' + sHrs + ':' + sMins + ':00 ' + sAMPM;
     return sDate;
   }
-  // /**
-  //  * This method is used to send the email to particualr user with subject and body.
-  //  * @param to
-  //  * @param from
-  //  * @param cc
-  //  * @param templateName
-  //  * @param objEmailBody
-  //  * @param mailSubject
-  //  */
-  // async triggerMail(to, from, cc, templateName, objEmailBody, mailSubject) {
-  //   const mailContent = this.globalConstantService.listNames.MailContent.name;
-  //   const mailQuery = this.caConstantService.mailContent;
-  //   mailQuery.filter = mailQuery.filter.replace('{0}', templateName);
-  //   //tslint:disable
-  //   // tslint:enable
-  //   const body = await this.spServices.readItems(mailContent, mailQuery);
-  //   // let mailBody = JSON.parse(body._body).d.results[0].Content;
-  //   let mailBody = body.length ? body[0].Content : [];
-  //   for (const data of objEmailBody) {
-  //     mailBody = mailBody.replace(RegExp(data.key, 'gi'), data.value);
-  //   }
-  //   //  cc = [fromEmail];
-  //   this.spServices.sendMail(to, from, mailSubject, mailBody, cc);
-  // }
+  
   /**
    * This method is to give the unique value with seperator.
    * @param sVal
@@ -248,18 +225,12 @@ export class CACommonService {
    * @param scheduleQueryOptions
    */
   async getItems(scheduleQueryOptions) {
-    // const batchGuid = this.spServices.generateUUID();
-    // const batchContents = new Array();
     const batchUrl = [];
     let resourceObj = Object.assign({}, this.queryConfig);
     resourceObj.url = this.spServices.getReadURL(this.globalConstantService.listNames.ResourceCategorization.name, this.caConstantService.resourceQueryOptions);
     resourceObj.listName = this.globalConstantService.listNames.ResourceCategorization.name;
     resourceObj.type = 'GET';
     batchUrl.push(resourceObj);
-    // const resourceEndPoint = this.spServices.getReadURL('' + resourceCategorizationList + '', this.caConstantService.resourceQueryOptions);
-    // this.spServices.getBatchBodyGet(batchContents, batchGuid, resourceEndPoint);
-    // const projectEndPoint = this.spServices.getReadURL('' + projectInformationList + '', this.caConstantService.projectOnLoad);
-    // this.spServices.getBatchBodyGet(batchContents, batchGuid, projectEndPoint);
 
     let projectInformationObj = Object.assign({}, this.queryConfig);
     projectInformationObj.url = this.spServices.getReadURL(this.globalConstantService.listNames.ProjectInformation.name, this.caConstantService.projectOnLoad);
@@ -267,18 +238,12 @@ export class CACommonService {
     projectInformationObj.type = 'GET';
     batchUrl.push(projectInformationObj);
 
-    // let schedulesItemEndPoint = this.spServices.getReadURL('' + scheduleList + '', scheduleQueryOptions);
-    // this.spServices.getBatchBodyGet(batchContents, batchGuid, schedulesItemEndPoint);
-
     let taskObj = Object.assign({}, this.queryConfig);
     taskObj.url = this.spServices.getReadURL(this.globalConstantService.listNames.Schedules.name, scheduleQueryOptions);
     taskObj.listName = this.globalConstantService.listNames.Schedules.name;
     taskObj.type = 'GET';
     batchUrl.push(taskObj);
 
-    // batchContents.push('--batch_' + batchGuid + '--');
-    // const userBatchBody = batchContents.join('\r\n');
-    // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
     let arrResults = await this.spServices.executeBatch(batchUrl);
     arrResults = arrResults.map(a => a.retItems);
     return arrResults;
@@ -286,18 +251,11 @@ export class CACommonService {
 
 
   async getProjectDetailsByCode(projectInformationList, projectCode) {
-    // const batchGuid = this.spServices.generateUUID();
-    // const batchContents = new Array();
     const Project = Object.assign({}, this.caConstantService.projectQueryOptions);
     Project.filterByCode = Project.filterByCode.replace(/{{projectCode}}/gi, projectCode);
     Project.filter = Project.filterByCode;
-    this.commonService.SetNewrelic('CA', 'cacommon-getProjectDetailsByCode', 'readItems');
+    this.commonService.SetNewrelic('CA', 'cacommon', 'getProjectDetailsByCode','GET');
     const arrResults = await this.spServices.readItems(this.globalConstantService.listNames.ProjectInformation.name, Project);
-    // const projectEndPoint = this.spServices.getReadURL('' + projectInformationList + '', Project);
-    // this.spServices.getBatchBodyGet(batchContents, batchGuid, projectEndPoint);
-    // batchContents.push('--batch_' + batchGuid + '--');
-    // const userBatchBody = batchContents.join('\r\n');
-    // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
     return arrResults.length > 0 ? arrResults : {};
   }
   /**
@@ -376,8 +334,8 @@ export class CACommonService {
     scTempArrays.taskTempArray.push({ label: scObj.Task, value: scObj.Task });
     scTempArrays.deliveryTypeTempArray.push({ label: scObj.DeliveryType, value: scObj.DeliveryType });
     scTempArrays.allocatedTempArray.push({ label: scObj.EstimatedTime, value: scObj.EstimatedTime });
-    scTempArrays.startTimeTempArray.push({ label: scObj.StartDateText, value: scObj.StartDate });
-    scTempArrays.endTimeTempArray.push({ label: scObj.DueDateText, value: scObj.DueDate });
+    scTempArrays.startTimeTempArray.push({ label: scObj.StartDateText, value: this.datePipe.transform(scObj.StartTime,'d MMM, yyyy, hh:mm a') });
+    scTempArrays.endTimeTempArray.push({ label: scObj.DueDateText, value: this.datePipe.transform(scObj.EndTime,'d MMM, yyyy, hh:mm a')});
     completeTaskArray.push(scObj);
   }
   /**
@@ -386,11 +344,8 @@ export class CACommonService {
    * @param arrTasks
    */
   public async getMilestoneSchedules(scheduleList, arrTasks) {
-    const batchUrl = [];
-
-    // const schedulesItemEndPoint = this.spServices.getReadURL('' + scheduleList + '', this.caConstantService.scheduleMilestoneQueryOptions);
-    // const batchGuid = this.spServices.generateUUID();
-    // const batchContents = new Array();
+    let batchUrl = [];
+    let finalArray = [];
     for (const task of arrTasks) {
       const taskObj = Object.assign({}, this.queryConfig);
       taskObj.url = this.spServices.getReadURL(this.globalConstantService.listNames.Schedules.name, this.caConstantService.scheduleMilestoneQueryOptions);
@@ -398,17 +353,21 @@ export class CACommonService {
       taskObj.listName = this.globalConstantService.listNames.Schedules.name;
       taskObj.type = 'GET';
       batchUrl.push(taskObj);
-      // const schedulesItemEndPointUpdated = schedulesItemEndPoint.replace('{0}', task.projectCode).replace('{1}', task.milestone).replace('{2}', task.projectCode);
-      // this.spServices.getBatchBodyGet(batchContents, batchGuid, schedulesItemEndPointUpdated);
+      if(batchUrl.length === 99) {
+        this.commonService.SetNewrelic('CA', 'caCommon', 'GetMilestoneSchedules', 'GET-BATCH');
+        const arrResults = await this.spServices.executeBatch(batchUrl);
+        finalArray = [ ...finalArray, ...arrResults];
+        batchUrl = [];
+      }
     }
-    // batchContents.push('--batch_' + batchGuid + '--');
-    // const userBatchBody = batchContents.join('\r\n');
-    // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
+    if(batchUrl.length) {
+      this.commonService.SetNewrelic('CA', 'caCommon', 'GetMilestoneSchedules', 'GET-BATCH');
+      const arrResults = await this.spServices.executeBatch(batchUrl);
+      finalArray = [ ...finalArray, ...arrResults];
+    }
 
-    this.commonService.SetNewrelic('CA', 'caCommon', 'GetMilestoneSchedules');
-    const arrResults = await this.spServices.executeBatch(batchUrl);
     for (const count in arrTasks) {
-      arrTasks[count].MilestoneTasks = arrResults[count].retItems;
+      arrTasks[count].MilestoneTasks = finalArray[count].retItems;
     }
     return arrTasks;
   }
@@ -441,10 +400,6 @@ export class CACommonService {
           for (let i = sortField.length - 1; i >= 0; i--) {
             this.customSort(data, sortField[i].field, sortField[i].order);
           }
-          // sortField.forEach(element => {
-
-          // });
-          // this.customSort(data, sortField, sortOrder);
         }
         if (globalFilter) {
           data = data.filter(row => this.globalFilter(row, globalFilter, filterColumns))
@@ -536,21 +491,7 @@ export class CACommonService {
    */
   customSort(data, fieldName: string, order: number) {
     data.sort((data1, data2) => {
-      //   const val1 = row1[fieldName];
-      //   const val2 = row2[fieldName];
-      //   if (val1 === val2) {
-      //     return 0;
-      //   }
-      //   let result = -1;
-      //   if (val1 > val2) {
-      //     result = 1;
-      //   }
-      //   if (order < 0) {
-      //     result = -result;
-      //   }
-      //   return result;
-      // });
-
+      
       let value1 = data1[fieldName];
       let value2 = data2[fieldName];
       let result = null;
@@ -645,21 +586,7 @@ export class CACommonService {
    * @param task
    */
   sortResources(filteredResources, task) {
-    // if (task.projectTask.length > 0) {
-    //   const projectTaskFilter = task.projectTask.filter(function (projObj) {
-    //     return projObj.projectCode === task.projectCode;
-    //   });
-    //   let completedTask;
-    //   if (projectTaskFilter.length) {
-    //     completedTask = projectTaskFilter[0].MilestoneTasks.filter(function (tasobj) {
-    //       return tasobj.Status === 'Completed' && task.task === tasobj.Task;
-    //     });
-    //   }
-
-    // }
-    // else {
-    //   return filteredResources;
-    // }
+    
     const sortedResources = [];
     const recommended = filteredResources.filter(function (objt) {
       return objt.userType === 'Recommended' || objt.userType === 'Best Fit';
@@ -879,25 +806,11 @@ export class CACommonService {
     const projectObj = Object.assign({}, this.caConstantService.projectQueryOptions);
     projectObj.filterByCode = projectObj.filterByCode.replace(/{{projectCode}}/gi, task.projectCode);
     projectObj.filter = projectObj.filterByCode;
-    this.commonService.SetNewrelic('CA', 'cacommon-ResourceAllocation', 'readItems');
+    this.commonService.SetNewrelic('CA', 'cacommon', 'ResourceAllocation','GET');
     const arrResults = await this.spServices.readItems(this.globalConstantService.listNames.ProjectInformation.name, projectObj);
     const project = arrResults.length > 0 ? arrResults[0] : {}
-    // const project = await this.getProjectDetailsByCode(projectInformationList, task.projectCode);
 
     let arrWriterIDs = [], arrQualityCheckerIds = [], arrEditorsIds = [], arrGraphicsIds = [], arrPubSupportIds = [], arrReviewers = [];
-    //  writers = [],
-    //   arrWriterNames = [],
-    //   qualityChecker = [],
-
-    //   arrQCNames = [],
-    //   editors = [],
-    //   arrEditorsNames = [],
-    //   graphics = [],
-    //   arrGraphicsNames = [],
-    //   pubSupport = [],
-    //   arrPubSupportNames = [],
-    //   reviewers = [],
-    //   arrReviewesNames = [],
     let arrPrimaryResourcesIds = [];
 
     arrWriterIDs = this.getIDFromItem(project.Writers);
@@ -957,25 +870,11 @@ export class CACommonService {
     const projectObj = Object.assign({}, this.caConstantService.projectQueryOptions);
     projectObj.filterByCode = projectObj.filterByCode.replace(/{{projectCode}}/gi, task.projectCode);
     projectObj.filter = projectObj.filterByCode;
-    this.commonService.SetNewrelic('CA', 'cacommon-ResourceAllocation', 'readItems');
+    this.commonService.SetNewrelic('CA', 'cacommon', 'CAResourceAllocation','GET');
     const arrResults = await this.spServices.readItems(this.globalConstantService.listNames.ProjectInformation.name, projectObj);
     const project = arrResults.length > 0 ? arrResults[0] : {}
-    // const project = await this.getProjectDetailsByCode(projectInformationList, task.projectCode);
 
     let arrWriterIDs = [], arrQualityCheckerIds = [], arrEditorsIds = [], arrGraphicsIds = [], arrPubSupportIds = [], arrReviewers = [];
-    //  writers = [],
-    //   arrWriterNames = [],
-    //   qualityChecker = [],
-
-    //   arrQCNames = [],
-    //   editors = [],
-    //   arrEditorsNames = [],
-    //   graphics = [],
-    //   arrGraphicsNames = [],
-    //   pubSupport = [],
-    //   arrPubSupportNames = [],
-    //   reviewers = [],
-    //   arrReviewesNames = [],
     let arrPrimaryResourcesIds = [];
 
     arrWriterIDs = this.getIDFromItem(project.Writers);
@@ -1050,9 +949,9 @@ export class CACommonService {
         this.caConstantService.taskQueryOptions);
       tasksObj.url = tasksObj.url.replace(/{{status}}/gi, 'Active');
       tasksObj.listName = this.globalConstantService.listNames.MilestoneTasks.name;
-      tasksObj.type = 'GET';
+      tasksObj.type = this.globalConstantService.Method.GET;
       batchUrl.push(tasksObj);
-      this.commonService.SetNewrelic('CA', 'caCommon', 'GetTaskBySlotType');
+      this.commonService.SetNewrelic('CA', 'caCommon', 'GetTaskBySlotType','GET');
       const arrResult = await this.spServices.executeBatch(batchUrl);
       const response = arrResult.length ? arrResult[0].retItems : [];
       this.alldbConstantTasks = response;
@@ -1080,24 +979,11 @@ export class CACommonService {
     tasksObj.url = this.spServices.getReadURL(this.globalConstantService.listNames.Schedules.name, SlotTasks);
     tasksObj.url = tasksObj.url.replace(/{{ParentSlotId}}/gi, event.data ? event.data.Id : event.Id);
     tasksObj.listName = this.globalConstantService.listNames.Schedules.name;
-    tasksObj.type = 'GET';
+    tasksObj.type = this.globalConstantService.Method.GET;
     batchUrl.push(tasksObj);
-    this.commonService.SetNewrelic('CA', 'caCommon', 'GetSlotTaskBySlotId');
+    this.commonService.SetNewrelic('CA', 'caCommon', 'GetSlotTaskBySlotId','GET');
     const arrResult = await this.spServices.executeBatch(batchUrl);
     response = arrResult.length ? arrResult[0].retItems : [];
-
-    // if (response.length > 0) {
-    //   event.data.subTaskloaderenable = false;
-    // } else {
-    //   const obj = this.GetTask(event.data);
-    //   const tasks = await this.GetAllConstantTasks(obj.taskName);
-    //   obj.taskName = tasks.length > 0 ? tasks[0] : obj.taskName;
-    //   event.data.SlotTasks.push(obj);
-    //   event.data.subTaskloaderenable = false;
-    // }
-
-
-
     return response;
   }
 }

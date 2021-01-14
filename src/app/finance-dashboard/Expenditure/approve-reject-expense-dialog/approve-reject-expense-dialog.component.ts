@@ -115,7 +115,7 @@ async getApproveExpenseMailContent(type) {
       type: 'GET',
       listName: this.constant.listNames.MailContent.name
   }];
-  this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'getApproveExpenseMailContent');
+  this.commonService.SetNewrelic('Finance-Dashboard', 'approve-red-expense-dialog', 'getApproveExpenseMailContent', 'GET');
   const res = await this.spServices.executeBatch(obj);
   this.mailContentRes = res;
   console.log('Approve Mail Content res ', this.mailContentRes);

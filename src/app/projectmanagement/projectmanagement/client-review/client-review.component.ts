@@ -218,7 +218,7 @@ export class ClientReviewComponent implements OnInit {
       filter: currentFilter,
       top: 4200
     };
-    this.commonService.SetNewrelic('projectManagment', 'client-review', 'GetSchedules');
+    this.commonService.SetNewrelic('projectManagment', 'client-review', 'GetSchedules', "GET");
     this.crArrays.taskItems = await this.spServices.readItems(this.Constant.listNames.Schedules.name, queryOptions);
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
@@ -241,8 +241,7 @@ export class ClientReviewComponent implements OnInit {
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       const tempCRArray = [];
       const batchUrl = [];
-      // const batchContents = new Array();
-      // const batchGuid = this.spServices.generateUUID();
+     
       // Iterate each CR Task
       let taskCount = 0;
       let arrResults = [];
@@ -312,10 +311,8 @@ export class ClientReviewComponent implements OnInit {
           batchUrl.length = 0;
         }
       }
-      // batchContents.push('--batch_' + batchGuid + '--');
-      // const userBatchBody = batchContents.join('\r\n');
-      // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
-      this.commonService.SetNewrelic('projectManagment', 'client-review', 'GetSchedules');
+      
+      this.commonService.SetNewrelic('projectManagment', 'client-review', 'GetSchedules', "GET-BATCH");
 
       // let arrResults = await this.spServices.executeBatch(batchUrl);
       const remainingResults = await this.spServices.executeBatch(batchUrl);
@@ -456,7 +453,7 @@ export class ClientReviewComponent implements OnInit {
           const objMilestone = Object.assign({}, this.pmConstant.milestoneTaskOptions);
           objMilestone.filter = objMilestone.filter.replace(/{{projectCode}}/gi, task.ProjectCode)
           .replace(/{{milestone}}/gi, task.Milestone);
-          this.commonService.SetNewrelic('projectManagment', 'client-review', 'fetchMilestone');
+          this.commonService.SetNewrelic('projectManagment', 'client-review', 'fetchMilestone', "GET");
           const response = await this.spServices.readItems(this.Constant.listNames.Schedules.name, objMilestone);
           const milestone = response.find(t => t.ContentTypeCH === 'Milestone');
           // update Milestone
@@ -493,7 +490,7 @@ export class ClientReviewComponent implements OnInit {
           projectInfoObj.listName = this.Constant.listNames.ProjectInformation.name;
           projectInfoObj.type = 'PATCH';
           batchUrl.push(projectInfoObj);
-          this.commonService.SetNewrelic('projectManagment', 'client-review', 'UpdateSchedules&PM');
+          this.commonService.SetNewrelic('projectManagment', 'client-review', 'UpdateSchedules&PM', "POST-BATCH");
           await this.spServices.executeBatch(batchUrl);
 
           this.isCRInnerLoaderHidden = true;

@@ -13,8 +13,6 @@ export class CaComponent implements OnInit {
   items: MenuItem[];
 
   ngOnInit() {
-    // this.globalService.isUnallocatedChecked = false;
-    // this.globalService.isAllocatedChecked = false;
 
     this.items = [
       { label: 'Unallocated', routerLink: ['unallocated'] },
