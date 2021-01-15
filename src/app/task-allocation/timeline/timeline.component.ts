@@ -7324,22 +7324,22 @@ export class TimelineComponent
       closable: false
     });
     ref.onClose.subscribe((allocation: any) => {
-      let task: any;
-      if (milestoneTask.type === "Milestone") {
+      // let task: any;
+      // if (milestoneTask.type === "Milestone") {
         const milestoneData: MilestoneTreeNode = this.milestoneData.find(
           m => m.data.title === milestoneTask.milestone
         );
-        const milestoneTasks: any[] = this.taskAllocateCommonService.getTasksFromMilestones(
-          milestoneData,
-          true,
-          this.milestoneData,
-          false
-        );
+        // const milestoneTasks: any[] = this.taskAllocateCommonService.getTasksFromMilestones(
+        //   milestoneData,
+        //   true,
+        //   this.milestoneData,
+        //   false
+        // );
         milestoneData.data.edited = true;
-        task = milestoneTasks.find(t => t.id === milestoneTask.id);
-      } else {
-        task = milestoneTask;
-      }
+      //   task = milestoneTasks.find(t => t.id === milestoneTask.id);
+      // } else {
+      //   task = milestoneTask;
+      // }
       this.prestackService.setAllocationPerDay(allocation, milestoneTask);
       if (allocation.allocationAlert) {
         this.commonService.showToastrMessage(
