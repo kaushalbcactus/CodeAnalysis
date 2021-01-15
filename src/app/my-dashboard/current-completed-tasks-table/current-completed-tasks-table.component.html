@@ -16,7 +16,7 @@
 
         <ng-template pTemplate="header" let-columns>
             <tr>
-                <th class="lastColumnWidth">No.</th>
+                <th class="firstColumnWidth">No.</th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility" [ngStyle]="{'width':  col.field === 'TimeSpent'  ? '7em': (col.field === 'StartDate' || col.field === 'DueDate'|| col.field === 'MainStatus' || col.field === 'TaskStatus' ||  col.field === 'ExpectedTime') ? '10em' : '25em' }">
                     <div class="p-d-flex p-jc-between p-ai-center">
                         {{col.header}}
@@ -39,7 +39,7 @@
                         </p-columnFilter>
                     </div>
                 </th>
-                <th style="width: 2em !important;"></th>
+                <th class="lastColumnWidth"></th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
@@ -76,8 +76,6 @@
                     <div *ngIf="rowData.MainStatus !=='Planned'">
                         <p-menu #popupMenu [style]="{'width': '16em' , 'right' : hideIcon ? '0px !important':'','left' :  hideIcon ? 'inherit !important':''  }" [popup]="true" [model]="taskMenu"></p-menu>
                         <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);" appendTo="body"></i>
-
-
                     </div>
                 </td>
             </tr>

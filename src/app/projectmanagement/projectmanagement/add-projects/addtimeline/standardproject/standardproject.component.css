@@ -40,6 +40,11 @@
     font-size: 14px !important;
 }
 
+.p-treetable .p-treetable-tbody>tr>td,
+.p-treetable .p-treetable-thead>tr>th {
+    border-width: 1px !important;
+}
+
 
 /* .toggle,
 .currentMilestone {
