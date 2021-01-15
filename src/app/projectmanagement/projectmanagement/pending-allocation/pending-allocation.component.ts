@@ -23,16 +23,16 @@ export class PendingAllocationComponent implements OnInit {
   tempClick: any;
 
   displayedColumns: any[] = [
-    { field: 'ProjectCode', header: 'Project Code' },
-    { field: 'ShortTitle', header: 'Short Title' },
-    { field: 'ClientLegalEntity', header: 'Client' },
-    { field: 'POC', header: 'POC' },
-    { field: 'DeliverableType', header: 'Deliverable Type' },
-    { field: 'TA', header: 'TA' },
-    { field: 'Molecule', header: 'Molecule' },
-    { field: 'PrimaryResourceText', header: 'Primary Resource' },
-    { field: 'Milestone', header: 'Milestone' },
-    { field: 'Status', header: 'Status' }
+    { field: 'ProjectCode', header: 'Project Code' ,Type:'string',dbName:'ProjectCode', options:[] },
+    { field: 'ShortTitle', header: 'Short Title',Type:'string',dbName:'ShortTitle' , options:[] },
+    { field: 'ClientLegalEntity', header: 'Client' ,Type:'string',dbName:'ClientLegalEntity' , options:[]},
+    { field: 'POC', header: 'POC' ,Type:'string',dbName:'POC' , options:[]},
+    { field: 'DeliverableType', header: 'Deliverable Type',Type:'string',dbName:'DeliverableType' , options:[] },
+    { field: 'TA', header: 'TA' ,Type:'string',dbName:'TA' , options:[]},
+    { field: 'Molecule', header: 'Molecule' ,Type:'string',dbName:'Molecule' , options:[]},
+    { field: 'PrimaryResourceText', header: 'Primary Resource' ,Type:'' , options:[] },
+    { field: 'Milestone', header: 'Milestone',Type:'string',dbName:'Milestone' , options:[] },
+    { field: 'Status', header: 'Status',Type:'string',dbName:'Status' , options:[] }
   ];
   filterColumns: any[] = [
     { field: 'ProjectCode' },
@@ -57,28 +57,19 @@ export class PendingAllocationComponent implements OnInit {
   isPATableHidden = true;
   popItems: MenuItem[];
   paHideNoDataMessage = true;
-  public paArrays = {
-    projectItems: [],
-    ProjectCode: [],
-    ShortTitle: [],
-    ClientLegalEntity: [],
-    TA: [],
-    Molecule: [],
-    PrimaryResMembers: [],
-    POC: [],
-    DeliverableType: [],
-    Milestone: [],
-    Status: [],
-    // shortTitleArray: [],
-    // clientLegalEntityArray: [],
-    // POCArray: [],
-    // taArray: [],
-    // moleculeArray: [],
-    // primaryResourceArray: [],
-    // deliveryTypeArray: [],
-    // milestoneArray: [],
-    // statusArray: []
-  };
+  projectItems = [];
+  // public paArrays = {
+  //   projectItems: [],
+  //   ProjectCode: [],
+  //   ShortTitle: [],
+  //   ClientLegalEntity: [],
+  //   TA: [],
+  //   Molecule: [],
+  //   POC: [],
+  //   DeliverableType: [],
+  //   Milestone: [],
+  //   Status: [],
+  // };
   @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
   @ViewChild('paTableRef', { static: false }) paTableRef: Table;
   constructor(
@@ -142,8 +133,8 @@ export class PendingAllocationComponent implements OnInit {
       arrResults = await this.pmCommonService.getProjects(true);
       this.pmObject.allProjectItems = arrResults;
     }
-    this.paArrays.projectItems = this.pmObject.allProjectItems.filter(x => x.Status === this.Constant.projectStatus.Unallocated);
-    this.pmObject.countObj.paCount = this.paArrays.projectItems.length;
+    this.projectItems = this.pmObject.allProjectItems.filter(x => x.Status === this.Constant.projectStatus.Unallocated);
+    this.pmObject.countObj.paCount = this.projectItems.length;
     this.pmObject.totalRecords.PendingAllocation = this.pmObject.countObj.paCount;
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
@@ -155,12 +146,12 @@ export class PendingAllocationComponent implements OnInit {
     const primaryResourceTempArray = [];
     const milestoneTempArray = [];
     const statusTempArray = [];
-    if (this.paArrays.projectItems.length) {
+    if (this.projectItems.length) {
       this.pmObject.tabMenuItems[4].label = 'Pending Allocation (' + this.pmObject.countObj.paCount + ')';
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       const tempPAArray = [];
       // Iterate each CR Task
-      for (const task of this.paArrays.projectItems) {
+      for (const task of this.projectItems) {
         const paObj = $.extend(true, {}, this.pmObject.paObj);
         paObj.ID = task.ID;
         paObj.ProjectCode = task.ProjectCode;
@@ -191,18 +182,8 @@ export class PendingAllocationComponent implements OnInit {
         tempPAArray.push(paObj);
       }
       if (tempPAArray.length) {
-        this.createColFieldValues(tempPAArray);
+        this.displayedColumns = await this.commonService.MainfilterForTable(this.displayedColumns, tempPAArray);
       }
-      // this.paArrays.ProjectCode = this.commonService.unique(projectCodeTempArray, 'value');
-      // this.paArrays.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
-      // this.paArrays.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
-      // this.paArrays.POCArray = this.commonService.unique(POCTempArray, 'value');
-      // this.paArrays.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
-      // this.paArrays.taArray = this.commonService.unique(taTempArray, 'value');
-      // this.paArrays.moleculeArray = this.commonService.unique(moleculeTempArray, 'value');
-      // this.paArrays.primaryResourceArray = this.commonService.unique(primaryResourceTempArray, 'value');
-      // this.paArrays.milestoneArray = this.commonService.unique(milestoneTempArray, 'value');
-      // this.paArrays.statusArray = this.commonService.unique(statusTempArray, 'value');
       this.pmObject.pendingAllocationArray = tempPAArray;
     } else {
       this.pmObject.tabMenuItems[4].label = 'Pending Allocation (' + this.pmObject.countObj.paCount + ')';
@@ -215,50 +196,12 @@ export class PendingAllocationComponent implements OnInit {
     this.commonService.setIframeHeight();
   }
 
-  createColFieldValues(resArray) {
-
-    this.paArrays.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-    this.paArrays.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
-    this.paArrays.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
-    this.paArrays.TA = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.TA, value: a.TA }; return b; }).filter(ele => ele.label)));
-    this.paArrays.Molecule = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Molecule, value: a.Molecule }; return b; }).filter(ele => ele.label)));
-    // this.paArrays.PrimaryResMembers = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PrimaryResMembers, value: a.PrimaryResMembers }; return b; }).filter(ele => ele.label)));
-    this.paArrays.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
-    this.paArrays.DeliverableType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DeliverableType, value: a.DeliverableType }; return b; }).filter(ele => ele.label)));
-    this.paArrays.Milestone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Milestone, value: a.Milestone }; return b; }).filter(ele => ele.label)));
-    this.paArrays.Status = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
-
-
-
-    // const RevenueBudget = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.RevenueBudget, value: a.RevenueBudget }; return b; }).filter(ele => ele.label));
-    // this.paArrays.RevenueBudget = this.commonService.customSort(RevenueBudget, 'label', 1);
-    // const OOPBudget = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.OOPBudget, value: a.OOPBudget }; return b; }).filter(ele => ele.label));
-
-
-    // this.allSOW.ModifiedDate = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ModifiedDateFormat, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a.ModifiedDateFormat, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label)));
-
-    // const modifiedDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ModifiedDate, "MMM dd, yyyy, h:mm a"), value: a.ModifiedDate }; return b; }).filter(ele => ele.label)));
-    // this.allSOW.ModifiedDate = modifiedDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label);
-  }
-
-  uniqueArrayObj(array: any) {
-    let sts: any = '';
-    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-      const keys = {
-        label: label1,
-        value: array.find(s => s.label === label1).value
-      };
-      return keys ? keys : '';
-    });
-  }
 
   goToAllocationPage(task) {
     window.open(this.globalObject.url + '/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
   }
   
   goToProjectManagement(task) {
-    // window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-    //   '/Pages/ProjectManagement.aspx?ProjectCode=' + task.ProjectCode, '_blank');
     this.pmObject.columnFilter.ProjectCode = [task.ProjectCode];
     this.router.navigate(['/projectMgmt/allProjects']);
   }
@@ -269,53 +212,5 @@ export class PendingAllocationComponent implements OnInit {
   storeRowData(rowData) {
     this.selectedPATask = rowData;
   }
-  @HostListener('document:click', ['$event'])
-  clickout(event) {
-    if (event.target.className === 'pi pi-ellipsis-v') {
-      if (this.tempClick) {
-        this.tempClick.style.display = 'none';
-        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
-          this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = '';
-        } else {
-          this.tempClick = undefined;
-        }
-      } else {
-        this.tempClick = event.target.parentElement.children[0].children[0];
-        this.tempClick.style.display = '';
-      }
-
-    } else {
-      if (this.tempClick) {
-        this.tempClick.style.display = 'none';
-        this.tempClick = undefined;
-      }
-    }
-  }
-
-  isOptionFilter: boolean;
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
-
-  ngAfterViewChecked() {
-    if (this.pmObject.pendingAllocationArray.length && this.isOptionFilter) {
-      let obj = {
-        tableData: this.paTableRef,
-        colFields: this.paArrays
-        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
-      }
-      if (obj.tableData.filteredValue) {
-        this.commonService.updateOptionValues(obj);
-      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-        this.createColFieldValues(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-    }
-    this.cdr.detectChanges();
-  }
-
-
+ 
 }

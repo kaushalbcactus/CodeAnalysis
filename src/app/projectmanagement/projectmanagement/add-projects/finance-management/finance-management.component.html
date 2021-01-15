@@ -3,111 +3,67 @@
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
 <div class="p-my-2 cardViewDisplay" [hidden]='isFinanceTableHidden'>
-
-    <div class="p-col p-grid p-p-1">
-        <div class="p-col p-grid p-p-0">
-            <label for="SOWCode" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">SOW Code</label>
-            <div class="p-col-12 p-md-8 ">
-                <input class="p-col-12" type="text" [attr.disabled]=true size="30" value="{{pmObject.addProject.SOWSelect.SOWCode}}" pInputText>
-            </div>
-        </div>
-        <div class="p-col p-grid p-p-0">
-            <label for="fileupload" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Project SOW</label>
-            <div class="p-col-12 p-md-8 ">
-                <div class="file-upload" #fileuploderView>
-                    <div class="file-select">
-                        <div class="file-select-button" id="fileName">Choose File</div>
-                        <div class="file-select-name" id="noFile">No file chosen...</div>
-                        <input type="file" name="chooseFile" class="form-control" id="chooseFile" (change)="onFileChange($event)">
-                    </div>
+    <p-scrollPanel [style]="{height: '45vh'}">
+        <div class="p-col p-grid">
+            <div class="p-col p-grid p-p-0">
+                <label for="SOWCode" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">SOW Code</label>
+                <div class="p-col-12 p-md-8 ">
+                    <input class="p-col-12" type="text" [attr.disabled]=true size="30" value="{{pmObject.addProject.SOWSelect.SOWCode}}" pInputText>
                 </div>
+            </div>
+            <div class="p-col p-grid p-p-0">
+                <label for="fileupload" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Project SOW</label>
+                <div class="p-col-12 p-md-8 ">
+                    <div class="file-upload" #fileuploderView>
+                        <div class="file-select">
+                            <div class="file-select-button" id="fileName">Choose File</div>
+                            <div class="file-select-name" id="noFile">No file chosen...</div>
+                            <input type="file" name="chooseFile" class="form-control" id="chooseFile" (change)="onFileChange($event)">
+                        </div>
+                    </div>
 
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="p-col p-grid p-p-1">
-        <div class="p-col p-grid p-p-0">
-            <label for="Currency" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Currency</label>
-            <div class="p-col-12 p-md-8 ">
-                <input class="p-col-12" type="text" [attr.disabled]=true value="{{pmObject.addProject.FinanceManagement.Currency}}" size="30" pInputText>
+        <div class="p-col p-grid">
+            <div class="p-col p-grid p-p-0">
+                <label for="Currency" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Currency</label>
+                <div class="p-col-12 p-md-8 ">
+                    <input class="p-col-12" type="text" [attr.disabled]=true value="{{pmObject.addProject.FinanceManagement.Currency}}" size="30" pInputText>
+                </div>
+            </div>
+            <div class="p-col p-grid p-p-0">
+                <label for="budgetHours" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Budget Hours</label>
+                <div class="p-col-12 p-md-8 ">
+                    <input class="p-col-12" [attr.disabled]=true [(ngModel)]="budgethours" type="text" size="20" placeholder="Budget Hours" pInputText>
+                </div>
             </div>
         </div>
-        <div class="p-col p-grid p-p-0">
-            <label for="budgetHours" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Budget Hours</label>
-            <div class="p-col-12 p-md-8 ">
-                <input class="p-col-12" [attr.disabled]=true [(ngModel)]="budgethours" type="text" size="20" placeholder="Budget Hours" pInputText>
-            </div>
-        </div>
-    </div>
 
-    <div class="p-col p-grid p-p-1">
-        <div class="p-col p-grid p-p-0">
-            <label for="clientLeagalEntity" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Client Legal Entity</label>
-            <div class="p-col-12 p-md-8 ">
-                <input class="p-col-12" [attr.disabled]=true [(ngModel)]="clientLegalEntity" type="text" size="20" placeholder="Client Legal Entity" pInputText>
+        <div class="p-col p-grid">
+            <div class="p-col p-grid p-p-0">
+                <label for="clientLeagalEntity" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Client Legal Entity</label>
+                <div class="p-col-12 p-md-8 ">
+                    <input class="p-col-12" [attr.disabled]=true [(ngModel)]="clientLegalEntity" type="text" size="20" placeholder="Client Legal Entity" pInputText>
+                </div>
+            </div>
+            <div class="p-col p-grid p-p-0">
+                <label for="BilledBy" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Billed By</label>
+                <div class="p-col-12 p-md-8 ">
+                    <p-dropdown [options]="pmObject.billedBy" appendTo="body" [(ngModel)]="billedBy" (onChange)="onBilledByChanged()" placeholder="Please Select" [showClear]="true" [style]="{'width':'100%'}">
+                    </p-dropdown>
+                </div>
             </div>
         </div>
-        <div class="p-col p-grid p-p-0">
-            <label for="BilledBy" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Billed By</label>
-            <div class="p-col-12 p-md-8 ">
-                <p-dropdown [options]="pmObject.billedBy" appendTo="body" [(ngModel)]="billedBy" (onChange)="onBilledByChanged()" placeholder="Please Select" [showClear]="true" [style]="{'width':'100%'}">
-                </p-dropdown>
-            </div>
-        </div>
-    </div>
 
-    <div *ngIf="budgetHoursSection" class="p-col p-grid p-p-1">
-        <div class="p-col p-grid p-p-0">
-            <label for="Budget" class="p-col-12 p-m-0 p-md-2 p-mb-md-0 p-p-3">Budget</label>
-            <div class="p-col-12 p-md-10">
-                <p-table [value]="budgetData" [style]="{'font-size':'14px'}" styleClass="p-datatable-cactus p-datatable-gridlines">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th>Total</th>
-                            <th>Revenue</th>
-                            <th>OOP</th>
-                            <th>Tax</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-rowData>
-                        <tr>
-                            <td>{{rowData.total}}</td>
-                            <td>{{rowData.revenue}}</td>
-                            <td>{{rowData.oop}}</td>
-                            <td>{{rowData.tax}}</td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-            </div>
-        </div>
-    </div>
-    <div *ngIf="rate" class="p-col p-grid p-p-1">
-        <div class="p-col p-grid p-p-0">
-            <label for="rate" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Rate</label>
-            <div class="p-col-12 p-md-8 ">
-                <input class="p-col-12" type="text" size="20" disabled [(ngModel)]="pmObject.addProject.FinanceManagement.Rate" placeholder="Rate" pInputText>
-            </div>
-        </div>
-        <div class="p-col p-grid p-p-0">
-            <label for="OvernightRequest" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Overnight Request</label>
-            <div class="p-col-12 p-md-8 ">
-                <input class="p-col-12" type="text" size="20" disabled [(ngModel)]="pmObject.addProject.FinanceManagement.OverNightRequest" placeholder="OvernightRequest" pInputText>
-            </div>
-        </div>
-    </div>
-
-    <div class="p-col p-grid p-p-1">
-        <div class="p-col p-grid p-p-0">
-            <div class="p-col-12 p-m-0 p-md-2 p-mb-md-0 p-p-3">
-                <button pButton pRipple type="button" label="Manage Finances" (click)="showPOTable()" class="p-button-raised p-button-danger"></button>
-            </div>
-            <div class="p-col-12 p-md-10" [hidden]="isPOTableHidden">
-                <ng-container *ngFor="let poObj of poData">
-                    <p-table [value]=poObj.poInfo [style]="{'font-size':'14px'}" styleClass="p-datatable-cactus p-datatable-gridlines">
+        <div *ngIf="budgetHoursSection" class="p-col p-grid">
+            <div class="p-col p-grid p-p-0">
+                <label for="Budget" class="p-col-12 p-m-0 p-md-2 p-mb-md-0 p-p-3">Budget</label>
+                <div class="p-col-12 p-md-10">
+                    <p-table [value]="budgetData" [style]="{'font-size':'14px'}" styleClass="p-datatable-cactus p-datatable-gridlines">
                         <ng-template pTemplate="header">
                             <tr>
-                                <th>PO Number - Name</th>
                                 <th>Total</th>
                                 <th>Revenue</th>
                                 <th>OOP</th>
@@ -116,53 +72,98 @@
                         </ng-template>
                         <ng-template pTemplate="body" let-rowData>
                             <tr>
-                                <td>{{rowData.poValue}}</td>
                                 <td>{{rowData.total}}</td>
                                 <td>{{rowData.revenue}}</td>
                                 <td>{{rowData.oop}}</td>
                                 <td>{{rowData.tax}}</td>
                             </tr>
-                            <tr>
-                                <td>{{rowData.scValue}}</td>
-                                <td>{{rowData.scTotal}}</td>
-                                <td>{{rowData.scRevenue}}</td>
-                                <td>{{rowData.scOOP}}</td>
-                                <td>{{rowData.scTax}}</td>
-                            </tr>
                         </ng-template>
                     </p-table>
-                    <p-table [value]=poObj.poInfoData [style]="{'font-size':'14px'}" styleClass="p-datatable-cactus p-datatable-gridlines">
-                        <ng-template pTemplate="header">
-                            <tr>
-                                <th>Inv Number</th>
-                                <th>Prf Number</th>
-                                <th>Date</th>
-                                <th>Amount</th>
-                                <th>Type</th>
-                                <th>Status</th>
-                                <th>POC</th>
-                                <th>Address</th>
-                                <th></th>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="body" let-rowData>
-                            <tr>
-                                <td>{{rowData.inv_number}}</td>
-                                <td>{{rowData.prf_number}}</td>
-                                <td>{{rowData.date | date:'MMM dd, yyyy'}}</td>
-                                <td>{{rowData.amount}}</td>
-                                <td>{{rowData.type}}</td>
-                                <td>{{rowData.status}}</td>
-                                <td>{{rowData.pocText}}</td>
-                                <td>{{rowData.address}}</td>
-                                <td></td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
-                </ng-container>
+                </div>
             </div>
         </div>
-    </div>
+        <div *ngIf="rate" class="p-col p-grid">
+            <div class="p-col p-grid p-p-0">
+                <label for="rate" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Rate</label>
+                <div class="p-col-12 p-md-8 ">
+                    <input class="p-col-12" type="text" size="20" disabled [(ngModel)]="pmObject.addProject.FinanceManagement.Rate" placeholder="Rate" pInputText>
+                </div>
+            </div>
+            <div class="p-col p-grid p-p-0">
+                <label for="OvernightRequest" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Overnight Request</label>
+                <div class="p-col-12 p-md-8 ">
+                    <input class="p-col-12" type="text" size="20" disabled [(ngModel)]="pmObject.addProject.FinanceManagement.OverNightRequest" placeholder="OvernightRequest" pInputText>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-col p-grid">
+            <div class="p-col p-grid p-p-0">
+                <div class="p-col-12 p-m-0 p-md-2 p-mb-md-0 p-p-3">
+                    <button pButton pRipple type="button" label="Manage Finances" (click)="showPOTable()" class="p-button-raised p-button-danger"></button>
+                </div>
+                <div class="p-col-12 p-md-10" [hidden]="isPOTableHidden">
+                    <ng-container *ngFor="let poObj of poData">
+                        <p-table [value]=poObj.poInfo [style]="{'font-size':'14px'}" styleClass="p-datatable-cactus p-datatable-gridlines">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>PO Number - Name</th>
+                                    <th>Total</th>
+                                    <th>Revenue</th>
+                                    <th>OOP</th>
+                                    <th>Tax</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData>
+                                <tr>
+                                    <td>{{rowData.poValue}}</td>
+                                    <td>{{rowData.total}}</td>
+                                    <td>{{rowData.revenue}}</td>
+                                    <td>{{rowData.oop}}</td>
+                                    <td>{{rowData.tax}}</td>
+                                </tr>
+                                <tr>
+                                    <td>{{rowData.scValue}}</td>
+                                    <td>{{rowData.scTotal}}</td>
+                                    <td>{{rowData.scRevenue}}</td>
+                                    <td>{{rowData.scOOP}}</td>
+                                    <td>{{rowData.scTax}}</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                        <p-table [value]=poObj.poInfoData [style]="{'font-size':'14px'}" styleClass="p-datatable-cactus p-datatable-gridlines">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Inv Number</th>
+                                    <th>Prf Number</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>POC</th>
+                                    <th>Address</th>
+                                    <th></th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData>
+                                <tr>
+                                    <td>{{rowData.inv_number}}</td>
+                                    <td>{{rowData.prf_number}}</td>
+                                    <td>{{rowData.date | date:'MMM dd, yyyy'}}</td>
+                                    <td>{{rowData.amount}}</td>
+                                    <td>{{rowData.type}}</td>
+                                    <td>{{rowData.status}}</td>
+                                    <td>{{rowData.pocText}}</td>
+                                    <td>{{rowData.address}}</td>
+                                    <td></td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </p-scrollPanel>
     <div class="p-col p-grid p-jc-between">
         <button pButton pRipple type="button" (click)="goToTimeline()" label="Back" class="p-ml-1 p-button-raised p-button-danger"></button>
 

@@ -1,4 +1,47 @@
-.toggle,
+.timeline-standard-section {
+    font-size: 14px !important;
+}
+
+.timepickercss {
+    border-radius: 4px !important;
+    border: 1px solid rgba(0, 0, 0, 0.38) !important;
+}
+
+.p-treetable-wrapper .p-treetable-table .p-treetable-thead>tr>th:nth-child(2),
+.p-treetable-wrapper .p-treetable-table .p-treetable-thead>tr>th:nth-child(3),
+.p-treetable-wrapper .p-treetable-table .p-treetable-tbody>tr>td:nth-child(2),
+.p-treetable-wrapper .p-treetable-table .p-treetable-tbody>tr>td:nth-child(3) {
+    width: 65px !important;
+}
+
+.p-treetable-wrapper .p-treetable-table .p-treetable-thead>tr>th:nth-child(6),
+.p-treetable-wrapper .p-treetable-table .p-treetable-tbody>tr>td:nth-child(6) {
+    width: 86px !important;
+}
+
+.p-treetable-wrapper .p-treetable-table .p-treetable-thead>tr>th:nth-child(4),
+.p-treetable-wrapper .p-treetable-table .p-treetable-thead>tr>th:nth-child(5),
+.p-treetable-wrapper .p-treetable-table .p-treetable-tbody>tr>td:nth-child(4),
+.p-treetable-wrapper .p-treetable-table .p-treetable-tbody>tr>td:nth-child(5) {
+    width: 225px !important;
+}
+
+.p-treetable-wrapper .p-treetable-table .p-treetable-thead>tr>th:nth-child(7),
+.p-treetable-wrapper .p-treetable-table .p-treetable-tbody>tr>td:nth-child(7) {
+    width: 100px !important
+}
+
+.p-treetable-wrapper .p-treetable-table .p-treetable-thead>tr>th:nth-child(1),
+.p-treetable-wrapper .p-treetable-table .p-treetable-tbody>tr>td:nth-child(1) {
+    width: 300px;
+}
+
+.p-treetable table {
+    font-size: 14px !important;
+}
+
+
+/* .toggle,
 .currentMilestone {
   width: 15px;
   cursor: pointer;
@@ -141,4 +184,4 @@
 
 .ui-overlaypanel-close {
   background-color: #db1721 !important;
-}
+} */

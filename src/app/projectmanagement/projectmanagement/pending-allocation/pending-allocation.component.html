@@ -6,7 +6,7 @@
         <div id="scInnerLoaderText">Loading...</div>
     </div>
 
-    <div class="pendingTable table100 projectDataExist ver4 m-b-110" [hidden]="isPATableHidden">
+    <div class="pendingTable table100 projectDataExist ver4 m-b-110" [hidden]="isPATableHidden" hideshowMenu>
         <div class="p-col p-grid p-jc-end">
             <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(paTableRef)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
         </div>
@@ -26,7 +26,7 @@
                                     </div>
                                 </ng-template>
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-multiSelect [ngModel]="value" [options]="paArrays[col.field]" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                                    <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
                                         <ng-template let-option pTemplate="item">
                                             <div class="p-multiselect-representative-option">
                                                 <span class="p-ml-1">{{option.label}}</span>

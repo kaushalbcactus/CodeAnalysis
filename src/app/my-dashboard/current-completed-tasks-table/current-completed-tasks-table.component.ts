@@ -924,4 +924,5 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     this.enteredSubMile = "";
     this.renameSub = false;
   }
+
 }

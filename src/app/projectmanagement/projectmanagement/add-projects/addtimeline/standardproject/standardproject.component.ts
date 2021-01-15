@@ -18,6 +18,7 @@ import { PreStackAllocationComponent } from 'src/app/shared/pre-stack-allocation
 import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
 import { TaskAllocationCommonService } from 'src/app/task-allocation/services/task-allocation-common.service';
 import { PreStackcommonService } from 'src/app/shared/pre-stack-allocation/service/pre-stackcommon.service';
+import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 
 declare var $;
 @Component({
@@ -75,6 +76,21 @@ export class StandardprojectComponent implements OnInit {
     },
     SkillLevel: {
       Title: ''
+    }
+  };
+
+  darkTheme: NgxMaterialTimepickerTheme = {
+    container: {
+      bodyBackgroundColor: "#424242",
+      buttonColor: "#fff"
+    },
+    dial: {
+      dialBackgroundColor: "#555"
+    },
+    clockFace: {
+      clockFaceBackgroundColor: "#555",
+      clockHandColor: "#C53E3E ",
+      clockFaceTimeInactiveColor: "#fff"
     }
   };
   public isServiceDisabled = false;

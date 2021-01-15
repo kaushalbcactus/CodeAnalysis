@@ -1,261 +1,229 @@
 <div class="cardViewDisplay">
-    <div class="timeline-standard-section" [hidden]="isStandardTableHidden">
-        <div class="container">
-            <div class="margin-top25">
-                <div class="row">
-                    <div class="col-md-2 col-xs-2 col-lg-2">
-                        <div class="floatLeft catHeader"><span class="compulsory">*</span>Service</div>
-                    </div>
-                    <div class="col-md-2 col-xs-2 col-lg-2">
-                        <!-- [(ngModel)]="ngModelSelectService" -->
+    <p-scrollPanel [style]="{height: '45vh'}">
+        <div class="timeline-standard-section p-mt-1 p-pr-1" *ngIf="!isStandardTableHidden">
+
+            <div class="p-col p-grid p-p-1">
+                <div class="p-col p-grid p-p-0">
+                    <label for="Service" class="p-col-12 p-m-0 p-md-5 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Service</label>
+                    <div class="p-col-12 p-md-7 ">
                         <p-dropdown *ngIf="!pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked"  #selectServiceDD [options]="standardServices" [filter]="true" placeholder="Select Service" [disabled]="isServiceDisabled" [showClear]="true" (onChange)="onServiceChange($event,selectServiceDD)"
-                            resetFilterOnHide="true">
+                            resetFilterOnHide="true" [style]="{width:'100%'}">
                         </p-dropdown>
-                        <p-dropdown *ngIf="pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked" [disabled]="isServiceDisabled" [options]="registerStandardServices">
+                        <p-dropdown *ngIf="pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked" [disabled]="isServiceDisabled" [options]="registerStandardServices" [style]="{width:'100%'}">
                         </p-dropdown>
                     </div>
-                    <div class="col-md-2 col-xs-2 col-lg-2">
-                        <div class="floatLeft catHeader"><span class="compulsory">*</span>Resource</div>
-                    </div>
-                    <div class="col-md-2 col-xs-2 col-lg-2">
-                        <!-- [(ngModel)]="ngModelSelectResource" -->
+                </div>
+                <div class="p-col p-grid p-p-0">
+                    <label for="Resource" class="p-col-12 p-m-0 p-md-5 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Resource</label>
+                    <div class="p-col-12 p-md-7 ">
                         <p-dropdown *ngIf="!pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked"  #skillTypesDD [options]="skillTypes" [filter]="true" [group]="true" placeholder="Select Skill" [disabled]="isResourceDisabled" [showClear]="true" (onChange)="onSkillChange($event,selectServiceDD)"
-                            resetFilterOnHide="true">
+                            resetFilterOnHide="true" [style]="{width:'100%'}">
                         </p-dropdown>
-                        <p-dropdown *ngIf="pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked" [disabled]="isResourceDisabled" [options]="registerSkillTypes">
+                        <p-dropdown *ngIf="pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked" [disabled]="isResourceDisabled" [options]="registerSkillTypes" [style]="{width:'100%'}">
                         </p-dropdown>
                     </div>
-                    <div class="col-md-2 col-xs-2 col-lg-2">
-                        <div class="floatLeft catHeader"><span class="compulsory">*</span>Reviewer</div>
-                    </div>
-                    <div class="col-md-2 col-xs-2 col-lg-2">
-                        <!-- [(ngModel)]="ngModelSelectReviewer" -->
+                </div>
+                <div class="p-col p-grid p-p-0">
+                    <label for="Reviewer" class="p-col-12 p-m-0 p-md-5 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Reviewer</label>
+                    <div class="p-col-12 p-md-7 ">
                         <p-dropdown *ngIf="!pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked"  #reviewerListDD [options]="reviewerList" [filter]="true" [group]="true" placeholder="Select Reviewer" [disabled]="isReviewerDisabled" [showClear]="true" (onChange)="onResourceChange($event,selectServiceDD)"
-                            resetFilterOnHide="true">
+                            resetFilterOnHide="true" [style]="{width:'100%'}">
                         </p-dropdown>
-                        <p-dropdown *ngIf="pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked" [disabled]="isReviewerDisabled" [options]="registerReviewerList">
+                        <p-dropdown *ngIf="pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked" [disabled]="isReviewerDisabled" [options]="registerReviewerList" [style]="{width:'100%'}">
                         </p-dropdown>
-                    </div>
-                </div>
-            </div>
-            <div class="margin-top25">
-                <div class="row">
-                    <div class="col-md-2 col-xs-2 col-lg-2">
-                        <div class="floatLeft catHeader"><span class="compulsory">*</span>Proposed Start Date</div>
-                    </div>
-                    <div class="col-md-2 col-xs-2 col-lg-2">
-                        <p-calendar class="pcalendarClass"    [(ngModel)]="ngStandardProposedStartDate"   [disabledDays]="[0,6]"   [readonlyInput]="true"   dateFormat="dd M, yy"   appendTo="body"   hideOnDateTimeSelect="true"   [required]="true"   [stepMinute]="15"   [showIcon]="true"
-                              [showOnFocus]="false"   [monthNavigator]="true"   [yearNavigator]="true"     yearRange="{{yearRange}}" [inputStyle]="{'width': '120px'}" [minDate]="minProposedDate" [disabled]="isProposedStartDateDisabled"  inputStyleClass="ngPrime-red">
-                        </p-calendar>
-                    </div>
-                    <div class="col-md-2 col-xs-2 col-lg-2">
-                        <div class="floatLeft catHeader">Proposed End Date</div>
-                    </div>
-                    <div class="col-md-2 col-xs-2 col-lg-2">
-                        <p-calendar  class="pcalendarClass"   [(ngModel)]="ngStandardProposedEndDate"   [disabledDays]="[0,6]"   [readonlyInput]="true"     dateFormat="dd M, yy"   appendTo="body"   hideOnDateTimeSelect="true"   [required]="true"   [stepMinute]="15"   [showIcon]="true"
-                              [showOnFocus]="false"   [monthNavigator]="true"   [yearNavigator]="true"   [disabled]="true" yearRange="{{yearRange}}" [inputStyle]="{'width': '120px'}">
-                            </p-calendar>
-                    </div>
-                    <div class="col-md-4 col-xs-4 col-lg-4">
-                        <button id="standardTimelineCapacity" class="btn btn-danger" type="button" styleClass="pmBtn" (click)="getInitialUserCapactiy(InitialUserCapacity)">Capacity</button>
-                        <button id="standardTimelineGenerate" class="btn btn-danger" type="button" styleClass="pmBtn" (click)="getMilestones()">Generate</button>
-                    </div>
-                </div>
-            </div>
-            <div class="margin-top25">
-                <div class="row">
-                    <div class="col-md-2 col-xs-2 col-lg-2">
-                        <div class="floatLeft catHeader">Standard Budget Hrs</div>
-                    </div>
-                    <div class="col-md-2 col-xs-2 col-lg-2">
-                        <input id="standardBudgetHrs" type="text" [(ngModel)]="standardBudgetHrs" disabled="disabled" />
-                    </div>
-                    <div class="col-md-2 col-xs-2 col-lg-2">
-                        <div class="floatLeft catHeader">Project Budget Hrs</div>
-                    </div>
-                    <div class="col-md-2 col-xs-2 col-lg-2">
-                        <input id="standardProjectBudgetHrs" [(ngModel)]="standardProjectBudgetHrs" type="text" />
-                    </div>
-                    <div class="col-md-2 col-xs-2 col-lg-2">
-                        <div class="floatLeft catHeader">Overall TAT(Days)</div>
-                    </div>
-                    <div class="col-md-2 col-xs-2 col-lg-2">
-                        <input id="OverallTATDays" [(ngModel)]="OverallTATDays" type="text" disabled />
                     </div>
                 </div>
             </div>
 
+
+            <div class="p-col p-grid p-p-1">
+                <div class="p-col p-grid p-p-0">
+                    <label for="ProposedSD" class="p-col-12 p-m-0 p-md-5 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Proposed Start Date</label>
+                    <div class="p-col-12 p-md-7 ">
+                        <p-calendar class="pcalendarClass"    [(ngModel)]="ngStandardProposedStartDate"   [disabledDays]="[0,6]"   [readonlyInput]="true"   dateFormat="dd M, yy"   appendTo="body"   hideOnDateTimeSelect="true"   [required]="true"   [stepMinute]="15"   [showIcon]="true"
+                              [showOnFocus]="false"   [monthNavigator]="true"   [yearNavigator]="true"     yearRange="{{yearRange}}" [minDate]="minProposedDate" [disabled]="isProposedStartDateDisabled"   [style]="{width:'100%'}">
+                        </p-calendar>
+                    </div>
+                </div>
+                <div class="p-col p-grid p-p-0">
+                    <label for="ProposedED" class="p-col-12 p-m-0 p-md-5 p-mb-md-0 p-p-3">Proposed Start Date</label>
+                    <div class="p-col-12 p-md-7 ">
+                        <p-calendar  class="pcalendarClass"   [(ngModel)]="ngStandardProposedEndDate"   [disabledDays]="[0,6]"   [readonlyInput]="true"     dateFormat="dd M, yy"   appendTo="body"   hideOnDateTimeSelect="true"   [required]="true"   [stepMinute]="15"   [showIcon]="true"
+                              [showOnFocus]="false"   [monthNavigator]="true"   [yearNavigator]="true"   [disabled]="true" yearRange="{{yearRange}}" [style]="{width:'100%'}">
+                            </p-calendar>
+                    </div>
+                </div>
+                <div class="p-col p-grid p-p-0">
+                    <label for="ProposedED" class="p-col-12 p-m-0 p-md-5 p-mb-md-0 p-p-3"></label>
+                    <div class="p-col-12 p-md-7">
+                        <button pButton pRipple type="button" id="standardTimelineCapacity" (click)="getInitialUserCapactiy(InitialUserCapacity)" label="Capacity" class=" p-button-raised p-button-danger"></button>
+                        <button pButton pRipple type="button" id="standardTimelineGenerate" (click)="getMilestones()" label="Generate" class="p-ml-1 p-button-raised p-button-danger"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-col p-grid p-p-1">
+                <div class="p-col p-grid p-p-0">
+                    <label for="StandardBudgetHrs" class="p-col-12 p-m-0 p-md-5 p-mb-md-0 p-p-3">Standard Budget Hrs</label>
+                    <div class="p-col-12 p-md-7 ">
+                        <input class="p-col-12" pInputText id="standardBudgetHrs" type="text" [(ngModel)]="standardBudgetHrs" disabled="disabled" />
+                    </div>
+                </div>
+                <div class="p-col p-grid p-p-0">
+                    <label for="ProjectBudgetHrs" class="p-col-12 p-m-0 p-md-5 p-mb-md-0 p-p-3">Project Budget Hrs</label>
+                    <div class="p-col-12 p-md-7 ">
+                        <input class="p-col-12" pInputText id="standardProjectBudgetHrs" [(ngModel)]="standardProjectBudgetHrs" type="text" />
+                    </div>
+                </div>
+                <div class="p-col p-grid p-p-0">
+                    <label for="TAT" class="p-col-12 p-m-0 p-md-5 p-mb-md-0 p-p-3">Overall TAT(Days)</label>
+                    <div class="p-col-12 p-md-7 ">
+                        <input class="p-col-12" pInputText id="OverallTATDays" [(ngModel)]="OverallTATDays" type="text" disabled />
+                    </div>
+                </div>
+            </div>
 
             <app-cm-delivey-view></app-cm-delivey-view>
 
         </div>
-    </div>
-    <div>
-    </div>
-
-    <!-- <div class="standard-spinner-section" [hidden]="hideLoader" style="padding-top: 12vh;">
-    <div id="modalInnerLoader"></div>
-    <div id="modalInnerLoaderText">Loading...</div>
-
-</div> -->
 
 
-    <div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="!isStandardLoaderHidden || !hideLoader">
-        <div id="modalInnerLoader"></div>
-        <div id="modalInnerLoaderText">Loading...</div>
-    </div>
+        <div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="!isStandardLoaderHidden || !hideLoader">
+            <div id="modalInnerLoader"></div>
+            <div id="modalInnerLoaderText">Loading...</div>
+        </div>
 
-    <div class="timeline-standard-generated-section">
-        <div class="col-md-12">
-            <div class="">
-                <div class="col-lg-12 col-xs-12 col-lg-12">
-                    <div class="margin-top25 initialUserCapacity-section" [hidden]="hideCapacity">
-                        <app-usercapacity #InitialUserCapacity [parentModule]="'pm'"></app-usercapacity>
-                    </div>
-                </div>
-                <div class="col-lg-12 col-xs-12 col-lg-12">
-                    <div class="standardMilestoneByType" [hidden]="hideTable">
-                        <p-treeTable [value]="standardFiles">
-                            <ng-template pTemplate="header">
-                                <tr>
-                                    <!-- [ttRow]="rowNode" -->
-                                    <th>Name</th>
-                                    <th>Hours</th>
-                                    <th>TAT</th>
-                                    <th>Start Date</th>
-                                    <th>End Date</th>
-                                    <th>Allocation Type</th>
-                                    <!-- <th>Deviation</th> -->
-                                    <th>Assigned</th>
-                                    <th></th>
-                                </tr>
-                            </ng-template>
-                            <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
-                                <tr>
-                                    <td>
-                                        <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-                                        <!-- <div></div> -->
-                                        <span>{{rowData.Name}}</span>
-                                    </td>
-                                    <td>{{rowData.Hours}}
-                                        <div class='overlayIcon' (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)" style="float: right;cursor: pointer;" title="Click to see allocation split" *ngIf="rowData.showAllocationSplit">
-                                            <i class="fa fa-info-circle" aria-hidden="true"></i>
-                                        </div>
-                                    </td>
-                                    <td>{{rowData.Days}}</td>
-                                    <td *ngIf="rowData.showTime">
-                                        <p-calendar class="pcalendarClass"    [(ngModel)]="rowData.StartDatePart"   [disabledDays]="[0,6]" [readonlyInput]="true"   [showTime]="false"   hourFormat="12"   dateFormat="dd M, yy"   appendTo="body"     [required]="true"   [stepMinute]="15"     [showOnFocus]="false"
-                                              [showIcon]="true" [monthNavigator]="true"   [yearNavigator]="true"   yearRange="{{yearRange}}" [disabled]="rowData.isStartDateDisabled" [minDate]="rowData.minStartDateValue" (onClose)="onStartDatePartChanged(rowData)"
-                                            inputStyleClass="ngPrime-red">
-                                        </p-calendar>
-                                        <input readonly [ngxTimepicker]="picker" [(ngModel)]="rowData.StartTimePart" [disabled]="rowData.isStartDateDisabled" class="timePicker">
-                                        <ngx-material-timepicker [preventOverlayClick]="true" (closed)="onStartDatePartChanged(rowData)" #picker [minutesGap]="15"></ngx-material-timepicker>
-                                    </td>
-                                    <td *ngIf="!rowData.showTime">
-                                        <p-calendar class="pcalendarClass"   [(ngModel)]="rowData.StartDate"   [disabledDays]="[0,6]" [readonlyInput]="true"   [showTime]="false"   hourFormat="12"   dateFormat="dd M, yy"   appendTo="body"     [required]="true"   [stepMinute]="15"     [showOnFocus]="false"
-                                              [showIcon]="true" [monthNavigator]="true"   [yearNavigator]="true"   yearRange="{{yearRange}}" [disabled]="rowData.isStartDateDisabled" [minDate]="rowData.minStartDateValue" (onSelect)="onStartDateChanged(rowData)"
-                                            inputStyleClass="ngPrime-red">
-                                            </p-calendar>
-                                    </td>
-                                    <td *ngIf="rowData.showTime">
-                                        <p-calendar class="pcalendarClass" [(ngModel)]="rowData.EndDatePart"   [disabledDays]="[0,6]"   [readonlyInput]="true"   [showTime]="false"   hourFormat="12"   dateFormat="dd M, yy"   appendTo="body" [required]="true"   [stepMinute]="15"    [showOnFocus]="false"
-                                            [showIcon]="true" [monthNavigator]="true"   [yearNavigator]="true"   yearRange="{{yearRange}}" [disabled]="rowData.isEndDateDisabled" [minDate]="rowData.minEndDateValue" (onClose)="onEndDatePartChanged(rowData)">
-                                        </p-calendar>
-                                        <input readonly [ngxTimepicker]="picker" [(ngModel)]="rowData.EndTimePart" [disabled]="rowData.isEndDateDisabled" class="timePicker">
-                                        <ngx-material-timepicker [preventOverlayClick]="true" (closed)="onEndDatePartChanged(rowData)" #picker [minutesGap]="15"></ngx-material-timepicker>
+        <div class="timeline-standard-generated-section">
+            <div class="initialUserCapacity-section" [hidden]="hideCapacity">
+                <app-usercapacity #InitialUserCapacity [parentModule]="'pm'"></app-usercapacity>
+            </div>
+            <div class="standardMilestoneByType" [hidden]="hideTable">
+                <p-treeTable [value]="standardFiles">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <!-- [ttRow]="rowNode" -->
+                            <th style="width: 300px;">Name</th>
+                            <th style="width: 65px;">Hours</th>
+                            <th style="width: 65px;">TAT</th>
+                            <th style="width: 225px;">Start Date</th>
+                            <th style="width: 225px;">End Date</th>
+                            <th style="width :86px">Allocation Type</th>
+                            <!-- <th>Deviation</th> -->
+                            <th style="width: 100px;">Assigned</th>
+                            <th class="lastColumnWidth"></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowNode let-rowData="rowData" style="font-size: 14px;">
+                        <tr>
+                            <td>
+                                <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+                                <!-- <div></div> -->
+                                <span>{{rowData.Name}}</span>
+                            </td>
+                            <td>{{rowData.Hours}}
+                                <div class='overlayIcon' (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)" style="float: right;cursor: pointer;" title="Click to see allocation split" *ngIf="rowData.showAllocationSplit">
+                                    <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                </div>
+                            </td>
+                            <td>{{rowData.Days}}</td>
+                            <td *ngIf="rowData.showTime">
+                                <p-calendar class="pcalendarClass"    [(ngModel)]="rowData.StartDatePart"   [disabledDays]="[0,6]" [readonlyInput]="true"   [showTime]="false"   hourFormat="12"   dateFormat="dd M, yy"   appendTo="body"     [required]="true"   [stepMinute]="15"     [showOnFocus]="false"
+                                      [showIcon]="true" [monthNavigator]="true"   [yearNavigator]="true"   yearRange="{{yearRange}}" [disabled]="rowData.isStartDateDisabled" [minDate]="rowData.minStartDateValue" (onClose)="onStartDatePartChanged(rowData)"
+                                    inputStyleClass="ngPrime-red">
+                                </p-calendar>
 
-                                    </td>
-                                    <td *ngIf="!rowData.showTime">
-                                        <p-calendar class="pcalendarClass" [(ngModel)]="rowData.EndDate" [disabledDays]="[0,6]"   [readonlyInput]="true"   [showTime]="false"   hourFormat="12"   dateFormat="dd M, yy"   appendTo="body" [required]="true"   [stepMinute]="15"    [showOnFocus]="false"
-                                            [showIcon]="true" [monthNavigator]="true"   [yearNavigator]="true"   yearRange="{{yearRange}}" [disabled]="rowData.isEndDateDisabled" [minDate]="rowData.minEndDateValue" (onSelect)="onEndDateChanged(rowData)">
-                                        </p-calendar>
-                                    </td>
-                                    <td [style.backgroundColor]="rowData.allocationColor"></td>
-                                    <!-- <td>{{rowData.Deviation}}</td> -->
-                                    <td *ngIf="rowData.showHyperLink">
-                                        <a href="javascript:void(0)" (click)="getUserCapacity(rowData,UserCapacity)">{{rowData.AssignedTo}}</a>
-                                    </td>
-                                    <td *ngIf="!rowData.showHyperLink">
-                                        {{rowData.AssignedTo}}
-                                    </td>
-                                    <td>
-                                        <div *ngIf="rowData.showAllocationSplit">
-                                            <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
-                                            </p-menu>
-                                            <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData);popupMenu.show($event);"></i>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="userCapacity" [hidden]="rowData.toggleCapacity">
-                                    <td colspan="8">
-                                        <app-usercapacity #UserCapacity [parentModule]="'pm'"></app-usercapacity>
-                                    </td>
-                                </tr>
-                            </ng-template>
-                        </p-treeTable>
+                                <input class="p-col-12 p-p-1 p-mt-1 timepickercss timePicker" readonly [ngxTimepicker]="picker" [(ngModel)]="rowData.StartTimePart" [disabled]="rowData.isStartDateDisabled">
+                                <ngx-material-timepicker [preventOverlayClick]="true" [ngxMaterialTimepickerTheme]="darkTheme" (closed)="onStartDatePartChanged(rowData)" #picker [minutesGap]="15"></ngx-material-timepicker>
+                            </td>
+                            <td *ngIf="!rowData.showTime">
+                                <p-calendar class="pcalendarClass"   [(ngModel)]="rowData.StartDate"   [disabledDays]="[0,6]" [readonlyInput]="true"   [showTime]="false"   hourFormat="12"   dateFormat="dd M, yy"   appendTo="body"     [required]="true"   [stepMinute]="15"     [showOnFocus]="false"
+                                      [showIcon]="true" [monthNavigator]="true"   [yearNavigator]="true"   yearRange="{{yearRange}}" [disabled]="rowData.isStartDateDisabled" [minDate]="rowData.minStartDateValue" (onSelect)="onStartDateChanged(rowData)" inputStyleClass="ngPrime-red">
+                                    </p-calendar>
+                            </td>
+                            <td *ngIf="rowData.showTime">
+                                <p-calendar class="pcalendarClass" [(ngModel)]="rowData.EndDatePart"   [disabledDays]="[0,6]"   [readonlyInput]="true"   [showTime]="false"   hourFormat="12"   dateFormat="dd M, yy"   appendTo="body" [required]="true"   [stepMinute]="15"    [showOnFocus]="false"
+                                    [showIcon]="true" [monthNavigator]="true"   [yearNavigator]="true"   yearRange="{{yearRange}}" [disabled]="rowData.isEndDateDisabled" [minDate]="rowData.minEndDateValue" (onClose)="onEndDatePartChanged(rowData)">
+                                </p-calendar>
+                                <input readonly [ngxTimepicker]="picker" [(ngModel)]="rowData.EndTimePart" [disabled]="rowData.isEndDateDisabled" class="p-col-12 p-p-1 p-mt-1 timepickercss timePicker">
+                                <ngx-material-timepicker [preventOverlayClick]="true" (closed)="onEndDatePartChanged(rowData)" #picker [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15"></ngx-material-timepicker>
+
+                            </td>
+                            <td *ngIf="!rowData.showTime">
+                                <p-calendar class="pcalendarClass" [(ngModel)]="rowData.EndDate" [disabledDays]="[0,6]"   [readonlyInput]="true"   [showTime]="false"   hourFormat="12"   dateFormat="dd M, yy"   appendTo="body" [required]="true"   [stepMinute]="15"    [showOnFocus]="false"
+                                    [showIcon]="true" [monthNavigator]="true"   [yearNavigator]="true"   yearRange="{{yearRange}}" [disabled]="rowData.isEndDateDisabled" [minDate]="rowData.minEndDateValue" (onSelect)="onEndDateChanged(rowData)">
+                                </p-calendar>
+                            </td>
+                            <td [style.backgroundColor]="rowData.allocationColor"></td>
+                            <!-- <td>{{rowData.Deviation}}</td> -->
+                            <td *ngIf="rowData.showHyperLink">
+                                <a href="javascript:void(0)" (click)="getUserCapacity(rowData,UserCapacity)">{{rowData.AssignedTo}}</a>
+                            </td>
+                            <td *ngIf="!rowData.showHyperLink">
+                                {{rowData.AssignedTo}}
+                            </td>
+                            <td class="lastColumnWidthtd">
+                                <div *ngIf="rowData.showAllocationSplit">
+                                    <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
+                                    </p-menu>
+                                    <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData);popupMenu.show($event);"></i>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="userCapacity" [hidden]="rowData.toggleCapacity">
+                            <td colspan="8">
+                                <app-usercapacity #UserCapacity [parentModule]="'pm'"></app-usercapacity>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-treeTable>
+            </div>
+        </div>
+        <div>
+            <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
+        </div>
+        <div class="standard-generated-fetch-section" [hidden]="isStandardFetchTableHidden">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 col-xs-12 col-lg-12">
+                        <div class="standardMilestone-fetch">
+                            <p-treeTable [value]="standardFiles">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <!-- [ttRow]="rowNode -->
+                                        <th>Name</th>
+                                        <th>Hours</th>
+                                        <th>TAT</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <!-- <th>Deviation</th> -->
+                                        <th>Assigned</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
+                                    <tr>
+                                        <td>
+                                            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+                                            <span>{{rowData.Name}}</span>
+                                        </td>
+                                        <td>{{rowData.Hours}}</td>
+                                        <td>{{rowData.Days}}</td>
+                                        <td>{{rowData.StartDate | date:'medium'}}</td>
+                                        <td>{{rowData.EndDate | date:'medium'}}</td>
+                                        <!-- <td>{{rowData.Deviation}}</td> -->
+                                        <td>{{rowData.AssignedTo}}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-treeTable>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div>
-        <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
-    </div>
-    <div class="standard-generated-fetch-section" [hidden]="isStandardFetchTableHidden">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 col-xs-12 col-lg-12">
-                    <div class="standardMilestone-fetch">
-                        <p-treeTable [value]="standardFiles">
-                            <ng-template pTemplate="header">
-                                <tr>
-                                    <!-- [ttRow]="rowNode -->
-                                    <th>Name</th>
-                                    <th>Hours</th>
-                                    <th>TAT</th>
-                                    <th>Start Date</th>
-                                    <th>End Date</th>
-                                    <!-- <th>Deviation</th> -->
-                                    <th>Assigned</th>
-                                </tr>
-                            </ng-template>
-                            <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
-                                <tr>
-                                    <td>
-                                        <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-                                        <span>{{rowData.Name}}</span>
-                                    </td>
-                                    <td>{{rowData.Hours}}</td>
-                                    <td>{{rowData.Days}}</td>
-                                    <td>{{rowData.StartDate | date:'medium'}}</td>
-                                    <td>{{rowData.EndDate | date:'medium'}}</td>
-                                    <!-- <td>{{rowData.Deviation}}</td> -->
-                                    <td>{{rowData.AssignedTo}}</td>
-                                </tr>
-                            </ng-template>
-                        </p-treeTable>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="standard-button-secton margin-top25">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-2 col-xs-2 col-lg-2">
-                    <div>
-                        <p-button type="button" styleClass="pmBtn" class="mr-5" label="Back" (click)="goToProjectAttributes()"></p-button>
-                    </div>
-                </div>
-                <div class="col-md-4 col-xs-4 col-lg-4"></div>
-                <div class="col-md-6 col-xs-6 col-lg-6">
-                    <div>
-                        <button [disabled]="confirmDisabled" id="standardTimelineConfirm" class="mr-5 btn btn-danger" type="button" styleClass="pmBtn" (click)="saveTimelineData()">Save Project</button>
-                        <!-- <p-button type="button" styleClass="pmBtn"  class="mr-5" label="Continue to Finance & Management" (click)="goToFinanceMang()"></p-button> -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </p-scrollPanel>
 
+    <div class="p-col p-grid p-jc-between">
+        <button pButton pRipple type="button" (click)="goToProjectAttributes()" label="Back" class="p-ml-1 p-button-raised p-button-danger"></button>
+
+        <button pButton pRipple [disabled]="confirmDisabled" id="standardTimelineConfirm" type="button" (click)="saveTimelineData()" label="Save Project" class=" p-button-raised p-button-danger"></button>
+    </div>
 </div>

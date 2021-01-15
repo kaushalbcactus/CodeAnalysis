@@ -255,7 +255,7 @@ export class AllProjectsComponent implements OnInit {
     ) {
       this.CSButtonEnable = true;
     }
-
+debugger
     this.isApprovalAction = true;
     this.reloadAllProject();
     this.checkEarlyTaskCompleted();
@@ -972,6 +972,12 @@ export class AllProjectsComponent implements OnInit {
           "ProjectCode",
           "in"
         );
+        this.allProjectRef.filters['ProjectCode']=null;
+        this.allProjectRef.filters['ProjectCode'] = [{
+          matchMode: 'in',
+          operator: "and",
+          value: this.pmObject.columnFilter.ProjectCode,
+       }];
       } else {
         this.pmObject.columnFilter.ProjectCode = [];
       }

@@ -12,7 +12,7 @@
         </div>
 
         <p-table #iapTableRef [columns]="displayedColumns" [value]="pmObject.inActiveProjectArray" [paginator]="true" [rows]="10" selectionMode="" exportFilename="Inactive Projects" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="InactiveProjects">
+            [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="InactiveProjects" hideshowMenu>
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="firstColumnWidth">S.No</th>
@@ -27,7 +27,7 @@
                                     </div>
                                 </ng-template>
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-multiSelect [ngModel]="value" [options]="iapArrays[col.field]" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                                    <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
                                         <ng-template let-option pTemplate="item">
                                             <div class="p-multiselect-representative-option">
                                                 <span class="p-ml-1">{{option.label}}</span>

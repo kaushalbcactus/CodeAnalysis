@@ -193,6 +193,7 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 .p-button:enabled:active,
 .p-button:enabled:focus {
     background: #d90000 !important;
+    color: #ffffff !important;
 }
 
 .p-datatable .p-sortable-column:focus,
@@ -277,9 +278,17 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     background: #c53e3e66 !important;
 }
 
+.p-fileupload .p-fileupload-buttonbar .p-button:disabled,
+.p-fileupload-row>div>.p-button:disabled {
+    background: #cdcdcd !important;
+    color: #000000 !important;
+    cursor: not-allowed !important;
+}
+
 .p-fileupload .p-fileupload-buttonbar .p-button,
 .p-fileupload-row>div>.p-button {
     background: #c53e3e !important;
+    color: #ffffff !important;
 }
 
 .p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {

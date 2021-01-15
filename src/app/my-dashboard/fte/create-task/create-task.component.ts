@@ -126,7 +126,7 @@ export class CreateTaskComponent implements OnInit {
   }
 
   async getFTEProjects() {
-    this.constantsService.loader.isPSInnerLoaderHidden = false;
+    this.constantsService.loader.isWaitDisable = false;
     this.fteProjectsList = [];
     this.milestonesList = [];
     const batchUrl = [];
@@ -154,7 +154,7 @@ export class CreateTaskComponent implements OnInit {
       this.milestonesList = [];
     }
 
-    this.constantsService.loader.isPSInnerLoaderHidden = true;
+    this.constantsService.loader.isWaitDisable = true;
   }
   onChangeDD(value: any, ddType: string) {
     if (value) {
@@ -417,7 +417,7 @@ export class CreateTaskComponent implements OnInit {
   }
 
   async submit(batchUrl: any) {
-    this.constantsService.loader.isPSInnerLoaderHidden = false;
+    this.constantsService.loader.isWaitDisable = false;
     // let batchUrl = [];
     // batchUrl.push(data);
     if (batchUrl.length) {
@@ -451,7 +451,7 @@ export class CreateTaskComponent implements OnInit {
 
         this.commonService.showToastrMessage(this.constantsService.MessageType.success,'Task Created',false);
         this.refetchTaskList();
-        this.constantsService.loader.isPSInnerLoaderHidden = true;
+        this.constantsService.loader.isWaitDisable = true;
         this.createTaskModal = false;
       }
     }

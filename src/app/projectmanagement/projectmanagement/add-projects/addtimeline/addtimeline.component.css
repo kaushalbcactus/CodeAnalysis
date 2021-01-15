@@ -1,5 +1,4 @@
-/* @import "~@ng-select/ng-select/themes/default.theme.css"; */
-
+/* 
 .infoSection #standardTimelineCapacity,
 #standardTimelineGenerate,
 #standardTimelineConfirm {
@@ -103,19 +102,12 @@ body,
     background: #A37c27 !important;
 }
 
-/* .tableHeader {
-    background: #A7414A !important;
-    color: #fff !important;
-} */
+
 
 #standardMilestoneTbl .tableHeader tr:first-child td {
     padding: 7px;
 }
 
-/* .table-bordered td,
-.table-bordered th {
-    padding: 7px !important;
-} */
 
 .milestoneTaskBody>tr>td:nth-child(3),
 .milestoneTaskBody>tr>td:nth-child(4) {
@@ -123,41 +115,12 @@ body,
 }
 
 
-/* .milestoneTaskBody tr td:nth-child(5) input,
-.milestoneTaskBody tr td:nth-child(6),
-.milestoneTaskBody tr td:nth-child(7),
-.milestoneTaskBody tr td:nth-child(8){
-    width: 70px !important;
-}  */
-
-/* .tableHeader {
-    font-weight: inherit !important;
-} */
-
-
-/* #capacityTable{
-    height: 172px !important;
-} */
-
-/* .capacityBody #TasksPerDay>thead>tr>td,
-#capacityTable>thead>tr>td,
-table#milestoneTasks thead td {
-    font-weight: inherit !important;
-} */
-
-/* .capacityBody td {
-    padding: 0px !important;
-} */
-
 my-date-picker>div * {
     min-width: 0px !important;
     margin: 0px !important;
 }
 
-/* #capacityTable .tableHeader td {
-    padding: 3px !important;
-    border-bottom: 0px;
-} */
+
 
 .container {
     padding: 0px !important;
@@ -177,30 +140,17 @@ my-date-picker>div * {
 #standardMilestoneTaskTbl>tbody>tr>td:last-child {
     width: 70px
 }
-/*.userCapacity>td*/
 .standardMilestoneTaskRow>td
  {
     padding: 0px !important;
 }
 
-/* .tableHeader {
-    background: #ECECEC !important;
-    color: #868686 !important;
-} */
 
 .milestoneBody {
     background: #90CCF4 !important;
     color: rgb(58, 94, 120)!important;
 }
 
-/* #capacityTable .tableHeader {
-    background-color: rgb(227, 227, 227) !important;
-    color: rgb(68, 68, 68) !important;
-} */
-
-/* table#capacityTable {
-    color: rgb(68, 68, 68) !important;
-} */
 
 #standardMilestoneTaskTbl {
     color: #fff !important;
@@ -258,10 +208,6 @@ my-date-picker>div * {
     padding-top: 15px;
 }
 
-
-/* .UserTasksRow{
-    width: 1107px !important;
-} */
 
 .animated {
     -webkit-animation-duration: 1s;
@@ -328,4 +274,4 @@ my-date-picker>div * {
 }
 ::ng-deep .ui-toast-detail {
   white-space: pre-line;
-}
+} */
