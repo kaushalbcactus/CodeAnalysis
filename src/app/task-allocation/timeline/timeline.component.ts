@@ -4329,8 +4329,9 @@ export class TimelineComponent
   }
   // tslint:enable
 
-  async calcLeaveMsgs(resource, nodeData:IMilestoneTask, leaveMsgs) {
-    const resourceCapacity: IUserCapacity = await this.prestackService.calcPrestackAllocation(resource, nodeData);
+  async calcLeaveMsgs(resource, nodeData: IMilestoneTask, leaveMsgs) {
+    const resourceDetail = await this.prestackService.calcResourceCapacity(resource, nodeData);
+    const resourceCapacity = resourceDetail.capacity;
     if (resourceCapacity && resourceCapacity.leaves.length) {
       const resourceExists = leaveMsgs.find(r => r.resource === resourceCapacity.userName);
       if (resourceExists) {
@@ -7326,16 +7327,16 @@ export class TimelineComponent
     ref.onClose.subscribe((allocation: any) => {
       // let task: any;
       // if (milestoneTask.type === "Milestone") {
-        const milestoneData: MilestoneTreeNode = this.milestoneData.find(
-          m => m.data.title === milestoneTask.milestone
-        );
-        // const milestoneTasks: any[] = this.taskAllocateCommonService.getTasksFromMilestones(
-        //   milestoneData,
-        //   true,
-        //   this.milestoneData,
-        //   false
-        // );
-        milestoneData.data.edited = true;
+      const milestoneData: MilestoneTreeNode = this.milestoneData.find(
+        m => m.data.title === milestoneTask.milestone
+      );
+      // const milestoneTasks: any[] = this.taskAllocateCommonService.getTasksFromMilestones(
+      //   milestoneData,
+      //   true,
+      //   this.milestoneData,
+      //   false
+      // );
+      milestoneData.data.edited = true;
       //   task = milestoneTasks.find(t => t.id === milestoneTask.id);
       // } else {
       //   task = milestoneTask;
