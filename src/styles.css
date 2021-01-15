@@ -310,8 +310,10 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     width: 2em !important;
 }
 
-.lastColumnWidthtd {
+.lastColumnWidth, .lastColumnWidthtd {
     padding: 0px !important;
+    vertical-align: middle !important;
+    text-align: center !important;
 }
 
 
@@ -643,3 +645,9 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 
 
 /* Dynamic Dialog common Css end  */
+
+/* */
+
+i.pi.pi-ellipsis-v {
+    font-size: 1.25em !important;
+}

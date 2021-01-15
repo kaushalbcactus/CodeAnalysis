@@ -39,7 +39,7 @@
             </ng-template>
             <ng-template pTemplate="body" let-rowData let-sow>
                 <tr [pContextMenuRow]="rowData">
-                    <td class="lastColumnWidth">
+                    <td class="firstColumnWidth">
                         <p-radioButton name="groupname" value="{{sow.SOWCode}}" (click)="setSelectedSOWObject(sow)" [(ngModel)]="pmObject.addProject.SOWSelect.SOWCode">
                         </p-radioButton>
                     </td>

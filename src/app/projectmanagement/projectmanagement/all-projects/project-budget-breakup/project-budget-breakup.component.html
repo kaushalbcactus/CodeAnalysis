@@ -2,7 +2,7 @@
     <p-table class="p-mt-2" #PBBTable [columns]="PBBColumns" [value]="PBBDetails" [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines">
         <ng-template pTemplate="header" let-columns>
             <tr>
-                <th class="lastColumnWidth">Sr No.</th>
+                <th class="firstColumnWidth">Sr No.</th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                     <div class="p-d-flex p-jc-between p-ai-center">
                         {{col.header}}
