@@ -21,7 +21,7 @@
     <div class="title">
         <h6>{{ globalService.currentTitle }}</h6>
     </div>
-    <div class="p-col p-grid p-pb-0 topbar-menu p-jc-end">
+    <div class="p-col p-grid p-pb-0 p-mr-0 topbar-menu p-jc-end">
         <!-- <span>Welcome {{globalService.currentUser.title}}</span> -->
         <p-menu #menu [popup]="true" [model]="items"></p-menu>
         <button pButton type="button" class="btn-menu" label="{{globalService.currentUser.title}}" (click)="menu.toggle($event)" style="border-radius: 0px;"></button>

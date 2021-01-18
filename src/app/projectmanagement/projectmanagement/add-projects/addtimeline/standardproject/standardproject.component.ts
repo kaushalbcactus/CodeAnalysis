@@ -2171,7 +2171,6 @@ export class StandardprojectComponent implements OnInit {
       // $('.standardMilestone-fetch').show();
       this.hideTable = true;
       this.isStandardFetchTableHidden = false;
-      this.isStandardFetchTableHidden = false;
       this.pmObject.addProject.Timeline.Standard.IsStandard = true;
       this.pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked = true;
       this.pmObject.addProject.Timeline.Standard.Service = this.selectedService;

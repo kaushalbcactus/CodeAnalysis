@@ -126,7 +126,6 @@ export class CreateTaskComponent implements OnInit {
   }
 
   async getFTEProjects() {
-    this.constantsService.loader.isWaitDisable = false;
     this.fteProjectsList = [];
     this.milestonesList = [];
     const batchUrl = [];
@@ -153,8 +152,6 @@ export class CreateTaskComponent implements OnInit {
     } else {
       this.milestonesList = [];
     }
-
-    this.constantsService.loader.isWaitDisable = true;
   }
   onChangeDD(value: any, ddType: string) {
     if (value) {
