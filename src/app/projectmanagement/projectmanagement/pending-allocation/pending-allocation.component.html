@@ -7,16 +7,16 @@
     </div>
 
     <div class="pendingTable table100 projectDataExist ver4 m-b-110" [hidden]="isPATableHidden" hideshowMenu>
-        <div class="p-col p-grid p-jc-end">
+        <!-- <div class="p-col p-grid p-jc-end">
             <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(paTableRef)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
-        </div>
+        </div> -->
         <p-table #paTableRef [columns]="displayedColumns" [value]="pmObject.pendingAllocationArray" [paginator]="true" [rows]="10" selectionMode="" exportFilename="Pending Allocation" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="PendingAllocationProjects">
+            styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="PendingAllocationProjects">
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="firstColumnWidth">S.No</th>
-                    <th *ngFor="let col of columns" [pSortableColumn]="col.field">
-                        <div class="p-col p-grid p-jc-between p-ai-center">
+                    <th [style]="{'width' : col.field === 'DeliverableType' ? '11%' : col.field === 'Molecule' || col.field === 'PrimaryResourceText' || col.field === 'Milestone'  ? '10%':'' }" *ngFor="let col of columns" [pSortableColumn]="col.field">
+                        <div class="p-d-flex p-jc-between p-ai-center">
                             {{col.header}}
                             <p-sortIcon [field]="col.field"></p-sortIcon>
                             <p-columnFilter *ngIf="col.header != ''  && col.field !='PrimaryResourceText' " [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
@@ -39,7 +39,7 @@
                             <p-columnFilter *ngIf="col.header != ''  && col.field ==='PrimaryResourceText' " type="text" [field]="col.field" matchMode="contains" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"></p-columnFilter>
                         </div>
                     </th>
-                    <th class="lastColumnWidth"></th>
+                    <th class="lastColumnWidth"> <i (click)="pmCommonService.convertToExcelFile(paTableRef)" title="Export To Excel" class="pi pi-file-excel tableExportIcon"></i></th>
                 </tr>
                 <!-- <tr>
                     <th class="lastColumnWidth"></th>
@@ -76,7 +76,7 @@
                     <td>{{task.PrimaryResourceText}}</td>
                     <td>{{task.Milestone}}</td>
                     <td>{{task.Status}}</td>
-                    <td class="lastColumnWidthtd">
+                    <td class="lastColumnWidth">
                         <div>
                             <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems" [popup]="true">
                             </p-menu>

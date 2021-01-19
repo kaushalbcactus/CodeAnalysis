@@ -30,8 +30,8 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="firstColumnWidth">S.No</th>
-                    <th [style]="{'width' : col.field ==='PrimaryResources' ? '11em':'' }" *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
-                        <div class="p-col p-grid p-jc-between p-ai-center">
+                    <th [style]="{'width' : col.field ==='PrimaryResources' ? '11em': col.field ==='Molecule' ? '10%':'' }" *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
+                        <div class="p-d-flex p-jc-between p-ai-center">
                             {{col.header}}
                             <p-sortIcon [field]="col.field"></p-sortIcon>
                             <p-columnFilter *ngIf="col.header != ''  && col.field !='PrimaryResources' " [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
@@ -81,7 +81,7 @@
                             <span *ngSwitchDefault>{{task.Status}}</span>
                         </ng-container>
                     </td>
-                    <td class="lastColumnWidthtd">
+                    <td class="lastColumnWidth">
                         <div>
                             <p-tieredMenu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu class="projectSlider" [model]="popItems" [popup]="true"></p-tieredMenu>
                             <i class="pi pi-ellipsis-v"  style="font-size:2em;cursor: pointer;" (click)="storeRowData(rowData,menu); menu.show($event);"></i>

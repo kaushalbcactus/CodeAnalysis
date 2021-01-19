@@ -167,8 +167,11 @@ export class InactiveComponent implements OnInit {
     }
     this.isIAPTableHidden = false;
     this.isIAPInnerLoaderHidden = true;
-    const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
-    tabMenuInk.style.width= this.pmObject.countObj.iapCount && this.pmObject.countObj.iapCount > 10 ? '193px' : '185px';
+    setTimeout(() => {
+      const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
+      const tabMenuWidth: any = document.querySelector('.p-menuitem-link-active');
+      tabMenuInk.style.width= tabMenuWidth.offsetWidth + 'px';
+    }, 10);
     this.commonService.setIframeHeight();
   }
 

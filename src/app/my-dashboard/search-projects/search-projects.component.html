@@ -75,7 +75,7 @@
                         <span *ngIf="col.field === 'CreatedDate'"> {{rowData[col.field] | date:' MMM d, y, h:mm a'}} </span>
                         <span *ngIf="col.field !== 'CreatedDate'"> {{rowData[col.field]}} </span>
                     </td>
-                    <td>
+                    <td class="lastColumnWidth">
                         <div>
                             <p-menu #popupMenu [style]="{'right' : '0px !important' ,'left' : 'inherit !important'}" [popup]="true" [model]="projectMenu"></p-menu>
                             <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);" appendTo="body"></i>

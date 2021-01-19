@@ -25,7 +25,7 @@
 
     <div class="crTable table100 slaExist ver4 m-b-110" [hidden]="isCRTableHidden">
         <p-table #crTableRef [columns]="displayedColumns" [value]="pmObject.clientReviewArray" [paginator]="true" [rows]="10" selectionMode="" exportFilename="Client Review" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            [style]="{'font-size':'14px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="ClientReviewTable">
+            styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="ClientReviewTable">
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th [ngClass]="{'firstColumnWidth': isFirst}" *ngFor="let col of columns; first as isFirst;" [pSortableColumn]="col.field" [hidden]="!col.visibility">
@@ -66,7 +66,7 @@
                     <td>{{task.Milestone}}</td>
                     <td>{{task.DeliveryDate | date:'MMM dd, yyyy, h:mm a'}}</td>
                     <!-- <td [style.backgroundColor]="task.backgroundColor"> -->
-                    <td class="lastColumnWidthtd">
+                    <td class="lastColumnWidth">
                         <div>
                             <p-menu [style]="{'width': '15em'}" [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems" [popup]="true">
                             </p-menu>

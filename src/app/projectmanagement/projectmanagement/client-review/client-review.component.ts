@@ -352,8 +352,11 @@ export class ClientReviewComponent implements OnInit {
 
     this.isCRTableHidden = false;
     this.isCRInnerLoaderHidden = true;
-    const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');    
-    tabMenuInk.style.width= this.pmObject.countObj.crCount && this.pmObject.countObj.crCount > 10 ? '167px' : '161px';
+    setTimeout(() => {
+      const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
+      const tabMenuWidth: any = document.querySelector('.p-menuitem-link-active');
+      tabMenuInk.style.width= tabMenuWidth.offsetWidth + 'px';
+    }, 10);
     this.commonService.setIframeHeight();
   }
 

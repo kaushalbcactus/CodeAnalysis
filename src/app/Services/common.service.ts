@@ -875,7 +875,7 @@ export class CommonService {
       if(element.Type && element.Type === 'string'){
         element.options = this.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a[element.dbName], value: a[element.dbName] }; return b; }).filter(ele => ele.label)));
       } else if(element.Type && element.Type === 'date'){
-
+        element.options = this.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a[element.dbName], 'MMM dd, yyyy') , value: a[element.dbName] }; return b; }).filter(ele => ele.label))); 
       } else if(element.Type && element.Type === 'datetime'){
         element.options = this.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a[element.dbName], 'MMM dd, yyyy, h:mm a') , value: new Date(this.datePipe.transform(a[element.dbName], 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label)));
       } else if(element.Type && element.Type === 'number'){
