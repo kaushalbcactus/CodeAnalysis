@@ -48,8 +48,8 @@
     <tr *ngIf="data.timeblockType ==='Admin'">
         <th>Total Hours:</th>
         <td>
-            <input placeholder="Select Hours" style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em; width:100%;    margin: 0px 8px 0px 0px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" (ngModelChange)="SetEndTime($event)"
-                [(ngModel)]="starttime" [ngxTimepicker]="StartTime" [format]="24" readonly>
+            <input placeholder="Select Hours" style="color: #333333; background: #ffffff;  padding: 0.429em; width:100%;    margin: 0px 8px 0px 0px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" (ngModelChange)="SetEndTime($event)" [(ngModel)]="starttime"
+                [ngxTimepicker]="StartTime" [format]="24" readonly>
 
             <ngx-material-timepicker #StartTime [minutesGap]="15" [enableKeyboardInput]="true" (closed)="SetTime(starttime)" [ngxMaterialTimepickerTheme]="darkTheme">
             </ngx-material-timepicker>
@@ -61,14 +61,14 @@
         <th>Time:</th>
         <td>
 
-            <input placeholder="Select Start Time" style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em; width:49%;    margin: 0px 8px 0px 0px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" (ngModelChange)="SetEndTime($event)"
+            <input placeholder="Select Start Time" style="color: #333333; background: #ffffff;  padding: 0.429em; width:49%;    margin: 0px 8px 0px 0px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" (ngModelChange)="SetEndTime($event)"
                 [(ngModel)]="starttime" [ngxTimepicker]="StartTime" [format]="12" readonly>
 
             <ngx-material-timepicker #StartTime [minutesGap]="15" [ngxMaterialTimepickerTheme]="darkTheme">
             </ngx-material-timepicker>
 
 
-            <input placeholder="Select End Time" style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em; width:49%; border: 1px solid #a6a6a6; border-radius: 4px;" min="{{minEndTime}}" aria-label="12hr format" [(ngModel)]="endtime" [ngxTimepicker]="EndTime"
+            <input placeholder="Select End Time" style="color: #333333; background: #ffffff;  padding: 0.429em; width:49%; border: 1px solid #a6a6a6; border-radius: 4px;" min="{{minEndTime}}" aria-label="12hr format" [(ngModel)]="endtime" [ngxTimepicker]="EndTime"
                 readonly>
 
             <ngx-material-timepicker #EndTime [minutesGap]="15" [ngxMaterialTimepickerTheme]="darkTheme">

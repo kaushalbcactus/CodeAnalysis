@@ -115,7 +115,7 @@ export class SOWComponent implements OnInit, OnDestroy {
   subscription;
   showProjectLink = false;
   @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
-  @ViewChild('allProjectRef', { static: true }) allProjectRef: Table;
+  @ViewChild('allSOWRef', { static: true }) allSOWRef: Table;
   step: number;
   ProjectArray = [];
   totalRevenueBudget = 0;
@@ -312,17 +312,12 @@ export class SOWComponent implements OnInit, OnDestroy {
       if (this.pmObject.tabMenuItems.length) {
         this.pmObject.tabMenuItems[1].label = 'All SOW (' + this.pmObject.countObj.allSOWCount + ')';
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
-        const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
-        
-         tabMenuInk.style.width= this.pmObject.countObj.allSOWCount && this.pmObject.countObj.allSOWCount < 10 ? '120px' : '131px';
+      
       }
     } else {
       if (this.pmObject.tabMenuItems.length) {
         this.pmObject.tabMenuItems[1].label = 'All SOW (' + this.pmObject.countObj.allSOWCount + ')';
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
-        
-        const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
-        tabMenuInk.style.width= this.pmObject.countObj.allSOWCount && this.pmObject.countObj.allSOWCount < 10 ? '120px' : '131px';
       }
     }
     if (this.pmObject.allSOWItems && this.pmObject.allSOWItems.length) {
@@ -406,9 +401,9 @@ export class SOWComponent implements OnInit, OnDestroy {
     if (this.pmObject.columnFilter.SOWCode && this.pmObject.columnFilter.SOWCode.length) {
       const getSOW = this.pmObject.allSOWArray.find(e => e.SOWCode === this.pmObject.columnFilter.SOWCode[0]);
       if (getSOW) {
-        this.allProjectRef.filter(this.pmObject.columnFilter.SOWCode, 'SOWCode', 'in');
-        this.allProjectRef.filters['SOWCode']=null;
-        this.allProjectRef.filters['SOWCode'] = [{
+        this.allSOWRef.filter(this.pmObject.columnFilter.SOWCode, 'SOWCode', 'in');
+        this.allSOWRef.filters['SOWCode']=null;
+        this.allSOWRef.filters['SOWCode'] = [{
           matchMode: 'in',
           operator: "and",
           value: this.pmObject.columnFilter.SOWCode,
@@ -420,6 +415,14 @@ export class SOWComponent implements OnInit, OnDestroy {
       }
 
     }
+    
+    setTimeout(() => {
+      const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
+      const tabMenuWidth: any = document.querySelector('.p-menuitem-link-active');
+      tabMenuInk.style.width= tabMenuWidth.offsetWidth + 'px';
+    }, 10);
+
+
     this.isAllSOWLoaderHidden = true;
     this.isAllSOWTableHidden = false;
 

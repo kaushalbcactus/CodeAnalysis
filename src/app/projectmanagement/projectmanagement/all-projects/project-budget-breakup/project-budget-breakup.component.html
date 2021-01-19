@@ -1,5 +1,5 @@
 <div *ngIf="projectCode">
-    <p-table class="p-mt-2" #PBBTable [columns]="PBBColumns" [value]="PBBDetails" [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines">
+    <p-table class="p-mt-2" #PBBTable [columns]="PBBColumns" [value]="PBBDetails" styleClass="p-datatable-cactus p-datatable-gridlines">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th class="firstColumnWidth">Sr No.</th>
@@ -14,7 +14,7 @@
                                 </div>
                             </ng-template>
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-multiSelect [ngModel]="value" [options]="PBBFilters[col.field]" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                                <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
                                     <ng-template let-option pTemplate="item">
                                         <div class="p-multiselect-representative-option">
                                             <span class="p-ml-1">{{option.label}}</span>
@@ -95,16 +95,34 @@
 </div>
 
 <div *ngIf="sowCode">
-    <p-table #SowBudgetTable [columns]="sowBudgetColumns" [value]="sowBudgetDetails">
+    <p-table #SowBudgetTable [columns]="sowBudgetColumns" [value]="sowBudgetDetails" styleClass="p-datatable-cactus p-datatable-gridlines">
         <ng-template pTemplate="header" let-columns>
             <tr>
-                <th>Sr No.</th>
+                <th class="firstColumnWidth">No.</th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
-                    {{ col.header }}
-                    <p-sortIcon *ngIf="col.field" [field]="col.field"></p-sortIcon>
+                    <div class="p-d-flex p-jc-between p-ai-center">
+                        {{col.header}}
+                        <p-sortIcon *ngIf="col.field" [field]="col.field"></p-sortIcon>
+                        <p-columnFilter *ngIf="col.header != ''" [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                            <ng-template pTemplate="header">
+                                <div class="p-px-3 p-pt-3 p-pb-0">
+                                    <span class="p-text-bold"> {{col.header}} Picker</span>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                                    <ng-template let-option pTemplate="item">
+                                        <div class="p-multiselect-representative-option">
+                                            <span class="p-ml-1">{{option.label}}</span>
+                                        </div>
+                                    </ng-template>
+                                </p-multiSelect>
+                            </ng-template>
+                        </p-columnFilter>
+                    </div>
                 </th>
             </tr>
-            <tr>
+            <!-- <tr>
                 <th></th>
                 <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
                     <p-multiSelect *ngSwitchCase="'InternalReviewStartDate'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.InternalReviewStartDate" defaultLabel="Approval Date" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
@@ -127,10 +145,9 @@
                         filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'AddendumTaxBudget'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.AddendumTaxBudget" defaultLabel="Addendum Tax Budget" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
                         filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                    <!-- <p-multiSelect *ngSwitchCase="'Currency'" [style]="{'width':'100%'}" [options]="this.SOWBudgetFilters.Currency" defaultLabel="Currency" (onChange)="SowBudgetTable.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect> -->
+                 
                 </th>
-            </tr>
+            </tr> -->
         </ng-template>
         <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
             <tr>
@@ -145,36 +162,6 @@
                         {{rowData[col.field]}}
                     </ng-container>
                 </td>
-                <!-- <td>
-                {{rowData.Status}}
-            </td>
-            <td>
-                {{rowData.TotalBudget}}
-            </td>
-            <td>
-                {{rowData.NetBudget}}
-            </td>
-            <td>
-                {{rowData.OOPBudget}}
-            </td>
-            <td>
-                {{rowData.TaxBudget}}
-            </td>
-            <td>
-                {{rowData.AddendumTotalBudget}}
-            </td>
-            <td>
-                {{rowData.AddendumNetBudget}}
-            </td>
-            <td>
-                {{rowData.AddendumOOPBudget}}
-            </td>
-            <td>
-                {{rowData.AddendumTaxBudget}}
-            </td> -->
-                <!-- <td>
-                {{rowData.Currency}}
-            </td> -->
             </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage" let-columns>

@@ -186,7 +186,7 @@
                                 <span *ngIf="task.projectType ===constants.PROJECTTYPES.FTE && SelectedStatus === constants.STATUS.NOT_STARTED && task.StartTime;else isStartConstant">
                                     <p-calendar [(ngModel)]="task.StartDate" appendTo="body" dateFormat="M dd, yy" (onClose)="onCloseStartDate()" [disabledDays]="[0,6]" [yearNavigator]="true" yearRange="{{yearRangePastNext}}" placeholder="Select Start Date">
                                     </p-calendar>
-                                    <input style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em;margin: 0px 8px 0px 10px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultStartTime" [(ngModel)]="task.StartTime" [format]="12"
+                                    <input style="color: #333333; background: #ffffff;  padding: 0.429em;margin: 0px 8px 0px 10px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultStartTime" [(ngModel)]="task.StartTime" [format]="12"
                                         readonly>
     
                                     <ngx-material-timepicker #defaultStartTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(task.StartTime, 'startTime')" [ngxMaterialTimepickerTheme]="darkTheme">
@@ -203,7 +203,7 @@
     <p-calendar [style]="{'border': '1px solid !important'}" placeholder="Select Due Date" (onClose)="onCloseDueDate()" [minDate]="task.StartDate" [(ngModel)]="task.DueDateDT" [disabledDays]="[0,6]" dateFormat="M dd, yy" appendTo="body" [monthNavigator]="true"
     [yearNavigator]="true" yearRange="{{yearRangePastNext}}">
 </p-calendar>
-<input style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em;margin: 0px 8px 0px 10px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultEndTime" [(ngModel)]="task.DueTime" [format]="12"
+<input style="color: #333333; background: #ffffff;  padding: 0.429em;margin: 0px 8px 0px 10px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultEndTime" [(ngModel)]="task.DueTime" [format]="12"
     readonly>
 <ngx-material-timepicker #defaultEndTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(task.DueTime, 'dueTime')" [ngxMaterialTimepickerTheme]="darkTheme">
 </ngx-material-timepicker>

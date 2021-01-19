@@ -1,4 +1,4 @@
-<p-dialog header="Create Task" [(visible)]="createTaskModal" [modal]="true" [draggable]="false" [style]="{'width': '70%'}" [maximizable]="false" (onHide)="cancelFormSub('createTask')" [closable]='false'>
+<p-dialog header="Create Task" [(visible)]="createTaskModal" [modal]="true" [draggable]="false" [style]="{'width': '50%'}" [maximizable]="false" (onHide)="cancelFormSub('createTask')" [closable]='false'>
 
 
     <div class="pdialogButton p-col-12 p-grid p-jc-end">
@@ -10,8 +10,8 @@
 
             <div class="p-col p-grid p-p-1">
                 <div class="p-col p-grid p-p-0">
-                    <label for="ProjectCode" class="p-col-12 p-m-0 p-md-2 p-mb-md-0 p-p-3">Project Code:</label>
-                    <div class="p-col-12 p-md-10">
+                    <label for="ProjectCode" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Project Code:</label>
+                    <div class="p-col-12 p-md-8">
                         <p-dropdown resetFilterOnHide="true" [options]="fteProjectsList" placeholder="Select Project code" [style]="{'width':'100%'}" formControlName="ProjectCode" optionLabel="ProjectCode" (onChange)="onChangeDD($event.value, 'ProjectCode')">
                         </p-dropdown>
                         <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.ProjectCode.errors">
@@ -21,9 +21,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="p-col p-grid p-p-1">
                 <div class="p-col p-grid p-p-0">
                     <label for="Milestones" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"> Milestones:</label>
                     <div class="p-col-12 p-md-8">
@@ -35,9 +32,13 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="p-col p-grid p-p-1">
+
                 <div class="p-col p-grid p-p-0">
-                    <label for="Submilestones" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"> Sub milestones:</label>
-                    <div class="p-col-12 p-md-8">
+                    <label for="Submilestones" class="p-col-12 p-m-0 p-md-2 p-mb-md-0 p-p-3"> Sub milestones:</label>
+                    <div class="p-col-12 p-md-10">
                         <p-dropdown #dd editable="true" [options]="subMilestonesList" [style]="{'width':'100%'}" formControlName="SubMilestones" optionLabel="label" (onChange)="onChangeDD($event.value, 'SubMilestone')" (input)="onSearchChange($event.target.value)" (click)="clearFilter(dd)">
                         </p-dropdown>
                         <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.SubMilestones.errors">
@@ -60,17 +61,16 @@
                     <div class="p-col-12 p-md-8 p-grid p-d-flex">
                         <div class="p-col">
                             <p-calendar [style]="{'border': '1px solid !important'}" [minDate]="minDateValue" placeholder="Select Start Date" formControlName="StartDate" [maxDate]="maxDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
-                                (onClose)="onCloseStartDate()" [yearNavigator]="true">
+                                [showIcon]="true" (onClose)="onCloseStartDate()" [yearNavigator]="true">
                             </p-calendar>
                             <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.StartDate.errors">
                                 <div style="color: red;">Start Date is required.</div>
                             </div>
                         </div>
                         <div class="p-col">
-                            <!-- <div class="p-grid p-d-flex"> -->
-                                <input placeholder="Select Start Time" style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em; width:49%;margin: 0px 8px 0px 0px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultStartTime"
-                                    formControlName="StartTime" [value]="'09:00 AM'" [format]="12" readonly>
-
+                            <div class="p-d-flex">
+                                <input placeholder="Select Start Time" style="padding:8px;width: 75%;  border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultStartTime" formControlName="StartTime" [value]="'09:00 AM'" [format]="12" readonly>
+                                <ngx-material-timepicker-toggle [for]="defaultStartTime"></ngx-material-timepicker-toggle>
                                 <ngx-material-timepicker #defaultStartTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(create_task_form.value.StartTime, 'startTime')" [ngxMaterialTimepickerTheme]="darkTheme">
                                 </ngx-material-timepicker>
 
@@ -87,17 +87,16 @@
                     <div class="p-col-12 p-md-8 p-grid p-d-flex">
                         <div class="p-col">
                             <p-calendar [style]="{'border': '1px solid !important'}" [minDate]="minDateValue" placeholder="Select Start Date" formControlName="StartDate" [maxDate]="maxDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
-                                (onClose)="onCloseStartDate()" [yearNavigator]="true">
+                                [showIcon]="true" (onClose)="onCloseStartDate()" [yearNavigator]="true">
                             </p-calendar>
                             <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.StartDate.errors">
                                 <div style="color: red;">Start Date is required.</div>
                             </div>
                         </div>
                         <div class="p-col">
-                            <!-- <div class="p-grid p-d-flex"> -->
-                                <input placeholder="Select Start Time" style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em; width:49%;margin: 0px 8px 0px 0px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultEndTime"
-                                    formControlName="EndTime" [value]="'07:00 PM'" [format]="12" readonly>
-
+                            <div class="p-d-flex">
+                                <input placeholder="Select Start Time" style="padding:8px;width: 75%;border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultEndTime" formControlName="EndTime" [value]="'07:00 PM'" [format]="12" readonly>
+                                <ngx-material-timepicker-toggle [for]="defaultEndTime"></ngx-material-timepicker-toggle>
                                 <ngx-material-timepicker #defaultEndTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(create_task_form.value.EndTime, 'endTime')" [ngxMaterialTimepickerTheme]="darkTheme">
                                 </ngx-material-timepicker>
 

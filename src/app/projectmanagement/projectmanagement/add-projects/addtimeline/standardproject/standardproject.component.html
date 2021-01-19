@@ -113,7 +113,7 @@
                             <th class="lastColumnWidth"></th>
                         </tr>
                     </ng-template>
-                    <ng-template pTemplate="body" let-rowNode let-rowData="rowData" style="font-size: 14px;">
+                    <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
                         <tr>
                             <td>
                                 <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
@@ -161,7 +161,7 @@
                             <td *ngIf="!rowData.showHyperLink">
                                 {{rowData.AssignedTo}}
                             </td>
-                            <td class="lastColumnWidthtd">
+                            <td class="lastColumnWidth">
                                 <div *ngIf="rowData.showAllocationSplit">
                                     <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
                                     </p-menu>

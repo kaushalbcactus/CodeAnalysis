@@ -23,7 +23,7 @@ export class PendingAllocationComponent implements OnInit {
   tempClick: any;
 
   displayedColumns: any[] = [
-    { field: 'ProjectCode', header: 'Project Code' ,Type:'string',dbName:'ProjectCode', options:[] },
+    { field: 'ProjectCode', header: 'Project Code' ,Type:'string',dbName:'ProjectCode' , options:[] },
     { field: 'ShortTitle', header: 'Short Title',Type:'string',dbName:'ShortTitle' , options:[] },
     { field: 'ClientLegalEntity', header: 'Client' ,Type:'string',dbName:'ClientLegalEntity' , options:[]},
     { field: 'POC', header: 'POC' ,Type:'string',dbName:'POC' , options:[]},
@@ -191,8 +191,11 @@ export class PendingAllocationComponent implements OnInit {
     }
     this.isPATableHidden = false;
     this.isPAInnerLoaderHidden = true;
-    const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');    
-    tabMenuInk.style.width= this.pmObject.countObj.paCount && this.pmObject.countObj.paCount > 10 ? '208px' : '197px';
+    setTimeout(() => {
+      const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
+      const tabMenuWidth: any = document.querySelector('.p-menuitem-link-active');
+      tabMenuInk.style.width= tabMenuWidth.offsetWidth + 'px';
+    }, 10);
     this.commonService.setIframeHeight();
   }
 

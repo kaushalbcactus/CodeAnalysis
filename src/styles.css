@@ -18,7 +18,7 @@
 
 body {
     font-family: Helvetica;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 
@@ -204,7 +204,7 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 .p-multiselect .p-multiselect-label,
 .p-inputtext {
     padding: 6px !important;
-    font-size: 14px !important;
+    font-size: 13px !important;
 }
 
 .p-calendar-w-btn:not(.p-disabled):hover,
@@ -308,7 +308,8 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     width: 2em !important;
 }
 
-.lastColumnWidth, .lastColumnWidthtd {
+.lastColumnWidth,
+.lastColumnWidthtd {
     padding: 0px !important;
     vertical-align: middle !important;
     text-align: center !important;
@@ -644,8 +645,23 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 
 /* Dynamic Dialog common Css end  */
 
+
 /* */
 
 i.pi.pi-ellipsis-v {
     font-size: 1.25em !important;
+}
+
+.p-scrollpanel-wrapper,
+.p-dropdown-items-wrapper,
+.p-datatable-cactus,
+.p-tieredmenu-overlay,
+.p-menu-overlay {
+    font-size: 13px !important;
+}
+
+.tableExportIcon {
+    font-size: 25px !important;
+    color: #c53e3e !important;
+    cursor: pointer !important;
 }

@@ -48,7 +48,7 @@
                     </div>
                 </div>
 
-                <p-table [value]="budgetData" [style]="{'font-size':'14px'}" styleClass="p-datatable-cactus p-datatable-gridlines">
+                <p-table [value]="budgetData" styleClass="p-datatable-cactus p-datatable-gridlines">
                     <ng-template pTemplate="header">
                         <tr>
                             <th></th>
@@ -128,7 +128,7 @@
                     <ng-container *ngFor="let poObj of poData">
                         <div class="p-my-2">
                             <p-card *ngIf="poObj.poInfo[0].status !== 'Deleted'">
-                                <p-table [value]=poObj.poInfo [style]="{'font-size':'14px'}" styleClass="p-datatable-cactus p-datatable-gridlines">
+                                <p-table [value]=poObj.poInfo styleClass="p-datatable-cactus p-datatable-gridlines">
                                     <ng-template pTemplate="header">
                                         <tr>
                                             <th>Number-Name</th>
@@ -178,7 +178,7 @@
                                     </ng-template>
                                 </p-table>
                                 <!-- <div>PO Information</div> -->
-                                <p-table [value]=poObj.poInfoData [style]="{'font-size':'14px'}" styleClass="p-datatable-cactus p-datatable-gridlines">
+                                <p-table [value]=poObj.poInfoData styleClass="p-datatable-cactus p-datatable-gridlines">
                                     <ng-template pTemplate="header">
                                         <tr>
                                             <th>Inv Number</th>
@@ -258,7 +258,7 @@
             </ng-template>
             <ng-template pTemplate="content">
 
-                <p-table *ngIf="showUnAssigned" [value]="unassignedBudget" [style]="{'font-size':'14px'}" styleClass="p-datatable-cactus p-datatable-gridlines">
+                <p-table *ngIf="showUnAssigned" [value]="unassignedBudget" styleClass="p-datatable-cactus p-datatable-gridlines">
                     <ng-template pTemplate="header">
                         <tr>
                             <th></th>

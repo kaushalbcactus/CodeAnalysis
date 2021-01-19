@@ -483,9 +483,11 @@ export class SendToClientComponent implements OnInit {
     this.isSCTableHidden = false;
     this.isSCInnerLoaderHidden = true;
     this.isSCFilterHidden = false;
-    const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
-    tabMenuInk.style.width='164px';
-    
+    setTimeout(() => {
+      const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
+      const tabMenuWidth: any = document.querySelector('.p-menuitem-link-active');
+      tabMenuInk.style.width= tabMenuWidth.offsetWidth + 'px';
+    }, 10); 
     // this.commonService.setIframeHeight();
   }
 

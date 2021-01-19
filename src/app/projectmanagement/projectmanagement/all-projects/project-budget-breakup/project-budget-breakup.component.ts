@@ -41,56 +41,35 @@ export class ProjectBudgetBreakupComponent implements OnInit {
     this.projectCode = this.config.data.projectCode;
     this.sowCode = this.config.data.sowCode;
     this.PBBColumns = [
-      { field: "ApprovalDate", header: "Approval Date", visibility: true },
-      { field: "Status", header: "Status", visibility: true },
-      { field: "OriginalBudget", header: "Total Budget ", visibility: true },
-      { field: "NetBudget", header: "Revenue", visibility: true },
-      { field: "OOPBudget", header: "OOP", visibility: true },
-      { field: "TaxBudget", header: "Tax", visibility: true },
-      { field: "BudgetHours", header: "Budget Hours", visibility: true },
+      { field: "ApprovalDate", header: "Approval Date", visibility: true ,Type:'date',dbName:'ApprovalDate' , options:[] },
+      { field: "Status", header: "Status", visibility: true ,Type:'string',dbName:'Status' , options:[] },
+      { field: "OriginalBudget", header: "Total Budget ", visibility: true  ,Type:'number',dbName:'OriginalBudget' , options:[]},
+      { field: "NetBudget", header: "Revenue", visibility: true ,Type:'number',dbName:'NetBudget' , options:[] },
+      { field: "OOPBudget", header: "OOP", visibility: true, Type:'number',dbName:'OOPBudget' , options:[] },
+      { field: "TaxBudget", header: "Tax", visibility: true,Type:'number',dbName:'TaxBudget' , options:[] },
+      { field: "BudgetHours", header: "Budget Hours", visibility: true, Type:'number',dbName:'BudgetHours' , options:[] },
       {
         field: "Reason",
         header: "Reason",
-        visibility: true
+        visibility: true ,Type:'string',dbName:'Reason' , options:[] 
       },
       {
         field: "CommentsMT",
         header: "Comments",
-        visibility: true
+        visibility: true ,Type:'string',dbName:'CommentsMT' , options:[] 
       }
     ];
     this.sowBudgetColumns = [
       {
         field: "InternalReviewStartDate",
         header: "Approval Date",
-        visibility: true
+        visibility: true ,Type:'date',dbName:'InternalReviewStartDate' , options:[] 
       },
-      { field: "Status", header: "Status", visibility: true },
-      { field: "TotalBudget", header: "Total Budget ", visibility: true },
-      { field: "NetBudget", header: "Revenue", visibility: true },
-      { field: "OOPBudget", header: "OOP", visibility: true },
-      { field: "TaxBudget", header: "Tax", visibility: true },
-      // {
-      //   field: "AddendumTotalBudget",
-      //   header: "Addendum Total Budget",
-      //   visibility: false
-      // },
-      // {
-      //   field: "AddendumNetBudget",
-      //   header: "Addendum Net Budget",
-      //   visibility: false
-      // },
-      // {
-      //   field: "AddendumOOPBudget",
-      //   header: "Addendum OOP Budget",
-      //   visibility: false
-      // },
-      // {
-      //   field: "AddendumTaxBudget",
-      //   header: "Addendum Tax Budget",
-      //   visibility: false
-      // }
-      // { field: "Currency", header: "Currency", visibility: true }
+      { field: "Status", header: "Status", visibility: true ,Type:'string',dbName:'Status' , options:[] },
+      { field: "TotalBudget", header: "Total Budget ", visibility: true,Type:'number',dbName:'TotalBudget' , options:[]  },
+      { field: "NetBudget", header: "Revenue", visibility: true ,Type:'number',dbName:'NetBudget' , options:[] },
+      { field: "OOPBudget", header: "OOP", visibility: true,Type:'number',dbName:'OOPBudget' , options:[]  },
+      { field: "TaxBudget", header: "Tax", visibility: true,Type:'number',dbName:'TaxBudget' , options:[]  },
     ];
     if (this.projectCode) {
       this.PBBDetails = await this.getProjectBudgetBrekup();
@@ -98,7 +77,7 @@ export class ProjectBudgetBreakupComponent implements OnInit {
         arr[index].ApprovalDate = new Date(arr[index].ApprovalDate);
       });
       this.sortData(this.PBBDetails, "ApprovalDate");
-      this.colFiltersForPBB(this.PBBDetails);
+      this.PBBColumns = this.common.MainfilterForTable(this.PBBColumns,this.PBBDetails);
     } else if (this.sowCode) {
       this.sowBudgetDetails = await this.getSowBudgetBrekup();
       this.sowBudgetDetails.forEach((ele, index, arr) => {
@@ -106,7 +85,8 @@ export class ProjectBudgetBreakupComponent implements OnInit {
       });
       this.sortData(this.sowBudgetDetails, "InternalReviewStartDate");
       this.forMultipleValues();
-      this.colFiltersForSOW(this.sowBudgetDetails);
+      this.sowBudgetColumns = this.common.MainfilterForTable(this.sowBudgetColumns,this.sowBudgetDetails);
+     
     }
   }
 
@@ -161,124 +141,12 @@ export class ProjectBudgetBreakupComponent implements OnInit {
     } 
   }
 
-  colFiltersForPBB(colData) {
-    this.PBBFilters.ApprovalDate = this.common.sortData(
-      this.uniqueArrayObj(colData,'ApprovalDate',"Date")
-    );
-    this.PBBFilters.Status = this.common.sortData(
-      this.uniqueArrayObj(colData,'Status')
-    );
-    const OriginalBudget = this.uniqueArrayObj(colData,'OriginalBudget')
-    this.PBBFilters.OriginalBudget = this.common.customSort(
-      OriginalBudget,
-      "label",
-      1
-    );
-    const NetBudget = this.uniqueArrayObj(colData,'NetBudget')
-    this.PBBFilters.NetBudget = this.common.customSort(NetBudget, "label", 1);
-    const OOPBudget = this.uniqueArrayObj(colData,'OOPBudget')
-    this.PBBFilters.OOPBudget = this.common.customSort(OOPBudget, "label", 1);
-    const TaxBudget = this.uniqueArrayObj(colData,'TaxBudget')
-    this.PBBFilters.TaxBudget = this.common.customSort(TaxBudget, "label", 1);
-    const BudgetHours = this.uniqueArrayObj(colData,'BudgetHours');
-    this.PBBFilters.BudgetHours = this.common.customSort(
-      BudgetHours,
-      "label",
-      1
-    );
-    this.PBBFilters.Reason = this.common.sortData(
-      this.uniqueArrayObj(colData,'Reason')
-    );
-    this.PBBFilters.CommentsMT = this.common.sortData(
-      this.uniqueArrayObj(colData,'CommentsMT')
-    );
-  }
-
-  colFiltersForSOW(colData) {
-    this.SOWBudgetFilters.InternalReviewStartDate = this.common.sortData(
-      this.uniqueArrayObj(colData,'InternalReviewStartDate',"Date")
-    );
-    this.SOWBudgetFilters.Status = this.common.sortData(
-      this.uniqueArrayObj(colData,'Status')
-    );
-    const TotalBudget = this.uniqueArrayObj(colData,'TotalBudget');
-    this.SOWBudgetFilters.TotalBudget = this.common.customSort(
-      TotalBudget,
-      "label",
-      1
-    );
-    const NetBudget = this.uniqueArrayObj(colData,'NetBudget');
-    this.SOWBudgetFilters.NetBudget = this.common.customSort(
-      NetBudget,
-      "label",
-      1
-    );
-    const OOPBudget = this.uniqueArrayObj(colData,'OOPBudget');
-    this.SOWBudgetFilters.OOPBudget = this.common.customSort(
-      OOPBudget,
-      "label",
-      1
-    );
-    const TaxBudget = this.uniqueArrayObj(colData,'TaxBudget');
-    this.SOWBudgetFilters.TaxBudget = this.common.customSort(
-      TaxBudget,
-      "label",
-      1
-    );
-    const AddendumTotalBudget = this.uniqueArrayObj(colData,'AddendumTotalBudget');
-    this.SOWBudgetFilters.AddendumTotalBudget = this.common.customSort(
-      AddendumTotalBudget,
-      "label",
-      1
-    );
-    const AddendumNetBudget = this.uniqueArrayObj(colData,'AddendumNetBudget');
-    this.SOWBudgetFilters.AddendumNetBudget = this.common.customSort(
-      AddendumNetBudget,
-      "label",
-      1
-    );
-    const AddendumOOPBudget = this.uniqueArrayObj(colData,'AddendumOOPBudget');
-    this.SOWBudgetFilters.AddendumOOPBudget = this.common.customSort(
-      AddendumOOPBudget,
-      "label",
-      1
-    );
-    const AddendumTaxBudget = this.uniqueArrayObj(colData,'AddendumTaxBudget');
-    this.SOWBudgetFilters.AddendumTaxBudget = this.common.customSort(
-      AddendumTaxBudget,
-      "label",
-      1
-    );
-    // this.SOWBudgetFilters.Currency = this.common.sortData(
-    //   this.uniqueArrayObj(
-    //     colData.map(a => {
-    //       const b = { label: a.Currency, value: a.Currency };
-    //       return b;
-    //     })
-    //   )
-    // );
-  }
-
-  uniqueArrayObj(array: any,field, date?) {
-    return [...new Set(array.map(element => element[field]))].map((a) => {
-      const b = date == 'Date'  ? { label: this.datePipe.transform( a instanceof Date ? a : new Date(a.toString()),"MMM dd, yyyy"), value: a } : { label: a, value: a }
-      return b;
-    })
-    .filter(ele => ele.label)
-  }
-
-
   
-
   sortData(arr, field) {
     let column = field;
     arr.sort((a, b) => {
       if (a[column] === "" || a[column] === null) return -1;
       if (b[column] === "" || b[column] === null) return 0;
-      // let d1 = new Date(a[column]).getTime();
-      // let d2 = new Date(b[column]).getTime();
-
-      // return d1 < d2 ? -1 : d1 > d2 ? 1 : 0;
     });
   }
 }
