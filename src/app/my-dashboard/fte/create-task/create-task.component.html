@@ -73,9 +73,7 @@
                                 <ngx-material-timepicker-toggle [for]="defaultStartTime"></ngx-material-timepicker-toggle>
                                 <ngx-material-timepicker #defaultStartTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(create_task_form.value.StartTime, 'startTime')" [ngxMaterialTimepickerTheme]="darkTheme">
                                 </ngx-material-timepicker>
-
-
-                            <!-- </div> -->
+                            </div>
                             <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.StartTime.errors">
                                 <div style="color: red;">Start time is required.</div>
                             </div>
@@ -99,8 +97,7 @@
                                 <ngx-material-timepicker-toggle [for]="defaultEndTime"></ngx-material-timepicker-toggle>
                                 <ngx-material-timepicker #defaultEndTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(create_task_form.value.EndTime, 'endTime')" [ngxMaterialTimepickerTheme]="darkTheme">
                                 </ngx-material-timepicker>
-
-                            <!-- </div> -->
+                            </div>
                             <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.StartTime.errors">
                                 <div style="color: red;">End time is required.</div>
                             </div>
