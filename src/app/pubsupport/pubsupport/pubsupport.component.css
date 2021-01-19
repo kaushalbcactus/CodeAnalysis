@@ -40,7 +40,7 @@ legend {
     padding-left: 2em;
 }
 
-a:hover {
+a,a:hover {
     color: #d7181f;
     cursor: pointer;
   }
