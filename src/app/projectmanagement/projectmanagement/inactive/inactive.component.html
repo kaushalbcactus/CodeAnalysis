@@ -7,16 +7,16 @@
     </div>
 
     <div class="inActiveTable table100 projectDataExist ver4 m-b-110" [hidden]="isIAPTableHidden">
-        <div class="p-col p-grid p-jc-end">
+        <!-- <div class="p-col p-grid p-jc-end">
             <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(iapTableRef)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
-        </div>
+        </div> -->
 
         <p-table #iapTableRef [columns]="displayedColumns" [value]="pmObject.inActiveProjectArray" [paginator]="true" [rows]="10" selectionMode="" exportFilename="Inactive Projects" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="InactiveProjects">
+            styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="InactiveProjects" hideshowMenu>
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="firstColumnWidth">S.No</th>
-                    <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                    <th [style]="{'width' : col.field === 'DeliverableType' ? '11%' : col.field === 'Molecule' || col.field === 'PrimaryResourceText' || col.field === 'Milestone'  ? '10%':'' }" *ngFor="let col of columns" [pSortableColumn]="col.field">
                         <div class="p-d-flex p-jc-between p-ai-center">
                             {{col.header}}
                             <p-sortIcon [field]="col.field"></p-sortIcon>
@@ -27,7 +27,7 @@
                                     </div>
                                 </ng-template>
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-multiSelect [ngModel]="value" [options]="iapArrays[col.field]" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                                    <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
                                         <ng-template let-option pTemplate="item">
                                             <div class="p-multiselect-representative-option">
                                                 <span class="p-ml-1">{{option.label}}</span>
@@ -40,7 +40,9 @@
                             <p-columnFilter *ngIf="col.header != ''  && col.field ==='PrimaryResourceText' " type="text" [field]="col.field" matchMode="contains" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"></p-columnFilter>
                         </div>
                     </th>
-                    <th class="lastColumnWidth"></th>
+                    <th class="lastColumnWidth">
+                        <i (click)="pmCommonService.convertToExcelFile(iapTableRef)" title="Export To Excel" class="pi pi-file-excel tableExportIcon"></i>
+                    </th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-rowData let-task let-rowIndex="rowIndex">

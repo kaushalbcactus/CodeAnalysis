@@ -12,12 +12,12 @@
 
 
 <div class="allSOW-section" [hidden]='isAllSOWTableHidden'>
-    <div class="box excelIcon">
-        <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(allProjectRef)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+    <!-- <div class="box excelIcon">
+        <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(allSOWRef)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
     </div>
-    <div class="clear"></div>
-    <p-table #allProjectRef [columns]="displayedColumns" [value]="pmObject.allSOWArray" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-        [style]="{'font-size':'14px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" [stateKey]="showProjectLink ? 'MyDashboardSowTable' : 'SowTable'" selectionMode="" exportFilename="All SOW">
+    <div class="clear"></div> -->
+    <p-table #allSOWRef [columns]="displayedColumns" [value]="pmObject.allSOWArray" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" [stateKey]="showProjectLink ? 'MyDashboardSowTable' : 'SowTable'" selectionMode="" exportFilename="All SOW">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th class="firstColumnWidth">S.No</th>
@@ -34,7 +34,7 @@
                                 </div>
                             </ng-template>
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-multiSelect [ngModel]="value" [options]="allSOW[col.field]" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                                <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
                                     <ng-template let-option pTemplate="item">
                                         <div class="p-multiselect-representative-option">
                                             <span class="p-ml-1">{{option.label}}</span>
@@ -45,7 +45,9 @@
                         </p-columnFilter>
                     </div>
                 </th>
-                <th class="lastColumnWidth"></th>
+                <th class="lastColumnWidth">
+                    <i (click)="pmCommonService.convertToExcelFile(allSOWRef)" title="Export To Excel" class="pi pi-file-excel tableExportIcon"></i>
+                </th>
             </tr>
             <!-- <tr>
                 <th class="lastColumnWidth"></th>
@@ -113,7 +115,7 @@
                 <td>{{task.OOPBudget}}</td>
                 <td>{{task.ModifiedBy}}</td>
                 <td>{{task.ModifiedDate | date:'MMM dd, yyyy, h:mm a'}}</td>
-                <td style="padding:0px !important">
+                <td class="lastColumnWidth">
                     <div>
                         <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems" [popup]="true">
                         </p-menu>
@@ -131,6 +133,8 @@
         </ng-template>
     </p-table>
 </div>
+
+
 <div class="all-project-section">
     <p-dialog [(visible)]="pmObject.isProjectVisible" [modal]="true" [style]="{width: '1300px'}">
         <p-header>View Projects</p-header>
@@ -334,136 +338,143 @@
         </mat-accordion>
     </p-dialog>
 </div>
-<div *ngIf="pmObject.isSOWRightViewVisible" class="ng-right-side-overlay">
-    <p-sidebar [(visible)]="pmObject.isSOWRightViewVisible" position="right" styleClass="ui-sidebar-md">
-        <p-table [value]="sowViewDataArray">
-            <ng-template pTemplate="header">
-                <tr>
-                    <th style="min-width: 140px !important">Name</th>
-                    <th>Value</th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-rowData let-task style="overflow: auto">
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">SOW ID</td>
-                    <td>{{task.ID}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">SOW Code</td>
-                    <td>{{task.SOWCode}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Client Legal Entity</td>
-                    <td>{{task.ClientLegalEntity}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Billing Entity</td>
-                    <td>{{task.BillingEntity}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Practice Areas</td>
-                    <td>{{task.PracticeArea}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Client POC</td>
-                    <td>{{task.PocText}} <br /> {{task.PocOptionalText}}
-                    </td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">SOW Title</td>
-                    <td>{{task.SOWTitle}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">SOW Creation Date</td>
-                    <td>{{task.SOWCreationDate | date:'medium'}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">SOW Expiry Date</td>
-                    <td>{{task.SOWExpiryDate | date:'medium'}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Status</td>
-                    <td>{{task.Status}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Comments</td>
-                    <td>{{task.Comments}}</td>
-                </tr>
-                <tr>
-                    <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Currency</td>
-                    <td>{{task.Currency}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">SOW Document</td>
-                    <td>
-                        <span *ngIf="task.SOWDocument.length">
+
+<!--***********************************************************************************
+                     //  sidebar to display project details
+*********************************************************************************** -->
+
+<div *ngIf="pmObject.isSOWRightViewVisible" class="right-side-overlay">
+    <p-sidebar [(visible)]="pmObject.isSOWRightViewVisible" position="right" [baseZIndex]="10000" [style]="{width:'28em'}">
+        <p-scrollPanel [style]="{'width': '100%', 'height': '95vh'}">
+            <p-table [value]="sowViewDataArray" styleClass="p-datatable-cactus p-datatable-sm p-datatable-gridlines">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="min-width: 140px !important">Name</th>
+                        <th>Value</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData let-task style="overflow: auto">
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">SOW ID</td>
+                        <td>{{task.ID}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">SOW Code</td>
+                        <td>{{task.SOWCode}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Client Legal Entity</td>
+                        <td>{{task.ClientLegalEntity}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Billing Entity</td>
+                        <td>{{task.BillingEntity}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Practice Areas</td>
+                        <td>{{task.PracticeArea}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Client POC</td>
+                        <td>{{task.PocText}} <br /> {{task.PocOptionalText}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">SOW Title</td>
+                        <td>{{task.SOWTitle}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">SOW Creation Date</td>
+                        <td>{{task.SOWCreationDate | date:'medium'}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">SOW Expiry Date</td>
+                        <td>{{task.SOWExpiryDate | date:'medium'}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Status</td>
+                        <td>{{task.Status}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Comments</td>
+                        <td>{{task.Comments}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Currency</td>
+                        <td>{{task.Currency}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">SOW Document</td>
+                        <td>
+                            <span *ngIf="task.SOWDocument.length">
                             <a href="{{task.SOWDocument}}" target="_blank" style="color:red">Click here</a>
                         </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2" [ngStyle]="{'color':'#d7181f'}">Budget</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Total</td>
-                    <td>{{task.Budget.Total}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Net</td>
-                    <td>{{task.Budget.Net}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">OOP</td>
-                    <td>{{task.Budget.OOP}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Tax</td>
-                    <td>{{task.Budget.Tax}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Total Balance</td>
-                    <td>{{task.Budget.TotalBalance}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Net Balance</td>
-                    <td>{{task.Budget.NetBalance}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">OOP Balance</td>
-                    <td>{{task.Budget.OOPBalance}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Tax Balance</td>
-                    <td>{{task.Budget.TaxBalance}}</td>
-                </tr>
-                <tr>
-                    <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">CM1</td>
-                    <td>{{task.CM1Text}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">CM2</td>
-                    <td>{{task.CM2Text}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Delivery1</td>
-                    <td>{{task.DeliveryText}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Delivery2</td>
-                    <td>{{task.DeliveryOptionalText}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">SOW Owner</td>
-                    <td>{{task.SOWOwnerText}}</td>
-                </tr>
-            </ng-template>
-        </p-table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" [ngStyle]="{'color':'#d7181f'}">Budget</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Total</td>
+                        <td>{{task.Budget.Total}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Net</td>
+                        <td>{{task.Budget.Net}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">OOP</td>
+                        <td>{{task.Budget.OOP}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Tax</td>
+                        <td>{{task.Budget.Tax}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Total Balance</td>
+                        <td>{{task.Budget.TotalBalance}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Net Balance</td>
+                        <td>{{task.Budget.NetBalance}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">OOP Balance</td>
+                        <td>{{task.Budget.OOPBalance}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Tax Balance</td>
+                        <td>{{task.Budget.TaxBalance}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">CM1</td>
+                        <td>{{task.CM1Text}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">CM2</td>
+                        <td>{{task.CM2Text}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Delivery1</td>
+                        <td>{{task.DeliveryText}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Delivery2</td>
+                        <td>{{task.DeliveryOptionalText}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">SOW Owner</td>
+                        <td>{{task.SOWOwnerText}}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-scrollPanel>
     </p-sidebar>
 </div>
 <app-timeline-history #timelineRef></app-timeline-history>

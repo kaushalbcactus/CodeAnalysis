@@ -1,6 +1,6 @@
 <div class="p-col p-grid p-p-1">
     <div class="p-col p-grid p-p-0">
-        <label for="CMAccess" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>CM Access</label>
+        <label for="CMAccess" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3" [style]="{'width' : this.pmObject.isStandardChecked ? '183px' :'' }"><span class="compulsory">*</span>CM Access</label>
         <div class="p-col-12 p-md-8 ">
             <p-multiSelect [style]="{'width':'100%'}" [options]="pmObject.OwnerAccess.cmLevel1" [(ngModel)]="pmObject.OwnerAccess.selectedCMAccess" [filter]="true" defaultLabel="Please Select" resetFilterOnHide="true"></p-multiSelect>
         </div>
@@ -16,7 +16,7 @@
 
 <div class="p-col p-grid p-p-1">
     <div class="p-col p-grid p-p-0">
-        <label for="DeliveryAccess" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Delivery Access</label>
+        <label for="DeliveryAccess" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3" [style]="{'width' : this.pmObject.isStandardChecked ? '183px' :'' }">Delivery Access</label>
         <div class="p-col-12 p-md-8 ">
             <p-multiSelect [style]="{'width':'100%'}" [options]="pmObject.OwnerAccess.deliveryLevel1" [(ngModel)]="pmObject.OwnerAccess.selectedDeliveryAccess" [filter]="true" defaultLabel="Please Select" resetFilterOnHide="true"></p-multiSelect>
         </div>

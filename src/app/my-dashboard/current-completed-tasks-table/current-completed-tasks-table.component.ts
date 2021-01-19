@@ -798,14 +798,15 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
   checkSubMilestone(val) {
     if (val) {
       const item = val + ":1:In Progress";
-      let submilestoneArray = this.subMilestonesArrayFormat.map(
+      let submilestoneArray =  this.subMilestonesArrayFormat ? this.subMilestonesArrayFormat.map(
         (e) => e.split(":")[0]
-      );
-      if (submilestoneArray.includes(this.taskArrayList[0].SubMilestones)) {
+      ) : [];
+      if (submilestoneArray && submilestoneArray.length > 0 &&  submilestoneArray.includes(this.taskArrayList[0].SubMilestones)) {
         let subIndex = submilestoneArray.indexOf(
           this.taskArrayList[0].SubMilestones
         );
         this.subMilestonesArrayFormat[subIndex] = item;
+        
       }
       return;
     }
@@ -924,4 +925,5 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     this.enteredSubMile = "";
     this.renameSub = false;
   }
+
 }

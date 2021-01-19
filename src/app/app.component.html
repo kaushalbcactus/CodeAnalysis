@@ -1,9 +1,9 @@
 <!-- <a routerLink="dashboard">Dashboard</a> -->
-<div class="tableLoader" [hidden]='constantsService.loader.isPSInnerLoaderHidden'>
+<!-- <div class="tableLoader" >
     <div id="scInnerLoader"></div>
     <div id="scInnerLoaderText">Loading...</div>
-</div>
-<p-sidebar class="sidenav" [(visible)]="visibleSidebar" [showCloseIcon]="false" [style]="{width:'19em'}">
+</div> -->
+<p-sidebar class="sidenav" [(visible)]="visibleSidebar" [showCloseIcon]="false" [style]="{width:'15em'}">
     <div>
         <a [routerLink]="" (click)="goToEmpDashboard()" class="logo">
             <img class="ng-tns-c0-0" alt="logo" src="https://cactusglobal.sharepoint.com/sites/medcomcdn/PublishingImages/Images/CACTUSRLogo3.png">
@@ -21,13 +21,21 @@
     <div class="title">
         <h6>{{ globalService.currentTitle }}</h6>
     </div>
-    <div class="topbar-menu">
+    <div class="p-col p-grid p-pb-0 p-mr-0 topbar-menu p-jc-end">
         <!-- <span>Welcome {{globalService.currentUser.title}}</span> -->
         <p-menu #menu [popup]="true" [model]="items"></p-menu>
-        <button pButton type="button" class="btn-menu" label="{{globalService.currentUser.title}}" (click)="menu.toggle($event)"></button>
-        <a href="mailto:sp.support@cactusglobal.com?subject=SP issue:"><i class="pi pi-envelope help-icon"></i></a>
+        <button pButton type="button" class="btn-menu" label="{{globalService.currentUser.title}}" (click)="menu.toggle($event)" style="border-radius: 0px;"></button>
+        <a href="mailto:sp.support@cactusglobal.com?subject=SP issue:"><i class="p-p-2 pi pi-envelope help-icon "></i></a>
     </div>
 </div>
+
+
+<div class="p-d-flex p-flex-column" style="padding: 10vw;width: 100%;" *ngIf='!constantsService.loader.isPSInnerLoaderHidden'>
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div>
+
+
 
 <div>
     <div #loader [ngClass]="constantsService.loader.isWaitDisable ? 'overlay' : 'overlay show'"></div>

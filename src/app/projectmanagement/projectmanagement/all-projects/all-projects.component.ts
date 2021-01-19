@@ -255,7 +255,7 @@ export class AllProjectsComponent implements OnInit {
     ) {
       this.CSButtonEnable = true;
     }
-
+debugger
     this.isApprovalAction = true;
     this.reloadAllProject();
     this.checkEarlyTaskCompleted();
@@ -564,8 +564,7 @@ export class AllProjectsComponent implements OnInit {
         this.pmObject.tabMenuItems[0].label =
           "All Projects (" + this.pmObject.countObj.allProjectCount + ")";
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
-        const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
-        tabMenuInk.style.width='165px';
+      
       }
       if (this.route.snapshot.queryParams) {
         this.params.ProjectCode = this.route.snapshot.queryParams.ProjectCode;
@@ -972,6 +971,12 @@ export class AllProjectsComponent implements OnInit {
           "ProjectCode",
           "in"
         );
+        this.allProjectRef.filters['ProjectCode']=null;
+        this.allProjectRef.filters['ProjectCode'] = [{
+          matchMode: 'in',
+          operator: "and",
+          value: this.pmObject.columnFilter.ProjectCode,
+       }];
       } else {
         this.pmObject.columnFilter.ProjectCode = [];
       }
@@ -996,6 +1001,11 @@ export class AllProjectsComponent implements OnInit {
       }
     }
 
+    setTimeout(() => {
+      const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
+      const tabMenuWidth: any = document.querySelector('.p-menuitem-link-active');
+      tabMenuInk.style.width= tabMenuWidth.offsetWidth + 'px';
+    }, 10);
     this.showFilterOptions = true;
   }
 

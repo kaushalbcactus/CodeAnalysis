@@ -856,6 +856,35 @@ export class CommonService {
     })
   }
 
+
+  uniqueArrayObj(array: any) {
+    let sts: any = '';
+    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
+      return {
+        label: label1,
+        value: array.find(s => s.label === label1).value
+      }
+    })
+  }
+
+
+  
+// this function is used to return table filter array List 
+  MainfilterForTable(ArrayObjectsValue, resArray ){
+    ArrayObjectsValue.forEach(element=>{
+      if(element.Type && element.Type === 'string'){
+        element.options = this.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a[element.dbName], value: a[element.dbName] }; return b; }).filter(ele => ele.label)));
+      } else if(element.Type && element.Type === 'date'){
+        element.options = this.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a[element.dbName], 'MMM dd, yyyy') , value: a[element.dbName] }; return b; }).filter(ele => ele.label))); 
+      } else if(element.Type && element.Type === 'datetime'){
+        element.options = this.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a[element.dbName], 'MMM dd, yyyy, h:mm a') , value: new Date(this.datePipe.transform(a[element.dbName], 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label)));
+      } else if(element.Type && element.Type === 'number'){
+        element.options = this.customSort(this.uniqueArrayObj(resArray.map(a => { let b = { label: a[element.dbName], value: a[element.dbName] }; return b; }).filter(ele => ele.label)), 'label', 1);
+      }
+    })
+    return ArrayObjectsValue;
+  }
+
   sortDateArray(array: any) {
     const reverseDateRepresentation = date => {
       if (date) {
@@ -919,15 +948,7 @@ export class CommonService {
     this.tableObj.colFields[colName] = [...tempArr];
   }
 
-  uniqueArrayObj(array: any) {
-    let sts: any = '';
-    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-      return {
-        label: label1,
-        value: array.find(s => s.label === label1).value
-      }
-    })
-  }
+ 
 
 
   SetNewrelic(moduleType, routeType, value, action?) {

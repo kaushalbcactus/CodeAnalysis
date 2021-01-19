@@ -1,7 +1,3 @@
-/* .ui-accordion-content-wrapper-overflown {
-    overflow: hidden;
-} */
-
 legend {
     width: 26% !important;
     font-size: 1rem !important;
@@ -40,44 +36,6 @@ legend {
     background-image: none;
 }
 
-
-/* table tr {
-    text-align: center !important;
-} */
-
-
-/* #mainLoader, #scInnerLoader{
-    border: 10px solid #f3f3f3;
-    border-radius: 50%;
-    border-top: 10px solid red;
-    border-bottom: 10px solid red;
-    width: 100px;
-    height: 100px;
-    -webkit-animation: spin 2s linear infinite;
-    animation: spin 2s linear infinite;
-    margin: 0 auto;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
-    margin-top: 1%;
-  }
-  
-  #mainLoaderText , #scInnerLoaderText{
-    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
-    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
-    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
-    animation: loading-text-opacity 2s linear 0s infinite normal;
-    color: black;
-    font-family: "Helvetica Neue, "Helvetica", ""arial";
-    font-size: 10px;
-    font-weight: bold;
-    opacity: 0.5;
-    text-align: center;
-    text-transform: uppercase;
-    top: 0;
-    margin-bottom: 1%;
-  } */
-
 .layout-topbar {
     background-color: #C53E3E;
     box-sizing: border-box;
@@ -115,17 +73,15 @@ legend {
 
 .sidebar-icon {
     cursor: pointer;
-    font-size: 25px;
-    padding-top: 5px;
+    font-size: 20px;
+    padding-top: 7px;
     float: left;
-    padding-left: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .help-icon {
-    font-size: 40px;
-    padding-top: 3px;
-    padding-left: 10px;
-    float: right;
+    font-size: 1.8em;
     text-decoration: none;
     color: white;
 }
@@ -140,18 +96,15 @@ legend {
     border: 1px solid #C53E3E !important;
 }
 
+::ng-deep .btn-menu .p-button-label {
+    padding: 5px !important;
+}
+
 .ui-button:enabled:focus {
     box-shadow: none;
     outline: 0 none;
     outline-offset: none;
 }
-
-
-/* .topbar-menu span {
-  float: left;
-  padding-top: 11px;
-  font-size: 16px;
-} */
 
 .sidenav a {
     padding: 8px 8px 8px 8px;

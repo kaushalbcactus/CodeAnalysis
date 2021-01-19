@@ -25,16 +25,16 @@ export class InactiveComponent implements OnInit {
   @ViewChild('iapTableRef', { static: false }) iapTableRef: Table;
 
   displayedColumns: any[] = [
-    { field: 'ProjectCode', header: 'Project Code' },
-    { field: 'ShortTitle', header: 'Short Title' },
-    { field: 'ClientLegalEntity', header: 'Client' },
-    { field: 'POC', header: 'POC' },
-    { field: 'DeliverableType', header: 'Deliverable Type' },
-    { field: 'TA', header: 'TA' },
-    { field: 'Molecule', header: 'Molecule' },
-    { field: 'PrimaryResourceText', header: 'Primary Resource' },
-    { field: 'Milestone', header: 'Milestone' },
-    { field: 'Status', header: 'Status' }];
+    { field: 'ProjectCode', header: 'Project Code' ,Type:'string',dbName:'ProjectCode' ,options:[] },
+    { field: 'ShortTitle', header: 'Short Title' ,Type:'string',dbName:'ShortTitle',options:[] },
+    { field: 'ClientLegalEntity', header: 'Client' ,Type:'string',dbName:'ClientLegalEntity',options:[] },
+    { field: 'POC', header: 'POC'  ,Type:'string',dbName:'POC' ,options:[]},
+    { field: 'DeliverableType', header: 'Deliverable Type' ,Type:'string',dbName:'DeliverableType' ,options:[] },
+    { field: 'TA', header: 'TA' ,Type:'string',dbName:'TA' ,options:[] },
+    { field: 'Molecule', header: 'Molecule' ,Type:'string',dbName:'Molecule' ,options:[] },
+    { field: 'PrimaryResourceText', header: 'Primary Resource' ,Type:'' ,options:[] },
+    { field: 'Milestone', header: 'Milestone' ,Type:'string',dbName:'Milestone' ,options:[] },
+    { field: 'Status', header: 'Status' ,Type:'string',dbName:'Status'  ,options:[]}];
   filterColumns: any[] = [
     { field: 'ProjectCode' },
     { field: 'ShortTitle' },
@@ -55,29 +55,20 @@ export class InactiveComponent implements OnInit {
   isIAPFilterHidden = true;
   isIAPTableHidden = true;
   iapHideNoDataMessage = true;
-  public iapArrays = {
-    projectItems: [],
-    ProjectCode: [],
-    ShortTitle: [],
-    ClientLegalEntity: [],
-    POC: [],
-    TA: [],
-    Molecule: [],
-    PrimaryResource: [],
-    DeliverableType: [],
-    Milestone: [],
-    Status: [],
-    // projectCodeArray: [],
-    // shortTitleArray: [],
-    // clientLegalEntityArray: [],
-    // POCArray: [],
-    // taArray: [],
-    // moleculeArray: [],
-    // primaryResourceArray: [],
-    // deliveryTypeArray: [],
-    // milestoneArray: [],
-    // statusArray: []
-  };
+  projectItems=[];
+  // public iapArrays = {
+  //   projectItems:  [],
+  //   ProjectCode: [],
+  //   ShortTitle: [],
+  //   ClientLegalEntity: [],
+  //   POC: [],
+  //   TA: [],
+  //   Molecule: [],
+  //   DeliverableType: [],
+  //   Milestone: [],
+  //   Status: [],
+  // }
+
   constructor(
     public globalObject: GlobalService,
     public pmObject: PMObjectService,
@@ -110,10 +101,6 @@ export class InactiveComponent implements OnInit {
     this.isIAPInnerLoaderHidden = false;
     this.isIAPFilterHidden = false;
     this.popItems = [
-      // {
-      //   label: 'Go to Allocation', target: '_blank',
-      //   command: (task) => this.goToAllocationPage(this.selectedIAPTask)
-      // },
       {
         label: 'Go to Project', target: '_blank',
         command: (task) => this.goToProjectManagement(this.selectedIAPTask)
@@ -131,35 +118,23 @@ export class InactiveComponent implements OnInit {
     this.fetchPendingProjects();
   }
   async fetchPendingProjects() {
-    // this.iapArrays.projectItems = await this.spServices.read('' + this.Constant.listNames.ProjectInformation.name + '',
-    //   this.pmConstant.pInfoInactiveProjectIndiviualViewOptions);
     if (!this.pmObject.allProjectItems.length) {
       let arrResults: any = [];
       // Get all project information based on current user.
       arrResults = await this.pmCommonService.getProjects(true);
       this.pmObject.allProjectItems = arrResults;
     }
-    this.iapArrays.projectItems = this.pmObject.allProjectItems.filter(x =>
+    this.projectItems = this.pmObject.allProjectItems.filter(x =>
       x.Status === this.Constant.projectStatus.OnHold ||
       x.Status === this.Constant.projectStatus.InDiscussion);
-    // const projectCodeTempArray = [];
-    // const shortTitleTempArray = [];
-    // const clientLegalEntityTempArray = [];
-    // const POCTempArray = [];
-    // const deliveryTypeTempArray = [];
-    // const taTempArray = [];
-    // const moleculeTempArray = [];
-    // const primaryResourceTempArray = [];
-    // const milestoneTempArray = [];
-    // const statusTempArray = [];
-    if (this.iapArrays.projectItems.length) {
+    if (this.projectItems.length) {
       const tempPAArray = [];
-      this.pmObject.countObj.iapCount = this.iapArrays.projectItems.length;
+      this.pmObject.countObj.iapCount = this.projectItems.length;
       this.pmObject.totalRecords.InactiveProject = this.pmObject.countObj.iapCount;
       this.pmObject.tabMenuItems[5].label = 'Inactive Projects (' + this.pmObject.countObj.iapCount + ')';
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       // Iterate each CR Task
-      for (const task of this.iapArrays.projectItems) {
+      for (const task of this.projectItems) {
         const paObj = $.extend(true, {}, this.pmObject.paObj);
         paObj.ID = task.ID;
         paObj.ProjectCode = task.ProjectCode;
@@ -177,33 +152,13 @@ export class InactiveComponent implements OnInit {
           return (obj.ID === task.PrimaryPOC);
         });
         paObj.POC = poc.length > 0 ? poc[0].FullNameCC : '';
-        // Adding the particular value into the array for sorting and filtering.
-        // projectCodeTempArray.push({ label: paObj.ProjectCode, value: paObj.ProjectCode });
-        // shortTitleTempArray.push({ label: paObj.ShortTitle, value: paObj.ShortTitle });
-        // clientLegalEntityTempArray.push({ label: paObj.ClientLegalEntity, value: paObj.ClientLegalEntity });
-        // POCTempArray.push({ label: paObj.POC, value: paObj.POC });
-        // deliveryTypeTempArray.push({ label: paObj.DeliverableType, value: paObj.DeliverableType });
-        // taTempArray.push({ label: paObj.TA, value: paObj.TA });
-        // moleculeTempArray.push({ label: paObj.Molecule, value: paObj.Molecule });
-        // primaryResourceTempArray.push({ label: paObj.PrimaryResourceText, value: paObj.PrimaryResourceText });
-        // milestoneTempArray.push({ label: paObj.Milestone, value: paObj.Milestone });
-        // statusTempArray.push({ label: paObj.Status, value: paObj.Status });
         tempPAArray.push(paObj);
       }
-
       if (tempPAArray.length) {
-        this.createColFieldValues(tempPAArray);
+        // this function return table filters Array
+        this.displayedColumns = await this.commonService.MainfilterForTable(this.displayedColumns, tempPAArray);
+
       }
-      // this.iapArrays.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
-      // this.iapArrays.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
-      // this.iapArrays.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
-      // this.iapArrays.POCArray = this.commonService.unique(POCTempArray, 'value');
-      // this.iapArrays.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
-      // this.iapArrays.taArray = this.commonService.unique(taTempArray, 'value');
-      // this.iapArrays.moleculeArray = this.commonService.unique(moleculeTempArray, 'value');
-      // this.iapArrays.primaryResourceArray = this.commonService.unique(primaryResourceTempArray, 'value');
-      // this.iapArrays.milestoneArray = this.commonService.unique(milestoneTempArray, 'value');
-      // this.iapArrays.statusArray = this.commonService.unique(statusTempArray, 'value');
       this.pmObject.inActiveProjectArray = tempPAArray;
      
     } else {
@@ -212,44 +167,19 @@ export class InactiveComponent implements OnInit {
     }
     this.isIAPTableHidden = false;
     this.isIAPInnerLoaderHidden = true;
-    const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
-    tabMenuInk.style.width= this.pmObject.countObj.iapCount && this.pmObject.countObj.iapCount > 10 ? '193px' : '185px';
+    setTimeout(() => {
+      const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
+      const tabMenuWidth: any = document.querySelector('.p-menuitem-link-active');
+      tabMenuInk.style.width= tabMenuWidth.offsetWidth + 'px';
+    }, 10);
     this.commonService.setIframeHeight();
   }
-
-  createColFieldValues(resArray) {
-    this.iapArrays.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-    this.iapArrays.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
-    this.iapArrays.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
-    this.iapArrays.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
-    this.iapArrays.TA = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.TA, value: a.TA }; return b; }).filter(ele => ele.label)));
-    this.iapArrays.Molecule = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Molecule, value: a.Molecule }; return b; }).filter(ele => ele.label)));
-    this.iapArrays.PrimaryResource = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PrimaryResource, value: a.PrimaryResource }; return b; }).filter(ele => ele.label)));
-    this.iapArrays.DeliverableType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DeliverableType, value: a.DeliverableType }; return b; }).filter(ele => ele.label)));
-    this.iapArrays.Milestone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Milestone, value: a.Milestone }; return b; }).filter(ele => ele.label)));
-    this.iapArrays.Status = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
-
-  }
-
-  uniqueArrayObj(array: any) {
-    let sts: any = '';
-    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-      return {
-        label: label1,
-        value: array.find(s => s.label === label1).value
-      }
-    })
-  }
-
 
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
       '/dashboard#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
   }
   goToProjectManagement(task) {
-    // window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-    //   '/Pages/ProjectManagement.aspx?ProjectCode=' + task.ProjectCode, '_blank');
-    //this.pmObject.columnFilter.ProjectCode = [{ label: task.ProjectCode, value: task.ProjectCode }];
     this.pmObject.columnFilter.ProjectCode = [task.ProjectCode];
     this.router.navigate(['/projectMgmt/allProjects']);
 
@@ -262,50 +192,5 @@ export class InactiveComponent implements OnInit {
   storeRowData(rowData) {
     this.selectedIAPTask = rowData;
   }
-  @HostListener('document:click', ['$event'])
-  clickout(event) {
-    if (event.target.className === "pi pi-ellipsis-v") {
-      if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
-          this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = "";
-        } else {
-          this.tempClick = undefined;
-        }
-      } else {
-        this.tempClick = event.target.parentElement.children[0].children[0];
-        this.tempClick.style.display = "";
-      }
-
-    } else {
-      if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        this.tempClick = undefined;
-      }
-    }
-  }
-
-  isOptionFilter: boolean;
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
-
-  ngAfterViewChecked() {
-    if (this.pmObject.inActiveProjectArray.length && this.isOptionFilter) {
-      let obj = {
-        tableData: this.iapTableRef,
-        colFields: this.iapArrays,
-      }
-      if (obj.tableData.filteredValue) {
-        this.commonService.updateOptionValues(obj);
-      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-        this.createColFieldValues(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-      this.cdr.detectChanges();
-    }
-  }
+  
 }

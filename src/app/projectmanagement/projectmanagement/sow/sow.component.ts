@@ -31,13 +31,13 @@ export class SOWComponent implements OnInit, OnDestroy {
   viewBudget = false;
   viewNote: true;
   displayedColumns: any[] = [
-    { field: 'SOWCode', header: 'SOW Code', visibility: true },
-    { field: 'ShortTitle', header: 'SOW Title', visibility: true },
-    { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
-    { field: 'POC', header: 'POC', visibility: true },
-    { field: 'Currency', header: 'Currency', visibility: true },
-    { field: 'RevenueBudget', header: 'Revenue Budget', visibility: true },
-    { field: 'OOPBudget', header: 'OOP Budget', visibility: true },
+    { field: 'SOWCode', header: 'SOW Code', visibility: true , Type:'string',dbName:'SOWCode' ,options:[] },
+    { field: 'ShortTitle', header: 'SOW Title', visibility: true , Type:'string',dbName:'ShortTitle' ,options:[]},
+    { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true , Type:'string',dbName:'ClientLegalEntity' ,options:[]},
+    { field: 'POC', header: 'POC', visibility: true , Type:'string',dbName:'POC' ,options:[] },
+    { field: 'Currency', header: 'Currency', visibility: true , Type:'string',dbName:'Currency' ,options:[] },
+    { field: 'RevenueBudget', header: 'Revenue Budget', visibility: true , Type:'number',dbName:'RevenueBudget' ,options:[] },
+    { field: 'OOPBudget', header: 'OOP Budget', visibility: true , Type:'number',dbName:'OOPBudget' ,options:[]},
     { field: 'TaxBudget', header: 'Tax Budget', visibility: false },
     { field: 'TotalBudget', header: 'Total Budget', visibility: false },
     { field: 'Revenue', header: 'Revenue Balance', visibility: false },
@@ -57,8 +57,8 @@ export class SOWComponent implements OnInit, OnDestroy {
     { field: 'CreatedBy', header: 'Created By', visibility: false },
     { field: 'CreatedDate', header: 'Created Date', visibility: false, exportable: false },
     { field: 'CreatedDateFormat', header: 'Created Date', visibility: false },
-    { field: 'ModifiedBy', header: 'Modified By', visibility: true },
-    { field: 'ModifiedDate', header: 'Modified Date', visibility: true, exportable: false },
+    { field: 'ModifiedBy', header: 'Modified By', visibility: true  , Type:'string',dbName:'ModifiedBy' ,options:[]},
+    { field: 'ModifiedDate', header: 'Modified Date', visibility: true, exportable: false , Type:'datetime',dbName:'ModifiedDateFormat' ,options:[] },
     { field: 'ModifiedDateFormat', header: 'Modified Date', visibility: false },
 
 
@@ -90,22 +90,7 @@ export class SOWComponent implements OnInit, OnDestroy {
     { field: 'Title' },
     { field: 'RevenueBudget' },
     { field: 'OOPBudget' },
-
-    // { field: 'Budget' },
     { field: 'Status' }];
-  public allSOW = {
-    SOWCode: [],
-    ShortTitle: [],
-    ClientLegalEntity: [],
-    POC: [],
-    CreatedBy: [],
-    CreatedDate: [],
-    ModifiedBy: [],
-    ModifiedDate: [],
-    RevenueBudget: [],
-    OOPBudget: [],
-    Currency: [],
-  };
   public projectObj = {
     ID: 0,
     DeliverableType: '',
@@ -130,7 +115,7 @@ export class SOWComponent implements OnInit, OnDestroy {
   subscription;
   showProjectLink = false;
   @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
-  @ViewChild('allProjectRef', { static: true }) allProjectRef: Table;
+  @ViewChild('allSOWRef', { static: true }) allSOWRef: Table;
   step: number;
   ProjectArray = [];
   totalRevenueBudget = 0;
@@ -327,17 +312,12 @@ export class SOWComponent implements OnInit, OnDestroy {
       if (this.pmObject.tabMenuItems.length) {
         this.pmObject.tabMenuItems[1].label = 'All SOW (' + this.pmObject.countObj.allSOWCount + ')';
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
-        const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
-        
-         tabMenuInk.style.width= this.pmObject.countObj.allSOWCount && this.pmObject.countObj.allSOWCount < 10 ? '120px' : '131px';
+      
       }
     } else {
       if (this.pmObject.tabMenuItems.length) {
         this.pmObject.tabMenuItems[1].label = 'All SOW (' + this.pmObject.countObj.allSOWCount + ')';
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
-        
-        const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
-        tabMenuInk.style.width= this.pmObject.countObj.allSOWCount && this.pmObject.countObj.allSOWCount < 10 ? '120px' : '131px';
       }
     }
     if (this.pmObject.allSOWItems && this.pmObject.allSOWItems.length) {
@@ -413,28 +393,21 @@ export class SOWComponent implements OnInit, OnDestroy {
       }
 
       if (tempAllSOWArray.length) {
-        this.createColFieldValues(tempAllSOWArray);
+        this.displayedColumns = await this.commonService.MainfilterForTable(this.displayedColumns,tempAllSOWArray);
       }
-
-      // this.allSOW.sowCodeArray = this.commonService.unique(sowCodeTempArray, 'value');
-      // this.allSOW.currencyArray = this.commonService.unique(currencyTempArray, 'value');
-      // this.allSOW.RevenueBudgetArray = this.commonService.unique(RevenueBudgetTempArray, 'value');
-      // this.allSOW.OOPBudgetArray = this.commonService.unique(OOPBudgetTempArray, 'value');
-      // this.allSOW.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
-      // this.allSOW.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
-      // this.allSOW.pocArray = this.commonService.unique(pocTempArray, 'value');
-      // this.allSOW.createdByArray = this.commonService.unique(createdByTempArray, 'value');
-      // this.allSOW.createdDateArray = this.commonService.unique(createDateTempArray, 'value');
-      // this.allSOW.modifiedByArray = this.commonService.unique(modifiedByTempArray, 'value');
-      // this.allSOW.modifiedDateArray = this.commonService.unique(modifiedDateTempArray, 'value');
       this.pmObject.allSOWArray = tempAllSOWArray;
-
     }
 
     if (this.pmObject.columnFilter.SOWCode && this.pmObject.columnFilter.SOWCode.length) {
       const getSOW = this.pmObject.allSOWArray.find(e => e.SOWCode === this.pmObject.columnFilter.SOWCode[0]);
       if (getSOW) {
-        this.allProjectRef.filter(this.pmObject.columnFilter.SOWCode, 'SOWCode', 'in');
+        this.allSOWRef.filter(this.pmObject.columnFilter.SOWCode, 'SOWCode', 'in');
+        this.allSOWRef.filters['SOWCode']=null;
+        this.allSOWRef.filters['SOWCode'] = [{
+          matchMode: 'in',
+          operator: "and",
+          value: this.pmObject.columnFilter.SOWCode,
+       }];  
         this.pmObject.selectedSOWTask = getSOW;
         this.viewSOW(this.pmObject.selectedSOWTask);
       } else {
@@ -442,44 +415,20 @@ export class SOWComponent implements OnInit, OnDestroy {
       }
 
     }
+    
+    setTimeout(() => {
+      const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
+      const tabMenuWidth: any = document.querySelector('.p-menuitem-link-active');
+      tabMenuInk.style.width= tabMenuWidth.offsetWidth + 'px';
+    }, 10);
+
+
     this.isAllSOWLoaderHidden = true;
     this.isAllSOWTableHidden = false;
 
   }
-
-  createColFieldValues(resArray) {
-    this.allSOW.SOWCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label)));
-    this.allSOW.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
-    this.allSOW.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
-    this.allSOW.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-
-    const RevenueBudget = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.RevenueBudget, value: a.RevenueBudget }; return b; }).filter(ele => ele.label));
-    this.allSOW.RevenueBudget = this.commonService.customSort(RevenueBudget, 'label', 1);
-    const OOPBudget = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.OOPBudget, value: a.OOPBudget }; return b; }).filter(ele => ele.label));
-    this.allSOW.OOPBudget = this.commonService.customSort(OOPBudget, 'label', 1);
-    this.allSOW.CreatedBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }).filter(ele => ele.label)));
-    this.allSOW.CreatedDate = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.CreatedDateFormat, value: a.CreatedDateFormat }; return b; }).filter(ele => ele.label)));
-    this.allSOW.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
-    this.allSOW.ModifiedBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }).filter(ele => ele.label)));
-
-
-    this.allSOW.ModifiedDate = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ModifiedDateFormat, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a.ModifiedDateFormat, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label)));
-
-    // const modifiedDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ModifiedDate, "MMM dd, yyyy, h:mm a"), value: a.ModifiedDate }; return b; }).filter(ele => ele.label)));
-    // this.allSOW.ModifiedDate = modifiedDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label);
-  }
-
-  uniqueArrayObj(array: any) {
-    let sts: any = '';
-    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-      const keys = {
-        label: label1,
-        value: array.find(s => s.label === label1).value
-      };
-      return keys ? keys : '';
-    });
-  }
-
+ 
+ 
   lazyLoadTask(event) {
     const allSOWArray = this.pmObject.allSOWArray;
     this.commonService.lazyLoadTask(event, allSOWArray, this.filterColumns, this.pmConstant.filterAction.ALL_SOW);

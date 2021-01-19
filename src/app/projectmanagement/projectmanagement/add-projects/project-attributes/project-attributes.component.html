@@ -10,7 +10,7 @@
 
 <div class="p-col p-my-2 allSOW-section" [hidden]="isProjectAttributeTableHidden">
     <p-scrollPanel [style]="{height: '55vh'}">
-        <form [formGroup]="addProjectAttributesForm" class="p-mt-3" style="font-size: 14px;">
+        <form [formGroup]="addProjectAttributesForm" class="p-mt-3">
 
             <div class="p-col p-grid p-p-1">
                 <div class="p-col p-grid p-p-0">
@@ -97,7 +97,7 @@
                     <label for="molecule" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Molecule</label>
                     <div class="p-col-12 p-md-8 p-d-flex">
                         <div class="p-col p-pl-0">
-                            <p-dropdown [virtualScroll]="true" [itemSize]="30" formControlName="molecule" [style]="{float: 'left'}" [options]="pmObject.oProjectCreation.oProjectInfo.molecule" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true"
+                            <p-dropdown [virtualScroll]="true" [itemSize]="20" formControlName="molecule" [style]="{float: 'left'}" [options]="pmObject.oProjectCreation.oProjectInfo.molecule" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true"
                                 [style]="{width:'100%'}"></p-dropdown>
                             <div class="error" *ngIf="!addProjectAttributesForm.controls['molecule'].valid&&addProjectAttributesForm.controls['molecule'].touched">
                                 Molecule is required</div>

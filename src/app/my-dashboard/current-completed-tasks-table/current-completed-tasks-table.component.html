@@ -16,12 +16,12 @@
 
         <ng-template pTemplate="header" let-columns>
             <tr>
-                <th class="lastColumnWidth">No.</th>
+                <th class="firstColumnWidth">No.</th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility" [ngStyle]="{'width':  col.field === 'TimeSpent'  ? '7em': (col.field === 'StartDate' || col.field === 'DueDate'|| col.field === 'MainStatus' || col.field === 'TaskStatus' ||  col.field === 'ExpectedTime') ? '10em' : '25em' }">
                     <div class="p-d-flex p-jc-between p-ai-center">
                         {{col.header}}
                         <p-sortIcon *ngIf="col.header != ''  && col.field != 'TimeSpent' " [field]="col.field"></p-sortIcon>
-                        <p-columnFilter *ngIf="col.header != ''  && col.field != 'TimeSpent'  && col.field != 'ExpectedTime' " [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                        <p-columnFilter class="cactus-filter" *ngIf="col.header != ''  && col.field != 'TimeSpent'  && col.field != 'ExpectedTime' " [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
                             <ng-template pTemplate="header">
                                 <div class="p-px-3 p-pt-3 p-pb-0">
                                     <span class="p-text-bold"> {{col.header}} Picker</span>
@@ -39,7 +39,7 @@
                         </p-columnFilter>
                     </div>
                 </th>
-                <th style="width: 2em !important;"></th>
+                <th class="lastColumnWidth"></th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
@@ -72,12 +72,10 @@
                         </span>
                     </span>
                 </td>
-                <td class="lastColumnWidthtd">
+                <td class="lastColumnWidth">
                     <div *ngIf="rowData.MainStatus !=='Planned'">
                         <p-menu #popupMenu [style]="{'width': '16em' , 'right' : hideIcon ? '0px !important':'','left' :  hideIcon ? 'inherit !important':''  }" [popup]="true" [model]="taskMenu"></p-menu>
                         <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);" appendTo="body"></i>
-
-
                     </div>
                 </td>
             </tr>
@@ -89,33 +87,25 @@
 <div *ngIf="allTasks.length === 0 && !loaderenable"><span style="font-size: 2em;color:#C53E3E;">No Tasks
         Available.</span></div>
 
-<p-dialog header="Rename SubMilestone" [(visible)]="renameSub" [modal]="true" [draggable]="false" [style]="{'width': '50%'}" [maximizable]="false" [contentStyle]="{'max-height':'350px'}">
+<p-dialog header="Rename SubMilestone" [(visible)]="renameSub" [closable]="false" [modal]="true" [draggable]="false" [style]="{'width': '30%','font-size':'13px'}" [maximizable]="false" [contentStyle]="{'max-height':'350px'}">
 
-    <div class="ui-g">
-        <div class="ui-g-12 ui-md-6 ui-lg-2">
-            Sub milestones:
-        </div>
-        <div class="ui-g-12 ui-md-6 ui-lg-6">
-            <p-dropdown #dd editable="true" [options]="subMilestonesList" [style]="{'width':'100%'}" appendTo="body" [(ngModel)]="subMilestone" optionLabel="label" (onChange)="onChangeDD($event.value)" (click)="clearFilter(dd)">
-            </p-dropdown>
-            <div *ngIf="errorMsg">
-                <div style="color: red;">{{errorMsg}}</div>
-            </div>
-            <!-- <div *ngIf="subMilestone.length > 30">
-                <div style="color: red;">Maximum Sub Milestone character length is 30 only.</div>
-            </div> -->
-        </div>
-        <div class="ui-g-12 ui-md-6 ui-lg-4">
-            <div style="color: #C53E3E;">Preferably PUB ID </div>
-            <div>{{enteredSubMile ? enteredSubMile.length : '0'}} / 30</div>
-        </div>
+    <div class="pdialogButton p-col-12 p-grid p-jc-end">
+        <button type="button " pButton icon="pi pi-save" class="p-mx-1 p-button-raised p-button-danger " (click)="onUpdate()" label="Update"></button>
+
+        <button type="button " pButton icon="pi pi-times " class="p-button-raised p-button-danger cls_closerenameSubMilestone" (click)="cancelSub()" label="Cancel"></button>
     </div>
 
-    <p-footer>
-        <button pButton type="button" label="Update" class="redLight" (click)="onUpdate()"></button>
-        <button pButton type="button" label="Cancel" class="redLight" (click)="cancelSub()"></button>
-    </p-footer>
 
+    <label class="p-mb-0 p-mt-3" for="dropdown">Sub milestones:</label>
+    <p-dropdown #dd editable="true" [options]="subMilestonesList" [style]="{'width':'100%'}" appendTo="body" [(ngModel)]="subMilestone" optionLabel="label" (onChange)="onChangeDD($event.value)" (click)="clearFilter(dd)">
+    </p-dropdown>
+
+    <div *ngIf="errorMsg">
+        <div style="color: red;">{{errorMsg}}</div>
+    </div>
+
+    <div class="p-py-0" style="color: #C53E3E;">Preferably PUB ID </div>
+    <div class="p-py-0">{{enteredSubMile ? enteredSubMile.length : '0'}} / 30</div>
 </p-dialog>
 
 <!-- <app-feedback-popup #feedbackPopup (popupClosed)='saveTask($event)'></app-feedback-popup> -->

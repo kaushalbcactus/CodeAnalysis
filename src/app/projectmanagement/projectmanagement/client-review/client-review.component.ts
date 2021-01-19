@@ -352,8 +352,11 @@ export class ClientReviewComponent implements OnInit {
 
     this.isCRTableHidden = false;
     this.isCRInnerLoaderHidden = true;
-    const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');    
-    tabMenuInk.style.width= this.pmObject.countObj.crCount && this.pmObject.countObj.crCount > 10 ? '167px' : '161px';
+    setTimeout(() => {
+      const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
+      const tabMenuWidth: any = document.querySelector('.p-menuitem-link-active');
+      tabMenuInk.style.width= tabMenuWidth.offsetWidth + 'px';
+    }, 10);
     this.commonService.setIframeHeight();
   }
 
@@ -535,53 +538,53 @@ export class ClientReviewComponent implements OnInit {
     this.selectedCRTask = rowData;
     menu.model[3].visible = this.selectedOption.name === 'Closed' ? false : true;
   }
-  @HostListener('document:click', ['$event'])
-  clickout(event) {
-    if (event.target.className === "pi pi-ellipsis-v") {
-      if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
-          this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = "";
-        } else {
-          this.tempClick = undefined;
-        }
-      } else {
-        this.tempClick = event.target.parentElement.children[0].children[0];
-        this.tempClick.style.display = "";
-      }
+  // @HostListener('document:click', ['$event'])
+  // clickout(event) {
+  //   if (event.target.className === "pi pi-ellipsis-v") {
+  //     if (this.tempClick) {
+  //       this.tempClick.style.display = "none";
+  //       if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
+  //         this.tempClick = event.target.parentElement.children[0].children[0];
+  //         this.tempClick.style.display = "";
+  //       } else {
+  //         this.tempClick = undefined;
+  //       }
+  //     } else {
+  //       this.tempClick = event.target.parentElement.children[0].children[0];
+  //       this.tempClick.style.display = "";
+  //     }
 
-    } else {
-      if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        this.tempClick = undefined;
-      }
-    }
-  }
+  //   } else {
+  //     if (this.tempClick) {
+  //       this.tempClick.style.display = "none";
+  //       this.tempClick = undefined;
+  //     }
+  //   }
+  // }
 
-  isOptionFilter: boolean;
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
+  // isOptionFilter: boolean;
+  // optionFilter(event: any) {
+  //   if (event.target.value) {
+  //     this.isOptionFilter = false;
+  //   }
+  // }
 
-  ngAfterViewChecked() {
-    if (this.pmObject.clientReviewArray.length && this.isOptionFilter) {
-      let obj = {
-        tableData: this.crTableRef,
-        colFields: this.crArrays,
-        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
-      }
-      if (obj.tableData.filteredValue) {
-        this.commonService.updateOptionValues(obj);
-      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-        this.createColFieldValues(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-    }
-    this.cdr.detectChanges();
-  }
+  // ngAfterViewChecked() {
+  //   if (this.pmObject.clientReviewArray.length && this.isOptionFilter) {
+  //     let obj = {
+  //       tableData: this.crTableRef,
+  //       colFields: this.crArrays,
+  //       // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+  //     }
+  //     if (obj.tableData.filteredValue) {
+  //       this.commonService.updateOptionValues(obj);
+  //     } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+  //       this.createColFieldValues(obj.tableData.value);
+  //       this.isOptionFilter = false;
+  //     }
+  //   }
+  //   this.cdr.detectChanges();
+  // }
 
   onChangeSelect(event) {
     this.isCRInnerLoaderHidden = false;

@@ -31,17 +31,17 @@ export class SendToClientComponent implements OnInit {
  {name: 'Overdue', key: 'Overdue', ColorIndicator : '#f08080'}];
  selectedSent_To_Client: any[] = [];
   displayedColumns: any[] = [
-    { field: 'SLA', header: 'SLA', visibility: true },
-    { field: 'ProjectCode', header: 'Project Code', visibility: true },
-    { field: 'ShortTitle', header: 'Short Title', visibility: true },
-    { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
-    { field: 'POC', header: 'POC', visibility: true },
-    { field: 'DeliverableType', header: 'Deliverable Type', visibility: true },
-    { field: 'DueDate', header: 'Due Date', visibility: true, exportable: false },
-    { field: 'displayMilestone', header: 'Milestone', visibility: true },
-    { field: 'PreviousTaskUser', header: 'Previous Task Owner', visibility: true },
-    { field: 'PreviousTaskStatus', header: 'Previous Task Status', visibility: true },
-    { field: 'DueDateFormat', header: 'Due Date', visibility: false }];
+    { field: 'SLA', header: 'SLA', visibility: true ,Type:'', options:[] },
+    { field: 'ProjectCode', header: 'Project Code', visibility: true, Type:'string',dbName:'ProjectCode', options:[] },
+    { field: 'ShortTitle', header: 'Short Title', visibility: true ,Type:'string',dbName:'ShortTitle' , options:[]},
+    { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true,  Type:'string',dbName:'ClientLegalEntity' , options:[]},
+    { field: 'POC', header: 'POC', visibility: true,  Type:'string',dbName:'POC', options:[] },
+    { field: 'DeliverableType', header: 'Deliverable Type', visibility: true , Type:'string',dbName:'DeliverableType', options:[] },
+    { field: 'DueDate', header: 'Due Date', visibility: true, exportable: false , Type:'datetime',dbName:'DueDateFormat' },
+    { field: 'displayMilestone', header: 'Milestone', visibility: true , Type:'string',dbName:'displayMilestone' , options:[]},
+    { field: 'PreviousTaskUser', header: 'Previous Task Owner', visibility: true , Type:'string',dbName:'' , options:[]},
+    { field: 'PreviousTaskStatus', header: 'Previous Task Status', visibility: true , Type:'string',dbName:'PreviousTaskUser' , options:[]},
+    { field: 'DueDateFormat', header: 'Due Date', visibility: false , Type:''}];
   filterColumns: any[] = [
     { field: 'ProjectCode' },
     { field: 'ShortTitle' },
@@ -465,7 +465,7 @@ export class SendToClientComponent implements OnInit {
       }
 
       if (tempSendToClientArray.length) {
-        this.createColFieldValues(tempSendToClientArray);
+        this.scArrays = await this.commonService.MainfilterForTable(this.displayedColumns,tempSendToClientArray);
       }
       this.pmObject.sendToClientArray = tempSendToClientArray;
       const tableRef: any = this.sct;
@@ -483,36 +483,12 @@ export class SendToClientComponent implements OnInit {
     this.isSCTableHidden = false;
     this.isSCInnerLoaderHidden = true;
     this.isSCFilterHidden = false;
-    const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
-    tabMenuInk.style.width='164px';
-    
+    setTimeout(() => {
+      const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
+      const tabMenuWidth: any = document.querySelector('.p-menuitem-link-active');
+      tabMenuInk.style.width= tabMenuWidth.offsetWidth + 'px';
+    }, 10); 
     // this.commonService.setIframeHeight();
-  }
-
-  createColFieldValues(resArray) {
-    this.scArrays.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-    this.scArrays.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
-    this.scArrays.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
-    this.scArrays.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
-    this.scArrays.DeliverableType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DeliverableType, value: a.DeliverableType }; return b; }).filter(ele => ele.label)));
-
-    // this.scArrays.DueDate = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DueDateFormat, value: a.DueDateFormat }; return b; }).filter(ele => ele.label)));
-    this.scArrays.DueDate = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.DueDateFormat, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a.DueDateFormat, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label)));
-
-    this.scArrays.displayMilestone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.displayMilestone, value: a.displayMilestone }; return b; }).filter(ele => ele.label)));
-    this.scArrays.PreviousTaskUser = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PreviousTaskUser, value: a.PreviousTaskUser }; return b; }).filter(ele => ele.label)));
-    this.scArrays.PreviousTaskStatus = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PreviousTaskStatus, value: a.PreviousTaskStatus }; return b; }).filter(ele => ele.label)));
-  }
-
-  uniqueArrayObj(array: any) {
-    let sts: any = '';
-    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-      const keys = {
-        label: label1,
-        value: array.find(s => s.label === label1).value
-      };
-      return keys ? keys : '';
-    });
   }
 
 
@@ -558,27 +534,5 @@ export class SendToClientComponent implements OnInit {
     }
   }
 
-  isOptionFilter: boolean;
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
 
-  ngAfterViewChecked() {
-    if (this.pmObject.sendToClientArray.length && this.isOptionFilter) {
-      let obj = {
-        tableData: this.sendToClientTableRef,
-        colFields: this.scArrays,
-        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
-      }
-      if (obj.tableData.filteredValue) {
-        this.commonService.updateOptionValues(obj);
-      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-        this.createColFieldValues(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-    }
-    this.cdr.detectChanges();
-  }
 }

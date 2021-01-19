@@ -27,7 +27,7 @@
 
 <div class="p-col timeline-top-section">
     <div class="p-col p-grid">
-        <div *ngFor="let category of categories" class="p-field-checkbox">
+        <div *ngFor="let category of categories" class="p-field-checkbox  p-mb-0">
             <p-radioButton [inputId]="category.key" name="category" [value]="category" [(ngModel)]="selectedCategory" [disabled]="category.disabled" (onClick)="isTimelineChecked()"></p-radioButton>
             <label class="p-m-2" [for]="category.key">{{category.name}}</label>
         </div>

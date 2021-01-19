@@ -16,8 +16,8 @@
 </div>
 <div class="pubsuppotTable">
     <p-table [value]="pubSupportProjectInfoData" dataKey="Id" [columns]="pubsupportCols" expandableRows="true" #dt [expandedRowKeys]="expandedRows" rowExpandMode="single" (onRowExpand)="onRowExpand($event)" [paginator]="true" [rows]="10" expandedIcon="fas fa-angle-down"
-        collapsedIcon="fas fa-angle-right"  [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-        [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="pubsupportTable">
+        collapsedIcon="fas fa-angle-right" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines"
+        stateStorage="local" stateKey="pubsupportTable">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th class="firstColumnWidth"></th>
@@ -26,7 +26,7 @@
                         {{col.header}}
                         <p-sortIcon *ngIf="col.header !== ''" [field]="col.field"></p-sortIcon>
                         <p-columnFilter *ngIf="col.header != '' && col.field !== 'ProjectCode'" type="text" [field]="col.field" matchMode="contains" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"></p-columnFilter>
-                        <p-columnFilter *ngIf="col.header != '' && col.field === 'ProjectCode'" type="text" [field]="col.field" matchMode="contains" display="menu" [(ngModel)]="projectCode"  [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"></p-columnFilter>
+                        <p-columnFilter *ngIf="col.header != '' && col.field === 'ProjectCode'" type="text" [field]="col.field" matchMode="contains" display="menu" [(ngModel)]="projectCode" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"></p-columnFilter>
                     </div>
 
                 </th>
@@ -48,7 +48,7 @@
                 <td>{{projectItem.PrimaryPOC}}</td>
                 <td [ngClass]="{'lightgreen': projectItem.Status =='In Progress', 'lightblue': projectItem.Status =='Unallocated',  'lightcoral': projectItem.Status =='In Discussion'}">
                     <ng-container>
-                        <div  style="height: 45px;padding: 7px 0px 0px 2px;" [ngStyle]="{'height':projectItem.Status.length > 15 ? '55px': projectItem.Status.length > 25 ? '75px':'45px'}">
+                        <div style="height: 45px;padding: 7px 0px 0px 2px;" [ngStyle]="{'height':projectItem.Status.length > 15 ? '55px': projectItem.Status.length > 25 ? '75px':'45px'}">
                             {{projectItem.Status }}
                         </div>
                     </ng-container>
@@ -64,7 +64,7 @@
                         <a style="color:#d7181f" (click)="openAuthorModal(projectItem)">Author Details</a>
                     </ng-container>
                 </td>
-                <td class="lastColumnWidthtd">
+                <td class="lastColumnWidth">
                     <div>
                         <p-menu #popupMenu [style]="{'width': '20em'}" [popup]="true" [model]="items"></p-menu>
                         <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(projectItem, popupMenu);popupMenu.show($event);"></i>
