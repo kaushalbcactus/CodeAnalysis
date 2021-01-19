@@ -200,3 +200,7 @@
 ::ng-deep .fc-more-popover {
     width: 25% !important;
 }
+
+::ng-deep .fc .fc-view-container .fc-event  {
+    color: white !important;
+}

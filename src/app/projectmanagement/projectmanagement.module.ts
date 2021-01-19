@@ -7,14 +7,12 @@ import { InactiveComponent } from './projectmanagement/inactive/inactive.compone
 import { ClientReviewComponent } from './projectmanagement/client-review/client-review.component';
 import { ProjectManagementRoutingModule } from './project-management-routing.module';
 import { PrimengModule } from '../primeng/primeng.module';
-// import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AllProjectsComponent } from './projectmanagement/all-projects/all-projects.component';
 import { SOWComponent } from './projectmanagement/sow/sow.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AddProjectsComponent } from './projectmanagement/add-projects/add-projects.component';
 import { SelectSOWComponent } from './projectmanagement/add-projects/select-sow/select-sow.component';
 import { ProjectAttributesComponent } from './projectmanagement/add-projects/project-attributes/project-attributes.component';
-// import { AddTimelineComponent } from './projectmanagement/add-projects/addtimeline/timeline.component';
 import { AddTimelineComponent } from './projectmanagement/add-projects/addtimeline/addtimeline.component';
 import { FinanceManagementComponent } from './projectmanagement/add-projects/finance-management/finance-management.component';
 import { ManageFinanceComponent } from './projectmanagement/add-projects/manage-finance/manage-finance.component';
@@ -86,7 +84,6 @@ import { SharedModule } from '../shared/shared.module';
     ReactiveFormsModule,
     TimelineModule,
     CustomMaterialModule,
-    // NgbModule,
     TaskAllocationModule,
     UserCapacityModule,
     FlexLayoutModule,

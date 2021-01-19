@@ -67,7 +67,7 @@
                             </div>
                         </div>
                         <div class="p-col">
-                            <div class="p-grid p-d-flex">
+                            <!-- <div class="p-grid p-d-flex"> -->
                                 <input placeholder="Select Start Time" style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em; width:49%;margin: 0px 8px 0px 0px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultStartTime"
                                     formControlName="StartTime" [value]="'09:00 AM'" [format]="12" readonly>
 
@@ -75,7 +75,7 @@
                                 </ngx-material-timepicker>
 
 
-                            </div>
+                            <!-- </div> -->
                             <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.StartTime.errors">
                                 <div style="color: red;">Start time is required.</div>
                             </div>
@@ -94,14 +94,14 @@
                             </div>
                         </div>
                         <div class="p-col">
-                            <div class="p-grid p-d-flex">
+                            <!-- <div class="p-grid p-d-flex"> -->
                                 <input placeholder="Select Start Time" style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em; width:49%;margin: 0px 8px 0px 0px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultEndTime"
                                     formControlName="EndTime" [value]="'07:00 PM'" [format]="12" readonly>
 
                                 <ngx-material-timepicker #defaultEndTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(create_task_form.value.EndTime, 'endTime')" [ngxMaterialTimepickerTheme]="darkTheme">
                                 </ngx-material-timepicker>
 
-                            </div>
+                            <!-- </div> -->
                             <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.StartTime.errors">
                                 <div style="color: red;">End time is required.</div>
                             </div>
