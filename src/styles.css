@@ -1,5 +1,4 @@
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
-@import "~jsgantt-improved/dist/jsgantt.css";
 
 /* @import '@fullcalendar/core/main.css';
 @import '@fullcalendar/daygrid/main.css';
@@ -319,7 +318,6 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 
 .firstColumnWidth {
     width: 4em !important;
-    padding: 12px !important;
 }
 
 .lastColumnWidth {

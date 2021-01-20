@@ -22,8 +22,6 @@
             <tr>
                 <th class="firstColumnWidth"></th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field">
-                    <!-- {{ col.header }}
-                    <p-sortIcon *ngIf="col.field" [field]="col.field"></p-sortIcon> -->
                     <div class="p-d-flex p-jc-between p-ai-center">
                         {{col.header}}
                         <p-sortIcon *ngIf="col.header !== ''" [field]="col.field"></p-sortIcon>
@@ -34,18 +32,6 @@
                 </th>
                 <th class="lastColumnWidth"></th>
             </tr>
-            <!-- <tr>
-                <th style="width: 3%;"></th>
-                <th *ngFor="let col of columns" [ngSwitch]="col.field">
-                    <ng-container *ngIf="col.field == 'ProjectCode'">
-                        <input pInputText type="text" [(ngModel)]="projectCode" (input)="dt.filter($event.target.value, col.field, 'contains')">
-                    </ng-container>
-                    <ng-container *ngIf="col.field && col.field !== 'ProjectCode'">
-                        <input pInputText type="text" (input)="dt.filter($event.target.value, col.field, 'contains')">
-                    </ng-container>
-                </th>
-                <th style="width: 3%;"></th>
-            </tr> -->
         </ng-template>
         <ng-template pTemplate="body" let-projectItem let-expanded="expanded" let-columns="columns" let-rowIndex="rowIndex">
             <tr>
@@ -87,59 +73,6 @@
 
             </tr>
         </ng-template>
-        <!-- <p-column expander="true" [style]="{'width':'50px', 'font-size':'larger'}">
-            <ng-template pTemplate let-plistIndex="rowIndex">
-            </ng-template>
-        </p-column>
-        <p-column field="ProjectCode" header="Project Code" [filter]="true" filterMatchMode="contains"
-            filterPlaceholder="Search" sortField="ProjectCode" [sortable]="true">
-            <ng-template pTemplate let-col let-projectCode="rowData" pTemplate="body" let-plistIndex="rowIndex">
-                <a style="color:#d7181f"
-                    (click)="goToProjectDetails(projectCode, plistIndex)">{{projectCode[col.field]}}</a>
-            </ng-template>
-        </p-column>
-        <p-column field="ClientLegalEntity" header="Client Legal Entity" [filter]="true" filterMatchMode="contains"
-            filterPlaceholder="Search" sortField="ClientLegalEntity" [sortable]="true">
-        </p-column>
-        <p-column field="DeliverableType" header="Deliverable" [filter]="true" filterMatchMode="contains"
-            filterPlaceholder="Search" sortField="DeliverableType" [sortable]="true"></p-column>
-        <p-column field="PrimaryPOC" header="POC" [filter]="true" filterMatchMode="contains" filterPlaceholder="Search"
-            sortField="PrimaryPOC" [sortable]="true">
-        </p-column>
-        <p-column field="Status" header="Status" [filter]="true" filterMatchMode="contains" filterPlaceholder="Search"
-            sortField="Status" [sortable]="true">
-            <ng-template let-col let-projectCode="rowData" pTemplate="body" let-plistIndex="rowIndex">
-                <div [ngClass]="{'lightgreen': projectCode[col.field] =='In Progress', 'lightblue': projectCode[col.field] =='Unallocated',  'lightcoral': projectCode[col.field] =='In Discussion'}"
-                    style="height: 45px;padding: 7px 0px 0px 2px;"
-                    [ngStyle]="{'height':projectCode[col.field].length > 15 ? '55px': projectCode[col.field].length > 25 ? '75px':'45px'}">
-                    {{projectCode[col.field] }}
-                </div>
-            </ng-template>
-        </p-column>
-        <p-column field="PubSupportStatus" header="Pub Sup Status" [filter]="true" filterMatchMode="contains"
-            filterPlaceholder="Search" sortField="PubSupportStatus" [sortable]="true">
-        </p-column>
-        <p-column field="LastSubmissionDate" header="Last Submission" [filter]="true" filterMatchMode="contains"
-            filterPlaceholder="Search" sortField="LastSubmissionDate" [sortable]="true">
-            <ng-template let-col let-projectCode="rowData" pTemplate="body" let-plistIndex="rowIndex">
-                {{projectCode[col.field] | date:'MMM d, y, hh:mm a' }}
-            </ng-template>
-        </p-column>
-        <p-column field="Authors_and_Author_Forms" header="Authors and Author Forms" filterPlaceholder="Search">
-            <ng-template pTemplate let-i="rowIndex" let-node="rowData">
-                <a style="color:#d7181f" (click)="openAuthorModal(node)">Author Details</a>
-            </ng-template>
-        </p-column>
-        <p-column [style]="{'width':'50px'}">
-            <ng-template pTemplate let-i="rowIndex" let-node="rowData">
-                <div>
-                    <p-menu #popupMenu [style]="{'width': '20em'}" [popup]="true" [model]="items">
-                    </p-menu>
-                    <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
-                        (click)="openPopup(node, popupMenu);popupMenu.show($event);"></i>
-                </div>
-            </ng-template>
-        </p-column> -->
         <ng-template let-car pTemplate="rowexpansion" let-parentIndex="plistIndex">
             <tr *ngIf="showHideJC">
                 <td colspan="10">
