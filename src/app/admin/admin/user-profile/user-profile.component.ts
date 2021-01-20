@@ -1139,17 +1139,6 @@ export class UserProfileComponent implements OnInit {
     this.userProfileViewDataArray.push(userObj);
     this.isUserProfileRightSideVisible = true;
   }
-  validateAllFormFields(formGroup: FormGroup) {
-    Object.keys(formGroup.controls).forEach(field => {
-      const control = formGroup.get(field);
-      if (control instanceof FormControl) {
-        control.markAsTouched({ onlySelf: false });
-      } else if (control instanceof FormGroup) {
-        this.validateAllFormFields(control);
-      }
-    });
-  }
-
   downloadExcel() {
     this.userProfileTable.exportCSV();
   }

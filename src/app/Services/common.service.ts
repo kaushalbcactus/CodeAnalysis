@@ -9,7 +9,7 @@ import { DatePipe } from '@angular/common';
 import {  DialogService} from 'primeng/dynamicdialog';
 import { FileUploadProgressDialogComponent } from '../shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
-import { ControlContainer, ValidatorFn, AbstractControl } from '@angular/forms';
+import { ControlContainer, ValidatorFn, AbstractControl, FormGroup, FormControl } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 declare var $;
 
@@ -1246,5 +1246,19 @@ export class CommonService {
       (a[b[props]] = a[b[props]] || []).push({data: b});
       return a;
     }, {});
+  }
+    /**
+   * This method is used to validate project attributes field.
+   * @param formGroup Pass the formGroup as parameter.
+   */
+  validateAllFormFields(formGroup: FormGroup) {
+    Object.keys(formGroup.controls).forEach((field) => {
+      const control = formGroup.get(field);
+      if (control instanceof FormControl) {
+        control.markAsTouched({ onlySelf: false });
+      } else if (control instanceof FormGroup) {
+        this.validateAllFormFields(control);
+      }
+    });
   }
 }

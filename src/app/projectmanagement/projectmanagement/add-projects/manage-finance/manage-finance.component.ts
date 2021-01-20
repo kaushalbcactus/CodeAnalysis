@@ -1450,25 +1450,11 @@ export class ManageFinanceComponent implements OnInit {
           }
         }
       } else {
-        this.validateAllFormFields(this.addPOForm);
+        this.commonService.validateAllFormFields(this.addPOForm);
       }
     }
     this.isInvoiceEdit = false;
     this.hideMoveLineItem = this.hideMoveLineItem === true ? false : true;
-  }
-
-  /***
-   * This function is used to validate the form field
-   */
-  validateAllFormFields(formGroup: FormGroup) {
-    Object.keys(formGroup.controls).forEach((field) => {
-      const control = formGroup.get(field);
-      if (control instanceof FormControl) {
-        control.markAsTouched({ onlySelf: true });
-      } else if (control instanceof FormGroup) {
-        this.validateAllFormFields(control);
-      }
-    });
   }
 
   /***

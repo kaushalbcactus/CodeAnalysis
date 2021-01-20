@@ -9,15 +9,23 @@
         <span>PROJECT LISTING </span>
     </div>
     <div class="ui-g-6">
-        <p-dropdown [options]="overAllValues" [(ngModel)]="selectedOption" styleClass="custom-dropDown" optionLabel="name" (onChange)="onChangeSelect($event)"></p-dropdown>
-        <input type="text" (change)="searchClosedProject($event)" (keydown.enter)="enterEvent($event)" *ngIf="showProjectInput" id="projectCodeSelect" placeholder="Project Code" pInputText [(ngModel)]="providedProjectCode" />
-        <a href="https://tableau.cactusmum.com/#/views/PublishPaper/PublishPaperDump?:iid=1 " style="color: red;float: right;padding: 5px 20px;" target="_blank">Published paper report</a>
+        <p-dropdown [options]="overAllValues" [(ngModel)]="selectedOption" styleClass="custom-dropDown"
+            optionLabel="name" (onChange)="onChangeSelect($event)"></p-dropdown>
+        <input type="text" (change)="searchClosedProject($event)" (keydown.enter)="enterEvent($event)"
+            *ngIf="showProjectInput" id="projectCodeSelect" placeholder="Project Code" pInputText
+            [(ngModel)]="providedProjectCode" />
+        <a href="https://tableau.cactusmum.com/#/views/PublishPaper/PublishPaperDump?:iid=1 " class="error"
+            style="float: right;padding: 5px 20px;" target="_blank">Published paper report</a>
     </div>
 </div>
 <div class="pubsuppotTable">
-    <p-table [value]="pubSupportProjectInfoData" dataKey="Id" [columns]="pubsupportCols" expandableRows="true" #dt [expandedRowKeys]="expandedRows" rowExpandMode="single" (onRowExpand)="onRowExpand($event)" [paginator]="true" [rows]="10" expandedIcon="fas fa-angle-down"
-        collapsedIcon="fas fa-angle-right" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines"
-        stateStorage="local" stateKey="pubsupportTable">
+    <p-table [value]="pubSupportProjectInfoData" dataKey="Id" [columns]="pubsupportCols" expandableRows="true" #dt
+        [expandedRowKeys]="expandedRows" rowExpandMode="single" (onRowExpand)="onRowExpand($event)" [paginator]="true"
+        [rows]="10" expandedIcon="fas fa-angle-down" collapsedIcon="fas fa-angle-right"
+        [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [style]="{'font-size':'13px','min-height': '400px','clear':'both'}"
+        styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="pubsupportTable">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th class="firstColumnWidth"></th>
@@ -25,15 +33,20 @@
                     <div class="p-d-flex p-jc-between p-ai-center">
                         {{col.header}}
                         <p-sortIcon *ngIf="col.header !== ''" [field]="col.field"></p-sortIcon>
-                        <p-columnFilter *ngIf="col.header != '' && col.field !== 'ProjectCode'" type="text" [field]="col.field" matchMode="contains" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"></p-columnFilter>
-                        <p-columnFilter *ngIf="col.header != '' && col.field === 'ProjectCode'" type="text" [field]="col.field" matchMode="contains" display="menu" [(ngModel)]="projectCode" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"></p-columnFilter>
+                        <p-columnFilter *ngIf="col.header != '' && col.field !== 'ProjectCode'" type="text"
+                            [field]="col.field" matchMode="contains" display="menu" [showMatchModes]="false"
+                            [showOperator]="false" [showAddButton]="false"></p-columnFilter>
+                        <p-columnFilter *ngIf="col.header != '' && col.field === 'ProjectCode'" type="text"
+                            [field]="col.field" matchMode="contains" display="menu" [(ngModel)]="projectCode"
+                            [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"></p-columnFilter>
                     </div>
 
                 </th>
                 <th class="lastColumnWidth"></th>
             </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-projectItem let-expanded="expanded" let-columns="columns" let-rowIndex="rowIndex">
+        <ng-template pTemplate="body" let-projectItem let-expanded="expanded" let-columns="columns"
+            let-rowIndex="rowIndex">
             <tr>
                 <td>
                     <a href="#" [pRowToggler]="projectItem">
@@ -41,14 +54,17 @@
                     </a>
                 </td>
                 <td>
-                    <a style="color:#d7181f" (click)="goToProjectDetails(projectItem, plistIndex)">{{projectItem.ProjectCode}}</a>
+                    <a style="color:#d7181f"
+                        (click)="goToProjectDetails(projectItem, plistIndex)">{{projectItem.ProjectCode}}</a>
                 </td>
                 <td>{{projectItem.ClientLegalEntity}}</td>
                 <td>{{projectItem.DeliverableType}}</td>
                 <td>{{projectItem.PrimaryPOC}}</td>
-                <td [ngClass]="{'lightgreen': projectItem.Status =='In Progress', 'lightblue': projectItem.Status =='Unallocated',  'lightcoral': projectItem.Status =='In Discussion'}">
+                <td
+                    [ngClass]="{'lightgreen': projectItem.Status =='In Progress', 'lightblue': projectItem.Status =='Unallocated',  'lightcoral': projectItem.Status =='In Discussion'}">
                     <ng-container>
-                        <div style="height: 45px;padding: 7px 0px 0px 2px;" [ngStyle]="{'height':projectItem.Status.length > 15 ? '55px': projectItem.Status.length > 25 ? '75px':'45px'}">
+                        <div style="height: 45px;padding: 7px 0px 0px 2px;"
+                            [ngStyle]="{'height':projectItem.Status.length > 15 ? '55px': projectItem.Status.length > 25 ? '75px':'45px'}">
                             {{projectItem.Status }}
                         </div>
                     </ng-container>
@@ -67,7 +83,8 @@
                 <td class="lastColumnWidth">
                     <div>
                         <p-menu #popupMenu [style]="{'width': '20em'}" [popup]="true" [model]="items"></p-menu>
-                        <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(projectItem, popupMenu);popupMenu.show($event);"></i>
+                        <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
+                            (click)="openPopup(projectItem, popupMenu);popupMenu.show($event);"></i>
                     </div>
                 </td>
 
@@ -77,7 +94,9 @@
             <tr *ngIf="showHideJC">
                 <td colspan="10">
                     <!-- <ng-template #jcDetails></ng-template> -->
-                    <app-journal-conference-details #jcDetails (fileReplace)='replaceFile($event.type, $event.project,$event.milestone,$event.id)'></app-journal-conference-details>
+                    <app-journal-conference-details #jcDetails
+                        (fileReplace)='replaceFile($event.type, $event.project,$event.milestone,$event.id)'>
+                    </app-journal-conference-details>
                 </td>
             </tr>
         </ng-template>
@@ -85,9 +104,17 @@
 </div>
 <ng-template #addAuthorcontainer></ng-template>
 <!-- Update author forms & emails -->
-<p-dialog header="Update Author forms & emails" [(visible)]="updateAuthorModal_1" [modal]="true" [draggable]="false" [style]="{'width': '50%'}" [maximizable]="false" [contentStyle]="{'height': '250px'}" (onHide)="cancelFormSub('updateAuthorModal')">
+<p-dialog header="Update Author forms & emails" [(visible)]="updateAuthorModal_1" [modal]="true" [draggable]="false"
+    [style]="{'width': '50%'}" [maximizable]="false" [contentStyle]="{'height': '250px'}"
+    (onHide)="cancelFormSub('updateAuthorModal')">
+    <div class="pdialogButton p-col-12 p-grid p-jc-end">
+        <button type="button " pButton icon="pi pi-save" [disabled]="submitBtn.isClicked"
+            class="p-mx-1 p-button-raised p-button-danger " (click)="onSubmit('updateAuthor')" label="Update"></button>
+        <button type="button " pButton icon="pi pi-times" (click)="cancelFormSub('updateAuthorModal')" label="Cancel"
+            class="p-button-raised p-button-danger "></button>
+    </div>
     <form [formGroup]="update_author_form">
-        <div class="ui-g" *ngIf="!selectedType">
+        <!-- <div class="ui-g" *ngIf="!selectedType">
             <div class="ui-g-12 ui-md-6 ui-lg-4">
                 Upload files:
             </div>
@@ -98,9 +125,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="ui-g" *ngIf="!update_author_form.value.file">
+        </div> -->
+        <!-- <div class="ui-g" *ngIf="!update_author_form.value.file">
             <div class="ui-g-12 ui-md-6 ui-lg-4">
                 Select from Existing Author Forms:
             </div>
@@ -118,35 +144,87 @@
                 </div>
                 <div style="color:#d7181f;">{{noFileMsg}}</div>
             </div>
+        </div> -->
+
+        <div class="p-col p-grid p-my-2" *ngIf="!selectedType">
+            <div class="p-col p-grid p-p-1">
+                <label for="file" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Upload
+                    files:</label>
+                <div class="p-col-12 p-md-8">
+                    <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)"
+                        #fileInput placeholder="updateAuthorForms" formControlName="file">
+                    <div *ngIf="formSubmit.isSubmit && isValidUpdateAuthorForm.file.errors">
+                        <div *ngIf="isValidUpdateAuthorForm.file.errors.required" class="error">File is required.
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
+        <div class="p-col p-grid p-my-2">
+            <div class="p-col p-grid p-p-1">
+                <label for="existingAuthorList" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Select from Existing Author Forms:</label>
+                <div class="p-col-12 p-md-8">
+                    <select id="type" name="existingAuthorList" class="form-control" [(ngModel)]="selectedType"
+                        (ngModelChange)="updateAuthorFormsFiles(selectedType)" formControlName="existingAuthorList">
+                        <option value="">Select</option>
+                        <ng-container *ngFor="let projctCode of projectCodeRes; let i = index">
+                            <option *ngIf="projctCode.ProjectCode !=selectedProject.ProjectCode" [ngValue]="projctCode">
+                                {{projctCode.ProjectCode}}
+                            </option>
+                        </ng-container>
+                    </select>
+                    <div *ngIf="formSubmit.isSubmit && isValidUpdateAuthorForm.existingAuthorList.errors">
+                        <div *ngIf="isValidUpdateAuthorForm.existingAuthorList.errors.required" class="error">Existing
+                            author is required.</div>
+                    </div>
+                    <div style="color:#d7181f;">{{noFileMsg}}</div>
+                </div>
+            </div>
+        </div>
     </form>
-    <p-footer>
-        <button pButton type="button" label="Update" class="ui_button_danger" [disabled]="submitBtn.isClicked" (click)="onSubmit('updateAuthor')"></button>
-        <button pButton type="button" label="Cancel" class="ui_button_danger" (click)="cancelFormSub('updateAuthorModal')"></button>
-    </p-footer>
-
 </p-dialog>
-
 <!-- End -->
-
 <!-- Update Decision Detais -->
-<p-dialog header="Update Decision details" [(visible)]="updateDecisionModal" [modal]="true" [draggable]="false" [style]="{'width': '50%'}" [maximizable]="false" [contentStyle]="{'height': '150px'}" (onHide)="cancelFormSub('updateDecisionModal')">
+<p-dialog header="Update Decision details" [(visible)]="updateDecisionModal" [modal]="true" [draggable]="false"
+    [style]="{'width': '50%'}" [maximizable]="false" [contentStyle]="{'height': '150px'}"
+    (onHide)="cancelFormSub('updateDecisionModal')">
     <form [formGroup]="update_decision_details">
-        <div class="ui-g">
+        <div class="pdialogButton p-col-12 p-grid p-jc-end">
+            <button type="button " pButton icon="pi pi-save" [disabled]="submitBtn.isClicked"
+                class="p-mx-1 p-button-raised p-button-danger " (click)="onSubmit('updateDecision')"
+                label="Update"></button>
+            <button type="button " pButton icon="pi pi-times" (click)="cancelFormSub('updateDecisionModal')"
+                label="Cancel" class="p-button-raised p-button-danger "></button>
+        </div>
+        <!-- <div class="ui-g">
             <div class="ui-g-12 ui-md-6 ui-lg-4">
                 Upload files:
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-8">
-                <input type="file" name="myfile" class="form-control" (change)="onFileChange($event)" formControlName="file" #fileInput />
+                <input type="file" name="myfile" class="form-control" (change)="onFileChange($event)"
+                    formControlName="file" #fileInput />
                 <div *ngIf="formSubmit.isSubmit && isValidDecisionForm.file.errors">
                     <div *ngIf="isValidDecisionForm.file.errors.required" style="color:red;">File is required.
                     </div>
                 </div>
             </div>
+        </div> -->
+        <div class="p-col p-grid p-my-2">
+            <div class="p-col p-grid p-p-1">
+                <label for="file" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Upload
+                    files:</label>
+                <div class="p-col-12 p-md-8">
+                    <input type="file" name="myfile" class="form-control" (change)="onFileChange($event)"
+                        formControlName="file" #fileInput />
+                    <div *ngIf="formSubmit.isSubmit && isValidDecisionForm.file.errors">
+                        <div *ngIf="isValidDecisionForm.file.errors.required" class="error">File is required.
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="ui-g">
+        <!-- <div class="ui-g">
             <div class="ui-g-12 ui-md-6 ui-lg-4">
                 Decision:
             </div>
@@ -169,28 +247,58 @@
                     </div>
                 </div>
             </div>
+        </div> -->
+        <div class="p-col p-grid p-my-1">
+            <div class="p-col p-grid p-p-1">
+                <label for="Decision" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Decision</label>
+                <div class="p-col-12 p-md-8">
+                    <select id="type" name="Decision" class="form-control" formControlName="Decision">
+                        <option value="">Select</option>
+                        <option value="Accepted"
+                            *ngIf="deliverableDetails.length && deliverableDetails[0].NameST == 'Accepted'">
+                            Accepted</option>
+                        <option value="Presented"
+                            *ngIf="deliverableDetails.length && deliverableDetails[0].NameST == 'Presented'">
+                            Presented</option>
+                        <option value="Rejected">Rejected</option>
+                        <option value="Resubmit to same journal"
+                            *ngIf="deliverableDetails.length && deliverableDetails[0].EntryType == 'Journal'">
+                            Resubmit to same journal</option>
+                    </select>
+                    <div *ngIf="formSubmit.isSubmit && isValidDecisionForm.Decision.errors">
+                        <div *ngIf="isValidDecisionForm.Decision.errors.required" class="error">Decision is
+                            required.
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
     </form>
-    <p-footer>
-        <button pButton type="button" label="Update" [disabled]="submitBtn.isClicked" (click)="onSubmit('updateDecision')"></button>
-        <button pButton type="button" label="Cancel" (click)="cancelFormSub('updateDecisionModal')"></button>
-    </p-footer>
-
 </p-dialog>
 <!-- End -->
-
 <!-- Update Decision Detais -->
-<p-dialog header="Update Publication details" [(visible)]="updatePublicatoinModal" [modal]="true" [draggable]="false" [style]="{'width': '60%'}" [maximizable]="false" [contentStyle]="{'height': '150px'}" (onHide)="cancelFormSub('updatePublicatoinModal')">
+<p-dialog header="Update Publication details" [(visible)]="updatePublicatoinModal" [modal]="true" [draggable]="false"
+    [style]="{'width': '60%'}" [maximizable]="false" [contentStyle]="{'height': '150px'}"
+    (onHide)="cancelFormSub('updatePublicatoinModal')">
     <form [formGroup]="update_publication_form">
-        <div class="ui-g">
+        <div class="pdialogButton p-col-12 p-grid p-jc-end">
+            <button type="button " pButton icon="pi pi-save" [disabled]="submitBtn.isClicked"
+                class="p-mx-1 p-button-raised p-button-danger " (click)="onSubmit('updatePublication')"
+                label="Update"></button>
+            <button type="button " pButton icon="pi pi-times" (click)="cancelFormSub('updatePublicatoinModal')"
+                label="Cancel" class="p-button-raised p-button-danger "></button>
+        </div>
+        <!-- <div class="ui-g">
             <div class="ui-g-12 ui-md-6 ui-lg-2">
                 Publication Title:
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <textarea maxlength="1000" placeholder="Title" class="form-control" formControlName="PublicationTitle"></textarea>
+                <textarea maxlength="1000" placeholder="Title" class="form-control"
+                    formControlName="PublicationTitle"></textarea>
                 <div *ngIf="formSubmit.isSubmit && isValidUpdatePublicationForm.PublicationTitle.errors">
-                    <div *ngIf="isValidUpdatePublicationForm.PublicationTitle.errors.required" style="color: red;">Title is required.
+                    <div *ngIf="isValidUpdatePublicationForm.PublicationTitle.errors.required" style="color: red;">Title
+                        is required.
                     </div>
                 </div>
             </div>
@@ -198,26 +306,59 @@
                 Citation:
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <textarea maxlength="1000" placeholder="Title" class="form-control" formControlName="Citation"></textarea>
+                <textarea maxlength="1000" placeholder="Title" class="form-control"
+                    formControlName="Citation"></textarea>
                 <div *ngIf="formSubmit.isSubmit && isValidUpdatePublicationForm.Citation.errors">
-                    <div *ngIf="isValidUpdatePublicationForm.Citation.errors.required" style="color: red;">Citation is required.
+                    <div *ngIf="isValidUpdatePublicationForm.Citation.errors.required" style="color: red;">Citation is
+                        required.
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <div class="p-col p-grid p-my-2">
+            <div class="p-col p-grid p-p-1">
+                <label for="PublicationTitle" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Publication Title</label>
+                <div class="p-col-12 p-md-8">
+                    <textarea maxlength="1000" placeholder="Title" class="form-control"
+                        formControlName="PublicationTitle"></textarea>
+                    <div *ngIf="formSubmit.isSubmit && isValidUpdatePublicationForm.PublicationTitle.errors">
+                        <div *ngIf="isValidUpdatePublicationForm.PublicationTitle.errors.required" class="error">
+                            Title
+                            is required.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-col p-grid p-p-0">
+                <label for="Citation" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Citation</label>
+                <div class="p-col-12 p-md-8">
+                    <textarea maxlength="1000" placeholder="Title" class="form-control"
+                        formControlName="Citation"></textarea>
+                    <div *ngIf="formSubmit.isSubmit && isValidUpdatePublicationForm.Citation.errors">
+                        <div *ngIf="isValidUpdatePublicationForm.Citation.errors.required" class="error">Citation is
+                            required.
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="ui-g">
+        <!-- <div class="ui-g">
             <div class="ui-g-12 ui-md-6 ui-lg-2">
                 PDF Available?:
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <select id="type" name="country" class="form-control" [ngClass]="{'is-invalid': submitted && isValidUpdatePublicationForm.PDFAvailable.errors}" formControlName="PDFAvailable">
+                <select id="type" name="country" class="form-control"
+                    [ngClass]="{'is-invalid': submitted && isValidUpdatePublicationForm.PDFAvailable.errors}"
+                    formControlName="PDFAvailable">
                     <option value="">Select</option>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
                 </select>
                 <div *ngIf="formSubmit.isSubmit && isValidUpdatePublicationForm.PDFAvailable.errors">
-                    <div *ngIf="isValidUpdatePublicationForm.PDFAvailable.errors.required" style="color: red;">Is PDF File available?
+                    <div *ngIf="isValidUpdatePublicationForm.PDFAvailable.errors.required" style="color: red;">Is PDF
+                        File available?
                     </div>
                 </div>
             </div>
@@ -225,66 +366,107 @@
                 Upload Published paper:
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)" #fileInput formControlName="PublicationURL" />
+                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)"
+                    #fileInput formControlName="PublicationURL" />
                 <div *ngIf="formSubmit.isSubmit && isValidUpdatePublicationForm.PublicationURL.errors">
-                    <div *ngIf="isValidUpdatePublicationForm.PublicationURL.errors.required" style="color: red;">File is required.
+                    <div *ngIf="isValidUpdatePublicationForm.PublicationURL.errors.required" style="color: red;">File is
+                        required.
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <div class="p-col p-grid p-my-2">
+            <div class="p-col p-grid p-p-1">
+                <label for="PDFAvailable" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>PDF Available?</label>
+                <div class="p-col-12 p-md-8">
+                    <select id="type" name="country" class="form-control"
+                        [ngClass]="{'is-invalid': submitted && isValidUpdatePublicationForm.PDFAvailable.errors}"
+                        formControlName="PDFAvailable">
+                        <option value="">Select</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                    <div *ngIf="formSubmit.isSubmit && isValidUpdatePublicationForm.PDFAvailable.errors">
+                        <div *ngIf="isValidUpdatePublicationForm.PDFAvailable.errors.required" class="error">Is
+                            PDF
+                            File available?
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-col p-grid p-p-0">
+                <label for="PublicationURL" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Upload Published paper</label>
+                <div class="p-col-12 p-md-8">
+                    <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)"
+                        #fileInput formControlName="PublicationURL" />
+                    <div *ngIf="formSubmit.isSubmit && isValidUpdatePublicationForm.PublicationURL.errors">
+                        <div *ngIf="isValidUpdatePublicationForm.PublicationURL.errors.required" class="error">File is
+                            required.
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </form>
-    <p-footer>
-        <button pButton type="button" label="Update" [disabled]="submitBtn.isClicked" (click)="onSubmit('updatePublication')"></button>
-        <button pButton type="button" label="Cancel" (click)="cancelFormSub('updatePublicatoinModal')"></button>
-    </p-footer>
-
 </p-dialog>
 
 <!-- Galley Form -->
-<p-dialog header="Override Galley" [(visible)]="overrideGalleyModal" [modal]="true" [draggable]="false" [style]="{'width': '30%'}" [maximizable]="false" [contentStyle]="{'height': '150px'}" (onHide)="cancelFormSub('overrideGalleyModal')">
+<p-dialog header="Override Galley" [(visible)]="overrideGalleyModal" [modal]="true" [draggable]="false"
+    [style]="{'width': '30%'}" [maximizable]="false" [contentStyle]="{'height': '150px'}"
+    (onHide)="cancelFormSub('overrideGalleyModal')">
     <form [formGroup]="galley_form">
-        <div class="ui-g">
-            <!-- <div class="ui-g-12 ui-md-6 ui-lg-2"></div> -->
-            <div class="ui-g-12 ui-md-6 ui-lg-12">
+        <div class="pdialogButton p-col-12 p-grid p-jc-end">
+            <button type="button " pButton icon="pi pi-save" [disabled]="submitBtn.isClicked"
+                class="p-mx-1 p-button-raised p-button-danger " (click)="onSubmit('galley')" label="Update"></button>
+            <button type="button " pButton icon="pi pi-times" (click)="cancelFormSub('overrideGalleyModal')"
+                label="Cancel" class="p-button-raised p-button-danger "></button>
+        </div>
+        <div class="p-col p-grid p-my-2">
+            <div class="p-col-12 p-md-12">
                 Upload file to enable Update Publication details option:
             </div>
-            <!-- <div class="ui-g-12 ui-md-6 ui-lg-2"></div> -->
-
         </div>
-
-        <div class="ui-g">
-            <div class="ui-g-12 ui-md-6 ui-lg-4">
-                Upload file:
-            </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-8">
-                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)" #fileInput formControlName="GalleyURL" />
-                <div *ngIf="formSubmit.isSubmit && isValidGalleyForm.GalleyURL.errors">
-                    <div *ngIf="isValidGalleyForm.GalleyURL.errors.required" style="color: red;">File is required.
+        <div class="p-col p-grid p-my-2">
+            <div class="p-col p-grid p-p-1">
+                <label for="GalleyURL" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Upload fileUpload file</label>
+                <div class="p-col-12 p-md-8">
+                    <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)"
+                        #fileInput formControlName="GalleyURL" />
+                    <div *ngIf="formSubmit.isSubmit && isValidGalleyForm.GalleyURL.errors">
+                        <div *ngIf="isValidGalleyForm.GalleyURL.errors.required" class="error">File is required.
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </form>
-    <p-footer>
-        <button pButton type="button" label="Update" [disabled]="submitBtn.isClicked" (click)="onSubmit('galley')"></button>
-        <button pButton type="button" label="Cancel" (click)="cancelFormSub('overrideGalleyModal')"></button>
-    </p-footer>
-
 </p-dialog>
 <!-- End -->
 
 <!-- Add Journal & Conference Modal -->
-<p-dialog header="Add Journal conference details" [(visible)]="addJCDetailsModal" [modal]="true" [draggable]="false" [contentStyle]="{'min-height':'350px','max-height':'450px'}" [responsive]="true" [style]="{'width': '75%'}" (onHide)="cancelFormSub('addJCDetailsModal')">
+<p-dialog header="Add Journal conference details" [(visible)]="addJCDetailsModal" [modal]="true" [draggable]="false"
+    [contentStyle]="{'min-height':'350px','max-height':'450px'}" [responsive]="true" [style]="{'width': '75%'}"
+    (onHide)="cancelFormSub('addJCDetailsModal')">
 
     <form id="myform" [formGroup]="journal_Conference_Detail_form">
-        <div class="ui-g">
+        <div class="pdialogButton p-col-12 p-grid p-jc-end">
+            <button type="button " pButton icon="pi pi-save" [disabled]="submitBtn.isClicked"
+                class="p-mx-1 p-button-raised p-button-danger " (click)="onSubmit('addJCDetailsModal')"
+                label="Submit"></button>
+            <button type="button " pButton icon="pi pi-times" (click)="cancelFormSub('addJCDetailsModal')" label="Close"
+                class="p-button-raised p-button-danger "></button>
+        </div>
+        <!-- <div class="ui-g">
             <div class="ui-g-12 ui-md-6 ui-lg-2">
                 Type <span style="color:red">*</span>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <p-dropdown resetFilterOnHide="true" [options]="documentTypes" placeholder="Select document type" [style]="{'width':'100%'}" formControlName="EntryType" (onChange)="onChangeSelectedType($event.value)">
+                <p-dropdown resetFilterOnHide="true" [options]="documentTypes" placeholder="Select document type"
+                    [style]="{'width':'100%'}" formControlName="EntryType"
+                    (onChange)="onChangeSelectedType($event.value)">
                 </p-dropdown>
                 <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.EntryType.errors">
                     <div *ngIf="isValidAddUpdateJCDetailsForm.EntryType.errors.required" style="color:red;">
@@ -299,7 +481,9 @@
                 List <span style="color:red">*</span>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <p-dropdown resetFilterOnHide="true" filter="true" [options]="jcListArray" placeholder="Select document type" [style]="{'width':'100%'}" formControlName="jcLineItem" optionLabel="{{optionLabel.title}}" emptyFilterMessage="No results found" resetFilterOnHide="true"
+                <p-dropdown resetFilterOnHide="true" filter="true" [options]="jcListArray"
+                    placeholder="Select document type" [style]="{'width':'100%'}" formControlName="jcLineItem"
+                    optionLabel="{{optionLabel.title}}" emptyFilterMessage="No results found" resetFilterOnHide="true"
                     (onChange)="onChangeSelectedJCItem($event,journal_Conference_Detail_form.value.EntryType)">
                 </p-dropdown>
                 <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.jcLineItem.errors">
@@ -308,16 +492,57 @@
                 </div>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-1">
-                <i class="pi pi-plus-circle" style="font-size: 3em;color:#c53e3e;margin-top: -7px;" (click)="createJC()"></i>
+                <i class="pi pi-plus-circle" style="font-size: 3em;color:#c53e3e;margin-top: -7px;"
+                    (click)="createJC()"></i>
+            </div>
+        </div> -->
+        <div class="p-col p-grid p-my-2">
+            <div class="p-col p-grid p-p-1">
+                <label for="EntryType" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Type</label>
+                <div class="p-col-12 p-md-8">
+                    <p-dropdown resetFilterOnHide="true" [options]="documentTypes" placeholder="Select document type"
+                        [style]="{'width':'100%'}" formControlName="EntryType"
+                        (onChange)="onChangeSelectedType($event.value)">
+                    </p-dropdown>
+                    <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.EntryType.errors">
+                        <div *ngIf="isValidAddUpdateJCDetailsForm.EntryType.errors.required" class="error">
+                            Please select one of type & try again.</div>
+                    </div>
+                    <div *ngIf="deliverableDetails.length && !deliverableDetails[0].EntryType">
+                        <div class="error">
+                            There is no document type for this deliverable type.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-col p-grid p-p-0">
+                <label for="jcLineItem" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>List</label>
+                <div class="p-col-12 p-md-8">
+                    <p-dropdown resetFilterOnHide="true" filter="true" [options]="jcListArray"
+                        placeholder="Select document type" [style]="{'width':'100%'}" formControlName="jcLineItem"
+                        optionLabel="{{optionLabel.title}}" emptyFilterMessage="No results found"
+                        resetFilterOnHide="true"
+                        (onChange)="onChangeSelectedJCItem($event,journal_Conference_Detail_form.value.EntryType)">
+                    </p-dropdown>
+                    <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.jcLineItem.errors">
+                        <div *ngIf="isValidAddUpdateJCDetailsForm.jcLineItem.errors.required" class="error">
+                            Please select one of document & try again.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-col p-grid p-p-0">
+                <i class="pi pi-plus-circle" style="font-size: 3em;color:#c53e3e;margin-top: -7px;"
+                    (click)="createJC()"></i>
             </div>
         </div>
-
         <div class="ui-g">
             <div class="ui-g-12 ui-md-6 ui-lg-2">
                 Milestones <span style="color:red">*</span>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <p-dropdown resetFilterOnHide="true" [options]="milestoneListArray" placeholder="Select milestone" [style]="{'width':'100%'}" filter="true" formControlName="Milestone">
+                <p-dropdown resetFilterOnHide="true" [options]="milestoneListArray" placeholder="Select milestone"
+                    [style]="{'width':'100%'}" filter="true" formControlName="Milestone">
                 </p-dropdown>
                 <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Milestone.errors">
                     <div *ngIf="isValidAddUpdateJCDetailsForm.Milestone.errors.required" style="color:red;">
@@ -326,14 +551,16 @@
             </div>
         </div>
 
-        <div *ngIf="(journal_Conference_Detail_form.value.EntryType === 'Journal' || journal_Conference_Detail_form.value.EntryType === 'Conference') && journal_Conference_Detail_form.value.jcLineItem">
+        <div
+            *ngIf="(journal_Conference_Detail_form.value.EntryType === 'Journal' || journal_Conference_Detail_form.value.EntryType === 'Conference') && journal_Conference_Detail_form.value.jcLineItem">
             <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
                     User Name
                     <!-- <span style="color:red">*</span> -->
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-                    <input type="text" pInputText maxlength="100" formControlName="UserName" style="width: 100%;" placeholder="User Name" />
+                    <input type="text" pInputText maxlength="100" formControlName="UserName" style="width: 100%;"
+                        placeholder="User Name" />
                     <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.UserName.errors">
                         <div *ngIf="isValidAddUpdateJCDetailsForm.UserName.errors.required" style="color:red;">
                             Please provide User Name.</div>
@@ -346,7 +573,8 @@
                     </div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-                    <input type="text" pInputText maxlength="100" formControlName="Password" style="width: 100%;" placeholder="Password" />
+                    <input type="text" pInputText maxlength="100" formControlName="Password" style="width: 100%;"
+                        placeholder="Password" />
                     <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Password.errors">
                         <div *ngIf="isValidAddUpdateJCDetailsForm.Password.errors.required" style="color:red;">
                             Please provide Password.</div>
@@ -355,7 +583,8 @@
             </div>
         </div>
 
-        <div *ngIf="journal_Conference_Detail_form.value.EntryType === 'Journal' && journal_Conference_Detail_form.value.jcLineItem">
+        <div
+            *ngIf="journal_Conference_Detail_form.value.EntryType === 'Journal' && journal_Conference_Detail_form.value.jcLineItem">
             <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
                     Name <span style="color:red">*</span>
@@ -374,9 +603,11 @@
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
-                        <input type="text" pInputText maxlength="100" formControlName="ExpectedReviewPeriod" placeholder="12 Months">
+                        <input type="text" pInputText maxlength="100" formControlName="ExpectedReviewPeriod"
+                            placeholder="12 Months">
                         <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.ExpectedReviewPeriod.errors">
-                            <div *ngIf="isValidAddUpdateJCDetailsForm.ExpectedReviewPeriod.errors.required" style="color:red;">
+                            <div *ngIf="isValidAddUpdateJCDetailsForm.ExpectedReviewPeriod.errors.required"
+                                style="color:red;">
                                 Expected Review is required.
                             </div>
                         </div>
@@ -417,7 +648,8 @@
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
-                        <textarea rows="5" cols="30" pInputTextarea formControlName="Comments" maxlength="2000"></textarea>
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="Comments"
+                            maxlength="2000"></textarea>
 
                     </div>
                 </div>
@@ -427,9 +659,11 @@
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
-                        <textarea rows="5" cols="30" pInputTextarea formControlName="JournalEditorInfo" maxlength="2000"></textarea>
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="JournalEditorInfo"
+                            maxlength="2000"></textarea>
                         <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.JournalEditorInfo.errors">
-                            <div *ngIf="isValidAddUpdateJCDetailsForm.JournalEditorInfo.errors.required" style="color:red;">
+                            <div *ngIf="isValidAddUpdateJCDetailsForm.JournalEditorInfo.errors.required"
+                                style="color:red;">
                                 Journal Editor Info is required.
                             </div>
                         </div>
@@ -439,7 +673,8 @@
 
         </div>
 
-        <div *ngIf="journal_Conference_Detail_form.value.EntryType === 'Conference' && journal_Conference_Detail_form.value.jcLineItem">
+        <div
+            *ngIf="journal_Conference_Detail_form.value.EntryType === 'Conference' && journal_Conference_Detail_form.value.jcLineItem">
             <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2 padding15">
                     Conference Name <span style="color:red">*</span>
@@ -461,8 +696,10 @@
                     </div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-                    <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true" dateFormat="M dd, yy" placeholder="Select Date" formControlName="CongressDate" [disabledDays]="[0,6]" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}"
-                        [yearNavigator]="true">
+                    <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true"
+                        dateFormat="M dd, yy" placeholder="Select Date" formControlName="CongressDate"
+                        [disabledDays]="[0,6]" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
+                        [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" [yearNavigator]="true">
                     </p-calendar>
                     <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.CongressDate.errors">
                         <div *ngIf="isValidAddUpdateJCDetailsForm.CongressDate.errors.required" style="color:red;">
@@ -474,11 +711,15 @@
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
-                        <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true" dateFormat="M dd, yy" placeholder="Select Date" formControlName="AbstractSubmissionDeadline" [disabledDays]="[0,6]" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
+                        <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true"
+                            dateFormat="M dd, yy" placeholder="Select Date" formControlName="AbstractSubmissionDeadline"
+                            [disabledDays]="[0,6]" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
                             [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" [yearNavigator]="true">
                         </p-calendar>
-                        <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.AbstractSubmissionDeadline.errors">
-                            <div *ngIf="isValidAddUpdateJCDetailsForm.AbstractSubmissionDeadline.errors.required" style="color:red;">
+                        <div
+                            *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.AbstractSubmissionDeadline.errors">
+                            <div *ngIf="isValidAddUpdateJCDetailsForm.AbstractSubmissionDeadline.errors.required"
+                                style="color:red;">
                                 Please provide Submission Deadline Date.</div>
                         </div>
                     </div>
@@ -491,7 +732,8 @@
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-10">
                     <div class="box">
-                        <textarea rows="5" cols="30" pInputTextarea formControlName="Comments" maxlength="2000"></textarea>
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="Comments"
+                            maxlength="2000"></textarea>
                         <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Comments.errors">
                             <div *ngIf="isValidAddUpdateJCDetailsForm.Comments.errors.required" style="color:red;">
                                 Please provide Comments.</div>
@@ -501,59 +743,98 @@
             </div>
         </div>
     </form>
-    <p-footer>
-        <button pButton type="button" label="Submit" [disabled]="submitBtn.isClicked" (click)="onSubmit('addJCDetailsModal')"></button>
-        <button pButton type="button" label="Close" (click)="cancelFormSub('addJCDetailsModal')"></button>
-    </p-footer>
 </p-dialog>
 
 <!-- Edit Journal Requirement Modal -->
-<p-dialog header="Edit Journal conference details" [(visible)]="editJCDetailsModal" [modal]="true" [draggable]="false" [contentStyle]="{'min-height':'350px','max-height':'450px'}" [responsive]="true" [style]="{'width': '75%'}" (onHide)="cancelFormSub('editJCDetailsModal')">
+<p-dialog header="Edit Journal conference details" [(visible)]="editJCDetailsModal" [modal]="true" [draggable]="false"
+    [contentStyle]="{'min-height':'350px','max-height':'450px'}" [responsive]="true" [style]="{'width': '75%'}"
+    (onHide)="cancelFormSub('editJCDetailsModal')">
 
     <form id="myform" [formGroup]="journal_Conference_Edit_Detail_form">
-        <div class="ui-g">
+        <div class="pdialogButton p-col-12 p-grid p-jc-end">
+            <button type="button " pButton icon="pi pi-save" [disabled]="submitBtn.isClicked"
+                class="p-mx-1 p-button-raised p-button-danger " (click)="onSubmit('editJCDetailsModal')"
+                label="Update"></button>
+            <button type="button " pButton icon="pi pi-times" (click)="cancelFormSub('editJCDetailsModal')"
+                label="Close" class="p-button-raised p-button-danger "></button>
+        </div>
+        <!-- <div class="ui-g">
             <div class="ui-g-12 ui-md-6 ui-lg-2">
                 Type <span style="color:red">*</span>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <p-dropdown resetFilterOnHide="true" [disabled]="true" [options]="documentTypes" placeholder="Select document type" [style]="{'width':'100%'}" formControlName="EntryType" (onChange)="onChangeSelectedType($event.value)">
+                <p-dropdown resetFilterOnHide="true" [disabled]="true" [options]="documentTypes"
+                    placeholder="Select document type" [style]="{'width':'100%'}" formControlName="EntryType"
+                    (onChange)="onChangeSelectedType($event.value)">
                 </p-dropdown>
-                <!-- <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.EntryType.errors">
-                    <div *ngIf="isValidAddUpdateJCDetailsForm.EntryType.errors.required" style="color:red;">
-                        Please select one of type & try again.</div>
-                </div> -->
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-2">
                 List <span style="color:red">*</span>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <input type="text" disabled="true" pInputText maxlength="100" formControlName="jcLineItemName" style="width: 100%;" placeholder="-" />
+                <input type="text" disabled="true" pInputText maxlength="100" formControlName="jcLineItemName"
+                    style="width: 100%;" placeholder="-" />
 
             </div>
 
+        </div> -->
+        <div class="p-col p-grid p-my-2">
+            <div class="p-col p-grid p-p-1">
+                <label for="EntryType" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Type</label>
+                <div class="p-col-12 p-md-8">
+                    <p-dropdown resetFilterOnHide="true" [disabled]="true" [options]="documentTypes"
+                        placeholder="Select document type" [style]="{'width':'100%'}" formControlName="EntryType"
+                        (onChange)="onChangeSelectedType($event.value)">
+                    </p-dropdown>
+                </div>
+            </div>
+            <div class="p-col p-grid p-p-0">
+                <label for="jcLineItemName" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>List</label>
+                <div class="p-col-12 p-md-8">
+                    <input type="text" disabled="true" pInputText maxlength="100" formControlName="jcLineItemName"
+                        style="width: 100%;" placeholder="-" />
+                </div>
+            </div>
         </div>
-
-        <div class="ui-g">
+        <!-- <div class="ui-g">
             <div class="ui-g-12 ui-md-6 ui-lg-2">
                 Milestones <span style="color:red">*</span>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <p-dropdown resetFilterOnHide="true" [options]="milestoneListArray" placeholder="Select milestone" [style]="{'width':'100%'}" filter="true" formControlName="Milestone">
+                <p-dropdown resetFilterOnHide="true" [options]="milestoneListArray" placeholder="Select milestone"
+                    [style]="{'width':'100%'}" filter="true" formControlName="Milestone">
                 </p-dropdown>
                 <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Milestone.errors">
                     <div *ngIf="isValidEditJCDetailsForm.Milestone.errors.required" style="color:red;">
                         Please select one of milestone & try again.</div>
                 </div>
             </div>
+        </div> -->
+        <div class="p-col p-grid p-my-1">
+            <div class="p-col p-grid p-p-1">
+                <label for="Milestone" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Milestones</label>
+                <div class="p-col-12 p-md-8">
+                    <p-dropdown resetFilterOnHide="true" [options]="milestoneListArray" placeholder="Select milestone"
+                        [style]="{'width':'100%'}" filter="true" formControlName="Milestone">
+                    </p-dropdown>
+                    <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Milestone.errors">
+                        <div *ngIf="isValidEditJCDetailsForm.Milestone.errors.required" class="error">
+                            Please select one of milestone & try again.</div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div>
+        <!-- <div>
             <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
                     User Name <span style="color:red">*</span>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-                    <input type="text" pInputText formControlName="UserName" maxlength="100" style="width: 100%;" placeholder="User Name" />
+                    <input type="text" pInputText formControlName="UserName" maxlength="100" style="width: 100%;"
+                        placeholder="User Name" />
                     <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.UserName.errors">
                         <div *ngIf="isValidEditJCDetailsForm.UserName.errors.required" style="color:red;">
                             Please provide Name.</div>
@@ -564,7 +845,8 @@
                     <div class="box">Password <span style="color:red">*</span></div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-                    <input type="text" pInputText maxlength="100" formControlName="Password" style="width: 100%;" placeholder="Password" />
+                    <input type="text" pInputText maxlength="100" formControlName="Password" style="width: 100%;"
+                        placeholder="Password" />
                     <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Password.errors">
                         <div *ngIf="isValidEditJCDetailsForm.Password.errors.required" style="color:red;">
                             Please provide Password.</div>
@@ -572,15 +854,40 @@
                 </div>
             </div>
 
+        </div> -->
+        <div class="p-col p-grid p-my-1">
+            <div class="p-col p-grid p-p-1">
+                <label for="UserName" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>
+                    User Name</label>
+                <div class="p-col-12 p-md-8">
+                    <input type="text" pInputText formControlName="UserName" maxlength="100" style="width: 100%;"
+                        placeholder="User Name" />
+                    <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.UserName.errors">
+                        <div *ngIf="isValidEditJCDetailsForm.UserName.errors.required" class="error">
+                            Please provide Name.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-col p-grid p-p-0">
+                <label for="Password" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Password</label>
+                <div class="p-col-12 p-md-8">
+                    <input type="text" pInputText maxlength="100" formControlName="Password" style="width: 100%;"
+                        placeholder="Password" />
+                    <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Password.errors">
+                        <div *ngIf="isValidEditJCDetailsForm.Password.errors.required" class="error">
+                            Please provide Password.</div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div *ngIf="journal_Conference_Edit_Detail_form.value.EntryType === 'Journal' && journal_Conference_Edit_Detail_form.value.jcLineItemName">
-            <div class="ui-g">
+        <div
+            *ngIf="journal_Conference_Edit_Detail_form.value.EntryType === 'Journal' && journal_Conference_Edit_Detail_form.value.jcLineItemName">
+            <!-- <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
                     Name <span style="color:red">*</span>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-                    <!-- <input type="text" pInputText maxlength="30" formControlName="Name" style="width: 100%;" placeholder="Name" />  (keyup)="onKey($event.value)" (blur)="checkUniqueName()"-->
                     <textarea rows="5" cols="30" pInputTextarea formControlName="Name" maxlength="200"></textarea>
                     <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Name.errors">
                         <div *ngIf="isValidEditJCDetailsForm.Name.errors.required" style="color:red;">
@@ -593,17 +900,44 @@
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
-                        <input type="text" pInputText maxlength="100" formControlName="ExpectedReviewPeriod" placeholder="12 Months">
+                        <input type="text" pInputText maxlength="100" formControlName="ExpectedReviewPeriod"
+                            placeholder="12 Months">
                         <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.ExpectedReviewPeriod.errors">
-                            <div *ngIf="isValidEditJCDetailsForm.ExpectedReviewPeriod.errors.required" style="color:red;">
+                            <div *ngIf="isValidEditJCDetailsForm.ExpectedReviewPeriod.errors.required"
+                                style="color:red;">
+                                Expected Review is required.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+            <div class="p-col p-grid p-my-1">
+                <div class="p-col p-grid p-p-1">
+                    <label for="Name" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Name</label>
+                    <div class="p-col-12 p-md-8">
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="Name" maxlength="200"></textarea>
+                        <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Name.errors">
+                            <div *ngIf="isValidEditJCDetailsForm.Name.errors.required" class="error">
+                                Please provide Name.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-col p-grid p-p-0">
+                    <label for="ExpectedReviewPeriod" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Expected Review Period</label>
+                    <div class="p-col-12 p-md-8">
+                        <input type="text" pInputText maxlength="100" formControlName="ExpectedReviewPeriod"
+                            placeholder="12 Months">
+                        <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.ExpectedReviewPeriod.errors">
+                            <div *ngIf="isValidEditJCDetailsForm.ExpectedReviewPeriod.errors.required" class="error">
                                 Expected Review is required.
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="ui-g">
+            <!-- <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
                     Impact factor <span style="color:red">*</span>
                 </div>
@@ -628,15 +962,41 @@
                         </div>
                     </div>
                 </div>
+            </div> -->
+            <div class="p-col p-grid p-my-1">
+                <div class="p-col p-grid p-p-1">
+                    <label for="IF" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Impact factor</label>
+                    <div class="p-col-12 p-md-8">
+                        <input type="text" maxlength="10" id="factor" name="name" placeholder="50%"
+                            formControlName="IF">
+                        <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.IF.errors">
+                            <div *ngIf="isValidEditJCDetailsForm.IF.errors.required" class="error">
+                                Impact factor is required.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-col p-grid p-p-0">
+                    <label for="RejectionRate" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Rejection Ratio</label>
+                    <div class="p-col-12 p-md-8">
+                        <input type="text" maxlength="10" placeholder="20%" formControlName="RejectionRate">
+                        <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.RejectionRate.errors">
+                            <div *ngIf="isValidEditJCDetailsForm.RejectionRate.errors.required" class="error">
+                                Rejection Rate is required.</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="ui-g">
+            <!-- <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
                     Comments
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
-                        <textarea rows="5" cols="30" pInputTextarea formControlName="Comments" maxlength="2000"></textarea>
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="Comments"
+                            maxlength="2000"></textarea>
                     </div>
                 </div>
 
@@ -645,7 +1005,8 @@
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
-                        <textarea rows="5" cols="30" pInputTextarea formControlName="JournalEditorInfo" maxlength="2000"></textarea>
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="JournalEditorInfo"
+                            maxlength="2000"></textarea>
                         <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.JournalEditorInfo.errors">
                             <div *ngIf="isValidEditJCDetailsForm.JournalEditorInfo.errors.required" style="color:red;">
                                 Journal Editor Info is required.
@@ -653,34 +1014,68 @@
                         </div>
                     </div>
                 </div>
+            </div> -->
+            <div class="p-col p-grid p-my-1">
+                <div class="p-col p-grid p-p-1">
+                    <label for="Comments" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Comments</label>
+                    <div class="p-col-12 p-md-8">
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="Comments"
+                            maxlength="2000"></textarea>
+                    </div>
+                </div>
+                <div class="p-col p-grid p-p-0">
+                    <label for="JournalEditorInfo" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Journal Editor Info</label>
+                    <div class="p-col-12 p-md-8">
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="JournalEditorInfo"
+                            maxlength="2000"></textarea>
+                        <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.JournalEditorInfo.errors">
+                            <div *ngIf="isValidEditJCDetailsForm.JournalEditorInfo.errors.required" class="error">
+                                Journal Editor Info is required.
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
         </div>
-
-        <div *ngIf="journal_Conference_Edit_Detail_form.value.EntryType === 'Conference' && journal_Conference_Edit_Detail_form.value.jcLineItemName">
-            <div class="ui-g">
+        <div
+            *ngIf="journal_Conference_Edit_Detail_form.value.EntryType === 'Conference' && journal_Conference_Edit_Detail_form.value.jcLineItemName">
+            <!-- <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2 padding15">
                     Conference Name <span style="color:red">*</span>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-10">
-                    <!-- <input type="text" pInputText maxlength="30" formControlName="Name" style="width: 100% !important;" placeholder="Name" (keyup)="onKey($event.value)" (blur)="checkUniqueName()" /> -->
                     <textarea rows="5" cols="30" pInputTextarea formControlName="Name" maxlength="200"></textarea>
                     <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Name.errors">
                         <div *ngIf="isValidEditJCDetailsForm.Name.errors.required" style="color:red;">
                             Please provide Conference Name.</div>
                     </div>
                 </div>
+            </div> -->
+            <div class="p-col p-grid p-my-2">
+                <div class="p-col p-grid p-p-1">
+                    <label for="Name" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Conference Name</label>
+                    <div class="p-col-12 p-md-8">
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="Name" maxlength="200"></textarea>
+                        <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Name.errors">
+                            <div *ngIf="isValidEditJCDetailsForm.Name.errors.required" class="error">
+                                Please provide Conference Name.</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="ui-g">
+            <!-- <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2 padding15">
                     <div class="box">
                         Conference Date <span style="color:red">*</span>
                     </div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-                    <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true" dateFormat="M dd, yy" placeholder="Select Date" formControlName="CongressDate" [disabledDays]="[0,6]" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}"
-                        [yearNavigator]="true">
+                    <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true"
+                        dateFormat="M dd, yy" placeholder="Select Date" formControlName="CongressDate"
+                        [disabledDays]="[0,6]" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
+                        [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" [yearNavigator]="true">
                     </p-calendar>
                     <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.CongressDate.errors">
                         <div *ngIf="isValidEditJCDetailsForm.CongressDate.errors.required" style="color:red;">
@@ -692,26 +1087,76 @@
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
-                        <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true" dateFormat="M dd, yy" placeholder="Select Date" formControlName="AbstractSubmissionDeadline" [disabledDays]="[0,6]" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
+                        <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true"
+                            dateFormat="M dd, yy" placeholder="Select Date" formControlName="AbstractSubmissionDeadline"
+                            [disabledDays]="[0,6]" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
                             [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" [yearNavigator]="true">
                         </p-calendar>
                         <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.AbstractSubmissionDeadline.errors">
-                            <div *ngIf="isValidEditJCDetailsForm.AbstractSubmissionDeadline.errors.required" style="color:red;">
+                            <div *ngIf="isValidEditJCDetailsForm.AbstractSubmissionDeadline.errors.required"
+                                style="color:red;">
+                                Please provide Submission Deadline Date.</div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+            <div class="p-col p-grid p-my-1">
+                <div class="p-col p-grid p-p-1">
+                    <label for="CongressDate" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Conference Date</label>
+                    <div class="p-col-12 p-md-8">
+                        <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true"
+                            dateFormat="M dd, yy" placeholder="Select Date" formControlName="CongressDate"
+                            [disabledDays]="[0,6]" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
+                            [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" [yearNavigator]="true">
+                        </p-calendar>
+                        <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.CongressDate.errors">
+                            <div *ngIf="isValidEditJCDetailsForm.CongressDate.errors.required" class="error">
+                                Please provide Start Date.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-col p-grid p-p-0">
+                    <label for="AbstractSubmissionDeadline" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Submission Deadline</label>
+                    <div class="p-col-12 p-md-8">
+                        <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true"
+                            dateFormat="M dd, yy" placeholder="Select Date" formControlName="AbstractSubmissionDeadline"
+                            [disabledDays]="[0,6]" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
+                            [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" [yearNavigator]="true">
+                        </p-calendar>
+                        <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.AbstractSubmissionDeadline.errors">
+                            <div *ngIf="isValidEditJCDetailsForm.AbstractSubmissionDeadline.errors.required"
+                                class="error">
                                 Please provide Submission Deadline Date.</div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="ui-g">
+            <!-- <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2 padding15">
                     Comments
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-10">
                     <div class="box">
-                        <textarea rows="5" cols="30" pInputTextarea formControlName="Comments" maxlength="2000"></textarea>
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="Comments"
+                            maxlength="2000"></textarea>
                         <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Comments.errors">
                             <div *ngIf="isValidEditJCDetailsForm.Comments.errors.required" style="color:red;">
+                                Please provide Comments.</div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+            <div class="p-col p-grid p-my-1">
+                <div class="p-col p-grid p-p-1">
+                    <label for="Comments" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Comments</label>
+                    <div class="p-col-12 p-md-8">
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="Comments"
+                            maxlength="2000"></textarea>
+                        <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Comments.errors">
+                            <div *ngIf="isValidEditJCDetailsForm.Comments.errors.required" class="error">
                                 Please provide Comments.</div>
                         </div>
                     </div>
@@ -719,57 +1164,97 @@
             </div>
         </div>
     </form>
-    <p-footer>
-        <button pButton type="button" label="Update" [disabled]="submitBtn.isClicked" (click)="onSubmit('editJCDetailsModal')"></button>
-        <button pButton type="button" label="Close" (click)="cancelFormSub('editJCDetailsModal')"></button>
-    </p-footer>
 </p-dialog>
 
 <!-- Update Journal Requirement Modal -->
-<p-dialog header="Update journal requirement details" [(visible)]="updateJCRequirementModal" [modal]="true" [draggable]="false" [contentStyle]="{'min-height':'150px','max-height':'450px'}" [responsive]="true" [style]="{'width': '45%'}" (onHide)="cancelFormSub('updateJCRequirementModal')">
+<p-dialog header="Update journal requirement details" [(visible)]="updateJCRequirementModal" [modal]="true"
+    [draggable]="false" [contentStyle]="{'min-height':'150px','max-height':'450px'}" [responsive]="true"
+    [style]="{'width': '45%'}" (onHide)="cancelFormSub('updateJCRequirementModal')">
 
     <form id="myform" [formGroup]="update_Journal_Requirement_form">
-        <div class="ui-g">
+        <div class="pdialogButton p-col-12 p-grid p-jc-end">
+            <button type="button " pButton icon="pi pi-save" [disabled]="submitBtn.isClicked"
+                class="p-mx-1 p-button-raised p-button-danger " (click)="onSubmit('updateJCRequirementModal')"
+                label="Submit"></button>
+            <button type="button " pButton icon="pi pi-times" (click)="cancelFormSub('updateJCRequirementModal')"
+                label="Close" class="p-button-raised p-button-danger "></button>
+        </div>
+        <!-- <div class="ui-g">
             <div class="row container">
                 <div class="col-lg-4">
                     <label for="upload-document">Upload files:</label>
                 </div>
                 <div class="col-lg-8">
-                    <input type="file" name="myfile" class="form-control" (change)="onFileChange($event)" formControlName="JournalRequirementResponse" #fileInput />
-                    <div *ngIf="formSubmit.isSubmit && isValidUpdateJCRequirementForm.JournalRequirementResponse.errors">
-                        <div *ngIf="isValidUpdateJCRequirementForm.JournalRequirementResponse.errors.required" style="color:red;">File is required.</div>
+                    <input type="file" name="myfile" class="form-control" (change)="onFileChange($event)"
+                        formControlName="JournalRequirementResponse" #fileInput />
+                    <div
+                        *ngIf="formSubmit.isSubmit && isValidUpdateJCRequirementForm.JournalRequirementResponse.errors">
+                        <div *ngIf="isValidUpdateJCRequirementForm.JournalRequirementResponse.errors.required"
+                            style="color:red;">File is required.</div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <div class="p-col p-grid p-my-2">
+            <div class="p-col p-grid p-p-1">
+                <label for="JournalRequirementResponse" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Upload files</label>
+                <div class="p-col-12 p-md-8">
+                    <input type="file" name="myfile" class="form-control" (change)="onFileChange($event)"
+                        formControlName="JournalRequirementResponse" #fileInput />
+                    <div
+                        *ngIf="formSubmit.isSubmit && isValidUpdateJCRequirementForm.JournalRequirementResponse.errors">
+                        <div *ngIf="isValidUpdateJCRequirementForm.JournalRequirementResponse.errors.required"
+                            class="error">File is required.</div>
                     </div>
                 </div>
             </div>
         </div>
     </form>
-    <p-footer>
-        <button pButton type="button" label="Submit" [disabled]="submitBtn.isClicked" (click)="onSubmit('updateJCRequirementModal')"></button>
-        <button pButton type="button" label="Close" (click)="cancelFormSub('updateJCRequirementModal')"></button>
-    </p-footer>
 </p-dialog>
 
 <!--- Replace Existing Document File-->
 
-<p-dialog header="Replace Document" [(visible)]="replaceDocument" [modal]="true" [draggable]="false" [contentStyle]="{'min-height':'150px','max-height':'450px'}" [responsive]="true" [style]="{'width': '45%'}" (onHide)="cancelFormSub('replaceDocument')">
+<p-dialog header="Replace Document" [(visible)]="replaceDocument" [modal]="true" [draggable]="false"
+    [contentStyle]="{'min-height':'150px','max-height':'450px'}" [responsive]="true" [style]="{'width': '45%'}"
+    (onHide)="cancelFormSub('replaceDocument')">
 
     <form id="myform" [formGroup]="replace_Document_Form">
-        <div class="ui-g">
+        <div class="pdialogButton p-col-12 p-grid p-jc-end">
+            <button type="button " pButton icon="pi pi-save" [disabled]="submitBtn.isClicked"
+                class="p-mx-1 p-button-raised p-button-danger " (click)="onSubmit('replaceDocument')"
+                label="Submit"></button>
+            <button type="button " pButton icon="pi pi-times" (click)="cancelFormSub('replaceDocument')" label="Close"
+                class="p-button-raised p-button-danger "></button>
+        </div>
+        <!-- <div class="ui-g">
             <div class="row container">
                 <div class="col-lg-4">
                     <label for="upload-document">Upload files:</label>
                 </div>
                 <div class="col-lg-8">
-                    <input type="file" name="myfile" class="form-control" (change)="onReplaceFile($event)" formControlName="documentFile" #fileInput />
+                    <input type="file" name="myfile" class="form-control" (change)="onReplaceFile($event)"
+                        formControlName="documentFile" #fileInput />
                     <div *ngIf="formSubmit.isSubmit && isValidReplaceDocumentForm.documentFile.errors">
-                        <div *ngIf="isValidReplaceDocumentForm.documentFile.errors.required" style="color:red;">File is required.</div>
+                        <div *ngIf="isValidReplaceDocumentForm.documentFile.errors.required" style="color:red;">File is
+                            required.</div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <div class="p-col p-grid p-my-2">
+            <div class="p-col p-grid p-p-1">
+                <label for="documentFile" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Upload files</label>
+                <div class="p-col-12 p-md-8">
+                    <input type="file" name="myfile" class="form-control" (change)="onReplaceFile($event)"
+                        formControlName="documentFile" #fileInput />
+                    <div *ngIf="formSubmit.isSubmit && isValidReplaceDocumentForm.documentFile.errors">
+                        <div *ngIf="isValidReplaceDocumentForm.documentFile.errors.required" class="error">File is
+                            required.</div>
                     </div>
                 </div>
             </div>
         </div>
     </form>
-    <p-footer>
-        <button pButton type="button" label="Submit" [disabled]="submitBtn.isClicked" (click)="onSubmit('replaceDocument')"></button>
-        <button pButton type="button" label="Close" (click)="cancelFormSub('replaceDocument')"></button>
-    </p-footer>
 </p-dialog>
