@@ -531,12 +531,11 @@
                     </div>
                 </div>
             </div>
-            <div class="p-col p-grid p-p-0">
-                <i class="pi pi-plus-circle" style="font-size: 3em;color:#c53e3e;margin-top: -7px;"
-                    (click)="createJC()"></i>
+            <div class="p-col p-grid p-mx-2">
+                <i class="pi pi-plus-circle error" (click)="createJC()"></i>
             </div>
         </div>
-        <div class="ui-g">
+        <!-- <div class="ui-g">
             <div class="ui-g-12 ui-md-6 ui-lg-2">
                 Milestones <span style="color:red">*</span>
             </div>
@@ -549,14 +548,27 @@
                         Please select one of milestone & try again.</div>
                 </div>
             </div>
+        </div> -->
+        <div class="p-col p-grid p-my-1">
+            <div class="p-col p-grid p-p-1">
+                <label for="Milestone" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Milestones</label>
+                <div class="p-col-12 p-md-8">
+                    <p-dropdown resetFilterOnHide="true" [options]="milestoneListArray" placeholder="Select milestone"
+                        [style]="{'width':'100%'}" filter="true" formControlName="Milestone">
+                    </p-dropdown>
+                    <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Milestone.errors">
+                        <div *ngIf="isValidAddUpdateJCDetailsForm.Milestone.errors.required" class="error">
+                            Please select one of milestone & try again.</div>
+                    </div>
+                </div>
+            </div>
         </div>
-
         <div
             *ngIf="(journal_Conference_Detail_form.value.EntryType === 'Journal' || journal_Conference_Detail_form.value.EntryType === 'Conference') && journal_Conference_Detail_form.value.jcLineItem">
-            <div class="ui-g">
+            <!-- <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
                     User Name
-                    <!-- <span style="color:red">*</span> -->
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <input type="text" pInputText maxlength="100" formControlName="UserName" style="width: 100%;"
@@ -569,7 +581,6 @@
 
                 <div class="p-col-12 p-md-6 p-lg-2" style="padding: 0.5rem!important;">
                     <div class="box">Password
-                        <!-- <span style="color:red">*</span> -->
                     </div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
@@ -580,17 +591,42 @@
                             Please provide Password.</div>
                     </div>
                 </div>
+            </div> -->
+            <div class="p-col p-grid p-my-1">
+                <div class="p-col p-grid p-p-1">
+                    <label for="UserName" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>User Name</label>
+                    <div class="p-col-12 p-md-8">
+                        <input type="text" pInputText maxlength="100" formControlName="UserName" style="width: 100%;"
+                            placeholder="User Name" />
+                        <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.UserName.errors">
+                            <div *ngIf="isValidAddUpdateJCDetailsForm.UserName.errors.required" class="error">
+                                Please provide User Name.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-col p-grid p-p-0">
+                    <label for="Password" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Password</label>
+                    <div class="p-col-12 p-md-8">
+                        <input type="text" pInputText maxlength="100" formControlName="Password" style="width: 100%;"
+                            placeholder="Password" />
+                        <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Password.errors">
+                            <div *ngIf="isValidAddUpdateJCDetailsForm.Password.errors.required" class="error">
+                                Please provide Password.</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div
             *ngIf="journal_Conference_Detail_form.value.EntryType === 'Journal' && journal_Conference_Detail_form.value.jcLineItem">
-            <div class="ui-g">
+            <!-- <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
                     Name <span style="color:red">*</span>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-                    <!-- <input type="text" pInputText maxlength="30" formControlName="Name" style="width: 100%;" placeholder="Name" />  (keyup)="onKey($event.value)" (blur)="checkUniqueName()"-->
                     <textarea rows="5" cols="30" pInputTextarea formControlName="Name" maxlength="200"></textarea>
                     <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Name.errors">
                         <div *ngIf="isValidAddUpdateJCDetailsForm.Name.errors.required" style="color:red;">
@@ -613,9 +649,35 @@
                         </div>
                     </div>
                 </div>
+            </div> -->
+            <div class="p-col p-grid p-my-1">
+                <div class="p-col p-grid p-p-1">
+                    <label for="Name" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Name</label>
+                    <div class="p-col-12 p-md-8">
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="Name" maxlength="200"></textarea>
+                        <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Name.errors">
+                            <div *ngIf="isValidAddUpdateJCDetailsForm.Name.errors.required" class="error">
+                                Please provide Name.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-col p-grid p-p-0">
+                    <label for="ExpectedReviewPeriod" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Expected Review Period</label>
+                    <div class="p-col-12 p-md-8">
+                        <input type="text" pInputText maxlength="100" formControlName="ExpectedReviewPeriod"
+                            placeholder="12 Months">
+                        <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.ExpectedReviewPeriod.errors">
+                            <div *ngIf="isValidAddUpdateJCDetailsForm.ExpectedReviewPeriod.errors.required"
+                                class="error">
+                                Expected Review is required.
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="ui-g">
+            <!-- <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
                     Impact factor <span style="color:red">*</span>
                 </div>
@@ -640,9 +702,34 @@
                         </div>
                     </div>
                 </div>
+            </div> -->
+            <div class="p-col p-grid p-my-1">
+                <div class="p-col p-grid p-p-1">
+                    <label for="IF" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Impact factor</label>
+                    <div class="p-col-12 p-md-8">
+                        <input type="text" maxlength="10" id="factor" name="name" placeholder="50%"
+                            formControlName="IF">
+                        <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.IF.errors">
+                            <div *ngIf="isValidAddUpdateJCDetailsForm.IF.errors.required" class="error">
+                                Impact factor is required.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-col p-grid p-p-0">
+                    <label for="RejectionRate" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Rejection Ratio</label>
+                    <div class="p-col-12 p-md-8">
+                        <input type="text" maxlength="10" placeholder="20%" formControlName="RejectionRate">
+                        <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.RejectionRate.errors">
+                            <div *ngIf="isValidAddUpdateJCDetailsForm.RejectionRate.errors.required" class="error">
+                                Rejection Rate is required.</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="ui-g">
+            <!-- <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
                     Comments
                 </div>
@@ -669,27 +756,60 @@
                         </div>
                     </div>
                 </div>
+            </div> -->
+            <div class="p-col p-grid p-my-1">
+                <div class="p-col p-grid p-p-1">
+                    <label for="Comments" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Comments</label>
+                    <div class="p-col-12 p-md-8">
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="Comments"
+                            maxlength="2000"></textarea>
+                    </div>
+                </div>
+                <div class="p-col p-grid p-p-0">
+                    <label for="JournalEditorInfo" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Journal Editor Info</label>
+                    <div class="p-col-12 p-md-8">
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="JournalEditorInfo"
+                            maxlength="2000"></textarea>
+                        <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.JournalEditorInfo.errors">
+                            <div *ngIf="isValidAddUpdateJCDetailsForm.JournalEditorInfo.errors.required"
+                                class="error">
+                                Journal Editor Info is required.
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
         </div>
 
         <div
             *ngIf="journal_Conference_Detail_form.value.EntryType === 'Conference' && journal_Conference_Detail_form.value.jcLineItem">
-            <div class="ui-g">
+            <!-- <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2 padding15">
                     Conference Name <span style="color:red">*</span>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-10">
-                    <!-- <input type="text" pInputText maxlength="30" formControlName="Name" style="width: 100% !important;" placeholder="Name" (keyup)="onKey($event.value)" (blur)="checkUniqueName()" /> -->
                     <textarea rows="5" cols="30" pInputTextarea formControlName="Name" maxlength="200"></textarea>
                     <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Name.errors">
                         <div *ngIf="isValidAddUpdateJCDetailsForm.Name.errors.required" style="color:red;">
                             Please provide Conference Name.</div>
                     </div>
                 </div>
+            </div> -->
+            <div class="p-col p-grid p-my-1">
+                <div class="p-col p-grid p-p-1">
+                    <label for="Name" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Conference Name</label>
+                    <div class="p-col-12 p-md-8">
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="Name" maxlength="200"></textarea>
+                    <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Name.errors">
+                        <div *ngIf="isValidAddUpdateJCDetailsForm.Name.errors.required" class="error">
+                            Please provide Conference Name.</div>
+                    </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="ui-g">
+            <!-- <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2 padding15">
                     <div class="box">
                         Conference Date <span style="color:red">*</span>
@@ -724,9 +844,42 @@
                         </div>
                     </div>
                 </div>
+            </div> -->
+            <div class="p-col p-grid p-my-1">
+                <div class="p-col p-grid p-p-1">
+                    <label for="CongressDate" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Conference Date</label>
+                    <div class="p-col-12 p-md-8">
+                        <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true"
+                        dateFormat="M dd, yy" placeholder="Select Date" formControlName="CongressDate"
+                        [disabledDays]="[0,6]" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
+                        [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" [yearNavigator]="true">
+                    </p-calendar>
+                    <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.CongressDate.errors">
+                        <div *ngIf="isValidAddUpdateJCDetailsForm.CongressDate.errors.required" class="error">
+                            Please provide Start Date.</div>
+                    </div>
+                    </div>
+                </div>
+                <div class="p-col p-grid p-p-0">
+                    <label for="AbstractSubmissionDeadline" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                            class="compulsory">*</span>Submission Deadline</label>
+                    <div class="p-col-12 p-md-8">
+                        <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true"
+                            dateFormat="M dd, yy" placeholder="Select Date" formControlName="AbstractSubmissionDeadline"
+                            [disabledDays]="[0,6]" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
+                            [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" [yearNavigator]="true">
+                        </p-calendar>
+                        <div
+                            *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.AbstractSubmissionDeadline.errors">
+                            <div *ngIf="isValidAddUpdateJCDetailsForm.AbstractSubmissionDeadline.errors.required"
+                                class="error">
+                                Please provide Submission Deadline Date.</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="ui-g">
+            <!-- <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2 padding15">
                     Comments
                 </div>
@@ -736,6 +889,19 @@
                             maxlength="2000"></textarea>
                         <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Comments.errors">
                             <div *ngIf="isValidAddUpdateJCDetailsForm.Comments.errors.required" style="color:red;">
+                                Please provide Comments.</div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+            <div class="p-col p-grid p-my-1">
+                <div class="p-col p-grid p-p-1">
+                    <label for="FirstName" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Comments</label>
+                    <div class="p-col-12 p-md-8">
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="Comments"
+                            maxlength="2000"></textarea>
+                        <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Comments.errors">
+                            <div *ngIf="isValidAddUpdateJCDetailsForm.Comments.errors.required" class="error">
                                 Please provide Comments.</div>
                         </div>
                     </div>
