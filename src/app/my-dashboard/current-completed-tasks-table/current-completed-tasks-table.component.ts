@@ -267,7 +267,6 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     );
     this.loaderenable = false;
     this.tableBlock = this.TasksTable;
-    debugger;
   }
 
   exportTasks() {
@@ -806,7 +805,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
           this.taskArrayList[0].SubMilestones
         );
         this.subMilestonesArrayFormat[subIndex] = item;
-        
+
       }
       return;
     }
