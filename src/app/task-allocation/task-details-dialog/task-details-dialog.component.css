@@ -1,4 +1,11 @@
+::ng-deep .taskDetailsDialog .p-panel .p-panel-header {
+    background: #c53e3e !important;
+    padding: 10px 0px 5px 0px !important;
+    color: white !important;
+}
 
+
+/* 
   
   #modalInnerLoader{
     border: 5px solid #f3f3f3;
@@ -46,4 +53,4 @@
  ::ng-deep .ui-card-header{
     background: #cdcdcd !important;
     padding: 5px !important;
-  }
+  } */

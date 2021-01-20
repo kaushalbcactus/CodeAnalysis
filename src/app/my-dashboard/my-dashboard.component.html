@@ -3,7 +3,7 @@
 
     <div class="p-col p-pb-0 p-pt-3 p-jc-end" style="border-bottom: 1px solid #e0e0e0;">
         <div class=" p-grid p-jc-end p-mr-3">
-            <p-dropdown class="p-col-7 p-p-0 p-mr-2" [style]="{'width':'100%'}" *ngIf="enableOtherUsers" [options]="activeUsers" placeholder="Select User" [showClear]="true" appendTo="body" filter="true" resetFilterOnHide="true" (onChange)="userChange()" [(ngModel)]="selectedUser">
+            <p-dropdown class="p-col-7 p-p-0 p-mr-2 p-fluid" *ngIf="enableOtherUsers" [options]="activeUsers" placeholder="Select User" [showClear]="true" appendTo="body" filter="true" resetFilterOnHide="true" (onChange)="userChange()" [(ngModel)]="selectedUser">
             </p-dropdown>
             <i title="Manage FTE Work" *ngIf="isUserFTE" (click)="createTask()" style="cursor: pointer; font-size: 2em;" class="p-mr-4 fa fa-user" aria-hidden="true"></i>
 

@@ -231,7 +231,7 @@
 
                                 <span *ngIf="task.Status !== 'Not Started' && task.Status !== 'In Progress'">
                                     {{task.Status}} </span>
-                                <p-dropdown [hidden]="task.Status !== 'Not Started' && task.Status !== 'In Progress'" [options]="statusOptions" [(ngModel)]="SelectedStatus" appendTo="body" [style]="{'width':'100%'}"></p-dropdown>
+                                <p-dropdown [hidden]="task.Status !== 'Not Started' && task.Status !== 'In Progress'" [options]="statusOptions" [(ngModel)]="SelectedStatus" appendTo="body" class="p-fluid"></p-dropdown>
 
                             </td>
                             <th>Time Spent:</th>

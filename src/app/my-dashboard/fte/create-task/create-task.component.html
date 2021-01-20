@@ -12,7 +12,7 @@
                 <div class="p-col p-grid p-p-0">
                     <label for="ProjectCode" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Project Code:</label>
                     <div class="p-col-12 p-md-8">
-                        <p-dropdown resetFilterOnHide="true" [options]="fteProjectsList" placeholder="Select Project code" [style]="{'width':'100%'}" formControlName="ProjectCode" optionLabel="ProjectCode" (onChange)="onChangeDD($event.value, 'ProjectCode')">
+                        <p-dropdown resetFilterOnHide="true" [options]="fteProjectsList" placeholder="Select Project code" class="p-fluid" formControlName="ProjectCode" optionLabel="ProjectCode" (onChange)="onChangeDD($event.value, 'ProjectCode')">
                         </p-dropdown>
                         <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.ProjectCode.errors">
                             <div *ngIf="isValidCreateTaskForm.ProjectCode.errors.required" style="color:red;" style="color:red;">
@@ -24,7 +24,7 @@
                 <div class="p-col p-grid p-p-0">
                     <label for="Milestones" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"> Milestones:</label>
                     <div class="p-col-12 p-md-8">
-                        <p-dropdown [options]="milestonesList" placeholder="Select milestone" optionLabel="label" [style]="{'width':'100%'}" formControlName="Milestones" (onChange)="onChangeDD($event.value, 'Milestone')">
+                        <p-dropdown [options]="milestonesList" placeholder="Select milestone" optionLabel="label" class="p-fluid" formControlName="Milestones" (onChange)="onChangeDD($event.value, 'Milestone')">
                         </p-dropdown>
                         <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.Milestones.errors">
                             <div *ngIf="isValidCreateTaskForm.Milestones.errors.required" style="color:red;">Milestone is required.
@@ -39,7 +39,7 @@
                 <div class="p-col p-grid p-p-0">
                     <label for="Submilestones" class="p-col-12 p-m-0 p-md-2 p-mb-md-0 p-p-3"> Sub milestones:</label>
                     <div class="p-col-12 p-md-10">
-                        <p-dropdown #dd editable="true" [options]="subMilestonesList" [style]="{'width':'100%'}" formControlName="SubMilestones" optionLabel="label" (onChange)="onChangeDD($event.value, 'SubMilestone')" (input)="onSearchChange($event.target.value)" (click)="clearFilter(dd)">
+                        <p-dropdown #dd editable="true" [options]="subMilestonesList" class="p-fluid" formControlName="SubMilestones" optionLabel="label" (onChange)="onChangeDD($event.value, 'SubMilestone')" (input)="onSearchChange($event.target.value)" (click)="clearFilter(dd)">
                         </p-dropdown>
                         <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.SubMilestones.errors">
                             <div style="color: red;" *ngIf="isValidCreateTaskForm.SubMilestones.errors">Sub Milestone is required.</div>

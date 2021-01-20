@@ -21,7 +21,7 @@
             <div class="p-col-12 p-md-12 p-lg-12 p-grid">
                 <div class="p-col-6 p-md-4 p-lg-3 blockResItem">Resources</div>
                 <div class="p-col-6 p-md-8 p-lg-9 blockResItem">
-                    <p-dropdown resetFilterOnHide="true" [style]="{'width':'100%'}" [disabled]="readonly" class="cls_blockResResources" [options]="Resources" [showClear]="true" formControlName="Resource" placeholder="Select Resource" [filter]="true" optionLabel="label"></p-dropdown>
+                    <p-dropdown resetFilterOnHide="true" [disabled]="readonly" class="cls_blockResResources p-fluid" [options]="Resources" [showClear]="true" formControlName="Resource" placeholder="Select Resource" [filter]="true" optionLabel="label"></p-dropdown>
 
                     <!-- optionLabel="label" (onChange)=setBudgetHoursValidation()></p-dropdown> -->
                     <div *ngIf="isBlockResourceFormSubmit && BlockResourceForm.controls.Resource.errors">

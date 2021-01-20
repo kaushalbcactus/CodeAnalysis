@@ -33,7 +33,7 @@
                     <div class="p-col p-grid">
                         <div class="p-col p-my-1"> Overnight Request</div>
                         <div class="p-col">
-                            <p-dropdown [disabled]="isHourlyOverNightDisabled" [options]="overNightRequest" [(ngModel)]="selectedOverNightRequest" placeholder="Please Select" [showClear]="true" [style]="{'width':'100%'}">
+                            <p-dropdown [disabled]="isHourlyOverNightDisabled" [options]="overNightRequest" [(ngModel)]="selectedOverNightRequest" placeholder="Please Select" [showClear]="true" class="p-fluid">
                             </p-dropdown>
                         </div>
                     </div>
@@ -106,7 +106,7 @@
                 <div class="p-grid p-my-1 p-jc-start" [hidden]="isAddToProjectHidden">
                     <div class="p-col-2"> PO List</div>
                     <div class="p-col p-grid">
-                        <p-dropdown class="p-col-3 p-py-0" filter="true" [options]="poList" placeholder="Select Po" [(ngModel)]="selectedPo" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-dropdown>
+                        <p-dropdown class="p-col-3 p-py-0 p-fluid" filter="true" [options]="poList" placeholder="Select Po" [(ngModel)]="selectedPo" resetFilterOnHide="true"></p-dropdown>
 
                         <button pButton pRipple type="button" label="Add PO" (click)="addPoToProject()" class="p-button-raised p-button-danger"></button>
                     </div>
@@ -327,7 +327,7 @@
         <div class="p-col p-grid">
             <div class="p-col-4 p-my-1">Client POC</div>
             <div class="p-col">
-                <p-dropdown [options]="primaryPoc" filter="true" formControlName="primarypoc" placeholder="Select POC" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                <p-dropdown [options]="primaryPoc" filter="true" formControlName="primarypoc" placeholder="Select POC" resetFilterOnHide="true" class="p-fluid">
                 </p-dropdown>
                 <div class="error" *ngIf="!addPOForm.controls['primarypoc'].valid&&addPOForm.controls['primarypoc'].touched">
                     Please select poc.</div>
@@ -336,7 +336,7 @@
         <div class="p-col p-grid">
             <div class="p-col-4 p-my-1">Address</div>
             <div class="p-col">
-                <p-dropdown [options]="address" formControlName="address" placeholder="Select Address" [style]="{'width':'100%'}">
+                <p-dropdown [options]="address" formControlName="address" placeholder="Select Address" class="p-fluid">
                 </p-dropdown>
                 <div class="error" *ngIf="!addPOForm.controls['address'].valid&&addPOForm.controls['address'].touched">
                     Please select address</div>
@@ -367,7 +367,7 @@
     <div class="p-col p-grid">
         <div class="p-col-4 p-my-1"><span class="compulsory">*</span>Reason Type</div>
         <div class="p-col">
-            <p-dropdown [(ngModel)]="selectedReasonType" [options]="budgetIncreaseArray" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-dropdown>
+            <p-dropdown [(ngModel)]="selectedReasonType" [options]="budgetIncreaseArray" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true" class="p-fluid"></p-dropdown>
         </div>
     </div>
     <div class="p-col p-grid">
@@ -413,7 +413,7 @@
     <div class="p-col p-grid">
         <div class="p-col-4 p-my-1"><span class="compulsory">*</span>Reason Type</div>
         <div class="p-col">
-            <p-dropdown [(ngModel)]="selectedReasonType" [options]="budgetDecreaseArray" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-dropdown>
+            <p-dropdown [(ngModel)]="selectedReasonType" [options]="budgetDecreaseArray" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true" class="p-fluid"></p-dropdown>
         </div>
     </div>
     <div class="p-col p-grid">
@@ -459,7 +459,7 @@
     <div class="p-col p-grid">
         <div class="p-col-4 p-my-1"><span class="compulsory">*</span>Invoice List</div>
         <div class="p-col">
-            <p-dropdown [(ngModel)]="advanceInvID" (onChange)="setInvData($event)" [options]="advanceInvArray" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-dropdown>
+            <p-dropdown [(ngModel)]="advanceInvID" (onChange)="setInvData($event)" [options]="advanceInvArray" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true" class="p-fluid"></p-dropdown>
         </div>
     </div>
     <div class="p-col p-grid">

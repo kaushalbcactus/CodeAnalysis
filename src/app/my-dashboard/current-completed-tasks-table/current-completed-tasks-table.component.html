@@ -11,8 +11,8 @@
 
 <div class="MyCurrentCompletedTable p-mt-2" *ngIf="allTasks.length > 0 && !loaderenable" hideshowMenu>
 
-    <p-table #TasksTable [columns]="cols" [value]="allTasks" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [style]="{'font-size':'13px','min-height': '400px'}"
-        styleClass="p-datatable-cactus p-datatable-gridlines" [exportFilename]="TabName ==='MyCompletedTask' ? 'My Completed Tasks':'My Current Tasks'" stateStorage="local" [stateKey]="config.data ? 'popupTaskTable' : TabName ==='MyCompletedTask' ? 'MyCompletedTasks':'MyCurrentTasks'">
+    <p-table #TasksTable [columns]="cols" [value]="allTasks" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" styleClass="p-datatable-cactus p-datatable-gridlines"
+        [exportFilename]="TabName ==='MyCompletedTask' ? 'My Completed Tasks':'My Current Tasks'" stateStorage="local" [stateKey]="config.data ? 'popupTaskTable' : TabName ==='MyCompletedTask' ? 'MyCompletedTasks':'MyCurrentTasks'">
 
         <ng-template pTemplate="header" let-columns>
             <tr>
@@ -97,7 +97,7 @@
 
 
     <label class="p-mb-0 p-mt-3" for="dropdown">Sub milestones:</label>
-    <p-dropdown #dd editable="true" [options]="subMilestonesList" [style]="{'width':'100%'}" appendTo="body" [(ngModel)]="subMilestone" optionLabel="label" (onChange)="onChangeDD($event.value)" (click)="clearFilter(dd)">
+    <p-dropdown #dd editable="true" [options]="subMilestonesList" class="p-fluid" appendTo="body" [(ngModel)]="subMilestone" optionLabel="label" (onChange)="onChangeDD($event.value)" (click)="clearFilter(dd)">
     </p-dropdown>
 
     <div *ngIf="errorMsg">
