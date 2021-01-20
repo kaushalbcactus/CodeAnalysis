@@ -9,3 +9,23 @@
 .redColor {
     background-color: lightcoral !important;
 }
+
+legend {
+    width: 25% !important;
+    font-size: 1.5rem !important;
+}
+
+fieldset {
+    display: block !important;
+    margin-inline-start: 2px !important;
+    margin-inline-end: 2px !important;
+    padding-block-start: 0.35em !important;
+    padding-inline-start: 0.75em !important;
+    padding-inline-end: 0.75em !important;
+    padding-block-end: 0.625em !important;
+    min-inline-size: min-content !important;
+}
+
+ ::ng-deep #saveSOW>span.p-button-icon {
+    margin-right: 10px !important;
+}

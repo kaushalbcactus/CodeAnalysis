@@ -37,39 +37,39 @@ export class AllProjectsComponent implements OnInit {
   popItems: MenuItem[];
   selectedProjectObj;
   displayedColumns: any[] = [
-    { field: "SOWCode", header: "Sow Code", visibility: true },
-    { field: "ProjectCode", header: "Project Code", visibility: true },
-    { field: "ShortTitle", header: "Short Title", visibility: true },
+    { field: "SOWCode", header: "Sow Code", visibility: true, Type:'string',dbName:'SOWCode', options:[] },
+    { field: "ProjectCode", header: "Project Code", visibility: true ,Type:'string',dbName:'ProjectCode', options:[] },
+    { field: "ShortTitle", header: "Short Title", visibility: true, Type:'string',dbName:'ShortTitle', options:[] },
     {
       field: "ClientLegalEntity",
       header: "Client Legal Entity",
-      visibility: true,
+      visibility: true,Type:'string',dbName:'ClientLegalEntity', options:[]
     },
-    { field: "DeliverableType", header: "Deliverable Type", visibility: false },
-    { field: "ProjectType", header: "Project Type", visibility: true },
+    { field: "DeliverableType", header: "Deliverable Type", visibility: false ,Type:'',dbName:'', options:[] },
+    { field: "ProjectType", header: "Project Type", visibility: true, Type:'string',dbName:'ProjectType', options:[] },
     {
       field: "PrimaryResources",
       header: "Primary Resources",
-      visibility: true,
+      visibility: true, Type:'',dbName:'', options:[]
     },
-    { field: "POC", header: "POC", visibility: true },
-    { field: "TA", header: "TA", visibility: true },
-    { field: "Molecule", header: "Molecule", visibility: true },
-    { field: "RevenueBudget", header: "Revenue Budget", visibility: false },
-    { field: "OOPBudget", header: "OOP Budget", visibility: false },
-    { field: "Currency", header: "Currency", visibility: false },
-    { field: "Status", header: "Status", visibility: true, exportable: false },
-    { field: "modifiedStatus", header: "Status", visibility: false },
-    { field: "CreatedBy", header: "Created By", visibility: false },
-    { field: "CreatedDateFormat", header: "Created Date", visibility: false },
-    { field: "ModifiedBy", header: "Modified By", visibility: false },
-    { field: "ReferenceCount", header: "Reference Count", visibility: false },
-    { field: "PageCount", header: "Page Count", visibility: false },
-    { field: "SlideCount", header: "Slide Count", visibility: false },
+    { field: "POC", header: "POC", visibility: true , Type:'string',dbName:'POC', options:[] },
+    { field: "TA", header: "TA", visibility: true , Type:'string',dbName:'TA', options:[] },
+    { field: "Molecule", header: "Molecule", visibility: true , Type:'string',dbName:'Molecule', options:[]},
+    { field: "RevenueBudget", header: "Revenue Budget", visibility: false, Type:'',dbName:'', options:[] },
+    { field: "OOPBudget", header: "OOP Budget", visibility: false, Type:'',dbName:'', options:[] },
+    { field: "Currency", header: "Currency", visibility: false, Type:'',dbName:'', options:[] },
+    { field: "Status", header: "Status", visibility: true, exportable: false, Type:'string',dbName:'Status', options:[] },
+    { field: "modifiedStatus", header: "Status", visibility: false, Type:'',dbName:'', options:[] },
+    { field: "CreatedBy", header: "Created By", visibility: false, Type:'',dbName:'', options:[] },
+    { field: "CreatedDateFormat", header: "Created Date", visibility: false, Type:'',dbName:'', options:[] },
+    { field: "ModifiedBy", header: "Modified By", visibility: false , Type:'',dbName:'', options:[]},
+    { field: "ReferenceCount", header: "Reference Count", visibility: false, Type:'',dbName:'', options:[] },
+    { field: "PageCount", header: "Page Count", visibility: false, Type:'',dbName:'', options:[] },
+    { field: "SlideCount", header: "Slide Count", visibility: false, Type:'',dbName:'', options:[] },
     {
       field: "AnnotationBinder",
       header: "Annotation/Binder",
-      visibility: false,
+      visibility: false,Type:'',dbName:'', options:[]
     },
 
     // { field: 'CreatedDate', header: 'Created Date', visibility: true, exportable: false }
@@ -89,31 +89,7 @@ export class AllProjectsComponent implements OnInit {
   ];
   // { field: 'CreatedBy' },
   // { field: 'CreatedDate' }];
-  public allProjects = {
-    SOWCode: [],
-    ProjectCode: [],
-    ShortTitle: [],
-    ClientLegalEntity: [],
-    ProjectType: [],
-    Status: [],
-    TA: [],
-    Molecule: [],
-    PrimaryResources: [],
-    POC: [],
-    // sowCodeArray: [],
-    // projectCodeArray: [],
-    // shortTitleArray: [],
-    // clientLegalEntityArray: [],
-    // POCArray: [],
-    // TAArray: [],
-    // PrimaryResourcesArray: [],
-    // MoleculeArray: [],
-    // projectTypeArray: [],
-    // statusArray: [],
-    // deliveryTypeArray: [],
-    // createdByArray: [],
-    // createdDateArray: []
-  };
+ 
   projectViewDataArray = [];
   public toUpdateIds = [];
   isAllProjectLoaderHidden = true;
@@ -255,7 +231,6 @@ export class AllProjectsComponent implements OnInit {
     ) {
       this.CSButtonEnable = true;
     }
-debugger
     this.isApprovalAction = true;
     this.reloadAllProject();
     this.checkEarlyTaskCompleted();
@@ -922,31 +897,11 @@ debugger
           label: projObj.PrimaryPOCText,
           value: projObj.PrimaryPOCText,
         });
-        // PrimaryResourcesTempArray.push({ label: projObj.Status, value: projObj.Status });
-        // createdByTempArray.push({ label: projObj.CreatedBy, value: projObj.CreatedBy });
-        // createDateTempArray.push({
-        //   label: this.datePipe.transform(projObj.CreatedDate, 'MMM dd yyyy hh:mm:ss aa'),
-        //   value: projObj.CreatedDate
-        // });
         tempAllProjectArray.push(projObj);
       }
       if (tempAllProjectArray) {
-        await this.createColFieldValues(tempAllProjectArray);
+        this.displayedColumns = await this.commonService.MainfilterForTable(this.displayedColumns,tempAllProjectArray);
       }
-      // this.allProjects.sowCodeArray = this.commonService.unique(sowCodeTempArray, 'value');
-      // this.allProjects.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
-      // this.allProjects.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
-      // this.allProjects.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
-      // // this.allProjects.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
-      // this.allProjects.projectTypeArray = this.commonService.unique(projectTypeTempArray, 'value');
-      // this.allProjects.statusArray = this.commonService.unique(statusTempArray, 'value');
-
-      // // this.allProjects.PrimaryResourcesArray = this.commonService.unique(PrimaryResourcesTempArray, 'value');
-      // this.allProjects.POCArray = this.commonService.unique(POCTempArray, 'value');
-      // this.allProjects.TAArray = this.commonService.unique(TATempArray, 'value');
-      // this.allProjects.MoleculeArray = this.commonService.unique(MoleculeTempArray, 'value');
-      // this.allProjects.createdByArray = this.commonService.unique(createdByTempArray, 'value');
-      // this.allProjects.createdDateArray = this.commonService.unique(createDateTempArray, 'value');
       this.pmObject.allProjectsArray = [];
       this.pmObject.allProjectsArray = tempAllProjectArray;
       setTimeout(() => {
@@ -957,12 +912,11 @@ debugger
       this.pmObject.columnFilter.ProjectCode = [this.params.ProjectCode];
       window.history.pushState({}, "Title", window.location.href.split("?")[0]);
     }
-
     if (
       this.pmObject.columnFilter.ProjectCode &&
       this.pmObject.columnFilter.ProjectCode.length
     ) {
-      const codeExists = this.allProjects.ProjectCode.find(
+      const codeExists = this.displayedColumns.find(c=>c.dbName ==='ProjectCode').options.find(
         (e) => e.label === this.pmObject.columnFilter.ProjectCode[0]
       );
       if (codeExists) {
@@ -1009,105 +963,6 @@ debugger
     this.showFilterOptions = true;
   }
 
-  createColFieldValues(resArray) {
-    this.allProjects.SOWCode = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.SOWCode, value: a.SOWCode };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.allProjects.ProjectCode = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.ProjectCode, value: a.ProjectCode };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.allProjects.ShortTitle = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.ShortTitle, value: a.ShortTitle };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.allProjects.ClientLegalEntity = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.allProjects.ProjectType = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.ProjectType, value: a.ProjectType };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.allProjects.Status = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = {
-              label:
-                a.Status === "Audit In Progress"
-                  ? "CS Audit"
-                  : a.Status === "Pending Closure"
-                  ? "Finance Audit"
-                  : a.Status,
-              value: a.Status,
-            };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.allProjects.TA = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.TA, value: a.TA };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.allProjects.Molecule = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.Molecule, value: a.Molecule };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    const poc1 = resArray
-      .map((a) => {
-        let b = { label: a.POC, value: a.POC };
-        return b;
-      })
-      .filter((ele) => ele.label);
-    this.allProjects.POC = this.commonService.sortData(
-      this.uniqueArrayObj(poc1)
-    );
-  }
 
   async approveRejectBudgetReduction(selectedStatus, projectObj) {
     let batchURL = [];
@@ -4580,7 +4435,7 @@ debugger
       this.providedProjectCode = "";
       this.pmObject.tabMenuItems[0].label = "All Projects (0)";
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
-      this.createColFieldValues([]);
+     // this.createColFieldValues([]);
     }
 
 
@@ -4660,45 +4515,6 @@ debugger
     this.pmObject.isMoveProjectToSOWVisible = false;
   }
 
-  isOptionFilter: boolean;
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
-
-  ngAfterViewChecked() {
-    if (this.pmObject.allProjectsArray.length && this.isOptionFilter) {
-      let obj = {
-        tableData: this.allProjectRef,
-        colFields: this.allProjects,
-      };
-      if (obj.tableData.filteredValue) {
-        this.commonService.updateOptionValues(obj);
-        if (
-          obj.colFields["Status"].filter((c) => c.value === "Pending Closure")
-        ) {
-          obj.colFields["Status"]
-            .filter((c) => c.value === "Pending Closure")
-            .map((c) => (c.label = "Finance Audit"));
-        }
-        if (
-          obj.colFields["Status"].filter((c) => c.value === "Audit In Progress")
-        ) {
-          obj.colFields["Status"]
-            .filter((c) => c.value === "Audit In Progress")
-            .map((c) => (c.label = "CS Audit"));
-        }
-      } else if (
-        obj.tableData.filteredValue === null ||
-        obj.tableData.filteredValue === undefined
-      ) {
-        this.createColFieldValues(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-    }
-    this.cdr.detectChanges();
-  }
 
   // this will open dialog with filter for Finance audit or CS audit project list.
   showAllCSFinanceAudit(title) {
@@ -4720,7 +4536,7 @@ debugger
 
     const allProjectItems = {
       projectList: ProjectList,
-      isOptionFilter: this.isOptionFilter,
+      // isOptionFilter: this.isOptionFilter,
       tableData: this.allProjectRef,
       AuditListType: title,
       projectFinanceIDs: ProjectFinanceIDs,

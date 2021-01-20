@@ -26,7 +26,7 @@
 <div class="p-col allProjects-section" [hidden]='isAllProjectTableHidden' hideshowMenu>
     <div *ngIf="showTable">
         <p-table #allProjectRef [columns]="displayedColumns" [value]="pmObject.allProjectsArray" [paginator]="true" [rows]="10" selectionMode="" exportFilename="All Projects" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" [stateKey]="hideExcelWithBudget ? 'MyDashboardProjects':'AllProjects'">
+            styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" [stateKey]="hideExcelWithBudget ? 'MyDashboardProjects':'AllProjects'">
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="firstColumnWidth">S.No</th>
@@ -41,7 +41,7 @@
                                     </div>
                                 </ng-template>
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-multiSelect [ngModel]="value" [options]="allProjects[col.field]" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                                    <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
                                         <ng-template let-option pTemplate="item">
                                             <div class="p-multiselect-representative-option">
                                                 <span class="p-ml-1">{{option.label}}</span>

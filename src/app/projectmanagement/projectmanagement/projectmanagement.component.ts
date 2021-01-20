@@ -20,7 +20,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class ProjectmanagementComponent implements OnInit, OnDestroy {
   @ViewChild('myInput', { static: true })
-  myInputVariable: ElementRef;
+  // myInputVariable: ElementRef;
   isUserAllowed = true;
   private tabMenuItems: MenuItem[];
   buttons: MenuItem[];
@@ -93,7 +93,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
 
       if(this.activeItem === this.pmObject.tabMenuItems[0]){
         const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
-        tabMenuInk.style.left='0px';
+        tabMenuInk.style.left='0px';  
       }
   }
   /**
@@ -155,7 +155,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.resetAddSOW();
     this.sowHeader = 'Add SOW';
     this.sowButton = 'Add SOW';
-    this.setSOWDropDownValue();
     this.addSowForm.controls.sowCode.enable();
     this.addSowForm.controls.status.disable();
     this.addSowForm.controls.currency.enable();
@@ -168,6 +167,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.pmObject.isSOWFormSubmit = false;
     await this.pmService.getAllRules('SOW');
     await this.pmService.GetRuleParameters('SOW');
+    this.setSOWDropDownValue();
 
    
   }
@@ -829,7 +829,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.pmObject.addSOW.Addendum.TaxBudget = +'';
     this.pmObject.isSOWFormSubmit = false;
     this.selectedFile = null;
-    this.myInputVariable.nativeElement.value = '';
+    // this.myInputVariable.nativeElement.value = '';
   }
   /**
    * This method is used to close the additional Popup.
@@ -988,5 +988,11 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.addSowForm.get('delivery').setValue(this.pmObject.OwnerAccess.selectedDeliveryAccess);
     this.addSowForm.get('cm2').setValue(this.pmObject.OwnerAccess.selectedCMOwner);
     this.addSowForm.get('deliveryOptional').setValue(this.pmObject.OwnerAccess.selectedDeliveryOwner);
+  }
+
+
+  cancel(){
+    this.pmObject.isAddSOWVisible=false;
+    this.resetAddSOW();
   }
 }

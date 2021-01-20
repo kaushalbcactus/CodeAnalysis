@@ -873,7 +873,13 @@ export class CommonService {
   MainfilterForTable(ArrayObjectsValue, resArray ){
     ArrayObjectsValue.forEach(element=>{
       if(element.Type && element.Type === 'string'){
-        element.options = this.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a[element.dbName], value: a[element.dbName] }; return b; }).filter(ele => ele.label)));
+        // if(element.dbName === 'Status'){
+          element.options = this.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a[element.dbName] === "Audit In Progress"
+          ? "CS Audit" : a[element.dbName] ===  "Pending Closure"
+          ? "Finance Audit" : a[element.dbName]  , value: a[element.dbName] }; return b; }).filter(ele => ele.label)));
+        // }else{
+        //   element.options = this.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a[element.dbName], value: a[element.dbName] }; return b; }).filter(ele => ele.label)));
+        // }
       } else if(element.Type && element.Type === 'date'){
         element.options = this.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a[element.dbName], 'MMM dd, yyyy') , value: a[element.dbName] }; return b; }).filter(ele => ele.label))); 
       } else if(element.Type && element.Type === 'datetime'){

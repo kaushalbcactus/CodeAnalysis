@@ -65,15 +65,6 @@ export class SendToClientComponent implements OnInit {
   popItems: MenuItem[];
   public scArrays = {
     taskItems: [],
-    ProjectCode: [],
-    ShortTitle: [],
-    ClientLegalEntity: [],
-    POC: [],
-    DeliverableType: [],
-    DueDate: [],
-    displayMilestone: [],
-    PreviousTaskUser: [],
-    PreviousTaskStatus: [],
     nextTaskArray: [],
     previousTaskArray: []
   };
@@ -473,7 +464,6 @@ export class SendToClientComponent implements OnInit {
      
    
     } else {
-      debugger
       if (this.scArrays.taskItems.length !== this.pmObject.countObj.scCount) {
         this.pmObject.countObj.scCount = this.scArrays.taskItems.length;
       }
@@ -509,30 +499,5 @@ export class SendToClientComponent implements OnInit {
       menu.model[0].visible = false;
     }
   }
-  @HostListener('document:click', ['$event'])
-  clickout(event) {
-    if (event.target.className === 'pi pi-ellipsis-v') {
-      if (this.tempClick) {
-        this.tempClick.style.display = 'none';
-        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
-          this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = '';
-
-        } else {
-          this.tempClick = undefined;
-        }
-      } else {
-        this.tempClick = event.target.parentElement.children[0].children[0];
-        this.tempClick.style.display = '';
-      }
-    } else {
-      if (this.tempClick) {
-        this.tempClick.style.display = 'none';
-
-        this.tempClick = undefined;
-      }
-    }
-  }
-
 
 }

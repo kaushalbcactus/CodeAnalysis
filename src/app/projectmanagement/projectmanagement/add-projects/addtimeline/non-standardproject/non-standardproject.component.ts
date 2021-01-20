@@ -427,7 +427,6 @@ export class NonStandardprojectComponent implements OnInit {
     $("#nonstandardTimelineConfirm").attr("disabled", "true");
   }
   setFieldProperties() {
-    debugger
     if (this.pmObject.addProject.Timeline.NonStandard.IsStandard) {
       $("#nonStandardTimeline").attr("checked", "checked");
       this.pmObject.isStandardChecked = false;

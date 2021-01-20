@@ -6,7 +6,6 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CustomMaterialModule } from '../shared/material.module';
 import { TimelineComponent } from './timeline/timeline.component';
-import { NgGanttEditorModule } from 'ng-gantt';
 import { TreeTableModule } from 'primeng/treetable';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { PrimengModule } from '../primeng/primeng.module';
@@ -38,7 +37,6 @@ import { ConflictAllocationComponent } from '../shared/conflict-allocations/conf
     CustomMaterialModule,
     FormsModule,
     ReactiveFormsModule,
-    NgGanttEditorModule,
     TreeTableModule,
     PrimengModule,
     DndModule,

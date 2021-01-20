@@ -1,15 +1,12 @@
-<div fxLayout="column" style="padding: 8vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+<div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="modalloaderenable">
     <div id="modalInnerLoader"></div>
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
 
-<div class='UserButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="modalloaderenable">
-
-    <button type="button" pButton icon="pi pi-save" id="saveBudget" [ngStyle]="{'margin-right':'5px','cursor':'pointer' }" (click)="saveBudget()" label="Update"></button>
-
-    <button type="button" pButton icon="pi pi-times" id="cancelBudget" (click)="cancel();" label="Cancel"></button>
-
+<div class="pdialogButton p-col-12 p-grid p-jc-end">
+    <button type="button" (click)="saveBudget()" label="Update" id="saveBudget" pButton icon="pi pi-save" [ngStyle]="{'cursor':'pointer' }" class="p-mx-1 p-button-raised p-button-danger"></button>
+    <button type="button" pButton icon="pi pi-times" id="cancelBudget" (click)="cancel();" label="Cancel" class="p-button-raised p-button-danger"></button>
 </div>
 
 <div *ngIf="!modalloaderenable" #scrollDown>
@@ -113,19 +110,12 @@
 
     <p-card class="p-col-12">
         <form [formGroup]='changeBudgetForm' class="p-col-12">
-            <!-- <div class="p-col-12">
-
-                <div class="p-col-2" *ngFor="let type of budgetType" style="float: left;">
-                    <p-radioButton name="budgetType" [value]="type.value" [label]="type.label" [(ngModel)]="selectedValue" inputId="selectedValue"></p-radioButton>
-                </div>
-            </div>
-            <br><br> -->
-
 
             <div class="p-grid">
                 <div class="p-grid p-col">
-                    <div class="p-col-4" *ngFor="let type of budgetType" style="float: left;">
-                        <p-radioButton name="budgetType" [value]="type.value" [label]="type.label" formControlName="selectedValue" (ngModelChange)="UpdateValidator($event)" inputId="selectedValue"></p-radioButton>
+                    <div class="p-col-4 p-field-checkbox  p-mb-0" *ngFor="let type of budgetType">
+                        <p-radioButton name="selectedValue" [value]="type" formControlName="selectedValue" (onClick)="UpdateValidator($event)" [inputId]="type.value"></p-radioButton>
+                        <label class="p-m-2" [for]="type.value">{{type.label}}</label>
                     </div>
                 </div>
                 <div class="p-grid p-col">

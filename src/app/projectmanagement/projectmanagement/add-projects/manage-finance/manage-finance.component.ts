@@ -24,8 +24,6 @@ declare var $;
   providers: [DialogService],
 })
 export class ManageFinanceComponent implements OnInit {
-  @ViewChild("loader", { static: false }) loaderView: ElementRef;
-  @ViewChild("spanner", { static: false }) spannerView: ElementRef;
   @Input() billedBy: any;
   @Output() budgetOutputData = new EventEmitter<any>();
   @Output() closepopup = new EventEmitter<any>();
@@ -1871,8 +1869,7 @@ export class ManageFinanceComponent implements OnInit {
   ////////// Refactor
   async editManageFinances(projObj) {
     this.hideRemoveButton = false;
-    this.loaderView.nativeElement.classList.add('show');
-    this.spannerView.nativeElement.classList.add('show');
+    this.constant.loader.isWaitDisable = false;
     this.poData = [];
     this.isBudgetHoursDisabled = false;
     this.sowNumber = projObj.SOWCode;
@@ -2344,8 +2341,7 @@ export class ManageFinanceComponent implements OnInit {
       }
       this.existPODataArray = this.poData;
       this.showPo = true;
-      this.loaderView.nativeElement.classList.remove('show');
-      this.spannerView.nativeElement.classList.remove('show');
+      this.constant.loader.isWaitDisable = true;
     }
   }
 
@@ -2633,8 +2629,7 @@ export class ManageFinanceComponent implements OnInit {
 
     console.log(budgetType);
     this.updateInvoices = [];
-    this.loaderView.nativeElement.classList.add('show');
-    this.spannerView.nativeElement.classList.add('show');
+    this.constant.loader.isWaitDisable = false;
     const batchURL = [];
     const options = {
       data: null,
@@ -3281,8 +3276,7 @@ export class ManageFinanceComponent implements OnInit {
       );
       const res = await this.spServices.executeBatch(batchURL);
     }
-    this.loaderView.nativeElement.classList.remove('show');
-    this.spannerView.nativeElement.classList.remove('show');
+    this.constant.loader.isWaitDisable = true;
 
     this.commonService.showToastrMessage(
       this.constant.MessageType.success,
@@ -3778,8 +3772,8 @@ export class ManageFinanceComponent implements OnInit {
       });
       ref.onClose.subscribe(async (data) => {
         if (data) {
-          this.loaderView.nativeElement.classList.show('show');
-          this.spannerView.nativeElement.classList.show('show');
+
+          this.constant.loader.isWaitDisable = false;
           console.log("selected data");
           console.log(data); //LineItems
 

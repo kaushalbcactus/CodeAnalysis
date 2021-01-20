@@ -1,18 +1,16 @@
-::ng-deep .mainlable {
-    font-size: 14px !important;
-    color: #c72e2e !important;
-}
-
 ::ng-deep .ui-float-label {
     float: left !important;
 }
 
+
 /* ::ng-deep .ui-datepicker table td>a.ui-state-active,
 ::ng-deep .ui-datepicker table td>span.ui-state-active, */
+
 ::ng-deep .customDate .ui-calendar-button,
 ::ng-deep .customDate .ui-button-icon-only
 /* ::ng-deep body .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight,
 ::ng-deep body .ui-chkbox .ui-chkbox-box.ui-state-active  */
+
 {
     background-color: #C53E3E !important;
     color: #ffffff !important;
@@ -52,18 +50,22 @@
     white-space: nowrap!important;
 }
 
-.ui-float-label> label {
+.ui-float-label>label {
     top: -13px !important;
 }
+
 ::ng-deep .ui-helper-clearfix {
-  border: 1px solid #a6a6a6!important;
+    border: 1px solid #a6a6a6!important;
 }
+
 ::ng-deep .ui-dropdown {
-  min-width: fit-content!important;
+    min-width: fit-content!important;
 }
+
 .spansubmit {
-  display: inline!important;
+    display: inline!important;
 }
+
 .btnSubmit {
-  margin-top: 0.5em!important;
+    margin-top: 0.5em!important;
 }
