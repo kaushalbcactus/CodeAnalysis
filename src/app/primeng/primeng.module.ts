@@ -42,6 +42,7 @@ import { TooltipModule } from "primeng/tooltip";
 import { InputSwitchModule } from "primeng/inputswitch";
 import { SliderModule } from "primeng/slider";
 import { RatingModule } from "primeng/rating";
+
 // import {AvatarGroupModule} from 'primeng/avatargroup';
 // import { AvatarModule } from "primeng/avatar";
 

@@ -28,7 +28,7 @@
 
 <div class="cls_sendToClient table100 slaExist ver4 m-b-110" [hidden]="isSCTableHidden">
     <p-table #sendToClientTableRef [columns]="displayedColumns" [value]="pmObject.sendToClientArray" [paginator]="true" [rows]="10" selectionMode="" exportFilename="Send to client" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-        styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="SendToClientTable">
+        styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="SendToClientTable" hideshowMenu>
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th [ngClass]="{'firstColumnWidth': isFirst}" *ngFor="let col of columns; first as isFirst;" [pSortableColumn]="col.field" [hidden]="!col.visibility">

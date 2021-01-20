@@ -43,6 +43,22 @@ body {
     }
 }
 
+#scTableInnerLoader {
+    border: 3px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 3px solid red;
+    border-bottom: 3px solid red;
+    width: 20px;
+    display: inline-block;
+    height: 20px;
+    vertical-align: middle;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    position: relative;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
 #scInnerLoader {
     border: 10px solid #f3f3f3 !important;
     border-radius: 50% !important;
@@ -479,8 +495,9 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     color: #c53e3e;
 }
 
-.error {
-    color: #c53e3e;
+.error,
+.mainlable {
+    color: #c53e3e !important;
 }
 
 .p-checkbox-label {
@@ -658,7 +675,11 @@ i.pi.pi-ellipsis-v {
 .p-dropdown-items-wrapper,
 .p-datatable-cactus,
 .p-tieredmenu-overlay,
-.p-menu-overlay {
+.p-menu-overlay,
+.p-fieldset-content,
+.p-multiselect-empty-message,
+.mainlable,
+.p-multiselect-item {
     font-size: 13px !important;
 }
 

@@ -31,17 +31,17 @@ export class ClientReviewComponent implements OnInit {
     listName: ''
   };
   displayedColumns: any[] = [
-    { field: 'SLA', header: 'SLA', visibility: true },
-    { field: 'ProjectCode', header: 'Project Code', visibility: true },
-    { field: 'ShortTitle', header: 'Short Title', visibility: true },
-    { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
-    { field: 'POC', header: 'POC', visibility: true },
-    { field: 'DeliverableType', header: 'Deliverable Type', visibility: true },
-    { field: 'DueDate', header: 'Due Date', visibility: true, exportable: false },
-    { field: 'Milestone', header: 'Milestone', visibility: true },
-    { field: 'DeliveryDate', header: 'Delivery Date', visibility: true, exportable: false },
-    { field: 'DeliveryDateFormat', header: 'Delivery Date', visibility: false },
-    { field: 'DueDateFormat', header: 'Due Date', visibility: false }];
+    { field: 'SLA', header: 'SLA', visibility: true , Type:'',dbName:'', options:[]  },
+    { field: 'ProjectCode', header: 'Project Code',  visibility: true ,Type:'string',dbName:'ProjectCode', options:[]  },
+    { field: 'ShortTitle', header: 'Short Title', visibility: true ,Type:'string',dbName:'ShortTitle', options:[]  },
+    { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true ,Type:'string',dbName:'ClientLegalEntity', options:[]},
+    { field: 'POC', header: 'POC', visibility: true,Type:'string',dbName:'POC', options:[] },
+    { field: 'DeliverableType', header: 'Deliverable Type', visibility: true, Type:'string',dbName:'DeliverableType', options:[] },
+    { field: 'DueDate', header: 'Due Date', visibility: true, exportable: false, Type:'datetime',dbName:'DueDateFormat', options:[] },
+    { field: 'Milestone', header: 'Milestone', visibility: true, Type:'string',dbName:'Milestone', options:[] },
+    { field: 'DeliveryDate', header: 'Delivery Date', visibility: true, exportable: false, Type:'datetime',dbName:'DeliveryDate', options:[] },
+    { field: 'DeliveryDateFormat', header: 'Delivery Date', visibility: false,Type:'',dbName:'', options:[] },
+    { field: 'DueDateFormat', header: 'Due Date', visibility: false, Type:'',dbName:'', options:[] }];
   filterColumns: any[] = [
     { field: 'ProjectCode' },
     { field: 'ShortTitle' },
@@ -73,17 +73,8 @@ export class ClientReviewComponent implements OnInit {
   ];
   public crArrays = {
     taskItems: [],
-    ProjectCode: [],
-    ShortTitle: [],
-    ClientLegalEntity: [],
-    POC: [],
-    DeliverableType: [],
-    DueDate: [],
-    Milestone: [],
-    PreviousTaskUser: [],
     PreviousTaskStatus: [],
     DeliveryDate: [],
-    nextTaskArray: [],
     previousTaskArray: []
   };
   constructor(
@@ -335,7 +326,7 @@ export class ClientReviewComponent implements OnInit {
       }
 
       if (tempCRArray.length) {
-        this.createColFieldValues(tempCRArray);
+        this.displayedColumns = await this.commonService.MainfilterForTable(this.displayedColumns,tempCRArray);
       }
       this.pmObject.clientReviewArray = tempCRArray;
       this.pmObject.countObj.crCount = tempCRArray.length;
@@ -360,17 +351,7 @@ export class ClientReviewComponent implements OnInit {
     this.commonService.setIframeHeight();
   }
 
-  createColFieldValues(resArray) {
-    this.crArrays.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-    this.crArrays.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
-    this.crArrays.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
-    this.crArrays.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
-    this.crArrays.DeliverableType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DeliverableType, value: a.DeliverableType }; return b; }).filter(ele => ele.label)));
-    this.crArrays.DueDate = this.commonService.sortDataDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.DueDateFormat, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a.DueDateFormat, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label)));
-    this.crArrays.Milestone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Milestone, value: a.Milestone }; return b; }).filter(ele => ele.label)));
-    this.crArrays.DeliveryDate = this.commonService.sortDataDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.DeliveryDate, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a.DeliveryDate, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label)));
-
-  }
+ 
 
   uniqueArrayObj(array: any) {
     let sts: any = '';
@@ -538,54 +519,7 @@ export class ClientReviewComponent implements OnInit {
     this.selectedCRTask = rowData;
     menu.model[3].visible = this.selectedOption.name === 'Closed' ? false : true;
   }
-  // @HostListener('document:click', ['$event'])
-  // clickout(event) {
-  //   if (event.target.className === "pi pi-ellipsis-v") {
-  //     if (this.tempClick) {
-  //       this.tempClick.style.display = "none";
-  //       if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
-  //         this.tempClick = event.target.parentElement.children[0].children[0];
-  //         this.tempClick.style.display = "";
-  //       } else {
-  //         this.tempClick = undefined;
-  //       }
-  //     } else {
-  //       this.tempClick = event.target.parentElement.children[0].children[0];
-  //       this.tempClick.style.display = "";
-  //     }
-
-  //   } else {
-  //     if (this.tempClick) {
-  //       this.tempClick.style.display = "none";
-  //       this.tempClick = undefined;
-  //     }
-  //   }
-  // }
-
-  // isOptionFilter: boolean;
-  // optionFilter(event: any) {
-  //   if (event.target.value) {
-  //     this.isOptionFilter = false;
-  //   }
-  // }
-
-  // ngAfterViewChecked() {
-  //   if (this.pmObject.clientReviewArray.length && this.isOptionFilter) {
-  //     let obj = {
-  //       tableData: this.crTableRef,
-  //       colFields: this.crArrays,
-  //       // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
-  //     }
-  //     if (obj.tableData.filteredValue) {
-  //       this.commonService.updateOptionValues(obj);
-  //     } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-  //       this.createColFieldValues(obj.tableData.value);
-  //       this.isOptionFilter = false;
-  //     }
-  //   }
-  //   this.cdr.detectChanges();
-  // }
-
+  
   onChangeSelect(event) {
     this.isCRInnerLoaderHidden = false;
     if (this.selectedOption.name === 'Not Started') {
