@@ -435,17 +435,6 @@ export class ReferenceDataComponent implements OnInit {
     this.showAddStandardTemplateModal = true;
     this.referenceDataObject.isStandardTemplateFormSubmit = false;
   }
-
-  validateAllFormFields(formGroup: FormGroup) {
-    Object.keys(formGroup.controls).forEach(field => {
-      const control = formGroup.get(field);
-      if (control instanceof FormControl) {
-        control.markAsTouched({ onlySelf: false });
-      } else if (control instanceof FormGroup) {
-        this.validateAllFormFields(control);
-      }
-    });
-  }
   onlyNumberKey(event) {
     console.log(event);
   }

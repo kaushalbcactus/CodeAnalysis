@@ -509,7 +509,7 @@ export class ProjectAttributesComponent implements OnInit {
           this.setFormFieldValue();
           this.pmObject.activeIndex = 3;
         } else {
-          this.validateAllFormFields(this.addProjectAttributesForm);
+          this.commonService.validateAllFormFields(this.addProjectAttributesForm);
         }
       }
     } else {
@@ -517,7 +517,7 @@ export class ProjectAttributesComponent implements OnInit {
         this.setFormFieldValue();
         this.pmObject.activeIndex = 3;
       } else {
-        this.validateAllFormFields(this.addProjectAttributesForm);
+        this.commonService.validateAllFormFields(this.addProjectAttributesForm);
       }
     }
   }
@@ -545,21 +545,6 @@ export class ProjectAttributesComponent implements OnInit {
     } else {
       this.enableCountFields = false;
     }
-  }
-
-  /**
-   * This method is used to validate project attributes field.
-   * @param formGroup Pass the formGroup as parameter.
-   */
-  validateAllFormFields(formGroup: FormGroup) {
-    Object.keys(formGroup.controls).forEach((field) => {
-      const control = formGroup.get(field);
-      if (control instanceof FormControl) {
-        control.markAsTouched({ onlySelf: false });
-      } else if (control instanceof FormGroup) {
-        this.validateAllFormFields(control);
-      }
-    });
   }
   /**
    * This method is used to the form field value.
@@ -972,7 +957,7 @@ export class ProjectAttributesComponent implements OnInit {
         this.continueSaveProject();
       }
     } else {
-      this.validateAllFormFields(this.addProjectAttributesForm);
+      this.commonService.validateAllFormFields(this.addProjectAttributesForm);
     }
   }
 
@@ -1191,7 +1176,7 @@ export class ProjectAttributesComponent implements OnInit {
         value: val,
       });
     } else {
-      this.validateAllFormFields(this.addMolecule);
+      this.commonService.validateAllFormFields(this.addMolecule);
     }
   }
 

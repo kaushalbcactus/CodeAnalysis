@@ -330,22 +330,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     });
   }
   /**
-   * This method is used to validate the form
-   * @param formGroup pass the formGroup as a parameter.
-   */
-  validateAllFormFields(formGroup: FormGroup) {
-    Object.keys(formGroup.controls).forEach(field => {
-      // console.log(field);
-      const control = formGroup.get(field);
-      if (control instanceof FormControl) {
-        control.markAsTouched({ onlySelf: true });
-        // console.log(control);
-      } else if (control instanceof FormGroup) {
-        this.validateAllFormFields(control);
-      }
-    });
-  }
-  /**
    * This method is use to set the SOW total.
    */
   setSOWTotal() {
@@ -502,7 +486,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         }
 
       } else {
-        this.validateAllFormFields(this.addSowForm);
+        this.commonService.validateAllFormFields(this.addSowForm);
       }
 
     }

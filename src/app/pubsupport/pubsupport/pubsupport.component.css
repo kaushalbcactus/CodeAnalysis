@@ -43,6 +43,7 @@ legend {
 a,a:hover {
     color: #d7181f;
     cursor: pointer;
+    text-decoration: none;
   }
 
   #authorModal.modal-dialog {

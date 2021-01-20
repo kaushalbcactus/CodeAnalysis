@@ -1,18 +1,18 @@
 <form [formGroup]="createConference_form">
     <div class='blockBookingButton'>
-        <button type="button" pButton icon="pi pi-save" id="saveBooking"
-            [ngStyle]="{'margin-right':'5px','cursor':'pointer' }" [disabled]="submitBtn.isClicked" (click)="onSubmit('createConference')" label="Create"></button>
-
-        <button type="button" pButton icon="pi pi-times" (click)="cancelFormSub();" label="Cancel"
-            class="ui-button-secondary" style="background-color:ghostwhite;"></button>
+        <div class="pdialogButton p-col-12 p-grid p-jc-end">
+            <button type="button " pButton icon="pi pi-save" id="saveBooking" [disabled]="submitBtn.isClicked"
+                class="p-mx-1 p-button-raised p-button-danger " (click)="onSubmit('createConference')"
+                label="Create"></button>
+            <button type="button " pButton icon="pi pi-times" (click)="cancelFormSub();" label="Cancel"
+                class="p-button-raised p-button-danger "></button>
+        </div>
     </div>
-
-    <div class="ui-g">
+    <!-- <div class="ui-g">
         <div class="p-col-12 p-md-6 p-lg-2 padding15">
             Conference Name <span style="color:red">*</span>
         </div>
         <div class="p-col-12 p-md-6 p-lg-10">
-            <!-- <input type="text" pInputText maxlength="30" formControlName="ConferenceName" style="width: 100% !important;" placeholder="Name" /> -->
             <textarea rows="5" cols="30" pInputTextarea formControlName="ConferenceName" maxlength="200"
             (keyup)="onKey($event.value)" (blur)="checkUniqueName()"></textarea>
             <span *ngIf="uniqueJName" style="color:red;">Please provide unique name.</span>
@@ -23,9 +23,28 @@
                     Please provide Conference Name.</div>
             </div>
         </div>
-    </div>
+    </div> -->
 
-    <div class="ui-g">
+    <div class="p-col p-grid p-my-2">
+        <div class="p-col p-grid p-p-0">
+            <label for="ConferenceName" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                    class="compulsory">*</span>Conference Name</label>
+            <div class="p-col-12 p-md-8">
+                <textarea rows="5" cols="30" pInputTextarea formControlName="ConferenceName" maxlength="200"
+                    (keyup)="onKey($event.value)" (blur)="checkUniqueName()"></textarea>
+                <span *ngIf="uniqueJName" class="error">Please provide unique name.</span>
+                <span *ngIf="createConference_form.value.ConferenceName"
+                    style="float: right;">{{createConference_form.value.ConferenceName.length}}/200</span>
+                <span *ngIf="createConference_form.value.ConferenceName.length >= '200'"
+                    class="error">You have enter maximum length of Conference Name</span>
+                <div *ngIf="formSubmit.isSubmit && isValidAddConferenceDetailsForm.ConferenceName.errors">
+                    <div *ngIf="isValidAddConferenceDetailsForm.ConferenceName.errors.required" class="error">
+                        Please provide Conference Name.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="ui-g">
         <div class="p-col-12 p-md-6 p-lg-2 padding15">
             <div class="box">
                 Conference Date <span style="color:red">*</span>
@@ -34,21 +53,21 @@
         <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
             <p-calendar [showIcon]="true" [style]="{'width':'100%'}" placeholder="Select Date" [readonlyInput]="true"
                 formControlName="ConferenceDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}"
-                appendTo="body" [monthNavigator]="true" [yearNavigator]="true"></p-calendar> 
+                appendTo="body" [monthNavigator]="true" [yearNavigator]="true"></p-calendar>
             <div *ngIf="formSubmit.isSubmit && isValidAddConferenceDetailsForm.ConferenceDate.errors">
                 <div *ngIf="isValidAddConferenceDetailsForm.ConferenceDate.errors.required" style="color:red;">
                     Please provide Start Date.</div>
             </div>
         </div>
         <div class="p-col-12 p-md-6 p-lg-2 padding15">
-            <div class="box">Submission Deadline <span style="color:red">*</span></div> 
+            <div class="box">Submission Deadline <span style="color:red">*</span></div>
         </div>
         <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
             <div class="box">
                 <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true"
                     placeholder="Select Date" formControlName="SubmissionDeadline" [disabledDays]="[0,6]"
                     dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
-                    [yearNavigator]="true"> 
+                    [yearNavigator]="true">
                 </p-calendar>
                 <div *ngIf="formSubmit.isSubmit && isValidAddConferenceDetailsForm.SubmissionDeadline.errors">
                     <div *ngIf="isValidAddConferenceDetailsForm.SubmissionDeadline.errors.required" style="color:red;">
@@ -56,21 +75,43 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="ui-g">
-        <div class="p-col-12 p-md-6 p-lg-2 padding15">
-            Comments
-        </div>
-        <div class="p-col-12 p-md-6 p-lg-10">
-            <div class="box">
-                <textarea rows="5" cols="30" pInputTextarea formControlName="Comments" maxlength="2000"></textarea>
-                <!-- <div *ngIf="formSubmit.isSubmit && isValidAddConferenceDetailsForm.Comments.errors">
-                    <div *ngIf="isValidAddConferenceDetailsForm.Comments.errors.required" style="color:red;">
-                        Please provide Comments.</div>
-                </div> -->
+    </div> -->
+    <div class="p-col p-grid p-my-2">
+        <div class="p-col p-grid p-p-1">
+            <label for="ConferenceDate" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                    class="compulsory">*</span>Conference Date</label>
+            <div class="p-col-12 p-md-8">
+                <p-calendar [showIcon]="true" [style]="{'width':'100%'}" placeholder="Select Date"
+                    [readonlyInput]="true" formControlName="ConferenceDate" [disabledDays]="[0,6]" dateFormat="M dd, yy"
+                    yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" [yearNavigator]="true">
+                </p-calendar>
+                <div *ngIf="formSubmit.isSubmit && isValidAddConferenceDetailsForm.ConferenceDate.errors">
+                    <div *ngIf="isValidAddConferenceDetailsForm.ConferenceDate.errors.required" class="error">
+                        Please provide Start Date.</div>
+                </div>
             </div>
         </div>
-    </div>
-
+        <div class="p-col p-grid p-p-0">
+            <label for="SubmissionDeadline" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Submission Deadline</label>
+            <div class="p-col-12 p-md-8 ">
+                <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true"
+                    placeholder="Select Date" formControlName="SubmissionDeadline" [disabledDays]="[0,6]"
+                    dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
+                    [yearNavigator]="true">
+                </p-calendar>
+                <div *ngIf="formSubmit.isSubmit && isValidAddConferenceDetailsForm.SubmissionDeadline.errors">
+                    <div *ngIf="isValidAddConferenceDetailsForm.SubmissionDeadline.errors.required" class="error">
+                        Please provide Submission Deadline Date.</div>
+                </div>
+            </div>
+        </div>
+    </div>  
+    <div class="p-col p-grid p-my-2">
+        <div class="p-col p-grid p-p-0">
+            <label for="Comments" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Comments</label>
+            <div class="p-col-12 p-md-8">
+                <textarea rows="5" cols="30" pInputTextarea formControlName="Comments" maxlength="2000"></textarea>
+            </div>
+        </div>
+    </div> 
 </form>

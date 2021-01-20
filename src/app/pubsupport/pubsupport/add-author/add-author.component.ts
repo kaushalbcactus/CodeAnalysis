@@ -93,34 +93,40 @@ export class AddAuthorComponent implements OnInit {
         // stop here if form is invalid
         this.formSubmit.isSubmit = true;
         this.submitBtn.isClicked = true;
-        if (this.add_author_form.invalid) {
+        // if (this.add_author_form.invalid) {
+        //     this.submitBtn.isClicked = false;
+        //     return;
+        // }
+        if (this.add_author_form.valid) {
+            this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
+            //this.add_author_form.value.Title = this.selectedRowItem.ProjectCode;
+            //this.add_author_form.value.__metadata = { type: this.constantService.listNames.Authors.type };
+            // const endpoint = this.pubsupportService.pubsupportComponent.addAuthor.addAuthorDetails;
+            // Added by Arvind
+            let obj = this.add_author_form.value;
+            obj['Title'] = this.selectedRowItem.ProjectCode;
+            obj['CommentsMT'] = obj['Comments'];
+            delete obj['Comments'];
+            obj['FirstNameST'] = obj['FirstName'];
+            delete obj['FirstName'];
+            obj['AddressMT'] = obj['Address'];
+            delete obj['Address'];
+            obj['__metadata'] = { type: this.constantService.listNames.Authors.type };
+            // Arvind code end here.
+            const endpoint = this.spOperationsService.getReadURL(this.constantService.listNames.Authors.name);
+            const data = [{
+                // data: this.add_author_form.value,
+                data: obj,
+                url: endpoint,
+                type: 'POST',
+                listName: this.constantService.listNames.Authors.name
+            }];
+            this.submit(data, type);
+        } else {
+            this.common.validateAllFormFields(this.add_author_form);
             this.submitBtn.isClicked = false;
             return;
         }
-        this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
-        //this.add_author_form.value.Title = this.selectedRowItem.ProjectCode;
-        //this.add_author_form.value.__metadata = { type: this.constantService.listNames.Authors.type };
-        // const endpoint = this.pubsupportService.pubsupportComponent.addAuthor.addAuthorDetails;
-        // Added by Arvind
-        let obj = this.add_author_form.value;
-        obj['Title'] = this.selectedRowItem.ProjectCode;
-        obj['CommentsMT'] = obj['Comments'];
-        delete obj['Comments'];
-        obj['FirstNameST'] =  obj['FirstName'];
-        delete obj['FirstName'];
-        obj['AddressMT'] = obj['Address'];
-        delete obj['Address'];
-        obj['__metadata'] = { type: this.constantService.listNames.Authors.type };
-        // Arvind code end here.
-        const endpoint = this.spOperationsService.getReadURL(this.constantService.listNames.Authors.name);
-        const data = [{
-            // data: this.add_author_form.value,
-            data: obj,
-            url: endpoint,
-            type: 'POST',
-            listName: this.constantService.listNames.Authors.name
-        }];
-        this.submit(data, type);
     }
 
     async submit(dataEndpointArray, type: string) {
@@ -132,9 +138,9 @@ export class AddAuthorComponent implements OnInit {
             res = result[0].retItems;
         }
         if (res.hasOwnProperty('hasError')) {
-            this.common.showToastrMessage(this.constantService.MessageType.error,res.message.value,false);
+            this.common.showToastrMessage(this.constantService.MessageType.error, res.message.value, false);
         } else if (type === 'addAuthor') {
-            this.common.showToastrMessage(this.constantService.MessageType.success,'Author Created.',false);
+            this.common.showToastrMessage(this.constantService.MessageType.success, 'Author Created.', false);
             this.addAuthorModal = false;
             this.add_author_form.reset();
             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
