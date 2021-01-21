@@ -45,19 +45,16 @@ export class PreStackcommonService {
     return task;
   }
 
-  /**
-   * Action is performed to recalculate daily allocation on changes to either resource, dates or budget hours
-   */
-  async calcPrestackAllocation(resource: IUserCapacity[], milestoneTask): Promise<IUserCapacity> {
+  async calcResourceCapacity(resource: IUserCapacity[], milestoneTask) {
     let resourceCapacity: IUserCapacity = null;
-    milestoneTask.allocationTypeLoader = true;
+    let allocationData :IDailyAllocationTask= null;
     const task = this.getData(milestoneTask);
     const eqgTasks = ['EditSlot', 'QualitySlot', 'GraphicsSlot', 'Client Review', 'Send to client'];
     if (!eqgTasks.find(t => t === task.taskType) && task.startDatePart &&
       resource.length && task.endDatePart && +task.budgetHrs &&
       task.endDate > task.startDate && resource.length
       && new Date(task.startDatePart).getTime() !== new Date(task.endDatePart).getTime()) {
-      const allocationData: IDailyAllocationTask = {
+      allocationData = {
         ID: task.ID,
         task: task.task,
         startDate: task.startDatePart,
@@ -72,6 +69,22 @@ export class PreStackcommonService {
         allocationType: ''
       };
       resourceCapacity = await this.recalculateUserCapacity(allocationData);
+    }
+    return {
+      capacity: resourceCapacity,
+      data: allocationData
+    };
+  }
+
+  /**
+   * Action is performed to recalculate daily allocation on changes to either resource, dates or budget hours
+   */
+  async calcPrestackAllocation(resource: IUserCapacity[], milestoneTask): Promise<IUserCapacity> {
+      milestoneTask.allocationTypeLoader = true;
+      const resourceDetail = await this.calcResourceCapacity(resource, milestoneTask);
+      const resourceCapacity = resourceDetail.capacity;
+      const allocationData = resourceDetail.data;
+      if(resourceCapacity) {
       const allocationSplit = await this.performAllocation(resourceCapacity, allocationData, false, []);
       const objDailyAllocation: IPreStack = this.getAllocationPerDay(resourceCapacity, allocationData, allocationSplit.arrAllocation);
       this.setAllocationPerDay(objDailyAllocation, milestoneTask);

@@ -110,7 +110,8 @@ export class ConflictAllocationComponent implements OnInit, AfterViewChecked {
       }
     }
     allTasks = allTasks.filter(e => e.itemType !== 'Client Review' && e.itemType !== 'Send to client' &&
-      e.slotType !== 'Slot' && e.AssignedTo && e.AssignedTo.ID && e.AssignedTo.ID !== -1);
+      e.slotType !== 'Slot' &&  e.AssignedTo && e.AssignedTo.ID && e.AssignedTo.ID !== -1
+      && (e.status === this.globalConstant.STATUS.NOT_STARTED || e.status === this.globalConstant.STATUS.IN_PROGRESS));
     return allTasks;
   }
 

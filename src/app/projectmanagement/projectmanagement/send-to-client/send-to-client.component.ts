@@ -147,7 +147,6 @@ export class SendToClientComponent implements OnInit {
     // this.spServices.downloadMultipleFiles(tempArray, fileName);
     this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'createZip', "GET-BATCH");
     this.spServices.createZip(tempArray.map(c => c.url), fileName);
-
     // }, 500);
   }
   goToAllocationPage(task) {
