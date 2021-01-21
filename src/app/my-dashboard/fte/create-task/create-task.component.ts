@@ -289,8 +289,14 @@ export class CreateTaskComponent implements OnInit {
 
   checkSubMilestone(val) {
     if (val) {
-      const alphaExp = new RegExp(this.constantsService.REG_EXPRESSION.ALPHA_SPECIAL);
-      if (!alphaExp.test(val)) {
+      const sNewFileName = val.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+      // const alphaExp = new RegExp(this.constantsService.REG_EXPRESSION.ALPHA_SPECIAL);
+      // if (!alphaExp.test(val)) {
+      //   return false;
+      // }
+
+      if (val !== sNewFileName) {
+        this.commonService.showToastrMessage(this.constantsService.MessageType.error, 'Special characters are found in PUBID name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', false);
         return false;
       }
       const item = val + ':1:In Progress';

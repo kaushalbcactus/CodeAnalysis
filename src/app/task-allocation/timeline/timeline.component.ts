@@ -4011,6 +4011,7 @@ export class TimelineComponent
         );
       }
       await this.changeDateOfEditedTask(node, type);
+      await this.prestackService.calcPrestackAllocation(resource, node);
       this.leaveAlertMsgs = await this.calcLeaveMsgs(resource, node, this.leaveAlertMsgs);
       await this.DateChange(node, type);
       this.displayLeaveMsgs(this.leaveAlertMsgs);
@@ -4319,6 +4320,7 @@ export class TimelineComponent
         return node.AssignedTo && node.AssignedTo.ID === objt.UserNamePG.ID;
       }
     );
+    await this.prestackService.calcPrestackAllocation(resource, nodeData);
     this.leaveAlertMsgs = await this.calcLeaveMsgs(resource, nodeData, this.leaveAlertMsgs);
     if (
       nodeData.IsCentrallyAllocated === "Yes" &&
@@ -4330,8 +4332,9 @@ export class TimelineComponent
   }
   // tslint:enable
 
-  async calcLeaveMsgs(resource, nodeData:IMilestoneTask, leaveMsgs) {
-    const resourceCapacity: IUserCapacity = await this.prestackService.calcPrestackAllocation(resource, nodeData);
+  async calcLeaveMsgs(resource, nodeData: IMilestoneTask, leaveMsgs) {
+    const resourceDetail = await this.prestackService.calcResourceCapacity(resource, nodeData);
+    const resourceCapacity = resourceDetail.capacity;
     if (resourceCapacity && resourceCapacity.leaves.length) {
       const resourceExists = leaveMsgs.find(r => r.resource === resourceCapacity.userName);
       if (resourceExists) {
@@ -7325,22 +7328,22 @@ export class TimelineComponent
       closable: false
     });
     ref.onClose.subscribe((allocation: any) => {
-      let task: any;
-      if (milestoneTask.type === "Milestone") {
-        const milestoneData: MilestoneTreeNode = this.milestoneData.find(
-          m => m.data.title === milestoneTask.milestone
-        );
-        const milestoneTasks: any[] = this.taskAllocateCommonService.getTasksFromMilestones(
-          milestoneData,
-          true,
-          this.milestoneData,
-          false
-        );
-        milestoneData.data.edited = true;
-        task = milestoneTasks.find(t => t.id === milestoneTask.id);
-      } else {
-        task = milestoneTask;
-      }
+      // let task: any;
+      // if (milestoneTask.type === "Milestone") {
+      const milestoneData: MilestoneTreeNode = this.milestoneData.find(
+        m => m.data.title === milestoneTask.milestone
+      );
+      // const milestoneTasks: any[] = this.taskAllocateCommonService.getTasksFromMilestones(
+      //   milestoneData,
+      //   true,
+      //   this.milestoneData,
+      //   false
+      // );
+      milestoneData.data.edited = true;
+      //   task = milestoneTasks.find(t => t.id === milestoneTask.id);
+      // } else {
+      //   task = milestoneTask;
+      // }
       this.prestackService.setAllocationPerDay(allocation, milestoneTask);
       if (allocation.allocationAlert) {
         this.commonService.showToastrMessage(
