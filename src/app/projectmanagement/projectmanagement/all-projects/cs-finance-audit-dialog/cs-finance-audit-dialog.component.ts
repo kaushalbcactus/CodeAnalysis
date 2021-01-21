@@ -22,7 +22,7 @@ import { Table } from "primeng/table";
 })
 export class CsFinanceAuditDialogComponent implements OnInit {
   projectUpdated = false;
-  @ViewChild("allProjectRef", { static: false }) allProjectRef: Table;
+  @ViewChild("csfinanceAuditTable", { static: false }) csfinanceAuditTable: Table;
   projectList: any;
   checked = false;
   public allProjects = {
@@ -47,23 +47,23 @@ export class CsFinanceAuditDialogComponent implements OnInit {
   selectedProjects = [];
 
   displayedColumns: any[] = [
-    { field: "SOWCode", header: "Sow Code", visibility: true },
-    { field: "ProjectCode", header: "Project Code", visibility: true },
-    { field: "ShortTitle", header: "Short Title", visibility: true },
+    { field: "SOWCode", header: "Sow Code", visibility: true ,Type:'string',dbName:'SOWCode', options:[]  },
+    { field: "ProjectCode", header: "Project Code", visibility: true ,Type:'string',dbName:'ProjectCode', options:[]  },
+    { field: "ShortTitle", header: "Short Title", visibility: true  ,Type:'string',dbName:'ShortTitle', options:[] },
     {
       field: "ClientLegalEntity",
       header: "Client Legal Entity",
-      visibility: true,
+      visibility: true, Type:'string',dbName:'ClientLegalEntity', options:[] 
     },
-    { field: "ProjectType", header: "Project Type", visibility: true },
+    { field: "ProjectType", header: "Project Type", visibility: true  ,Type:'string',dbName:'ProjectType', options:[] },
     {
       field: "PrimaryResources",
       header: "Primary Resources",
-      visibility: true,
+      visibility: true ,Type:'string',dbName:'Status', options:[] 
     },
-    { field: "POC", header: "POC", visibility: true },
-    { field: "TA", header: "TA", visibility: true },
-    { field: "Molecule", header: "Molecule", visibility: true },
+    { field: "POC", header: "POC", visibility: true ,Type:'string',dbName:'POC', options:[]  },
+    { field: "TA", header: "TA", visibility: true ,Type:'string',dbName:'TA', options:[]  },
+    { field: "Molecule", header: "Molecule", visibility: true  ,Type:'string',dbName:'Molecule', options:[]  },
   ];
   modalloaderenable = true;
   AuditType = "";
@@ -89,7 +89,8 @@ export class CsFinanceAuditDialogComponent implements OnInit {
     this.projectList = this.config.data.projectList;
     this.dbProjectList = this.projectList.slice(0);
     this.AuditType = this.config.data.AuditListType;
-    this.createColFieldValues(this.projectList);
+    this.displayedColumns = await this.commonService.MainfilterForTable(this.displayedColumns,this.projectList);
+    // this.createColFieldValues(this.projectList);
   }
 
   async ngAfterViewInit() {
@@ -125,13 +126,13 @@ export class CsFinanceAuditDialogComponent implements OnInit {
   }
 
   PrefilterData(Type:string, filterType){
-    const data = this.allProjects[Type].map((c) => c.value).filter((c) =>
+    const data = this.displayedColumns.find(c=>c.dbName === Type).options.map((c) => c.value).filter((c) =>
     this.config.data.tableData.filters[Type][0].value.includes(c)
   );
-     this.allProjectRef.filter(data, Type, filterType);
+     this.csfinanceAuditTable.filter(data, Type, filterType);
      setTimeout(() => {
-      this.allProjectRef.filters[Type]=null;
-      this.allProjectRef.filters[Type] = [{
+      this.csfinanceAuditTable.filters[Type]=null;
+      this.csfinanceAuditTable.filters[Type] = [{
         matchMode: filterType,
         operator: "and",
         value: data,
@@ -140,118 +141,6 @@ export class CsFinanceAuditDialogComponent implements OnInit {
     
   }
     
-  createColFieldValues(resArray) {
-    this.allProjects.SOWCode = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.SOWCode, value: a.SOWCode };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.allProjects.ProjectCode = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.ProjectCode, value: a.ProjectCode };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.allProjects.ShortTitle = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.ShortTitle, value: a.ShortTitle };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.allProjects.ClientLegalEntity = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.allProjects.ProjectType = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.ProjectType, value: a.ProjectType };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.allProjects.Status = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = {
-              label:
-                a.Status === "Audit In Progress"
-                  ? "CS Audit"
-                  : a.Status === "Pending Closure"
-                  ? "Finance Audit"
-                  : a.Status,
-              value: a.Status,
-            };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.allProjects.TA = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.TA, value: a.TA };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.allProjects.Molecule = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.Molecule, value: a.Molecule };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    const poc1 = resArray
-      .map((a) => {
-        let b = { label: a.POC, value: a.POC };
-        return b;
-      })
-      .filter((ele) => ele.label);
-    this.allProjects.POC = this.commonService.sortData(
-      this.uniqueArrayObj(poc1)
-    );
-  }
-
-  uniqueArrayObj(array: any) {
-    let sts: any = "";
-    return (sts = Array.from(new Set(array.map((s) => s.label))).map(
-      (label1) => {
-        const keys = {
-          label: label1,
-          value: array.find((s) => s.label === label1).value,
-        };
-        return keys ? keys : "";
-      }
-    ));
-  }
 
   // **************************************************************************************
   // To Close dialog
@@ -645,9 +534,9 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       (c) => !this.selectedProjects.includes(c)
     );
 
-    this.createColFieldValues(this.projectList);
+    this.displayedColumns = await this.commonService.MainfilterForTable(this.displayedColumns,this.projectList);
 
-    if (this.allProjectRef.filteredValue) {
+    if (this.csfinanceAuditTable.filteredValue) {
       this.updateTableFilterOption();
     }
     this.modalloaderenable = false;
@@ -737,11 +626,11 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
   MultipleSelectRows(AuditType) {
     setTimeout(() => {
-        if (this.allProjectRef.filteredValue) {
-          if (this.allProjectRef.filteredValue.length > 10 && !this.checked) {
-            this.selectedProjects = this.allProjectRef.filteredValue.slice(
-              this.allProjectRef.first,
-              this.allProjectRef.first + 10
+        if (this.csfinanceAuditTable.filteredValue) {
+          if (this.csfinanceAuditTable.filteredValue.length > 10 && !this.checked) {
+            this.selectedProjects = this.csfinanceAuditTable.filteredValue.slice(
+              this.csfinanceAuditTable.first,
+              this.csfinanceAuditTable.first + 10
             );
             this.checked = true;
           } else if (this.checked === true) {
@@ -751,8 +640,8 @@ export class CsFinanceAuditDialogComponent implements OnInit {
         } else {
           if (this.projectList.length > 10 && !this.checked) {
             this.selectedProjects = this.projectList.slice(
-              this.allProjectRef.first,
-              this.allProjectRef.first + 10
+              this.csfinanceAuditTable.first,
+              this.csfinanceAuditTable.first + 10
             );
             this.checked = true;
           } else if (this.checked === true) {

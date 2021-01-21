@@ -2,13 +2,13 @@
     <div class="p-col p-grid p-p-0">
         <label for="CMAccess" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3" [style]="{'width' : this.pmObject.isStandardChecked ? '183px' :'' }"><span class="compulsory">*</span>CM Access</label>
         <div class="p-col-12 p-md-8 ">
-            <p-multiSelect [style]="{'width':'100%'}" [options]="pmObject.OwnerAccess.cmLevel1" [(ngModel)]="pmObject.OwnerAccess.selectedCMAccess" [filter]="true" defaultLabel="Please Select" resetFilterOnHide="true"></p-multiSelect>
+            <p-multiSelect class="p-fluid" appendTo="body" [options]="pmObject.OwnerAccess.cmLevel1" [(ngModel)]="pmObject.OwnerAccess.selectedCMAccess" [filter]="true" defaultLabel="Please Select" resetFilterOnHide="true"></p-multiSelect>
         </div>
     </div>
     <div class="p-col p-grid p-p-0">
         <label for="CMOwner" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>CM Owner</label>
         <div class="p-col-12 p-md-8 ">
-            <p-dropdown [options]="pmObject.OwnerAccess.cmLevel2" [(ngModel)]="pmObject.OwnerAccess.selectedCMOwner" [filter]="true" [showClear]="true" placeholder="Please Select" resetFilterOnHide="true" [disabled]=true [style]="{'width':'100%'}"></p-dropdown>
+            <p-dropdown [options]="pmObject.OwnerAccess.cmLevel2" [(ngModel)]="pmObject.OwnerAccess.selectedCMOwner" [filter]="true" [showClear]="true" placeholder="Please Select" resetFilterOnHide="true" [disabled]=true class="p-fluid"></p-dropdown>
         </div>
     </div>
 </div>
@@ -18,13 +18,13 @@
     <div class="p-col p-grid p-p-0">
         <label for="DeliveryAccess" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3" [style]="{'width' : this.pmObject.isStandardChecked ? '183px' :'' }">Delivery Access</label>
         <div class="p-col-12 p-md-8 ">
-            <p-multiSelect [style]="{'width':'100%'}" [options]="pmObject.OwnerAccess.deliveryLevel1" [(ngModel)]="pmObject.OwnerAccess.selectedDeliveryAccess" [filter]="true" defaultLabel="Please Select" resetFilterOnHide="true"></p-multiSelect>
+            <p-multiSelect class="p-fluid" appendTo="body" [options]="pmObject.OwnerAccess.deliveryLevel1" [(ngModel)]="pmObject.OwnerAccess.selectedDeliveryAccess" [filter]="true" defaultLabel="Please Select" resetFilterOnHide="true"></p-multiSelect>
         </div>
     </div>
     <div class="p-col p-grid p-p-0">
         <label for="DeliveryOwner" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Delivery Owner</label>
         <div class="p-col-12 p-md-8 ">
-            <p-dropdown [options]="pmObject.OwnerAccess.deliveryLevel2" [(ngModel)]="pmObject.OwnerAccess.selectedDeliveryOwner" [filter]="true" [showClear]="true" placeholder="Please Select" resetFilterOnHide="true" [disabled]=true [style]="{'width':'100%'}"></p-dropdown>
+            <p-dropdown [options]="pmObject.OwnerAccess.deliveryLevel2" [(ngModel)]="pmObject.OwnerAccess.selectedDeliveryOwner" [filter]="true" [showClear]="true" placeholder="Please Select" resetFilterOnHide="true" [disabled]=true class="p-fluid"></p-dropdown>
         </div>
     </div>
 </div>

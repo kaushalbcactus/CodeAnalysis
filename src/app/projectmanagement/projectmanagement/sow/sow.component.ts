@@ -261,7 +261,7 @@ export class SOWComponent implements OnInit, OnDestroy {
   }
   viewProjectSOW(task) {
     this.pmObject.isProjectVisible = true;
-    this.setStep(0);
+    this.onTabOpen(0);
   }
 
   showSOWBudgetBreakup(sowTask) {
@@ -545,7 +545,7 @@ export class SOWComponent implements OnInit, OnDestroy {
     }
   }
 
-  async loadBudgetHours(projectFilter) {
+  async loadBudgetHours(projectFilter,table) {
     this.loaderenable = true;
     const budgetArray = await this.pmCommonService.getAllBudget(this.ProjectArray);
     const tempProjectArray = [];
@@ -570,26 +570,28 @@ export class SOWComponent implements OnInit, OnDestroy {
       projectObj.Status = projectItem.Status;
       tempProjectArray.push(projectObj);
     });
+
+    console.log(table)
     AllArrayObj = Object.assign([], tempProjectArray);
     switch (projectFilter) {
       case this.pmConstant.filterAction.ACTIVE_PROJECT:
         this.pmObject.allProjects.activeProjectArray = Object.assign([], tempProjectArray);
         this.pmObject.totalRecords.activeProject = tempProjectArray.length;
-        this.pmObject.allProjects.activeProjectCopyArray = tempProjectArray.splice(0, 5);
+        this.pmObject.allProjects.activeProjectCopyArray = tempProjectArray.splice(0, table.rows);
         this.activeProjectLoader = true;
         this.isActiveProjectTableHidden = false;
         break;
       case this.pmConstant.filterAction.PIPELINE_PROJECT:
         this.pmObject.allProjects.pipelineProjectArray = Object.assign([], tempProjectArray);
         this.pmObject.totalRecords.pipelineProject = tempProjectArray.length;
-        this.pmObject.allProjects.pipelineProjectCopyArray = tempProjectArray.splice(0, 5);
+        this.pmObject.allProjects.pipelineProjectCopyArray = tempProjectArray.splice(0, table.rows);
         this.pipelineProjectLoader = true;
         this.isPipelineProjectTableHidden = false;
         break;
       case this.pmConstant.filterAction.INACTIVE_PROJECT:
         this.pmObject.allProjects.inActiveProjectArray = Object.assign([], tempProjectArray);
         this.pmObject.totalRecords.inActiveProject = tempProjectArray.length;
-        this.pmObject.allProjects.inActiveProjectCopyArray = tempProjectArray.splice(0, 5);
+        this.pmObject.allProjects.inActiveProjectCopyArray = tempProjectArray.splice(0, table.rows);
         this.inActiveProjectLoader = true;
         this.isInActiveProjectTableHidden = false;
         break;
@@ -613,8 +615,7 @@ export class SOWComponent implements OnInit, OnDestroy {
     const inActiveProjectArray = this.pmObject.allProjects.inActiveProjectArray;
     this.commonService.lazyLoadTask(event, inActiveProjectArray, this.projectFilterColumns, this.pmConstant.filterAction.INACTIVE_PROJECT);
   }
-  setStep(index: number) {
-
+  onTabOpen(index) {
     this.viewBudget = false;
     this.viewNote = true;
     this.step = index;
@@ -636,33 +637,6 @@ export class SOWComponent implements OnInit, OnDestroy {
     allProjects = allProjects + '?ProjectCode=' + projObj.ProjectCode;
     window.open(allProjects, '_blank');
   }
-
-
-  // isOptionFilter: boolean;
-  // optionFilter(event: any) {
-  //   if (event.target.value) {
-  //     this.isOptionFilter = false;
-  //   }
-  // }
-
-  // ngAfterViewChecked() {
-  //   if (this.pmObject.allSOWArray.length && this.isOptionFilter) {
-  //     let obj = {
-  //       tableData: this.allProjectRef,
-  //       colFields: this.allSOW
-  //       // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
-  //     }
-  //     if (obj.tableData.filteredValue) {
-  //       this.commonService.updateOptionValues(obj);
-  //     } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-  //       this.createColFieldValues(obj.tableData.value);
-  //       this.isOptionFilter = false;
-  //     }
-  //   }
-  //   this.cdr.detectChanges();
-  // }
-
-
 
   // ***************************************************************************************************
   // open dialog module to add / reduce sow budget of selected row item

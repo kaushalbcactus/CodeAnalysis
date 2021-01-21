@@ -1,4 +1,14 @@
-div.ms-wikicontent.ms-rtestate-field {
+:host ::ng-deep .p-button-icon-only {
+    height: auto !important;
+}
+
+:host ::ng-deep .p-autocomplete-token {
+    flex: inherit !important;
+    margin: 2px !important;
+}
+
+
+/* div.ms-wikicontent.ms-rtestate-field {
     padding-right: 0px !important;
 }
 
@@ -7,15 +17,10 @@ div.ms-wikicontent.ms-rtestate-field {
     border: 2px solid #b03f44;
 }
 
-
-/* ::ng-deep  */
-
 .searchIcon {
     font-size: 2em !important;
 }
 
-
-/* ::ng-deep  */
 
 .mat-card-content,
 .mat-card-subtitle {
@@ -23,14 +28,9 @@ div.ms-wikicontent.ms-rtestate-field {
 }
 
 
-/* :host ::ng-deep  */
-
 button {
     margin-right: 0.25em;
 }
-
-
-/* :host ::ng-deep  */
 
 .custom-toast .ui-toast-message {
     color: #ffffff;
@@ -38,9 +38,6 @@ button {
     background: -webkit-linear-gradient(to right, #3f5efb, #fc466b);
     background: linear-gradient(to right, #3f5efb, #fc466b);
 }
-
-
-/* :host ::ng-deep  */
 
 .custom-toast .ui-toast-close-icon {
     color: #ffffff;
@@ -98,7 +95,6 @@ button {
 
 .tableLoader {
     position: fixed;
-    /* or absolute */
     z-index: 9999;
 }
 
@@ -133,14 +129,10 @@ button {
 }
 
 
-/* mat-expansion-panel app-timeline{
-    display: inline !important;
-}*/
-
 .searchPrj {
     border: 0px !important;
 }
 
 .matSectionPanel .mat-accordion>.mat-expansion-panel-spacing:last-child {
     margin-top: 0px !important;
-}
+} */

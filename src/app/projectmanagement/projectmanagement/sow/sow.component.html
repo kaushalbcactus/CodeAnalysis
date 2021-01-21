@@ -49,59 +49,6 @@
                     <i (click)="pmCommonService.convertToExcelFile(allSOWRef)" title="Export To Excel" class="pi pi-file-excel tableExportIcon"></i>
                 </th>
             </tr>
-            <!-- <tr>
-                <th class="lastColumnWidth"></th>
-                <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
-                    <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allSOW.SOWCode" defaultLabel="All"
-                        [maxSelectedLabels]="1" [(ngModel)]="pmObject.columnFilter.SOWCode"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
-                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                        (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="allSOW.ShortTitle" defaultLabel="All"
-                        [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
-                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                        (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="allSOW.ClientLegalEntity"
-                        defaultLabel="All" [maxSelectedLabels]="1"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
-                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                        (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'POC'" [options]="allSOW.POC" defaultLabel="All"
-                        [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
-                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                        (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'RevenueBudget'" [options]="allSOW.RevenueBudget" defaultLabel="All"
-                        [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
-                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                        (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'OOPBudget'" [options]="allSOW.OOPBudget" defaultLabel="All"
-                        [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
-                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                        (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'Currency'" [options]="allSOW.Currency" defaultLabel="All"
-                        [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
-                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                        (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ModifiedBy'" [options]="allSOW.ModifiedBy" defaultLabel="All"
-                        [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
-                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                        (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ModifiedDate'" [options]="allSOW.ModifiedDate" defaultLabel="All"
-                        [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
-                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
-                        (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
-                    </p-multiSelect>
-                </th>
-                <th class="lastColumnWidth"></th>
-            </tr> -->
         </ng-template>
         <ng-template pTemplate="body" let-rowData let-task let-rowIndex="rowIndex">
             <tr>
@@ -136,9 +83,220 @@
 
 
 <div class="all-project-section">
-    <p-dialog [(visible)]="pmObject.isProjectVisible" [modal]="true" [style]="{width: '1300px'}">
+    <p-dialog [(visible)]="pmObject.isProjectVisible" [modal]="true" [style]="{width: '70vw'}">
         <p-header>View Projects</p-header>
-        <mat-accordion>
+        <div class="p-mt-2">
+            <p-accordion (onOpen)="onTabOpen($event.index)">
+                <p-accordionTab [selected]="step === 0">
+                    <ng-template pTemplate="header">
+                        <div class="p-col p-grid p-pt-1 p-pb-0 p-px-2">
+                            <div class="p-col">Active Projects</div>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="content">
+                        <div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="!activeProjectLoader">
+                            <div id="modalInnerLoader"></div>
+                            <div id="modalInnerLoaderText">Loading...</div>
+                        </div>
+
+                        <p-table *ngIf="activeProjectLoader" #activeProject [columns]="projectsDisplayedColumns" [value]="pmObject.allProjects.activeProjectCopyArray" [paginator]="true" [rows]="5" [lazy]="true" [totalRecords]="pmObject.totalRecords.activeProject" [loading]="pmObject.loading.activeProject"
+                            [rowsPerPageOptions]="[5,10,15]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" styleClass="p-datatable-cactus p-datatable-gridlines" (onLazyLoad)="activeProjectlazyLoadTask($event)"
+                            [lazyLoadOnInit]="false">
+                            <ng-template pTemplate="caption">
+                                <div class="p-d-flex">
+                                    <span class="p-col p-grid p-ai-center vertical-container p-input-icon-left">
+                                        <i class="pi pi-search"></i>
+                                        <input pInputText type="text" size="50" (input)="activeProject.filterGlobal($event.target.value, 'contains')" placeholder="Search keyword" (keydown.enter)="$event.preventDefault()" />
+                                    </span>
+                                    <div class="p-col p-grid p-jc-between" *ngIf="!viewBudget">
+                                        <span *ngIf="viewNote" class="error p-grid p-ai-center vertical-container">Note*:
+                                Please click on load budgets button to load budget data. </span>
+                                        <div class="p-m-auto" *ngIf="loaderenable" id="scTableInnerLoader"></div>
+
+                                    </div>
+                                    <div class="p-col p-grid p-ai-center vertical-container p-jc-around error" *ngIf="viewBudget">
+                                        <span> Total  Revenue Budget : {{totalRevenueBudget}} </span>
+                                        <span> Total OOP Budget : {{totalOOPBudget}} </span>
+                                    </div>
+                                    <div class="p-col-2 p-grid p-jc-end">
+                                        <button pButton type="button" class="p-button-raised p-button-danger p-m-2" label="Load budgets" (click)="loadBudgetHours(pmConstant.filterAction.ACTIVE_PROJECT,  activeProject);viewNote =false;"></button>
+                                    </div>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                                        {{ col.header }}
+                                        <p-sortIcon [field]="col.field"></p-sortIcon>
+                                    </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData let-task>
+                                <tr [pContextMenuRow]="rowData">
+                                    <td>{{task.DeliverableType}}</td>
+                                    <td>
+                                        <a *ngIf="showProjectLink" href="javascript:void(0)" (click)="navigateToProject(task)">{{task.ProjectCode}}</a>
+                                        <span *ngIf="!showProjectLink">{{task.ProjectCode}}</span>
+                                    </td>
+                                    <td>{{task.Title}}</td>
+                                    <td>{{task.RevenueBudget}}</td>
+                                    <td>{{task.OOPBudget}}</td>
+                                    <td>{{task.Status}}</td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage" let-columns>
+                                <tr>
+                                    <td style="text-align:center" [attr.colspan]="9">
+                                        No project found
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </ng-template>
+                </p-accordionTab>
+                <p-accordionTab [selected]="step === 1">
+                    <ng-template pTemplate="header">
+                        <div class="p-col p-grid p-pt-1 p-pb-0 p-px-2">
+                            <div class="p-col">Pipeline Projects</div>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="content">
+
+                        <div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="!pipelineProjectLoader">
+                            <div id="modalInnerLoader"></div>
+                            <div id="modalInnerLoaderText">Loading...</div>
+                        </div>
+                        <p-table *ngIf="pipelineProjectLoader" #pipeLineProject [columns]="projectsDisplayedColumns" [value]="pmObject.allProjects.pipelineProjectCopyArray" [paginator]="true" [rows]="5" [lazy]="true" [totalRecords]="pmObject.totalRecords.pipelineProject" [loading]="pmObject.loading.pipelineProject"
+                            [rowsPerPageOptions]="[5,10,15]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" styleClass="p-datatable-cactus p-datatable-gridlines" (onLazyLoad)="pipelineProjectlazyLoadTask($event)"
+                            [lazyLoadOnInit]="false">
+                            <ng-template pTemplate="caption">
+                                <div class="p-d-flex">
+                                    <span class="p-col p-grid p-ai-center vertical-container p-input-icon-left">
+                                            <i class="pi pi-search"></i>
+                                            <input pInputText type="text" size="50" (input)="pipeLineProject.filterGlobal($event.target.value, 'contains')" placeholder="Search keyword" (keydown.enter)="$event.preventDefault()" />
+                                        </span>
+                                    <div class="p-col p-grid p-jc-between" *ngIf="!viewBudget">
+                                        <span *ngIf="viewNote" class="error p-grid p-ai-center vertical-container">Note*:
+                                    Please click on load budgets button to load budget data. </span>
+                                        <div class="p-m-auto" *ngIf="loaderenable" id="scTableInnerLoader"></div>
+
+                                    </div>
+                                    <div class="p-col p-grid p-ai-center vertical-container p-jc-around error" *ngIf="viewBudget">
+                                        <span> Total  Revenue Budget : {{totalRevenueBudget}} </span>
+                                        <span> Total OOP Budget : {{totalOOPBudget}} </span>
+                                    </div>
+                                    <div class="p-col-2 p-grid p-jc-end">
+                                        <button pButton type="button" class="p-button-raised p-button-danger p-m-2" label="Load budgets" (click)="loadBudgetHours(pmConstant.filterAction.PIPELINE_PROJECT, pipeLineProject);viewNote =false;"></button>
+                                    </div>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                                        {{ col.header }}
+                                        <p-sortIcon [field]="col.field"></p-sortIcon>
+                                    </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData let-task>
+                                <tr [pContextMenuRow]="rowData">
+                                    <td>{{task.DeliverableType}}</td>
+                                    <td>
+                                        <a *ngIf="showProjectLink" href="javascript:void(0)" (click)="navigateToProject(task)">{{task.ProjectCode}}</a>
+                                        <span *ngIf="!showProjectLink">{{task.ProjectCode}}</span>
+                                    </td>
+                                    <td>{{task.Title}}</td>
+                                    <td>{{task.RevenueBudget}}</td>
+                                    <td>{{task.OOPBudget}}</td>
+                                    <td>{{task.Status}}</td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage" let-columns>
+                                <tr>
+                                    <td style="text-align:center" [attr.colspan]="9">
+                                        No project found
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </ng-template>
+                </p-accordionTab>
+                <p-accordionTab [selected]="step === 2">
+                    <ng-template pTemplate="header">
+                        <div class="p-col p-grid p-pt-1 p-pb-0 p-px-2">
+                            <div class="p-col">InActive Projects</div>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="content">
+
+                        <div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="!inActiveProjectLoader">
+                            <div id="modalInnerLoader"></div>
+                            <div id="modalInnerLoaderText">Loading...</div>
+                        </div>
+
+                        <p-calendar *ngIf="inActiveProjectLoader" [(ngModel)]="rangeDates" selectionMode="range" (onClose)="getInactiveProject()" [style]="{'width':'100%', 'cursor': 'pointer'}" numberOfMonths='1' appendTo="body" dateFormat="dd M , yy" [showIcon]="true" [disabledDays]="[0,6]"
+                            [readonlyInput]="true" placeholder="Select Custom Dates"></p-calendar>
+                        <p-table *ngIf="inActiveProjectLoader" #inActiveProject [columns]="projectsDisplayedColumns" [value]="pmObject.allProjects.inActiveProjectCopyArray" [paginator]="true" [rows]="5" [lazy]="true" [totalRecords]="pmObject.totalRecords.inActiveProject" [rowsPerPageOptions]="[5,10,15]"
+                            [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" styleClass="p-datatable-cactus p-datatable-gridlines p-mt-2" [loading]="pmObject.loading.inActiveProject" (onLazyLoad)="inActivelazyLoadTask($event)"
+                            [lazyLoadOnInit]="false">
+                            <ng-template pTemplate="caption">
+
+                                <div class="p-d-flex">
+                                    <span class="p-col p-grid p-ai-center vertical-container p-input-icon-left">
+                                            <i class="pi pi-search"></i>
+                                            <input pInputText type="text" size="50" (input)="inActiveProject.filterGlobal($event.target.value, 'contains')" placeholder="Search keyword" (keydown.enter)="$event.preventDefault()" />
+                                        </span>
+                                    <div class="p-col p-grid p-jc-between" *ngIf="!viewBudget">
+                                        <span *ngIf="viewNote" class="error p-grid p-ai-center vertical-container">Note*:
+                                    Please click on load budgets button to load budget data. </span>
+                                        <div class="p-m-auto" *ngIf="loaderenable" id="scTableInnerLoader"></div>
+
+                                    </div>
+                                    <div class="p-col p-grid p-ai-center vertical-container p-jc-around error" *ngIf="viewBudget">
+                                        <span> Total  Revenue Budget : {{totalRevenueBudget}} </span>
+                                        <span> Total OOP Budget : {{totalOOPBudget}} </span>
+                                    </div>
+                                    <div class="p-col-2 p-grid p-jc-end">
+                                        <button pButton type="button" class="p-button-raised p-button-danger p-m-2" label="Load budgets" (click)="loadBudgetHours(pmConstant.filterAction.INACTIVE_PROJECT, inActiveProject);viewNote =false;"></button>
+                                    </div>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                                        {{ col.header }}
+                                        <p-sortIcon [field]="col.field"></p-sortIcon>
+                                    </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rowData let-task>
+                                <tr [pContextMenuRow]="rowData">
+                                    <td>{{task.DeliverableType}}</td>
+                                    <td>
+                                        <a *ngIf="showProjectLink" href="javascript:void(0)" (click)="navigateToProject(task)">{{task.ProjectCode}}</a>
+                                        <span *ngIf="!showProjectLink">{{task.ProjectCode}}</span>
+                                    </td>
+                                    <td>{{task.Title}}</td>
+                                    <td>{{task.RevenueBudget}}</td>
+                                    <td>{{task.OOPBudget}}</td>
+                                    <td>{{task.Status}}</td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage" let-columns>
+                                <tr>
+                                    <td style="text-align:center" [attr.colspan]="9">
+                                        No project found
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </ng-template>
+                </p-accordionTab>
+            </p-accordion>
+        </div>
+
+
+        <!-- <mat-accordion>
             <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)">
                 <mat-expansion-panel-header>
                     <mat-panel-title style="color:#000000;">
@@ -150,58 +308,7 @@
                             <div id="mainLoaderText">Loading...</div>
                         </div>
                         <div [hidden]="isActiveProjectTableHidden">
-                            <p-table #activeProject [columns]="projectsDisplayedColumns" [value]="pmObject.allProjects.activeProjectCopyArray" [paginator]="true" [rows]="5" [lazy]="true" [totalRecords]="pmObject.totalRecords.activeProject" [loading]="pmObject.loading.activeProject"
-                                (onLazyLoad)="activeProjectlazyLoadTask($event)" [lazyLoadOnInit]="false">
-                                <ng-template pTemplate="caption">
-                                    <div style="text-align: left">
-                                        <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-                                        <input type="text" pInputText size="50" placeholder="search" (input)="activeProject.filterGlobal($event.target.value, 'contains')" (keydown.enter)="$event.preventDefault()" style="width:auto">
 
-                                        <span *ngIf="viewNote" style="color:red;    padding: 0px 0px 0px 15px;">Note*:
-                                            Please click on load budgets button to load budget data. </span>
-
-                                        <button pButton type="button" class="pmBtn" label="Load budgets" style="margin-left: 10px;float: right;" (click)="loadBudgetHours(pmConstant.filterAction.ACTIVE_PROJECT);viewNote =false;"></button>
-                                        <div *ngIf="loaderenable" id="scTableInnerLoader"></div>
-
-                                        <span *ngIf="viewBudget" style="padding: 0px 25px 0px 25px;font-size: 500;color :darkred"> Total
-                                            Revenue Budget : {{totalRevenueBudget}} </span>
-                                        <span *ngIf="viewBudget" style="padding: 0px 25px 0px 25px;  font-size: 500;color :darkred"> Total
-                                            OOP Budget : {{totalOOPBudget}} </span>
-
-
-                                    </div>
-
-
-                                </ng-template>
-                                <ng-template pTemplate="header" let-columns>
-                                    <tr>
-                                        <th *ngFor="let col of columns" [pSortableColumn]="col.field">
-                                            {{ col.header }}
-                                            <p-sortIcon [field]="col.field"></p-sortIcon>
-                                        </th>
-                                    </tr>
-                                </ng-template>
-                                <ng-template pTemplate="body" let-rowData let-task>
-                                    <tr [pContextMenuRow]="rowData">
-                                        <td>{{task.DeliverableType}}</td>
-                                        <td>
-                                            <a *ngIf="showProjectLink" href="javascript:void(0)" (click)="navigateToProject(task)">{{task.ProjectCode}}</a>
-                                            <span *ngIf="!showProjectLink">{{task.ProjectCode}}</span>
-                                        </td>
-                                        <td>{{task.Title}}</td>
-                                        <td>{{task.RevenueBudget}}</td>
-                                        <td>{{task.OOPBudget}}</td>
-                                        <td>{{task.Status}}</td>
-                                    </tr>
-                                </ng-template>
-                                <ng-template pTemplate="emptymessage" let-columns>
-                                    <tr>
-                                        <td style="text-align:center" [attr.colspan]="9">
-                                            No project found
-                                        </td>
-                                    </tr>
-                                </ng-template>
-                            </p-table>
                         </div>
                     </ng-template>
                 </mat-expansion-panel-header>
@@ -335,7 +442,7 @@
                     </ng-template>
                 </mat-expansion-panel-header>
             </mat-expansion-panel>
-        </mat-accordion>
+        </mat-accordion> -->
     </p-dialog>
 </div>
 

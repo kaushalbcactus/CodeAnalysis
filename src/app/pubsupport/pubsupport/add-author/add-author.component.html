@@ -1,150 +1,137 @@
-<!-- <div class="tableLoader1" [hidden]='pubsupportService.pubsupportComponent.isPSInnerLoaderHidden'>
-    <div id="scInnerLoader"></div>
-    <div id="scInnerLoaderText">Loading...</div>
-</div> -->
-
 <p-dialog header="Add Author" [(visible)]="addAuthorModal" [modal]="true" [draggable]="false" [style]="{'width': '70%'}"
-    [maximizable]="false" [contentStyle]="{'max-height':'350px'}"
-    (onHide)="cancelFormSub('addAuthor')">
+    [maximizable]="false" [contentStyle]="{'max-height':'350px'}" (onHide)="cancelFormSub('addAuthor')">
+    <div class="pdialogButton p-col-12 p-grid p-jc-end">
+        <button type="button " pButton icon="pi pi-save" id="saveClient" [disabled]="submitBtn.isClicked"
+            class="p-mx-1 p-button-raised p-button-danger " (click)="onSubmit('addAuthor')" label="Add"></button>
+        <button type="button " pButton icon="pi pi-times" (click)="cancelFormSub('addAuthor')" label="Cancel"
+            class="p-button-raised p-button-danger "></button>
+    </div>
     <form [formGroup]="add_author_form">
-        <div class="ui-g">
-            <div class="ui-g-12 ui-md-6 ui-lg-2">
-                First Name:
-            </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <input type="text" maxlength="25" id="FirstName" placeholder="ABC" formControlName="FirstName">
-                <div *ngIf="formSubmit.isSubmit &&  isValidAddAuthorForm.FirstName.errors">
-                    <div *ngIf="isValidAddAuthorForm.FirstName.errors.required" style="color:red;" style="color:red;">
-                        First Name is required.
-                    </div>
+        <div class="p-col p-grid p-my-2">
+            <div class="p-col p-grid p-p-1">
+                <label for="FirstName" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>First Name</label>
+                <div class="p-col-12 p-md-8">
+                    <input type="text" maxlength="25" id="FirstName" placeholder="ABC" formControlName="FirstName">
+                    <div class="error"
+                        *ngIf="!add_author_form.controls['FirstName'].valid&&add_author_form.controls['FirstName'].touched">
+                        First Name is required</div>
                 </div>
             </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-2">
-                Last Name:
-            </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <input type="text" maxlength="25" id="lastname" placeholder="ABC" formControlName="LastName">
-                <div *ngIf="formSubmit.isSubmit &&  isValidAddAuthorForm.LastName.errors">
-                    <div *ngIf="isValidAddAuthorForm.LastName.errors.required" style="color:red;" style="color:red;">
-                        Last Name is required.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="ui-g">
-            <div class="ui-g-12 ui-md-6 ui-lg-2">
-                Comments:
-            </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <textarea maxlength="1000" placeholder="Comment text" formControlName="Comments"></textarea>
-                <div *ngIf="formSubmit.isSubmit &&  isValidAddAuthorForm.Comments.errors">
-                    <div *ngIf="isValidAddAuthorForm.Comments.errors.required" style="color:red;">Comment is required.
-                    </div>
-                </div>
-            </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-2">
-                Highest Degree:
-            </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <input type="text" maxlength="25" id="degree" placeholder="MD" class="form-control"
-                    formControlName="HighestDegree">
-                <div *ngIf="formSubmit.isSubmit &&  isValidAddAuthorForm.HighestDegree.errors">
-                    <div *ngIf="isValidAddAuthorForm.HighestDegree.errors.required" style="color:red;">Highest Degree is
-                        required.
-                    </div>
+            <div class="p-col p-grid p-p-0">
+                <label for="LastName" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>LastName</label>
+                <div class="p-col-12 p-md-8">
+                    <input type="text" maxlength="25" id="lastname" placeholder="ABC" formControlName="LastName">
+                    <div class="error"
+                        *ngIf="!add_author_form.controls['LastName'].valid&&add_author_form.controls['LastName'].touched">
+                        Last Name is required</div>
                 </div>
             </div>
         </div>
-
-        <div class="ui-g">
-            <div class="ui-g-12 ui-md-6 ui-lg-2">
-                Email Address:
-            </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <input type="text" maxlength="50" id="email" placeholder="j.watanabe@sschr.jp"
-                    formControlName="EmailAddress">
-                <div *ngIf="formSubmit.isSubmit &&  isValidAddAuthorForm.EmailAddress.errors">
-                    <div style="color: red;">Valid email ID is required.</div>
+        <div class="p-col p-grid p-p-1">
+            <div class="p-col p-grid p-p-1">
+                <label for="Comments" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Comments</label>
+                <div class="p-col-12 p-md-8">
+                    <textarea maxlength="1000" placeholder="Comment text" formControlName="Comments"></textarea>
+                    <div class="error"
+                        *ngIf="!add_author_form.controls['Comments'].valid&&add_author_form.controls['Comments'].touched">
+                        Comment is required.</div>
                 </div>
             </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-2">
-                Address:
-            </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <input type="text" maxlength="50" id="Address"
-                    placeholder="1007 Shimonagakubo, Nagaizumi-cho, Sunto-gun" class="form-control"
-                    formControlName="Address">
-                <div *ngIf="formSubmit.isSubmit &&  isValidAddAuthorForm.Address.errors">
-                    <div *ngIf="isValidAddAuthorForm.Address.errors.required" style="color:red;">Address is required.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="ui-g">
-            <div class="ui-g-12 ui-md-6 ui-lg-2">
-                Affiliation:
-            </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <textarea maxlength="1000" placeholder="Shizuoka Cancer Centre" class="form-control"
-                    formControlName="Affiliation"></textarea>
-                <div *ngIf="formSubmit.isSubmit &&  isValidAddAuthorForm.Affiliation.errors">
-                    <div *ngIf="isValidAddAuthorForm.Affiliation.errors.required" style="color:red;">Affiliation is
-                        required.
-                    </div>
-                </div>
-            </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-2">
-                Phone Number
-            </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <input type="text" maxlength="25" id="phoneNumber" placeholder="81-55-989-5222" class="form-control"
-                    formControlName="Phone_x0020_No" (keypress)="keyPress($event)">
-                <div *ngIf="formSubmit.isSubmit &&  isValidAddAuthorForm.Phone_x0020_No.errors">
-                    <div *ngIf="isValidAddAuthorForm.Phone_x0020_No.errors.required" style="color:red;">Phone Number is
-                        required.
-                    </div>
+            <div class="p-col p-grid p-p-0">
+                <label for="HighestDegree" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Highest Degree</label>
+                <div class="p-col-12 p-md-8">
+                    <input type="text" maxlength="25" id="degree" placeholder="MD" class="form-control"
+                        formControlName="HighestDegree">
+                    <div class="error"
+                        *ngIf="!add_author_form.controls['HighestDegree'].valid&&add_author_form.controls['HighestDegree'].touched">
+                        Highest Degree is required.</div>
                 </div>
             </div>
         </div>
-
-        <div class="ui-g">
-            <div class="ui-g-12 ui-md-6 ui-lg-2">
-                Fax:
-            </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <input type="text" maxlength="25" id="Fax" placeholder="81-55-989-5551" class="form-control"
-                    formControlName="Fax" (keypress)="keyPress($event)">
-                <div *ngIf="formSubmit.isSubmit &&  isValidAddAuthorForm.Fax.errors">
-                    <div *ngIf="isValidAddAuthorForm.Fax.errors.required" style="color:red;">Fax is required.</div>
+        <div class="p-col p-grid p-p-1">
+            <div class="p-col p-grid p-p-1">
+                <label for="EmailAddress" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Email Id</label>
+                <div class="p-col-12 p-md-8">
+                    <input type="text" maxlength="50" id="email" placeholder="j.watanabe@sschr.jp"
+                        formControlName="EmailAddress">
+                    <div class="error"
+                        *ngIf="!add_author_form.controls['EmailAddress'].valid&&add_author_form.controls['EmailAddress'].touched">
+                        Valid email ID is required.</div>
                 </div>
             </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-2">
-                Type:
+            <div class="p-col p-grid p-p-0">
+                <label for="Address" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Address</label>
+                <div class="p-col-12 p-md-8">
+                    <input type="text" maxlength="50" id="Address"
+                        placeholder="1007 Shimonagakubo, Nagaizumi-cho, Sunto-gun" class="form-control"
+                        formControlName="Address">
+                    <div class="error"
+                        *ngIf="!add_author_form.controls['Address'].valid&&add_author_form.controls['Address'].touched">
+                        Address is required.</div>
+                </div>
             </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <select id="type" name="type" class="form-control"
-                    [ngClass]="{'is-invalid': formSubmit.isSubmit &&  isValidAddAuthorForm.AuthorType.errors}"
-                    formControlName="AuthorType">
-                    <option value="">Select</option>
-                    <option value="-">-</option>
-                    <option value="Lead">Lead</option>
-                    <option value="Correspondence">Correspondence</option>
-                    <option value="Lead and Correspondence">Lead & Correspondence</option>
-                </select>
-                <div *ngIf="formSubmit.isSubmit &&  isValidAddAuthorForm.AuthorType.errors">
-                    <div *ngIf="isValidAddAuthorForm.AuthorType.errors.required" style="color:red;">Type is required.
+        </div>
+        <div class="p-col p-grid p-p-1">
+            <div class="p-col p-grid p-p-1">
+                <label for="Affiliation" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Affiliation</label>
+                <div class="p-col-12 p-md-8">
+                    <textarea maxlength="1000" placeholder="Shizuoka Cancer Centre" class="form-control"
+                        formControlName="Affiliation"></textarea>
+                    <div class="error"
+                        *ngIf="!add_author_form.controls['Affiliation'].valid&&add_author_form.controls['Affiliation'].touched">
+                        Affiliation is required.</div>
+                </div>
+            </div>
+            <div class="p-col p-grid p-p-0">
+                <label for="Phone_x0020_No" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Phone Number</label>
+                <div class="p-col-12 p-md-8">
+                    <input type="text" maxlength="25" id="phoneNumber" placeholder="81-55-989-5222" class="form-control"
+                        formControlName="Phone_x0020_No" (keypress)="keyPress($event)">
+                    <div class="error"
+                        *ngIf="!add_author_form.controls['Phone_x0020_No'].valid&&add_author_form.controls['Phone_x0020_No'].touched">
+                        Phone Number is required.</div>
+                </div>
+            </div>
+        </div>
+        <div class="p-col p-grid p-p-1">
+            <div class="p-col p-grid p-p-1">
+                <label for="Fax" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Fax</label>
+                <div class="p-col-12 p-md-8">
+                    <input type="text" maxlength="25" id="Fax" placeholder="81-55-989-5551" class="form-control"
+                        formControlName="Fax" (keypress)="keyPress($event)">
+                    <div class="error"
+                        *ngIf="!add_author_form.controls['Fax'].valid&&add_author_form.controls['Fax'].touched">
+                        Fax is required.</div>
+                </div>
+            </div>
+            <div class="p-col p-grid p-p-0">
+                <label for="AuthorType" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
+                        class="compulsory">*</span>Type</label>
+                <div class="p-col-12 p-md-8">
+                    <select id="type" name="type" class="form-control"
+                        [ngClass]="{'is-invalid': formSubmit.isSubmit &&  isValidAddAuthorForm.AuthorType.errors}"
+                        formControlName="AuthorType">
+                        <option value="">Select</option>
+                        <option value="-">-</option>
+                        <option value="Lead">Lead</option>
+                        <option value="Correspondence">Correspondence</option>
+                        <option value="Lead and Correspondence">Lead & Correspondence</option>
+                    </select>
+                    <div class="error"
+                        *ngIf="!add_author_form.controls['AuthorType'].valid&&add_author_form.controls['AuthorType'].touched">
+                        Type is required.
                     </div>
                 </div>
             </div>
         </div>
     </form>
-
-    <p-footer>
-        <button pButton type="button" label="Add" [disabled]="submitBtn.isClicked"
-            (click)="onSubmit('addAuthor')"></button>
-        <button pButton type="button" label="Cancel" (click)="cancelFormSub('addAuthor')"></button>
-    </p-footer>
-
 </p-dialog>

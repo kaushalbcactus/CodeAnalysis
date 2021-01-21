@@ -9,7 +9,7 @@ import { DatePipe } from '@angular/common';
 import {  DialogService} from 'primeng/dynamicdialog';
 import { FileUploadProgressDialogComponent } from '../shared/file-upload-progress-dialog/file-upload-progress-dialog.component';
 import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
-import { ControlContainer, ValidatorFn, AbstractControl } from '@angular/forms';
+import { ControlContainer, ValidatorFn, AbstractControl, FormGroup, FormControl } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 declare var $;
 
@@ -873,7 +873,13 @@ export class CommonService {
   MainfilterForTable(ArrayObjectsValue, resArray ){
     ArrayObjectsValue.forEach(element=>{
       if(element.Type && element.Type === 'string'){
-        element.options = this.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a[element.dbName], value: a[element.dbName] }; return b; }).filter(ele => ele.label)));
+        // if(element.dbName === 'Status'){
+          element.options = this.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a[element.dbName] === "Audit In Progress"
+          ? "CS Audit" : a[element.dbName] ===  "Pending Closure"
+          ? "Finance Audit" : a[element.dbName]  , value: a[element.dbName] }; return b; }).filter(ele => ele.label)));
+        // }else{
+        //   element.options = this.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a[element.dbName], value: a[element.dbName] }; return b; }).filter(ele => ele.label)));
+        // }
       } else if(element.Type && element.Type === 'date'){
         element.options = this.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a[element.dbName], 'MMM dd, yyyy') , value: a[element.dbName] }; return b; }).filter(ele => ele.label))); 
       } else if(element.Type && element.Type === 'datetime'){
@@ -1246,5 +1252,19 @@ export class CommonService {
       (a[b[props]] = a[b[props]] || []).push({data: b});
       return a;
     }, {});
+  }
+    /**
+   * This method is used to validate project attributes field.
+   * @param formGroup Pass the formGroup as parameter.
+   */
+  validateAllFormFields(formGroup: FormGroup) {
+    Object.keys(formGroup.controls).forEach((field) => {
+      const control = formGroup.get(field);
+      if (control instanceof FormControl) {
+        control.markAsTouched({ onlySelf: false });
+      } else if (control instanceof FormGroup) {
+        this.validateAllFormFields(control);
+      }
+    });
   }
 }
