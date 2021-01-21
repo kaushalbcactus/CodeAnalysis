@@ -122,9 +122,9 @@ export class MyTimelineComponent implements OnInit {
   }
 
   // tslint:disable-next-line: use-life-cycle-interface
-  ngAfterViewInit() {
-    this.bindEvents();
-  }
+  // ngAfterViewInit() {
+  //   this.bindEvents();
+  // }
 
   ngOnInit() {
     this.yearRangePastNext = ((new Date()).getFullYear() - 5) + ':' + ((new Date()).getFullYear() + 5);
@@ -406,7 +406,7 @@ export class MyTimelineComponent implements OnInit {
 
     this.events = [...this.events];
     this.CalendarLoader = false;
-
+    this.bindEvents();
   }
 
 
