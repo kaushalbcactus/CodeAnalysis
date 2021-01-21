@@ -4010,6 +4010,7 @@ export class TimelineComponent
         );
       }
       await this.changeDateOfEditedTask(node, type);
+      await this.prestackService.calcPrestackAllocation(resource, node);
       this.leaveAlertMsgs = await this.calcLeaveMsgs(resource, node, this.leaveAlertMsgs);
       await this.DateChange(node, type);
       this.displayLeaveMsgs(this.leaveAlertMsgs);
@@ -4318,6 +4319,7 @@ export class TimelineComponent
         return node.AssignedTo && node.AssignedTo.ID === objt.UserNamePG.ID;
       }
     );
+    await this.prestackService.calcPrestackAllocation(resource, nodeData);
     this.leaveAlertMsgs = await this.calcLeaveMsgs(resource, nodeData, this.leaveAlertMsgs);
     if (
       nodeData.IsCentrallyAllocated === "Yes" &&
