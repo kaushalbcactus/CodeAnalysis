@@ -72,6 +72,7 @@ export interface IMilestoneTask {
     'ganttOverlay': string;
     'ganttMenu':string;
     'ExpectedBudgetHrs': any;
+    'Reason': string;
 }
 
 export interface IConflictTask {

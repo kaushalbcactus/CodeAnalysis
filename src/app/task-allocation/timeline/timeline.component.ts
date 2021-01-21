@@ -49,6 +49,7 @@ import { PreStackcommonService } from "src/app/shared/pre-stack-allocation/servi
 import { IConflictResource } from "src/app/shared/conflict-allocations/interface/conflict-allocation";
 import { GanttService } from "src/app/shared/gantt-chart/service/gantt.service";
 import { IUserCapacity } from 'src/app/shared/usercapacity/interface/usercapacity';
+import { WriterReviewTransitionComponent } from '../writer-review-transition/writer-review-transition.component';
 
 @Component({
   selector: "app-timeline",
@@ -5513,7 +5514,8 @@ export class TimelineComponent
       ContentTypeCH:
         milestoneTask.IsCentrallyAllocated === "Yes"
           ? this.constants.CONTENT_TYPE.SLOT
-          : this.constants.CONTENT_TYPE.TASK
+          : this.constants.CONTENT_TYPE.TASK,
+      Reason: milestoneTask.Reason
     };
   }
 
@@ -6447,6 +6449,12 @@ export class TimelineComponent
       }
       previousNode = milestone.data;
     }
+
+    let validTransition = await this.isWriterReviewTransition(milestonesData);
+    if (!validTransition) {
+      return false;
+    }
+
     return true;
   }
 
@@ -6475,6 +6483,7 @@ export class TimelineComponent
     }
     this.commonService.showToastrMessage(this.constants.MessageType.info, arrMsgs.join('/\n'), false);
   }
+
   async checkForPubSupportTasks(allTasks) {
     const allowedTasks = ['Journal Requirement', 'Galley', "GalleySlot", 'Submission Pkg', 'Submit', 'SubmitSlot'];
     const status = ['Completed', 'Auto Closed'];
@@ -6583,6 +6592,67 @@ export class TimelineComponent
       }
     }
     return true;
+  }
+
+  async isWriterReviewTransition(milestoneData) {
+    const batchUrl = [];
+    let writeTransition = false;
+    let reviewTransition = false;
+      let allMilestones = this.sharedObject.oTaskAllocation.oProjectDetails.allMilestones;
+      let prevMilestone = allMilestones.length ? milestoneData.find(m => m.data.title == allMilestones[allMilestones.length-1]) : {};
+      let addedMilestone = this.milestoneData.find(m => m.data.type == 'milestone' && m.data.added);
+      if(prevMilestone && addedMilestone) {
+      
+      let prevMilestoneTasks = prevMilestone ? this.taskAllocateCommonService.getTasksFromMilestones(prevMilestone, false, milestoneData, false) : [];
+      let addedMilestoneTasks = addedMilestone ? this.taskAllocateCommonService.getTasksFromMilestones(addedMilestone, false, milestoneData, false) : [];
+
+      let prevWriteTasks = prevMilestoneTasks.length ? prevMilestoneTasks.filter(t=> t.itemType == 'Write') : [];
+      let prevReviewTasks = prevMilestoneTasks.length ? prevMilestoneTasks.filter(t=> t.itemType == 'Review-Write') : [];
+      let writers = Array.from(new Set(prevWriteTasks.map(e=> e.AssignedTo).map(t => t.ID)))
+      .map(id => {
+        return prevWriteTasks.map(e=> e.AssignedTo).find(t => t.ID === id)
+      });
+      let reviewers = Array.from(new Set(prevReviewTasks.map(e=> e.AssignedTo).map(t => t.ID)))
+      .map(id => {
+        return prevReviewTasks.map(e=> e.AssignedTo).find(t => t.ID === id)
+      });
+
+      let newAddedWriteTasks = addedMilestoneTasks.length ? addedMilestoneTasks.filter(t=> t.itemType == 'Write') : [];   
+      let newAddedReviewTasks = addedMilestoneTasks.length ? addedMilestoneTasks.filter(t=> t.itemType == 'Review-Write') : []
+
+      if(prevWriteTasks.length && newAddedWriteTasks.length) {
+        newAddedWriteTasks.forEach((a)=>{
+          writeTransition = !writers.some(e=> e.ID == a.AssignedTo.ID);
+        })
+      }
+
+      if(prevReviewTasks.length && newAddedReviewTasks.length) {
+        newAddedReviewTasks.forEach((a)=>{
+          reviewTransition = !reviewers.some(e=> e.ID == a.AssignedTo.ID);
+        })
+      }
+
+      const ref = this.dialogService.open(WriterReviewTransitionComponent, {
+        data: {
+          milestoneData,
+          newAddedWriteTasks,
+          newAddedReviewTasks,
+        },
+        width: "65vw",
+        header:
+          "Writer and Review Transition",
+        contentStyle: { "max-height": "90vh", "overflow-y": "auto" },
+        closable: false
+      });
+      ref.onClose.subscribe(async (reasonData: any) => {
+        if(milestoneData) {
+          this.milestoneData = milestoneData;
+          await this.generateSaveTasks();
+        }
+      }); 
+    }
+    return (writeTransition || reviewTransition) ? false : true;
+    
   }
 
   validateAllocationString(checkTasks) {
@@ -7201,7 +7271,8 @@ export class TimelineComponent
       allocationTypeLoader: false,
       ganttOverlay: "",
       ganttMenu: "",
-      ExpectedBudgetHrs: ""
+      ExpectedBudgetHrs: "",
+      Reason:''
     };
 
     return taskObj;
@@ -7289,7 +7360,8 @@ export class TimelineComponent
       allocationTypeLoader: false,
       ganttOverlay: "",
       ganttMenu: "",
-      ExpectedBudgetHrs: ""
+      ExpectedBudgetHrs: "",
+      Reason:''
     };
 
     return taskObj;

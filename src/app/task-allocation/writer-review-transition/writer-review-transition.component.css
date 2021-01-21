@@ -1,0 +1,50 @@
+.transitionButton {
+    position: fixed !important;
+    width: 65vw !important;
+    margin: -50px !important;
+  }
+
+  h4 {
+    width: 100%; 
+    text-align: center; 
+    border-bottom: 1px solid #000; 
+    line-height: 0.1em;
+    margin: 10px 0 20px; 
+ } 
+ 
+ h4 span { 
+     background:#fff; 
+     padding:0 10px; 
+ }
+ 
+ ::ng-deep .dropdown-border .body .ui-dropdown{
+  border: 1px solid #a6a6a6 !important;
+ }
+
+ .divider {
+  width: 2px;
+  margin: 6px 0;
+  background: blue;
+}
+
+
+div.maincontent {
+  /* text-align: center; */
+  margin: 0 auto;
+  /* max-height: 720px; */
+}
+div.writerSection,
+div.reviewerSection {
+  display: inline-block;
+  vertical-align: top;
+  overflow: auto;
+}
+div.writerSection,
+div.reviewerSection {
+  width: 50%;
+  padding-left: 3%;
+  padding-right: 3%;
+}
+div.writerSection {
+  border-right: 2px solid #000;
+}

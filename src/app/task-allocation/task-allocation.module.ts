@@ -29,10 +29,11 @@ import { ResourceSelectionComponent } from './resource-selection/resource-select
 import { ConflictAllocationsModule } from '../shared/conflict-allocations/conflict-allocations.module';
 import { ConflictAllocationComponent } from '../shared/conflict-allocations/conflict-allocation.component';
 import { MCMICountFieldsComponent } from './mc-mi-count-fields/mc-mi-count-fields.component';
+import { WriterReviewTransitionComponent } from './writer-review-transition/writer-review-transition.component';
 
 @NgModule({
   declarations: [TaskAllocationComponent, TimelineComponent, DragDropComponent,
-    TaskDetailsDialogComponent, ResourcesComponent, GanttEdittaskComponent, ResourceSelectionComponent, MCMICountFieldsComponent],
+    TaskDetailsDialogComponent, ResourcesComponent, GanttEdittaskComponent, ResourceSelectionComponent, MCMICountFieldsComponent, WriterReviewTransitionComponent],
   imports: [
     CommonModule,
     TaskAllocationRoutingModule,
@@ -58,6 +59,6 @@ import { MCMICountFieldsComponent } from './mc-mi-count-fields/mc-mi-count-field
   ],
   providers: [DatePipe, DynamicDialogConfig, DynamicDialogRef],
   entryComponents: [UsercapacityComponent, DragDropComponent, TaskDetailsDialogComponent, GanttChartComponent, PreStackAllocationComponent,
-    GanttEdittaskComponent, ResourceSelectionComponent, ConflictAllocationComponent]
+    GanttEdittaskComponent, ResourceSelectionComponent, ConflictAllocationComponent, WriterReviewTransitionComponent]
 })
 export class TaskAllocationModule { }
