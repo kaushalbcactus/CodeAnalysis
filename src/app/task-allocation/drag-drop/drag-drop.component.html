@@ -179,7 +179,7 @@
                 <div class="p-col p-grid p-flex-column">
                     <div class="p-col-12">
                         <div class="p-grid p-p-4 milestones dndList panelArea" dndEffectAllowed="move">
-
+                            <div dndPlaceholderRef class="dndPlaceholder"></div>
                             <div class="p-p-2 p-mr-2 p-mb-2 itemBox" *ngFor="let task of sharedObject.oTaskAllocation.arrTasks" [dndDraggable]="task" dndEffectAllowed="move" [dndType]="task" (dndStart)="onDragged($event)">
                                 <div class="task-item"><span> {{task}}</span></div>
                             </div>
@@ -195,13 +195,13 @@
                                 </div>
                                 <div class="p-col p-grid p-jc-end">
 
-                                    <button *ngIf="!enableZoom" pButton pRipple type="button" class="p-button-outlined p-button-danger  p-mr-1" icon="fa fa-search-plus" title="Enable zooming" (click)="EnableZoom(true)"></button>
+                                    <button *ngIf="!enableZoom" pButton pRipple type="button" class="p-button-outlined p-button-danger  p-mr-1" icon="pi pi-search-plus" title="Enable zooming" (click)="EnableZoom(true)"></button>
 
-                                    <button *ngIf="enableZoom" pButton pRipple type="button" class="p-button-outlined p-button-danger  p-mr-1" icon="fa fa-search-minus" title="Disable zooming" (click)="EnableZoom(false)"></button>
+                                    <button *ngIf="enableZoom" pButton pRipple type="button" class="p-button-outlined p-button-danger  p-mr-1" icon="pi pi-search-minus" title="Disable zooming" (click)="EnableZoom(false)"></button>
 
                                     <button *ngIf="!enablePaan" pButton pRipple type="button" class="p-button-outlined p-button-danger  p-mr-1" icon="fa fa-table" title="Enable panning" (click)="EnablePaan(true)"></button>
 
-                                    <button *ngIf="enablePaan" pButton pRipple type="button" class="p-button-outlined p-button-danger  p-mr-1" icon="fa fa-refresh" title="Disable panning" (click)="EnablePaan(false)"></button>
+                                    <button *ngIf="enablePaan" pButton pRipple type="button" class="p-button-outlined p-button-danger  p-mr-1" icon="pi pi-list" title="Disable panning" (click)="EnablePaan(false)"></button>
 
                                     <button pButton pRipple type="button" class="p-button-outlined p-button-danger  p-mr-1" (click)="ChangeOrientation('task')" icon="fa fa-refresh" title="Change Orientation"></button>
 

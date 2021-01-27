@@ -27,6 +27,11 @@
     border: 1px dashed #db1721 !important;
 }
 
+::ng-deep #taskChart,
+ ::ng-deep #SubMilestoneChart {
+    max-height: 80% !important;
+}
+
 
 /* .footer {
     position: absolute;
