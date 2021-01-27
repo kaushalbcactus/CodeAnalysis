@@ -1,6 +1,6 @@
 <!-- //   Search box to search project  -->
-<div class="p-mt-5 box p-shadow-24" *ngIf=" !loaderenable  && SearchView ">
-    <div class="p-col-8 vertical-container">
+<div class="p-col-5 p-mx-auto p-mt-6 p-p-4 p-shadow-24" *ngIf=" !loaderenable  && SearchView ">
+    <div class="p-col-12 vertical-container">
         <form class="p-col p-grid p-as-center">
             <span class=" p-col-11 p-float-label">
               <input class="searchbox p-p-3 p-col-12" id="float-input-invalid" type="text" pInputText [formControl]="searchFormControl" (keydown)="SearchProject($event)" [ngClass]="errormessage ==='' ? '': ' ng-invalid ng-dirty'"> 
@@ -54,7 +54,7 @@
                 </div>
             </ng-template>
             <ng-template pTemplate="content">
-                <app-timeline fxLayout="row" (reloadResources)="reloadResourceArray($event)" fxLayoutAlign="center center" style="width:100%;padding-bottom:200px;"></app-timeline>
+                <app-timeline (reloadResources)="reloadResourceArray($event)" style="width:100%;"></app-timeline>
             </ng-template>
         </p-accordionTab>
     </p-accordion>

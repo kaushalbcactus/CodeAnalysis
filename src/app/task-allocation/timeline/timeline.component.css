@@ -1,0 +1,26 @@
+::ng-deep .taskAllocationTimeline .p-datatable-cactus .p-treetable-wrapper .p-treetable-thead>tr>th:nth-child(5) {
+    width: 7em !important;
+}
+
+::ng-deep .taskAllocationTimeline .p-datatable-cactus .p-treetable-wrapper .p-treetable-thead>tr>th:nth-child(4) {
+    width: 10em !important;
+}
+
+::ng-deep .taskAllocationTimeline .p-datatable-cactus .p-treetable-wrapper .p-treetable-thead>tr>th:nth-child(8) {
+    width: 3em !important;
+}
+
+::ng-deep .taskAllocationTimeline .p-datatable-cactus .p-treetable-wrapper .p-treetable-thead>tr>th:nth-child(6),
+::ng-deep .taskAllocationTimeline .p-datatable-cactus .p-treetable-wrapper .p-treetable-thead>tr>th:nth-child(9) {
+    width: 5em !important;
+}
+
+::ng-deep .taskAllocationTimeline .p-datatable-cactus .p-treetable-wrapper .p-treetable-thead>tr>th:nth-child(2),
+::ng-deep .taskAllocationTimeline .p-datatable-cactus .p-treetable-wrapper .p-treetable-thead>tr>th:nth-child(3),
+ ::ng-deep .taskAllocationTimeline .p-datatable-cactus .p-treetable-wrapper .p-treetable-thead>tr>th:nth-child(7) {
+    width: 15em !important;
+}
+
+::ng-deep .VisualRepresentation {
+    padding-bottom: 200px !important;
+}

@@ -64,7 +64,7 @@ import { IUserCapacity } from 'src/app/shared/usercapacity/interface/usercapacit
     GanttEdittaskComponent,
     ConflictAllocationComponent
   ],
-  encapsulation: ViewEncapsulation.None
+  // encapsulation: ViewEncapsulation.None
 })
 export class TimelineComponent
   implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
@@ -111,31 +111,48 @@ export class TimelineComponent
   public colors = [
     {
       key: "Not Confirmed",
-      value: "#FFD34E"
+      value: "#FFD34E",
+      visibility:false
+    },
+    {
+      key:"Planned",
+      value:"#FFD34E",
+      visibility:true
     },
     {
       key: "Not Started",
-      value: "#5F6273"
+      value: "#5F6273",
+      visibility:true
     },
     {
       key: "In Progress",
-      value: "#6EDC6C"
+      value: "#6EDC6C",
+      visibility:true
     },
     {
       key: "Completed",
-      value: "#3498DB"
+      value: "#3498DB",
+      visibility:true
     },
     {
       key: "Auto Closed",
-      value: "#8183CC"
+      value: "#8183CC",
+      visibility:true
     },
     {
       key: "Hold",
-      value: "#FF3E56"
+      value: "#FF3E56",
+      visibility:false
     },
     {
       key: "Not Saved",
-      value: "rgb(219, 23, 33)"
+      value: "rgb(219, 23, 33)",
+      visibility:false
+    },
+   {
+      key:"Equal allocation per day",
+      value:"indianred",
+      visibility:true
     }
   ];
 
@@ -1955,7 +1972,7 @@ export class TimelineComponent
 
   async timeChange() {
     this.visualgraph = false;
-    this.loaderenable = true;
+    this.constants.loader.isWaitDisable = true;
     const isStartDate =
       this.dragClickedInput.indexOf("start_date") > -1 ? true : false;
     let type = isStartDate ? "start" : "end";
@@ -2004,7 +2021,7 @@ export class TimelineComponent
         this.GanttchartData = allTasks.data;
       }
 
-      this.loaderenable = false;
+      this.constants.loader.isWaitDisable = true;
       this.visualgraph = true;
       this.GanttchartData = allTasks.data;
       await this.ganttNotification();
@@ -2026,7 +2043,7 @@ export class TimelineComponent
       });
 
       this.GanttchartData = allTasks.data;
-      this.loaderenable = false;
+      this.constants.loader.isWaitDisable = true;
       this.visualgraph = true;
     }
     await this.showGanttChart(false);
@@ -2256,7 +2273,7 @@ export class TimelineComponent
   }
 
   confirmMilestone(task) {
-    this.loaderenable = true;
+    this.constants.loader.isWaitDisable = false;
     this.confirmMilestoneLoader = true;
     setTimeout(async () => {
       const rowNode: TreeNode = this.getNode(task);
@@ -2286,7 +2303,7 @@ export class TimelineComponent
           await this.setAsNextMilestoneCall(task, message);
         }
       }
-      this.loaderenable = false;
+      this.constants.loader.isWaitDisable = true;
       this.confirmMilestoneLoader = false;
     }, 100);
   }
@@ -2697,10 +2714,10 @@ export class TimelineComponent
 
   loadComponentRefresh() {
     this.visualgraph = false;
-    this.loaderenable = true;
+   this.constants.loader.isWaitDisable= false;
     setTimeout(() => {
       this.loadComponent();
-      this.loaderenable = false;
+      this.constants.loader.isWaitDisable= true;
       this.visualgraph = true;
     });
   }
@@ -2846,7 +2863,7 @@ export class TimelineComponent
   // **************************************************************************************************************************************
 
   CancelChanges(milestone, type) {
-    this.loaderenable = true;
+    this.constants.loader.isWaitDisable= false;
     if (type === "discardAll") {
       //this.loaderenable = false;
       this.changeInRestructure = false;
@@ -2882,7 +2899,7 @@ export class TimelineComponent
       );
       this.createGanttDataAndLinks(true);
       setTimeout(() => {
-        this.loaderenable = false;
+        this.constants.loader.isWaitDisable= true;
       }, 50);
     } else {
       this.tempmilestoneData.forEach(element => {
@@ -3035,7 +3052,7 @@ export class TimelineComponent
         true
       );
       this.createGanttDataAndLinks(true);
-      this.loaderenable = false;
+      this.constants.loader.isWaitDisable = true;
     }, 200);
   }
   // tslint:enable
@@ -3086,7 +3103,7 @@ export class TimelineComponent
 
   async editTask(task, rowNode, type?) {
     if (type == "Edit All") {
-      this.loaderenable = true;
+      this.constants.loader.isWaitDisable = false;
       setTimeout(() => {
         this.milestoneData.forEach(async (mil, index) => {
           if (mil.children && mil.children.length) {
@@ -3102,7 +3119,7 @@ export class TimelineComponent
             await this.editModeForTasks(mil, mil);
           }
         });
-        this.loaderenable = false;
+        this.constants.loader.isWaitDisable = true;
       }, 100);
     } else {
       task.assignedUsers.forEach(element => {
@@ -3294,31 +3311,6 @@ export class TimelineComponent
   // *************************************************************************************************
   // hide popup menu on production
   // ***********************************************************************************************
-
-  @HostListener("document:click", ["$event"])
-  clickout(event) {
-    if (event.target.className === "pi pi-ellipsis-v") {
-      if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        if (
-          this.tempClick !== event.target.parentElement.children[0].children[0]
-        ) {
-          this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = "";
-        } else {
-          this.tempClick = undefined;
-        }
-      } else {
-        this.tempClick = event.target.parentElement.children[0].children[0];
-        this.tempClick.style.display = "";
-      }
-    } else {
-      if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        this.tempClick = undefined;
-      }
-    }
-  }
 
   async budgetHrsChanged(event) {
     this.disableSave = true;
@@ -3738,7 +3730,6 @@ export class TimelineComponent
   // *************************************************************************************************
   // tslint:disable
   showRestructure() {
-    this.loaderenable = true;
     const ref = this.dialogService.open(DragDropComponent, {
       data: {
         milestones: this.milestoneData,
@@ -3754,7 +3745,8 @@ export class TimelineComponent
     });
 
     ref.onClose.subscribe((restructureMilestones: any) => {
-      this.loaderenable = true;
+      this.constants.loader.isWaitDisable= false;
+      // this.loaderenable = true;
       let allReturnedTasks = [],
         tempSubmilestones = [];
       if (restructureMilestones) {
@@ -3793,7 +3785,8 @@ export class TimelineComponent
           }, 300);
         }
         this.postProcessRestructureChanges(allReturnedTasks, milestonesList);
-        this.loaderenable = false;
+        this.constants.loader.isWaitDisable= true;
+        // this.loaderenable = false;
       } else {
         this.CancelChanges(tempSubmilestones, "discardAll");
       }

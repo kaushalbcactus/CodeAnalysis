@@ -57,7 +57,7 @@ export class DragDropComponent implements OnInit {
   milestones: null;
   resizeGraph: string = '';
   initialLoad: boolean = true;
-  grapLoading: boolean = false;
+  // grapLoading: boolean = false;
   subMilestoneHoritontal: boolean = true;
   tasksHoritontal: boolean = true;
   showSvg = false;
@@ -85,7 +85,7 @@ export class DragDropComponent implements OnInit {
 
   ngOnInit() {
     this.initialLoad = true;
-    this.setInitialWidth();
+   
     this.GetAllTasksMilestones();
 
     this.data = this.config.data.milestones;
@@ -208,7 +208,7 @@ export class DragDropComponent implements OnInit {
     this.minWidth = areaWidth;
   }
 
-  setStep(index: number) {
+  onTabOpen(index: number) {
     this.step = index;
     switch (this.step) {
       case 0:
@@ -805,6 +805,10 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
 
 
     this.mainloaderenable = false;
+
+    setTimeout(() => {
+      this.setInitialWidth();
+    },100);
 
   }
 
@@ -1557,7 +1561,8 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
   }
 
   GraphResize() {
-    this.grapLoading = true;
+    // this.constants.loader.isWaitDisable= false;
+    // this.grapLoading = true;
     setTimeout(() => {
       let uiDialog: any = document.querySelector('.allocation-drag-drop');
       switch (this.resizeGraph) {
@@ -1574,13 +1579,16 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
             this.width = this.minWidth;
 
           }
-
-          this.grapLoading = false;
+          setTimeout(() => {
+            this.constants.loader.isWaitDisable= true;
+          },500);
+          // this.grapLoading = false;
           this.moveToScrollView(this.resizeGraph);
 
           break;
         case 'submilestone':
           // let changeGraph = false;
+          debugger
           var milestoneAreaWidth: any = document.querySelector('.submilestonesDropArea');
           this.minWidth = milestoneAreaWidth.clientWidth;
           this.subMilestoneMaxHeight = uiDialog.clientHeight - milestoneAreaWidth.offsetTop - 150;
@@ -1611,12 +1619,16 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
             }
           }
 
-          this.grapLoading = false;
+          // this.grapLoading = false;
+          setTimeout(() => {
+            this.constants.loader.isWaitDisable= true;
+          },500);
           this.moveToScrollView(this.resizeGraph);
           // }
           break;
         case 'task':
           // let changeTaskGraph = false;
+          debugger
           var milestoneAreaWidth: any = document.querySelector('.taskDropArea');
           this.minWidth = milestoneAreaWidth.clientWidth;
           this.taskMaxHeight = uiDialog.clientHeight - milestoneAreaWidth.offsetTop - 60;
@@ -1651,7 +1663,12 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
             }
           }
 
-          this.grapLoading = false;
+          // this.grapLoading = false;
+          setTimeout(() => {
+            this.constants.loader.isWaitDisable= true;
+          },500);
+
+          
           this.moveToScrollView(this.resizeGraph);
           //  }
           break;

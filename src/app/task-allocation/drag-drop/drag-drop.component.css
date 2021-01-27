@@ -1,4 +1,34 @@
-.footer {
+.panelArea {
+    border: 1px solid #c53e3e !important;
+    border-radius: 4px !important;
+    font-size: 13px !important;
+}
+
+.itemBox {
+    background-color: #ededed !important;
+    cursor: pointer !important;
+}
+
+#dropZone {
+    border: 2px dashed #bbb;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    text-align: center;
+    font: 14pt bold arial;
+    color: #bbb;
+}
+
+#milestonetext {
+    font: 21px bold arial;
+}
+
+::ng-deep .ngx-charts-outer {
+    margin: auto !important;
+    border: 1px dashed #db1721 !important;
+}
+
+
+/* .footer {
     position: absolute;
     right: 80px;
     bottom: 30px;
@@ -53,19 +83,17 @@
 }
 
 :root {
-    /* setting var for nav height, you can do this however you want */
+   
     --sticky-nav-height: 40px;
 }
 
 .sticky-nav-wrapper {
-    /* set min height on wrapper so that the page
-     doesn't awkwardly snap and lose height */
+
     min-height: var(--sticky-nav-height);
 }
 
 .sticky-nav {
     height: var(--sticky-nav-height);
-    /* other styles */
 }
 
 ::ng-deep .ui-dialog .ui-dialog-titlebar {
@@ -166,4 +194,4 @@
 
 .dragDropFlex .mat-accordion .mat-expansion-panel .mat-expansion-panel-header-description {
     display: none;
-}
+} */

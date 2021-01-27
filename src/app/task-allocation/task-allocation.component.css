@@ -7,6 +7,11 @@
     margin: 2px !important;
 }
 
+::ng-deep .graybox {
+    background: #efefef !important;
+    min-width: 50px;
+}
+
 
 /* div.ms-wikicontent.ms-rtestate-field {
     padding-right: 0px !important;

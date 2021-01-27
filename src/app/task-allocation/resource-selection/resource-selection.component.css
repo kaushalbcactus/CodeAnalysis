@@ -1,3 +1,8 @@
+:host ::ng-deep .p-calendar-w-btn {
+    height: 33px !important;
+}
+
+
 /* ::ng-deep .ui-float-label {
     float: left !important;
 }

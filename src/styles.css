@@ -141,9 +141,14 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     text-decoration: none !important;
 }
 
-.p-accordion .p-accordion-header:not(.p-disabled).p-highlight .p-accordion-header-link {
+.p-accordion .p-accordion-header:not(.p-disabled).p-highlight .p-accordion-header-link,
+.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider:before {
     background: #c53e3e !important;
     color: #ffffff !important;
+}
+
+.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+    background: rgb(181 63 72 / 50%) !important;
 }
 
 .p-accordion .p-accordion-header:not(.p-disabled).p-highlight:hover .p-accordion-header-link {
@@ -343,7 +348,8 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
  */
 
 .p-datatable.p-datatable-cactus .p-datatable-wrapper tbody.p-datatable-tbody>tr>td:last-child>div div.p-menu,
-.p-datatable.p-datatable-cactus .p-datatable-wrapper tbody.p-datatable-tbody>tr>td:last-child>div div.p-tieredmenu {
+.p-datatable.p-datatable-cactus .p-datatable-wrapper tbody.p-datatable-tbody>tr>td:last-child>div div.p-tieredmenu,
+.p-treetable-wrapper tbody.p-treetable-tbody>tr>td:last-child>div div.p-menu {
     top: inherit !important;
     left: inherit !important;
     right: 25px !important;
@@ -409,7 +415,9 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 .loader {
     color: #ffffff;
     font-size: 10px;
-    margin: 30px auto;
+    margin: auto;
+    margin-top: 25vh;
+    margin-bottom: 5vh;
     position: relative;
     text-indent: -9999em;
     -webkit-transform: translateZ(0);
@@ -673,8 +681,10 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 /* */
 
 i.pi.pi-ellipsis-v,
-.headerview {
+.headerview,
+.fa-info-circle {
     font-size: 1.25em !important;
+    cursor: pointer !important;
 }
 
 .p-scrollpanel-wrapper,
@@ -687,7 +697,11 @@ i.pi.pi-ellipsis-v,
 .mainlable,
 .p-multiselect-item,
 .p-autocomplete-item,
-.p-autocomplete.p-autocomplete-multiple .p-autocomplete-multiple-container .p-autocomplete-input-token input {
+.p-autocomplete.p-autocomplete-multiple .p-autocomplete-multiple-container .p-autocomplete-input-token input,
+.UserTasksRow,
+.tableHeader,
+form>div>div>label,
+form>div>div>div>label {
     font-size: 13px !important;
 }
 
@@ -697,18 +711,17 @@ i.pi.pi-ellipsis-v,
     cursor: pointer !important;
 }
 
-.box {
-    height: 30vh !important;
-    width: 50vw !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-weight: 600 !important;
-    margin: auto !important;
-    border-radius: 4px !important;
-}
-
 .p-autocomplete.p-autocomplete-multiple .p-autocomplete-multiple-container .p-autocomplete-token {
     background: rgb(240 58 58 / 12%) !important;
     color: #c53e3e !important;
+}
+
+.p-treetable .p-treetable-thead>tr>th,
+.p-treetable .p-treetable-tbody>tr>td {
+    border-width: 1px !important;
+}
+
+.gantt_last_cell .contextMenu {
+    padding: 10px 20px;
+    background-color: beige;
 }

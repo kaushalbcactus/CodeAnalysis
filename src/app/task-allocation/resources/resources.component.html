@@ -8,8 +8,8 @@
 <div class="p-col-12 p-p-0 p-grid p-m-0" *ngIf="!loaderEnable">
     <div class="p-col p-grid p-flex-column p-mr-1">
         <span class="header">Primary Resources</span>
-        <p-autoComplete class="p-fluid" [(ngModel)]="primaryResoucesusers" appendTo="body" [suggestions]="filterPrimaryResources" (completeMethod)="filterUsers($event)" [minLength]="1" placeholder="Select Resources" field="UserName" [multiple]="!forFTE" scrollHeight="135px"
-            [dropdown]="true" class="primaryResource">
+        <p-autoComplete [style]="{'width':'100%'}" [(ngModel)]="primaryResoucesusers" appendTo="body" [suggestions]="filterPrimaryResources" (completeMethod)="filterUsers($event)" [minLength]="1" placeholder="Select Resources" field="UserName" [multiple]="!forFTE"
+            scrollHeight="135px" [dropdown]="true" class="primaryResource">
             <ng-template let-primaryResoucesusers pTemplate="item">
                 <div class="user-name">
                     {{primaryResoucesusers.UserName}}

@@ -27,7 +27,7 @@
                         <th *ngFor="let col of columns">
                             <div class="p-grid p-jc-between">
                                 <div class="p-col p-as-center"> {{ col.header }}</div>
-                                <button pButton pRipple [hidden]="col.header !== 'Document Name'" type="button" label="Download" (click)="downloadFile()" icon="pi pi-downloadh" class="p-button-raised p-button-danger"></button>
+                                <button *ngIf="DocumentArray.length > 0 " pButton pRipple [hidden]=" col.header !== 'Document Name'" type="button" label="Download" (click)="downloadFile()" icon="pi pi-downloadh" class="p-button-raised p-button-danger"></button>
                             </div>
                         </th>
                     </tr>
@@ -43,9 +43,9 @@
                         </td>
                     </tr>
                 </ng-template>
-                <ng-template pTemplate="emptymessage">
+                <ng-template pTemplate="emptymessage" let-columns>
                     <tr>
-                        <td [colspan]="columns.length + 1">No Documents Available.</td>
+                        <td [attr.colspan]="columns.length + 1">No Documents Available.</td>
                     </tr>
                 </ng-template>
             </p-table>
@@ -88,62 +88,3 @@
         </ng-template>
     </p-panel>
 </div>
-
-
-
-<!-- 
-<div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
-    <div id="modalInnerLoader"></div>
-    <div id="modalInnerLoaderText">Loading...</div>
-</div>
-
-<div [hidden]="modalloaderenable" fxLayout="column" fxLayoutGap="10px">
-    <p-card>
-        <p-header style="
-        padding: 0.5em;
-        font-size: 1.5em;
-        color: #6f0b0b;
-        font-weight: 600;
-      "><i class="fa fa-book" aria-hidden="true"></i> &nbsp;&nbsp; Documents
-        </p-header>
-        <div>
-            <div *ngIf="DocumentArray.length === 0 && !modalloaderenable" style="color: #c53e3e; font-size: 1em;">
-                *No Documents Available.
-            </div>
-
-        </div>
-    </p-card>
-    <p-card>
-        <p-header style="
-        padding: 0.5em;
-        font-size: 1.5em;
-        color: #6f0b0b;
-        font-weight: 600;
-        width: 100%;
-      "><i class="fa fa-commenting" aria-hidden="true"></i>&nbsp;&nbsp; Comments
-        </p-header>
-        <div *ngIf="currentTask">
-            <span *ngIf="!currentTask.TaskComments" style="color: #c53e3e; font-size: 1em;">
-        * No notes or comments present for current task.
-      </span>
-            <span *ngIf="currentTask.TaskComments" [innerHTML]="currentTask.TaskComments">
-      </span>
-        </div>
-    </p-card>
-    <p-card>
-        <p-header style="
-        padding: 0.5em;
-        font-size: 1.5em;
-        color: #6f0b0b;
-        font-weight: 600;
-      "><i class="fa fa-comments" aria-hidden="true"></i>&nbsp;&nbsp; Scope
-        </p-header>
-        <div *ngIf="currentTask">
-            <span *ngIf="!currentTask.CommentsMT" style="color: #c53e3e; font-size: 1em;">
-        * No notes or comments present for current task.
-      </span>
-            <span *ngIf="currentTask.CommentsMT" [innerHTML]="currentTask.CommentsMT">
-      </span>
-        </div>
-    </p-card>
-</div> -->
