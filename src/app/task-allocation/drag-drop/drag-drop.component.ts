@@ -67,6 +67,9 @@ export class DragDropComponent implements OnInit {
   enableZoom: boolean = false;
   enablePaan: boolean = false;
   recentEventNode = undefined;
+  public layoutSettings = {
+    orientation: 'TB'
+  };
   public queryConfig = {
     data: null,
     url: '',
@@ -578,8 +581,6 @@ export class DragDropComponent implements OnInit {
         this.milestonesGraph.nodes = [...reOrderData.Nodes];
         this.milestonesGraph.links = [...reOrderData.Links];
       }
-
-     
 
       if (!this.initialLoad)
         this.GraphResize();

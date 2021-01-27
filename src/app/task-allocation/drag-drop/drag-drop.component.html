@@ -136,7 +136,8 @@
                             </ngx-graph>
 
                             <ngx-graph *ngIf="!subMilestoneHoritontal" [view]="[subMilestoneWidth, subMilestoneHeight]" class="chart-container" id="SubMilestoneChart" [links]="milestonesGraph.nodes[milestoneIndex].submilestone.links" [nodes]="milestonesGraph.nodes[milestoneIndex].submilestone.nodes"
-                                [legend]="false" [curve]="curve" [enableZoom]="false" [draggingEnabled]="false" [panningEnabled]="false" [autoCenter]="true" [style.overflow-x]="subMilestoneWidth > minWidth ? 'scroll' : ''" [orientation]="TB" [style.overflow-y]="subMilestoneHeight > subMilestoneMaxHeight ? 'scroll' : ''">
+                                [legend]="false" [curve]="curve" [enableZoom]="false" [draggingEnabled]="false" [panningEnabled]="false" [autoCenter]="true" [style.overflow-x]="subMilestoneWidth > minWidth ? 'scroll' : ''" [layoutSettings]="layoutSettings"
+                                [style.overflow-y]="subMilestoneHeight > subMilestoneMaxHeight ? 'scroll' : ''">
 
                                 <ng-template #defsTemplate>
                                     <svg:marker id="arrow1" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
@@ -238,7 +239,8 @@
 
                             </ngx-graph>
                             <ngx-graph *ngIf="!tasksHoritontal" [view]="[taskWidth,taskHeight]" class="chart-container" id="taskChart" [links]="milestonesGraph.nodes[milestoneIndex].submilestone.nodes[submilestoneIndex].task.links" [nodes]="milestonesGraph.nodes[milestoneIndex].submilestone.nodes[submilestoneIndex].task.nodes"
-                                [legend]="false" [curve]="curve" [enableZoom]="enableZoom" [draggingEnabled]="false" [panningEnabled]="enablePaan" [autoCenter]="true" [orientation]="TB" [style.overflow-x]="taskWidth > minWidth ? 'scroll' : ''" [style.overflow-y]="taskHeight > taskMaxHeight ? 'scroll' : ''">
+                                [legend]="false" [curve]="curve" [enableZoom]="enableZoom" [draggingEnabled]="false" [panningEnabled]="enablePaan" [autoCenter]="true" [layoutSettings]="layoutSettings" [style.overflow-x]="taskWidth > minWidth ? 'scroll' : ''"
+                                [style.overflow-y]="taskHeight > taskMaxHeight ? 'scroll' : ''">
 
                                 <ng-template #defsTemplate>
                                     <svg:marker id="arrow2" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
