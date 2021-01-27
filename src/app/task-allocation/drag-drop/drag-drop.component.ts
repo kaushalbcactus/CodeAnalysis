@@ -1589,7 +1589,6 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
           break;
         case 'submilestone':
           // let changeGraph = false;
-          debugger
           var milestoneAreaWidth: any = document.querySelector('.submilestonesDropArea');
           this.minWidth = milestoneAreaWidth.clientWidth;
           this.subMilestoneMaxHeight = uiDialog.clientHeight - milestoneAreaWidth.offsetTop - 150;
@@ -1629,7 +1628,6 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
           break;
         case 'task':
           // let changeTaskGraph = false;
-          debugger
           var milestoneAreaWidth: any = document.querySelector('.taskDropArea');
           this.minWidth = milestoneAreaWidth.clientWidth;
           this.taskMaxHeight = uiDialog.clientHeight - milestoneAreaWidth.offsetTop - 60;

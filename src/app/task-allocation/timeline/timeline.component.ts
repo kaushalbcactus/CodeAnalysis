@@ -416,7 +416,6 @@ export class TimelineComponent
     tempSubmilestones,
     milestone
   ) {
-    // debugger;
     let taskName = "";
     let bConsiderAllcoated = true;
     for (const milestoneTask of milestoneTasks) {
@@ -3435,7 +3434,6 @@ export class TimelineComponent
   ) {
     const allTaskNodes = node.task.nodes;
     const allTaskLinks = node.task.links;
-    // debugger;
     allTaskNodes.forEach(task => {
       let nextTasks = this.getNextPrevious(
         allTaskNodes,
@@ -5037,7 +5035,6 @@ export class TimelineComponent
       milestoneTask.AssignedTo.hasOwnProperty("ID") &&
       milestoneTask.AssignedTo.ID !== -1
     ) {
-      // debugger;
       switch (milestoneTask.skillLevel) {
         case 'Writer':
           writers.push({
@@ -5439,7 +5436,6 @@ export class TimelineComponent
     };
   }
   addUpdateTaskObject(milestoneTask) {
-    // debugger
     return {
       __metadata: { type: this.constants.listNames.Schedules.type },
       CommentsMT: milestoneTask.scope,
@@ -7105,7 +7101,6 @@ export class TimelineComponent
     submilestone,
     tempID
   ) {
-    // debugger;
     const submilestoneLabel = submilestone ? submilestone.title : "";
     const defaultDate = this.getDefaultDate();
     let taskObj: IMilestoneTask = {
