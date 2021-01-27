@@ -1,6 +1,6 @@
 .transitionButton {
     position: fixed !important;
-    width: 65vw !important;
+    width: 85vw !important;
     margin: -50px !important;
   }
 
@@ -47,4 +47,26 @@ div.reviewerSection {
 }
 div.writerSection {
   border-right: 2px solid #000;
+}
+
+.milestone_tr {
+  background-color: #fff !important;
+}
+
+.milestone_tr>td {
+  border: none !important;
+}
+
+.milestoneTaskColumn {
+  margin: 0px !important;
+  padding: 0px !important;
+  word-break: break-word !important;
+}
+
+.milestoneTaskColumn div {
+  margin:5px;
+}
+
+.mt-15 {
+ margin-top: 15px;
 }

@@ -15,10 +15,16 @@ export class WriterReviewTransitionComponent implements OnInit {
   milestoneData: any = [];
   newAddedWriteTasks: any = [];
   newAddedReviewTasks: any = [];
+  // prevReviewTasks: any = [];
+  // prevWriteTasks: any = [];
   writerReason: any;
   reviewerReason: any;
+  writeTransition: boolean
+  reviewTransition: boolean;
   writerArr = [];
   reviewerArr = [];
+  transitionMil: any;
+  cols = [{ field: "Transition", header: "Transition" }];
 
   constructor(
     private config: DynamicDialogConfig,
@@ -70,11 +76,24 @@ export class WriterReviewTransitionComponent implements OnInit {
     ];
 
     this.milestoneData = this.config.data.milestoneData;
+    // this.prevWriteTasks = this.config.data.prevWriteTasks;
+    // this.prevReviewTasks = this.config.data.prevReviewTasks;
     this.newAddedWriteTasks = this.config.data.newAddedWriteTasks;
     this.newAddedReviewTasks = this.config.data.newAddedReviewTasks;
+    this.writeTransition = this.config.data.writeTransition;
+    this.reviewTransition = this.config.data.reviewTransition;
+    this.transitionMil = this.config.data.transitionMilestone;
 
+   
     let allMilestone = this.milestoneData.filter(e=> e.data.type=='milestone').map(e=> e.data);
-    if(this.newAddedWriteTasks.length) {
+    let mil = allMilestone.map(e=> e.title)
+    let startIndex = mil.indexOf(this.transitionMil.milestone) - 2 >= 0 ? mil.indexOf(this.transitionMil.milestone) - 2 : 0
+    let endIndex = mil.indexOf(this.transitionMil.milestone) + 1
+    allMilestone = mil.slice(startIndex,endIndex).map(title => {
+      return allMilestone.find(t => t.title === title)
+    });
+
+    if(this.writeTransition) {
       allMilestone.forEach(element => {
         let task = this.taskAllocateCommonService.getTasksFromMilestones(element, false, this.milestoneData, false)
         let writeTasks = task.filter(e=> e.itemType=='Write');
@@ -83,7 +102,7 @@ export class WriterReviewTransitionComponent implements OnInit {
       });
     }
 
-    if(this.newAddedReviewTasks.length) {
+    if(this.reviewTransition) {
       allMilestone.forEach(element => {
         let task = this.taskAllocateCommonService.getTasksFromMilestones(element, false, this.milestoneData, false)
         let reviewTasks = task.filter(e=> e.itemType=='Review-Write');
@@ -101,9 +120,11 @@ export class WriterReviewTransitionComponent implements OnInit {
       if(mil.data.type == 'milestone' && mil.data.title == addedMilestone[0] && mil.children) {
         mil.children.forEach(submilestone => {
           if (submilestone.children) {
-            // this.setDateValues(submilestone);
+            submilestone.children.forEach(sub => { 
+              sub.data.Reason =  sub.data.itemType == 'Write' ? this.newAddedWriteTasks.some(n=> n.id == sub.data.id) ? this.writerReason : '' : sub.data.itemType == 'Review-Write' ? this.newAddedReviewTasks.some(n=> n.id == sub.data.id) ? this.reviewerReason : '' : '';
+            })
           }else {
-            submilestone.data.Reason = submilestone.data.itemType == 'Write' ? this.writerReason : submilestone.data.itemType == 'Review-Write' ? this.reviewerReason : '';
+            submilestone.data.Reason = submilestone.data.itemType == 'Write' ? this.newAddedWriteTasks.some(n=> n.id == submilestone.data.id) ? this.writerReason : '' : submilestone.data.itemType == 'Review-Write' ? this.newAddedReviewTasks.some(n=> n.id == submilestone.data.id) ? this.reviewerReason : '' : '';
           }
         });
       }
