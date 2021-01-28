@@ -68,16 +68,16 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
     this.qcs = [];
     this.showLoader();
     this.CDColumns = [
-      { field: 'ID', header: 'ID' },
-      { field: 'Title', header: 'Project Code' },
-      { field: 'SentDate', header: 'Sent Date' },
-      { field: 'SentBy', header: 'Sent By' },
-      { field: 'Status', header: 'Status' },
-      { field: 'SeverityLevel', header: 'CD Category' },
-      { field: 'Accountable', header: 'Accountble' },
-      { field: 'Segregation', header: 'Segregation' },
-      { field: 'BusinessImpact', header: 'Business Imapact' },
-      { field: '', header: '' },
+      { field: 'ID', header: 'ID', Type: 'number', dbName: 'ID', options: [] },
+      { field: 'Title', header: 'Project Code', Type: 'string', dbName: 'Title', options: [] },
+      { field: 'SentDate', header: 'Sent Date', Type: 'datetime', dbName: 'SentDate', options: [] },
+      { field: 'SentBy', header: 'Sent By', Type: 'string', dbName: 'SentBy', options: [] },
+      { field: 'Status', header: 'Status', Type: 'string', dbName: 'Status', options: [] },
+      { field: 'SeverityLevel', header: 'CD Category', Type: 'string', dbName: 'SeverityLevel', options: [] },
+      { field: 'Accountable', header: 'Accountble', Type: 'string', dbName: 'Accountable', options: [] },
+      { field: 'Segregation', header: 'Segregation', Type: 'string', dbName: 'Segregation', options: [] },
+      { field: 'BusinessImpact', header: 'Business Imapact', Type: 'string', dbName: 'BusinessImpact', options: [] },
+      { field: '', header: '', Type: '', dbName: '', options: [] },
     ];
     setTimeout(async () => {
       await this.applyFilters(this.filterObj);
@@ -85,24 +85,24 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
     }, 500);
   }
 
-  colFilters(colData) {
-    this.CDColArray.ID = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.ID, value: a.ID, filterValue: +a.ID }; return b; }));
-    this.CDColArray.Title = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Title, value: a.Title, filterValue: a.Title }; return b; }));
-    this.CDColArray.SentDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: this.datepipe.transform(a.SentDate, 'MMM d, yyyy'),
-        value: a.SentDate ? new Date(this.datepipe.transform(a.SentDate, 'MMM d, yyyy')) : '',
-        filterValue: new Date(a.SentDate)
-      };
-      return b;
-    }));
-    this.CDColArray.SentBy = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.SentBy, value: a.SentBy, filterValue: a.SentBy }; return b; }));
-    this.CDColArray.Status = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Status, value: a.Status, filterValue: a.Status }; return b; }));
-    this.CDColArray.SeverityLevel = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.SeverityLevel, value: a.SeverityLevel, filterValue: a.SeverityLevel }; return b; }));
-    this.CDColArray.Accountable = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Accountable, value: a.Accountable, filterValue: a.Accountable }; return b; }));
-    this.CDColArray.Segregation = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Segregation, value: a.Segregation, filterValue: a.Segregation }; return b; }));
-    this.CDColArray.BusinessImpact = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.BusinessImpact, value: a.BusinessImpact, filterValue: a.BusinessImpact }; return b; }));
-  }
+  // colFilters(colData) {
+  //   this.CDColArray.ID = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.ID, value: a.ID, filterValue: +a.ID }; return b; }));
+  //   this.CDColArray.Title = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Title, value: a.Title, filterValue: a.Title }; return b; }));
+  //   this.CDColArray.SentDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
+  //     const b = {
+  //       label: this.datepipe.transform(a.SentDate, 'MMM d, yyyy'),
+  //       value: a.SentDate ? new Date(this.datepipe.transform(a.SentDate, 'MMM d, yyyy')) : '',
+  //       filterValue: new Date(a.SentDate)
+  //     };
+  //     return b;
+  //   }));
+  //   this.CDColArray.SentBy = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.SentBy, value: a.SentBy, filterValue: a.SentBy }; return b; }));
+  //   this.CDColArray.Status = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Status, value: a.Status, filterValue: a.Status }; return b; }));
+  //   this.CDColArray.SeverityLevel = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.SeverityLevel, value: a.SeverityLevel, filterValue: a.SeverityLevel }; return b; }));
+  //   this.CDColArray.Accountable = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Accountable, value: a.Accountable, filterValue: a.Accountable }; return b; }));
+  //   this.CDColArray.Segregation = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Segregation, value: a.Segregation, filterValue: a.Segregation }; return b; }));
+  //   this.CDColArray.BusinessImpact = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.BusinessImpact, value: a.BusinessImpact, filterValue: a.BusinessImpact }; return b; }));
+  // }
 
   ngDoCheck() {
     this.cdr.markForCheck();
@@ -221,7 +221,7 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
     } else {
       arrQCs = await this.getMyQCItems(filterObj);
     }
-    this.bindTable(arrQCs);
+    await this.bindTable(arrQCs);
     this.qcs = arrQCs;
   }
 
@@ -229,9 +229,10 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
    * It binds table to html
    * @param arrayItems -  array of CD Items
    */
-  bindTable(arrayItems) {
+  async bindTable(arrayItems) {
     this.CDRows = [];
-    arrayItems.forEach(async element => {
+    for(const element of arrayItems) {
+    // arrayItems.forEach(async element => {
       this.CDRows.push({
         ASD: element.ASD,
         CS: element.CS,
@@ -265,8 +266,10 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
         SurveyResponse : element.SurveyResponse.ID,
         EmailAddress : element.EmailAddress 
       });
-    });
-    this.colFilters(this.CDRows);
+    // });
+    }
+    //this.colFilters(this.CDRows);
+    this.CDColumns = this.commonService.MainfilterForTable(this.CDColumns, this.CDRows);
   }
 
   showTable() {
@@ -369,7 +372,8 @@ export class CdsComponent implements OnInit, AfterViewChecked, DoCheck {
       if (obj.tableData.filteredValue) {
         this.commonService.updateOptionValues(obj);
       } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-        this.colFilters(obj.tableData.value);
+        //this.colFilters(obj.tableData.value);
+        this.CDColumns = this.commonService.MainfilterForTable(this.CDColumns, obj.tableData.value);
         this.isOptionFilter = false;
       }
       this.cdr.detectChanges();

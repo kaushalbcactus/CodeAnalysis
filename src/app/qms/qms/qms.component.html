@@ -1,3 +1,3 @@
-<p-tabMenu [model]="qmsConstantsService.qmsTab.list" [activeItem]="activeItem"></p-tabMenu>
+<p-tabMenu [model]="qmsConstantsService.qmsTab.list" [activeItem]="qmsConstantsService.mainRouter"></p-tabMenu>
 <router-outlet (activate)="onActivate()" #myOutlet="outlet">
 </router-outlet>

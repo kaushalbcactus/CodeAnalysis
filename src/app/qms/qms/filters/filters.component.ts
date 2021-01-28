@@ -69,6 +69,7 @@ export class FiltersComponent implements OnInit {
       // Emits obj to other component
       this.callApplyFilter.emit(this.filterObj);
       this.fillQuartersOptions(yearValue, quarterFilter);
+      this.filterObj.quarterSelected = '';
     }
   }
 
@@ -94,8 +95,8 @@ export class FiltersComponent implements OnInit {
    */
   filterByQuarter(quarter) {
     if (quarter && this.filterObj.yearSelected) {
-      const date = this.common.getQuarterDates(this.filterObj.yearSelected.value, quarter);
       this.filterObj.quarterSelected = quarter.value;
+      const date = this.common.getQuarterDates(this.filterObj.yearSelected, this.filterObj.quarterSelected);
       this.filterObj.isDateFilter = true;
       this.filterObj.startDate = date.fromDate;
       this.filterObj.endDate = date.toDate;
@@ -115,7 +116,6 @@ export class FiltersComponent implements OnInit {
     // Clear all filter by their reference
     this.filterObj.dateRange = '';
     if (filterBy) {
-      this.filterObj.filterSelectedValue = filterBy;
       switch (filterBy.value) {
         case 'Quarter':
           this.filterObj.hideYears = false;

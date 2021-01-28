@@ -13,12 +13,12 @@
 
 <p-table #fb [columns]="feedbackColumns" [value]="feedbackRows" [hidden]="hideTable" [rowsPerPageOptions]="[10,25,50]"
     [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-    [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines"
+    [style]="{'font-size':'13px'}" styleClass="p-datatable-cactus p-datatable-gridlines"
     stateStorage="local" stateKey="feedbacksTable">
     <ng-template pTemplate="header" let-columns>
         <tr>
             <ng-container *ngFor="let col of columns">
-                <th *ngIf="!col.visibility">
+                <th *ngIf="col.visibility">
                     <div class="p-d-flex p-jc-between p-ai-center">
                         {{col.header}}
                         <p-sortIcon [field]="col.field"></p-sortIcon>
@@ -84,9 +84,9 @@
     <ng-template pTemplate="body" let-rowData let-columns="columns">
         <tr>
             <ng-container *ngFor="let col of columns">
-                <td *ngIf="col.field != '' && !col.visibility">
+                <td *ngIf="col.field != '' && col.visibility">
                     <ng-container
-                        *ngIf="col.field != '' && !col.visibility &&  col.field !== 'Date' &&  col.field !== 'Rating'">
+                        *ngIf="col.field != '' && col.visibility &&  col.field !== 'Date' &&  col.field !== 'Rating'">
                         {{rowData[col.field]}}
                     </ng-container>
                     <ng-container *ngIf="col.field === 'Date'">
@@ -99,6 +99,7 @@
                             style="float: right;cursor: pointer;" title="Click to see rating split">
                             <i class="fa fa-info-circle" aria-hidden="true"></i>
                         </div>
+                        <app-rating-overlay #ratingOP></app-rating-overlay>
                     </ng-container>
                 </td>
             </ng-container>
@@ -112,8 +113,9 @@
         </tr>
     </ng-template>
 </p-table>
-<app-rating-overlay #ratingOP></app-rating-overlay>
-<div class="tableLoader" [hidden]='hideLoader'>
-    <div id="mainLoader"></div>
-    <div id="mainLoaderText">Loading...</div>
+
+
+<div class="p-d-flex p-flex-column" style="padding:5vw;" *ngIf="!hideLoader">
+    <div id="modalInnerLoader"></div>
+    <div id="modalInnerLoaderText">Loading...</div>
 </div>

@@ -23,7 +23,7 @@
 
 /** CSS Fix by Ashish **/
 
-::ng-deep app-qms a {
+::ng-deep app-qms a, ::ng-deep app-qms a:hover {
     color: #B13E3E;
 }
 

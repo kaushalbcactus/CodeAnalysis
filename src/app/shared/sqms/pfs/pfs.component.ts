@@ -61,15 +61,15 @@ export class PfsComponent implements OnInit, AfterViewChecked {
     this.pfs = [];
     this.showLoader();
     this.CFColumns = [
-      { field: 'ID', header: 'ID' },
-      { field: 'Title', header: 'Project Code' },
-      { field: 'SentDate', header: 'Sent Date' },
-      { field: 'SentBy', header: 'Sent By' },
-      { field: 'Resources', header: 'Resources' },
-      { field: '', header: '' },
+      { field: 'ID', header: 'ID' , Type: 'number', dbName: 'ID', options: [] },
+      { field: 'Title', header: 'Project Code' , Type: 'string', dbName: 'Title', options: [] },
+      { field: 'SentDate', header: 'Sent Date' , Type: 'datetime', dbName: 'SentDate', options: [] },
+      { field: 'SentBy', header: 'Sent By' , Type: 'string', dbName: 'SentBy', options: [] },
+      { field: 'Resources', header: 'Resources' , Type: 'string', dbName: 'Resources', options: [] },
+      { field: '', header: '', Type: '', dbName: '', options: [] },
     ];
     if (this.parentComponent === 'clientFeedback') {
-      this.CFColumns.splice(2, 0, { field: 'Status', header: 'Status' });
+      this.CFColumns.splice(2, 0, { field: 'Status', header: 'Status' , Type: 'string', dbName: 'Status', options: [] });
     }
     setTimeout(async () => {
       await this.applyFilters(this.filterObj);
@@ -77,22 +77,22 @@ export class PfsComponent implements OnInit, AfterViewChecked {
     }, 500);
   }
 
-  colFilters(colData) {
-    //
-    // tslint:disable: max-line-length
-    this.CFPositiveColArray.ID = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.ID, value: a.ID, filterValue: +a.ID }; return b; }));
-    this.CFPositiveColArray.Title = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Title, value: a.Title, filterValue: a.Title }; return b; }));
-    this.CFPositiveColArray.Status = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Status, value: a.Status, filterValue: a.Status }; return b; }));
-    this.CFPositiveColArray.SentDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: this.datepipe.transform(a.SentDate, 'MMM d, yyyy'),
-        value: a.SentDate ? new Date(this.datepipe.transform(a.SentDate, 'MMM d, yyyy')) : '',
-        filterValue: new Date(a.SentDate)
-      };
-      return b;
-    }));
-    this.CFPositiveColArray.SentBy = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.SentBy, value: a.SentBy, filterValue: a.SentBy }; return b; }));
-  }
+  // colFilters(colData) {
+  //   //
+  //   // tslint:disable: max-line-length
+  //   this.CFPositiveColArray.ID = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.ID, value: a.ID, filterValue: +a.ID }; return b; }));
+  //   this.CFPositiveColArray.Title = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Title, value: a.Title, filterValue: a.Title }; return b; }));
+  //   this.CFPositiveColArray.Status = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Status, value: a.Status, filterValue: a.Status }; return b; }));
+  //   this.CFPositiveColArray.SentDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
+  //     const b = {
+  //       label: this.datepipe.transform(a.SentDate, 'MMM d, yyyy'),
+  //       value: a.SentDate ? new Date(this.datepipe.transform(a.SentDate, 'MMM d, yyyy')) : '',
+  //       filterValue: new Date(a.SentDate)
+  //     };
+  //     return b;
+  //   }));
+  //   this.CFPositiveColArray.SentBy = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.SentBy, value: a.SentBy, filterValue: a.SentBy }; return b; }));
+  // }
 
   uniqueArrayObj(array: any) {
     let sts: any = '';
@@ -192,9 +192,10 @@ export class PfsComponent implements OnInit, AfterViewChecked {
    * It binds table to html
    * @param arrayItems -  array of PF Items
    */
-  bindTable(arrayItems) {
+  async bindTable(arrayItems) {
     this.CFRows = [];
-    arrayItems.forEach(async element => {
+    for(const element of arrayItems) {
+    // arrayItems.forEach(async element => {
       this.CFRows.push({
         DeliveryLeads: element.DeliveryLeads,
         FileID: element.FileID,
@@ -208,7 +209,7 @@ export class PfsComponent implements OnInit, AfterViewChecked {
         Title: element.Title ? element.Title : '',
         AssignedTo: element.AssignedTo ? element.AssignedTo : '',
         SentBy:  element.SurveyResponse.ID  ?  await this.getNameFromPOC(element.EmailAddress)    : element.SentBy.Title ? element.SentBy.Title : '',
-        Resources: element.resources,
+        Resources: element.resources.join(', '),
         FileUrl: element.FileURL,
         IsActive: element.IsActiveCH,
         isLoggedInDeliveryLead: element.isLoggedInDeliveryLead,
@@ -216,8 +217,10 @@ export class PfsComponent implements OnInit, AfterViewChecked {
         EmailAddress: element.EmailAddress,
         SurveyResponse : element.SurveyResponse.ID
       });
-    });
-    this.colFilters(this.CFRows);
+    // });
+    }
+    this.CFColumns = this.commonService.MainfilterForTable(this.CFColumns, this.CFRows);
+    //this.colFilters(this.CFRows);
   }
 
   /**
@@ -233,8 +236,9 @@ export class PfsComponent implements OnInit, AfterViewChecked {
     } else {
       arrPFs = await this.getMyPFItems(filterObj);
     }
-    this.bindTable(arrPFs);
+    await this.bindTable(arrPFs);
     this.pfs = arrPFs;
+    
   }
 
   /**
@@ -324,7 +328,8 @@ export class PfsComponent implements OnInit, AfterViewChecked {
       if (obj.tableData.filteredValue) {
         this.commonService.updateOptionValues(obj);
       } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-        this.colFilters(obj.tableData.value);
+        //this.colFilters(obj.tableData.value);
+        this.CFColumns = this.commonService.MainfilterForTable(this.CFColumns, obj.tableData.value);
         this.isOptionFilter = false;
       }
       this.cdr.detectChanges();
