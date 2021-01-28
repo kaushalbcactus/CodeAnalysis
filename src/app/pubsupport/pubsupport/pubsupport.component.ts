@@ -76,7 +76,7 @@ export class PubsupportComponent implements OnInit {
 
         this.overAllValues = [
             { name: 'Open', value: 'Open' },
-            { name: 'Closed', code: 'Closed' }
+            { name: 'Closed', value: 'Closed' }
         ];
         this.selectedOption = this.overAllValues[0];
 
@@ -1944,7 +1944,7 @@ export class PubsupportComponent implements OnInit {
     }
 
     onChangeSelect(event) {
-        if (this.selectedOption.name === 'Open') {
+        if (event.value === 'Open') {
             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
             this.showProjectInput = false;
             this.callGetProjects(false);

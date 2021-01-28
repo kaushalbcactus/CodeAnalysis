@@ -5,11 +5,8 @@
     <div id="scInnerLoaderText">Loading...</div>
 </div>
 <div class="ui-g">
-    <div class="ui-g-12 ui-md-6 ui-lg-6 top-left-title">
-        <span>PROJECT LISTING </span>
-    </div>
     <div class="ui-g-6">
-        <p-dropdown [options]="overAllValues" [(ngModel)]="selectedOption" styleClass="custom-dropDown"
+        <p-dropdown [options]="overAllValues"  styleClass="custom-dropDown"
             optionLabel="name" (onChange)="onChangeSelect($event)"></p-dropdown>
         <input type="text" (change)="searchClosedProject($event)" (keydown.enter)="enterEvent($event)"
             *ngIf="showProjectInput" id="projectCodeSelect" placeholder="Project Code" pInputText
@@ -24,7 +21,7 @@
         [rows]="10" expandedIcon="fas fa-angle-down" collapsedIcon="fas fa-angle-right"
         [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-        [style]="{'font-size':'13px','min-height': '400px','clear':'both'}"
+        [style]="{'font-size':'13px','min-height': '400px'}"
         styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="pubsupportTable">
         <ng-template pTemplate="header" let-columns>
             <tr>
@@ -161,12 +158,12 @@
             </div>
         </div>
         <div class="p-col p-grid p-my-2">
-            <div class="p-col p-grid p-p-1">
+            <div class="p-col p-grid p-p-1" *ngIf="!update_author_form.value.file">
                 <label for="existingAuthorList" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span
                         class="compulsory">*</span>Select from Existing Author Forms:</label>
                 <div class="p-col-12 p-md-8">
                     <select id="type" name="existingAuthorList" class="form-control" [(ngModel)]="selectedType"
-                        (ngModelChange)="updateAuthorFormsFiles(selectedType)" formControlName="existingAuthorList">
+                        (change)="updateAuthorFormsFiles(selectedType)" formControlName="existingAuthorList">
                         <option value="">Select</option>
                         <ng-container *ngFor="let projctCode of projectCodeRes; let i = index">
                             <option *ngIf="projctCode.ProjectCode !=selectedProject.ProjectCode" [ngValue]="projctCode">
@@ -178,7 +175,7 @@
                         <div *ngIf="isValidUpdateAuthorForm.existingAuthorList.errors.required" class="error">Existing
                             author is required.</div>
                     </div>
-                    <div style="color:#d7181f;">{{noFileMsg}}</div>
+                    <div class="error">{{noFileMsg}}</div>
                 </div>
             </div>
         </div>

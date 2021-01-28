@@ -1,4 +1,5 @@
-<p-table [columns]="cols" [value]="averageRatings">
+<p-table [columns]="cols" [value]="averageRatings" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+[style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="averageRatings">
   <ng-template pTemplate="header" let-columns>
     <tr>
       <th>Main</th>

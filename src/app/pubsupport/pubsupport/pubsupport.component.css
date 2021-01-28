@@ -684,7 +684,10 @@ input[type=submit]:hover {
 tr td:last-child .ui-menu {
     top:0px;
 }
-
+.pubsuppotTable{
+    clear: both;
+    padding-top: 5px;
+}
 .pubsuppotTable .custom-pdatatable .ui-table-wrapper> table> tbody.ui-table-tbody>tr>td:last-child {
     overflow: visible;
 }

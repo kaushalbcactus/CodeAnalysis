@@ -53,43 +53,42 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
 
   ngOnInit() {
     this.UFColumns = [
-      { field: 'Date', header: 'Date', visibility: true, exportable: true },
-      { field: 'Task', header: 'Task', visibility: true, exportable: true },
-      { field: 'Type', header: 'Type', visibility: true, exportable: true },
-      { field: 'Feedbackby', header: 'Feedback By', visibility: true, exportable: true },
-      { field: 'Rating', header: 'Rating', visibility: true, exportable: true },
-      { field: 'EvaluatorSkill', header: 'Evaluator Skill', visibility: true, exportable: true },
-      { field: 'Comments', header: 'Comments', visibility: true, exportable: true },
-      { field: 'Parameters', header: 'Parameters', visibility: false, exportable: true },
-      { field: 'Score', header: 'Score', visibility: false, exportable: true }
+      { field: 'Date', header: 'Date', visibility: true, exportable: true, Type: 'datetime', dbName: 'Created', options: []  },
+      { field: 'Task', header: 'Task', visibility: true, exportable: true, Type: 'string', dbName: 'SubMilestones', options: [] },
+      { field: 'Type', header: 'Type', visibility: true, exportable: true, Type: 'string', dbName: 'FeedbackType', options: [] },
+      { field: 'Feedbackby', header: 'Feedback By', visibility: true, exportable: true, Type: 'string', dbName: 'Feedbackby', options: [] },
+      { field: 'Rating', header: 'Rating', visibility: true, exportable: true, Type: 'string', dbName: 'AverageRating', options: [] },
+      { field: 'EvaluatorSkill', header: 'Evaluator Skill', visibility: true, exportable: true, Type: 'EvaluatorSkill', dbName: 'resource', options: [] },
+      { field: 'Comments', header: 'Comments', visibility: true, exportable: true, Type: 'string', dbName: 'CommentsMT', options: [] },
+      { field: 'Parameters', header: 'Parameters', visibility: false, exportable: true, Type: 'string', dbName: 'resource', options: [] },
+      { field: 'Score', header: 'Score', visibility: false, exportable: true, Type: 'string', dbName: 'resource', options: [] }
     ];
   }
-
-  colFilters(colData) {
-    // tslint:disable: max-line-length
-    this.UFColArray.Date = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: this.datepipe.transform(a.Created, 'MMM d, yyyy'),
-        value: a.Created ? new Date(this.datepipe.transform(a.Created, 'MMM d, yyyy')) : '',
-        filterValue: new Date(a.Created)
-      };
-      return b;
-    }));
-    this.UFColArray.Task = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: a.Title ? a.SubMilestones ? a.Title + ' - ' + a.SubMilestones : a.Title : '',
-        value: a.Title ? a.SubMilestones ? a.Title + ' - ' + a.SubMilestones : a.Title : '',
-        filterValue: a.Title
-      };
-      return b;
-    }));
-    this.UFColArray.Type = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.FeedbackType, value: a.FeedbackType, filterValue: a.FeedbackType }; return b; }));
-    this.UFColArray.EvaluatorSkill = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.EvaluatorSkill, value: a.EvaluatorSkill, filterValue: a.EvaluatorSkill }; return b; }));
-    this.UFColArray.Feedbackby = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Author.Title, value: a.Author.Title, filterValue: a.Author.Title }; return b; }));
-    this.UFColArray.Rating = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AverageRating, value: +a.AverageRating, filterValue: a.AverageRating }; return b; }));
-    this.UFColArray.Comments = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.CommentsMT, value: a.CommentsMT, filterValue: a.CommentsMT }; return b; }));
-    console.log('this.UFColArray ', this.UFColArray);
-  }
+  // colFilters(colData) {
+  //   // tslint:disable: max-line-length
+  //   this.UFColArray.Date = this.qmsCommon.uniqueArrayObj(colData.map(a => {
+  //     const b = {
+  //       label: this.datepipe.transform(a.Created, 'MMM d, yyyy'),
+  //       value: a.Created ? new Date(this.datepipe.transform(a.Created, 'MMM d, yyyy')) : '',
+  //       filterValue: new Date(a.Created)
+  //     };
+  //     return b;
+  //   }));
+  //   this.UFColArray.Task = this.qmsCommon.uniqueArrayObj(colData.map(a => {
+  //     const b = {
+  //       label: a.Title ? a.SubMilestones ? a.Title + ' - ' + a.SubMilestones : a.Title : '',
+  //       value: a.Title ? a.SubMilestones ? a.Title + ' - ' + a.SubMilestones : a.Title : '',
+  //       filterValue: a.Title
+  //     };
+  //     return b;
+  //   }));
+  //   this.UFColArray.Type = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.FeedbackType, value: a.FeedbackType, filterValue: a.FeedbackType }; return b; }));
+  //   this.UFColArray.EvaluatorSkill = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.EvaluatorSkill, value: a.EvaluatorSkill, filterValue: a.EvaluatorSkill }; return b; }));
+  //   this.UFColArray.Feedbackby = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Author.Title, value: a.Author.Title, filterValue: a.Author.Title }; return b; }));
+  //   this.UFColArray.Rating = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AverageRating, value: +a.AverageRating, filterValue: a.AverageRating }; return b; }));
+  //   this.UFColArray.Comments = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.CommentsMT, value: a.CommentsMT, filterValue: a.CommentsMT }; return b; }));
+  //   console.log('this.UFColArray ', this.UFColArray);
+  // }
 
   /**
    * Get scorecard list items based on parameter passed
@@ -260,7 +259,8 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
     this.UFRows = [...feedbacks];
     this.originalScorecard = [...this.UFRows];
     this.feedbackData.emit(this.UFRows);
-    this.colFilters(arrScorecard);
+    this.UFColumns = this.commonService.MainfilterForTable(this.UFColumns, arrScorecard);
+    // this.colFilters(arrScorecard);
     this.hideTable = false;
     this.hideLoader = true;
     // }, 500);
@@ -278,7 +278,8 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
     this.UFRows = [...feedbacks];
     // this.originalScorecard = [...this.UFRows];
     this.feedbackData.emit(this.UFRows);
-    this.colFilters(newScorecard);
+    this.UFColumns = this.commonService.MainfilterForTable(this.UFColumns, newScorecard);
+    // this.colFilters(newScorecard);
   }
 
   optionFilter(event: any) {
@@ -304,7 +305,8 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
         // this.colFilters(obj.tableData.filteredValue);
         console.log('this.UFColArray ', this.UFColArray)
       } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-        this.colFilters(obj.tableData.value);
+        this.UFColumns = this.commonService.MainfilterForTable(this.UFColumns, obj.tableData.value);
+        // this.colFilters(obj.tableData.value);
         this.isOptionFilter = false;
       }
       this.cdr.detectChanges();
