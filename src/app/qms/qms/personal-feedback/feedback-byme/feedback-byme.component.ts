@@ -81,15 +81,15 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
 
   protected async initialiseFeedback() {
     this.feedbackColumns = [
-      { field: 'Date', header: 'Date', visibility: false },
-      { field: 'Task', header: 'Task', visibility: false },
-      { field: 'Type', header: 'Type', visibility: false },
-      { field: 'Feedbackfor', header: 'Feedback For', visibility: false },
-      { field: 'FeedbackBy', header: 'Feedback By', visibility: true },
-      { field: 'Rating', header: 'Rating', visibility: false },
-      { field: 'Comments', header: 'Comments', visibility: false },
-      { field: 'Parameters', header: 'Parameters', visibility: true },
-      { field: 'Score', header: 'Score', visibility: true }
+      { field: 'Date', header: 'Date', visibility: false, Type: 'datetime', dbName: 'Created', options: [] },
+      { field: 'Task', header: 'Task', visibility: false, Type: 'string', dbName: 'Title', options: [] },
+      { field: 'Type', header: 'Type', visibility: false, Type: 'string', dbName: 'FeedbackType', options: [] },
+      { field: 'Feedbackfor', header: 'Feedback For', visibility: false, Type: 'string', dbName: 'AssignedTo.Title', options: [] },
+      { field: 'FeedbackBy', header: 'Feedback By', visibility: true, Type: 'string', dbName: 'FeedbackBy', options: [] },
+      { field: 'Rating', header: 'Rating', visibility: false, Type: 'number', dbName: 'AverageRating', options: [] },
+      { field: 'Comments', header: 'Comments', visibility: false, Type: 'string', dbName: 'Comments', options: [] },
+      { field: 'Parameters', header: 'Parameters', visibility: true, Type: 'string', dbName: 'Parameters', options: [] },
+      { field: 'Score', header: 'Score', visibility: true, Type: 'string', dbName: 'Score', options: [] }
     ];
     this.hideDetail = false;
     this.feedbackRows = [];
@@ -109,29 +109,29 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
     }
   }
 
-  colFilters(colData) {
-    // tslint:disable: max-line-length
-    this.FBColArray.Date = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: this.datepipe.transform(a.Created, 'MMM d, yyyy'),
-        value: a.Created ? new Date(this.datepipe.transform(a.Created, 'MMM d, yyyy')) : '',
-        filterValue: new Date(a.Created)
-      }; return b;
-    }));
-    this.FBColArray.Task = this.FBColArray.Task = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: a.Title ? a.SubMilestones ? a.Title + ' - ' + a.SubMilestones : a.Title : '',
-        value: a.Title ? a.SubMilestones ? a.Title + ' - ' + a.SubMilestones : a.Title : '',
-        filterValue: a.Title
-      };
-      return b;
-    }));
-    this.FBColArray.Type = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.FeedbackType, value: a.FeedbackType, filterValue: a.FeedbackType }; return b; }));
-    this.FBColArray.Feedbackfor = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AssignedTo.Title, value: a.AssignedTo.Title, filterValue: a.AssignedTo.Title }; return b; }));
-    this.FBColArray.FeedbackBy = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Author.Title, value: a.Author.Title, filterValue: a.Author.Title }; return b; }));
-    this.FBColArray.Rating = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AverageRating, value: a.AverageRating, filterValue: +a.AverageRating }; return b; }));
-    this.FBColArray.Comments = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.CommentsMT, value: a.CommentsMT, filterValue: a.CommentsMT }; return b; }));
-  }
+  // colFilters(colData) {
+  //   // tslint:disable: max-line-length
+  //   this.FBColArray.Date = this.qmsCommon.uniqueArrayObj(colData.map(a => {
+  //     const b = {
+  //       label: this.datepipe.transform(a.Created, 'MMM d, yyyy'),
+  //       value: a.Created ? new Date(this.datepipe.transform(a.Created, 'MMM d, yyyy')) : '',
+  //       filterValue: new Date(a.Created)
+  //     }; return b;
+  //   }));
+  //   this.FBColArray.Task = this.FBColArray.Task = this.qmsCommon.uniqueArrayObj(colData.map(a => {
+  //     const b = {
+  //       label: a.Title ? a.SubMilestones ? a.Title + ' - ' + a.SubMilestones : a.Title : '',
+  //       value: a.Title ? a.SubMilestones ? a.Title + ' - ' + a.SubMilestones : a.Title : '',
+  //       filterValue: a.Title
+  //     };
+  //     return b;
+  //   }));
+  //   this.FBColArray.Type = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.FeedbackType, value: a.FeedbackType, filterValue: a.FeedbackType }; return b; }));
+  //   this.FBColArray.Feedbackfor = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AssignedTo.Title, value: a.AssignedTo.Title, filterValue: a.AssignedTo.Title }; return b; }));
+  //   this.FBColArray.FeedbackBy = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Author.Title, value: a.Author.Title, filterValue: a.Author.Title }; return b; }));
+  //   this.FBColArray.Rating = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AverageRating, value: a.AverageRating, filterValue: +a.AverageRating }; return b; }));
+  //   this.FBColArray.Comments = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.CommentsMT, value: a.CommentsMT, filterValue: a.CommentsMT }; return b; }));
+  // }
 
   downloadExcel(fb) {
     fb.exportFilename = this.feedbackRows.length > 0 ? this.feedbackRows[0].Feedbackfor + '-Feedback' : 'Feedback';
@@ -178,11 +178,11 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
       getRatingData.type = 'GET';
       batchURL.push(getRatingData);
       i++;
-       if (i % 100 === 0) {
-         let bresult = await this.spService.executeBatch(batchURL);
-         tempScorecardData = [...tempScorecardData, ...bresult];
-         batchURL = [];
-       }
+      if (i % 100 === 0) {
+        let bresult = await this.spService.executeBatch(batchURL);
+        tempScorecardData = [...tempScorecardData, ...bresult];
+        batchURL = [];
+      }
     }
 
     // Fetch Qualitative feedback if filter is based on Last 10,20,... or it will fetch in date range filter itself
@@ -225,7 +225,7 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
           arrRatings[i].retItems.forEach(elem => {
             arrScoreCards[i].ParameterRating = arrScoreCards[i].ParameterRating + elem.Parameter.Title + '\n';
             arrScoreCards[i].Value = arrScoreCards[i].Value + elem.Rating + '\n';
-            arrScoreCards[i].parameters.push({property: elem.Parameter.Title, value: elem.Rating});
+            arrScoreCards[i].parameters.push({ property: elem.Parameter.Title, value: elem.Rating });
           });
         }
       }
@@ -295,7 +295,8 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
         arrScorecard = await this.getScorecardItems(filterObj.count, '', '', resourceID);
       }
       this.bindTable(arrScorecard);
-      this.colFilters(arrScorecard);
+      this.feedbackColumns = this.commonService.MainfilterForTable(this.feedbackColumns, arrScorecard);
+      // this.colFilters(arrScorecard);
       this.showTable();
     }, 500);
 
@@ -328,7 +329,8 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
       if (obj.tableData.filteredValue) {
         this.commonService.updateOptionValues(obj);
       } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-        this.colFilters(obj.tableData.value);
+        this.feedbackColumns = this.commonService.MainfilterForTable(this.feedbackColumns,obj.tableData)
+        // this.colFilters(obj.tableData.value);
         this.isOptionFilter = false;
       }
       this.cdr.detectChanges();

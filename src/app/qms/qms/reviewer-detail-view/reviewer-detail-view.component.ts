@@ -87,11 +87,11 @@ export class ReviewerDetailViewComponent implements OnInit {
   ngOnInit() {
     this.showLoader();
     this.ReviewerDetailColumns = [
-      { field: 'resource', header: 'Resources' },
-      { field: 'taskTitle', header: 'Pending Work Draft' },
-      { field: 'taskCompletionDate', header: 'Submission Date' },
-      { field: 'docUrlHtmlTag', header: 'Drafts' },
-      { field: 'docReviewUrlHtmlTag', header: 'My Drafts' },
+      { field: 'resource', header: 'Resources', Type: 'string', dbName: 'resource', options: []},
+      { field: 'taskTitle', header: 'Pending Work Draft',Type: 'string', dbName: 'taskTitle', options: [] },
+      { field: 'taskCompletionDate', header: 'Submission Date',Type: 'datetime', dbName: 'taskCompletionDate', options: [] },
+      { field: 'docUrlHtmlTag', header: 'Drafts',Type: 'string', dbName: '', options: [] },
+      { field: 'docReviewUrlHtmlTag', header: 'My Drafts',Type: 'string', dbName: '', options: [] },
     ];
     setTimeout(async () => {
       // Initialize and subscribe for success and alert message
@@ -103,25 +103,25 @@ export class ReviewerDetailViewComponent implements OnInit {
   }
 
 
-  colFilters(colData) {
-    // tslint:disable
-    this.RDColArray.resource = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.resource, value: a.resource, filterValue: a.resource }; return b; }));
-    this.RDColArray.taskTitle = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: a.taskTitle,
-        value: a.taskTitle,
-        filterValue: a.taskTitle
-      };
-      return b;
-    }).filter(ele => ele.label));
-    this.RDColArray.taskCompletionDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: a.taskCompletionDate ? this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy') : "",
-        value: a.taskCompletionDate ? new Date(this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy')) : "",
-        filterValue: a.taskCompletionDate ? new Date(a.taskCompletionDate) : ""
-      }; return b;
-    }).filter(ele => ele.label));
-  }
+  // colFilters(colData) {
+  //   // tslint:disable
+  //   this.RDColArray.resource = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.resource, value: a.resource, filterValue: a.resource }; return b; }));
+  //   this.RDColArray.taskTitle = this.qmsCommon.uniqueArrayObj(colData.map(a => {
+  //     const b = {
+  //       label: a.taskTitle,
+  //       value: a.taskTitle,
+  //       filterValue: a.taskTitle
+  //     };
+  //     return b;
+  //   }).filter(ele => ele.label));
+  //   this.RDColArray.taskCompletionDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
+  //     const b = {
+  //       label: a.taskCompletionDate ? this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy') : "",
+  //       value: a.taskCompletionDate ? new Date(this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy')) : "",
+  //       filterValue: a.taskCompletionDate ? new Date(a.taskCompletionDate) : ""
+  //     }; return b;
+  //   }).filter(ele => ele.label));
+  // }
 
   /**
    * Retrieve previous tasks of review tasks completed by current user and pending for rating
@@ -360,7 +360,8 @@ export class ReviewerDetailViewComponent implements OnInit {
         defaultSkill: element.defaultSkill
       });
     });
-    this.colFilters(this.ReviewerDetail);
+    // this.colFilters(this.ReviewerDetail);
+    this.ReviewerDetailColumns = this.commonService.MainfilterForTable(this.ReviewerDetailColumns, this.ReviewerDetail);
   }
 
   //#endregion ForReviewer
@@ -409,7 +410,8 @@ export class ReviewerDetailViewComponent implements OnInit {
       if (obj.tableData.filteredValue) {
         this.commonService.updateOptionValues(obj);
       } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-        this.colFilters(obj.tableData.value);
+        // this.colFilters(obj.tableData.value);
+        this.ReviewerDetailColumns = this.commonService.MainfilterForTable(this.ReviewerDetailColumns, obj.tableData.value);
         this.isOptionFilter = false;
       }
       this.cdr.detectChanges();

@@ -9,7 +9,7 @@
         <span>PROJECT LISTING </span>
     </div>
     <div class="ui-g-6">
-        <p-dropdown [options]="overAllValues" [(ngModel)]="selectedOption" styleClass="custom-dropDown"
+        <p-dropdown [options]="overAllValues"  styleClass="custom-dropDown"
             optionLabel="name" (onChange)="onChangeSelect($event)"></p-dropdown>
         <input type="text" (change)="searchClosedProject($event)" (keydown.enter)="enterEvent($event)"
             *ngIf="showProjectInput" id="projectCodeSelect" placeholder="Project Code" pInputText
@@ -24,7 +24,7 @@
         [rows]="10" expandedIcon="fas fa-angle-down" collapsedIcon="fas fa-angle-right"
         [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-        [style]="{'font-size':'13px','min-height': '400px','clear':'both'}"
+        [style]="{'font-size':'13px','min-height': '400px'}"
         styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="pubsupportTable">
         <ng-template pTemplate="header" let-columns>
             <tr>

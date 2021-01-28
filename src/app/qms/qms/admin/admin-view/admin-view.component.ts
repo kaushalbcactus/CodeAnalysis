@@ -126,10 +126,10 @@ export class AdminViewComponent implements OnInit, OnDestroy {
     );
     this.global.viewTabsPermission.hideAdmin = isQMSAdmin.length ? false : true;
     this.ReviewerDetailColumns = [
-      { field: "taskTitle", header: "Pending Work Draft" },
-      { field: "taskCompletionDate", header: "Date of submission" },
-      { field: "rated", header: "Rated" },
-      { field: "docUrlHtmlTag", header: "Drafts" },
+      { field: "taskTitle", header: "Pending Work Draft" ,Type:'string',dbName:'taskTitle', options:[]},
+      { field: "taskCompletionDate", header: "Date of submission",Type:'datetime',dbName:'taskCompletionDate', options:[] },
+      { field: "rated", header: "Rated",Type:'string',dbName:'rated', options:[] },
+      { field: "docUrlHtmlTag", header: "Drafts",Type:'string',dbName:'docUrlHtmlTag', options:[] },
     ];
     if (!this.global.viewTabsPermission.hideAdmin) {
       this.showLoader();
@@ -160,43 +160,6 @@ export class AdminViewComponent implements OnInit, OnDestroy {
     }
   }
 
-  colFilters(colData) {
-    this.AdminColArray.taskTitle = this.qmsCommon.uniqueArrayObj(
-      colData.map((a) => {
-        const b = {
-          label: a.taskTitle,
-          value: a.taskTitle,
-          filterValue: a.taskTitle,
-        };
-        return b;
-      })
-    );
-    this.AdminColArray.taskCompletionDate = this.qmsCommon.uniqueArrayObj(
-      colData.map((a) => {
-        const b = {
-          label: this.datepipe.transform(a.taskCompletionDate, "MMM d, yyyy"),
-          // tslint:disable-next-line: max-line-length
-          value: a.taskCompletionDate
-            ? new Date(
-                this.datepipe.transform(a.taskCompletionDate, "MMM d, yyyy")
-              )
-            : "",
-          filterValue: a.taskCompletionDate
-            ? new Date(a.taskCompletionDate)
-            : "",
-        };
-        return b;
-      })
-    );
-    // tslint:disable: max-line-length
-    this.AdminColArray.rated = this.qmsCommon.uniqueArrayObj(
-      colData.map((a) => {
-        const b = { label: a.rated, value: a.rated, filterValue: +a.rated };
-        return b;
-      })
-    );
-  }
-
   /**
    * Updates Admin view Rated column after admin provides rating
    *
@@ -216,7 +179,7 @@ export class AdminViewComponent implements OnInit, OnDestroy {
    *
    *
    */
-  bindAdminView(tasks) {
+  async bindAdminView(tasks) {
     // Bind results of tasks to Admin table
     this.ReviewerDetail = [];
     tasks.forEach((element) => {
@@ -251,7 +214,8 @@ export class AdminViewComponent implements OnInit, OnDestroy {
         },
       });
     });
-    this.colFilters(this.ReviewerDetail);
+    this.ReviewerDetailColumns = await this.commonService.MainfilterForTable(this.ReviewerDetailColumns,this.ReviewerDetail)
+    // this.colFilters(this.ReviewerDetail);
     this.tasks.arrTasks = tasks;
   }
 
@@ -263,7 +227,7 @@ export class AdminViewComponent implements OnInit, OnDestroy {
    */
   fetchResourcesTasks(element) {
     this.showAdminTable = false;
-    this.isOptionFilter = false;
+    //this.isOptionFilter = false;
     if (element && !this.global.viewTabsPermission.hideAdmin) {
       this.showLoader();
       setTimeout(async () => {
@@ -301,7 +265,7 @@ export class AdminViewComponent implements OnInit, OnDestroy {
     adminComponent.resourceTaskUrl.filter = adminComponent.resourceTaskUrl.filter
       .replace("{{PrevMonthDate}}", filterDate)
       .replace("{{resourceID}}", userID)
-      .replace("{{TaskType}}", this.filterObj.selectedTaskType.value);
+      .replace("{{TaskType}}", this.filterObj.selectedTaskType);
     this.commonService.SetNewrelic("QMS", "admin-view", "CurrentUserInfo", "GET");
     const arrResult = await this.spService.readItems(
       this.globalConstant.listNames.Schedules.name,
@@ -391,7 +355,7 @@ export class AdminViewComponent implements OnInit, OnDestroy {
    */
   filterResource() {
     this.showAdminTable = false;
-    this.isOptionFilter = false;
+    //this.isOptionFilter = false;
     this.filterObj.selectedResource = null;
     this.filterObj.filteredResources = [];
     // tslint:disable
@@ -399,7 +363,7 @@ export class AdminViewComponent implements OnInit, OnDestroy {
     let filteredResources = this.resources.filter(
       (t) =>
         t.Tasks.results.filter(
-          (type) => type.Title === this.filterObj.selectedTaskType.value
+          (type) => type.Title === this.filterObj.selectedTaskType
         ).length > 0
     );
     filteredResources.forEach((element) => {
@@ -421,31 +385,31 @@ export class AdminViewComponent implements OnInit, OnDestroy {
     this.commonService.showToastrMessage(objMsg.type, objMsg.detail, false);
   }
 
-  isOptionFilter: boolean;
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
+  // isOptionFilter: boolean;
+  // optionFilter(event: any) {
+  //   if (event.target.value) {
+  //     this.isOptionFilter = false;
+  //   }
+  // }
 
-  ngAfterViewChecked() {
-    if (this.ReviewerDetail.length && this.isOptionFilter) {
-      let obj = {
-        tableData: this.adminTable,
-        colFields: this.AdminColArray,
-      };
-      if (obj.tableData.filteredValue) {
-        this.commonService.updateOptionValues(obj);
-      } else if (
-        obj.tableData.filteredValue === null ||
-        obj.tableData.filteredValue === undefined
-      ) {
-        this.colFilters(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-      this.cdr.detectChanges();
-    }
-  }
+  // ngAfterViewChecked() {
+  //   if (this.ReviewerDetail.length && this.isOptionFilter) {
+  //     let obj = {
+  //       tableData: this.adminTable,
+  //       colFields: this.AdminColArray,
+  //     };
+  //     if (obj.tableData.filteredValue) {
+  //       this.commonService.updateOptionValues(obj);
+  //     } else if (
+  //       obj.tableData.filteredValue === null ||
+  //       obj.tableData.filteredValue === undefined
+  //     ) {
+  //       this.colFilters(obj.tableData.value);
+  //       this.isOptionFilter = false;
+  //     }
+  //     this.cdr.detectChanges();
+  //   }
+  // }
 
   openfeedbackpopup(qmsTasks, task) {
     const ref = this.dialogService.open(FeedbackPopupComponent, {
