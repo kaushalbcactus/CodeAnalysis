@@ -5,6 +5,7 @@
 
 <div *ngIf="!loaderEnable" class="ui-grid-row mt-20">
     <form [formGroup]="countFieldsForm">
+        <div class="error" style="padding: 10px 0px 10px 0px;" *ngIf="CountError"> {{errorType}} count should not be negative.</div>
         <div class="ui-grid-col-1">Reference Count</div>
         <div class="ui-grid-col-2">
             <input formControlName="ReferenceCount" type="number" placeholder="Reference Count" pInputText>

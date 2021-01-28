@@ -16,6 +16,8 @@ export class MCMICountFieldsComponent implements OnInit {
   countFieldsForm: FormGroup;
   loaderEnable: boolean = true;
   projectDetails: any;
+  CountError: boolean = false;
+  errorType: string = '';
   constructor(private frmbuilder: FormBuilder,
   private taskAllocationService: TaskAllocationConstantsService,
   private taskAllocateCommonService: TaskAllocationCommonService,
@@ -53,32 +55,55 @@ export class MCMICountFieldsComponent implements OnInit {
   }
 
   async saveCounts() {
-    this.loaderEnable = true;
-    const projectData: any = {
-      __metadata: { type: this.constants.listNames.ProjectInformation.type },
-      SlideCount: this.countFieldsForm.get('SlideCount').value,
-      PageCount: this.countFieldsForm.get('PageCount').value,
-      ReferenceCount: this.countFieldsForm.get('ReferenceCount').value,
-      AnnotationBinder: this.countFieldsForm.get('AnnotationBinder').value ? 'Yes' : 'No'
-    };
+    if (
+      this.countFieldsForm.value.ReferenceCount === null ||
+      this.countFieldsForm.value.ReferenceCount < 0
+    ) {
+      this.CountError = true;
+      this.errorType = "Reference";
+    } else if (
+      this.countFieldsForm.value.SlideCount === null ||
+      this.countFieldsForm.value.SlideCount < 0
+    ) {
+      this.CountError = true;
+      this.errorType = "Slide";
+    } else if (
+      this.countFieldsForm.value.PageCount === null ||
+      this.countFieldsForm.value.PageCount < 0
+    ) {
+      this.CountError = true;
+      this.errorType = "Page";
+    } else {
+      this.loaderEnable = true;
+      this.CountError = false;
+      this.errorType = "";
 
-    console.log(projectData);
-
-    await this.spService.updateItem(
-      this.constants.listNames.ProjectInformation.name,
-      this.sharedTaskAllocateObj.oProjectDetails.projectID,
-      projectData,
-      this.constants.listNames.ProjectInformation.type
-    );
-
-    this.loaderEnable = false;
-    this.commonService.showToastrMessage(
-      this.constants.MessageType.success,
-      "Project Updated Successfully for the projectcode - " +
-      this.sharedTaskAllocateObj.oProjectDetails.projectCode,
-      false
-    );
-
+      const projectData: any = {
+        __metadata: { type: this.constants.listNames.ProjectInformation.type },
+        SlideCount: this.countFieldsForm.get('SlideCount').value,
+        PageCount: this.countFieldsForm.get('PageCount').value,
+        ReferenceCount: this.countFieldsForm.get('ReferenceCount').value,
+        AnnotationBinder: this.countFieldsForm.get('AnnotationBinder').value ? 'Yes' : 'No'
+      };
+  
+      // console.log(projectData);
+  
+      await this.spService.updateItem(
+        this.constants.listNames.ProjectInformation.name,
+        this.sharedTaskAllocateObj.oProjectDetails.projectID,
+        projectData,
+        this.constants.listNames.ProjectInformation.type
+      );
+  
+      this.loaderEnable = false;
+      this.commonService.showToastrMessage(
+        this.constants.MessageType.success,
+        "Project Updated Successfully for the projectcode - " +
+        this.sharedTaskAllocateObj.oProjectDetails.projectCode,
+        false
+      );
+  
+    }
   }
 
 }
