@@ -56,7 +56,7 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
       { field: 'Date', header: 'Date', visibility: true, exportable: true, Type: 'datetime', dbName: 'Created', options: []  },
       { field: 'Task', header: 'Task', visibility: true, exportable: true, Type: 'string', dbName: 'SubMilestones', options: [] },
       { field: 'Type', header: 'Type', visibility: true, exportable: true, Type: 'string', dbName: 'FeedbackType', options: [] },
-      { field: 'Feedbackby', header: 'Feedback By', visibility: true, exportable: true, Type: 'string', dbName: 'Author.Title', options: [] },
+      { field: 'Feedbackby', header: 'Feedback By', visibility: true, exportable: true, Type: 'string', dbName: 'Feedbackby', options: [] },
       { field: 'Rating', header: 'Rating', visibility: true, exportable: true, Type: 'string', dbName: 'AverageRating', options: [] },
       { field: 'EvaluatorSkill', header: 'Evaluator Skill', visibility: true, exportable: true, Type: 'EvaluatorSkill', dbName: 'resource', options: [] },
       { field: 'Comments', header: 'Comments', visibility: true, exportable: true, Type: 'string', dbName: 'CommentsMT', options: [] },
