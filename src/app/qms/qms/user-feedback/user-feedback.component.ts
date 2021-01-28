@@ -64,7 +64,6 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
       { field: 'Score', header: 'Score', visibility: false, exportable: true, Type: 'string', dbName: '', options: [] }
     ];
   }
-
   // colFilters(colData) {
   //   // tslint:disable: max-line-length
   //   this.UFColArray.Date = this.qmsCommon.uniqueArrayObj(colData.map(a => {
