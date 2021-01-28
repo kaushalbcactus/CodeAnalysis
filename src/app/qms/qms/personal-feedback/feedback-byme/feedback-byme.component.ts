@@ -84,7 +84,7 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
       { field: 'Date', header: 'Date', visibility: false, Type: 'datetime', dbName: 'Created', options: [] },
       { field: 'Task', header: 'Task', visibility: false, Type: 'string', dbName: 'Title', options: [] },
       { field: 'Type', header: 'Type', visibility: false, Type: 'string', dbName: 'FeedbackType', options: [] },
-      { field: 'Feedbackfor', header: 'Feedback For', visibility: false, Type: 'string', dbName: 'AssignedTo.Title', options: [] },
+      { field: 'Feedbackfor', header: 'Feedback For', visibility: false, Type: 'string', dbName: 'Feedbackfor', options: [] },
       { field: 'FeedbackBy', header: 'Feedback By', visibility: true, Type: 'string', dbName: 'FeedbackBy', options: [] },
       { field: 'Rating', header: 'Rating', visibility: false, Type: 'number', dbName: 'AverageRating', options: [] },
       { field: 'Comments', header: 'Comments', visibility: false, Type: 'string', dbName: 'Comments', options: [] },

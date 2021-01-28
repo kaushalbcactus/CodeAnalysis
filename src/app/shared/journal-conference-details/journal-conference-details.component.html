@@ -71,7 +71,7 @@
                             </td>
                             <td>
                                 <a (click)="jcViewDetails(i)" class="btn go view_details" data-parent="detail_1">
-                                    <i class="pi pi-plus-circle" *ngIf="i+1" style="padding-top: 5px;"></i>
+                                    <i class="pi pi-plus-circle" *ngIf="!state" style="padding-top: 5px;"></i>
                                     <i class="pi pi-minus-circle" *ngIf="state && i == showJournalRowIndex" style="padding-top: 5px;"></i> View details
                                 </a>
 

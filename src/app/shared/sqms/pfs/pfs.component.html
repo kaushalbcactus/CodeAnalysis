@@ -10,8 +10,6 @@
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field" [ngStyle]="{'width':col.field === '' ? '3em' : col.field === 'ID' ? '8em' : ''}">
-
-
                     <div class="p-d-flex p-jc-between p-ai-center">
                         {{col.header}}
                         <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" *ngIf="col.field !== ''" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
