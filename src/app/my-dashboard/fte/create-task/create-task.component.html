@@ -12,7 +12,7 @@
                 <div class="p-col p-grid p-p-0">
                     <label for="ProjectCode" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Project Code:</label>
                     <div class="p-col-12 p-md-8">
-                        <p-dropdown resetFilterOnHide="true" [options]="fteProjectsList" placeholder="Select Project code" [style]="{'width':'100%'}" formControlName="ProjectCode" optionLabel="ProjectCode" (onChange)="onChangeDD($event.value, 'ProjectCode')">
+                        <p-dropdown resetFilterOnHide="true" [options]="fteProjectsList" placeholder="Select Project code" class="p-fluid" formControlName="ProjectCode" optionLabel="ProjectCode" (onChange)="onChangeDD($event.value, 'ProjectCode')">
                         </p-dropdown>
                         <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.ProjectCode.errors">
                             <div *ngIf="isValidCreateTaskForm.ProjectCode.errors.required" style="color:red;" style="color:red;">
@@ -24,7 +24,7 @@
                 <div class="p-col p-grid p-p-0">
                     <label for="Milestones" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"> Milestones:</label>
                     <div class="p-col-12 p-md-8">
-                        <p-dropdown [options]="milestonesList" placeholder="Select milestone" optionLabel="label" [style]="{'width':'100%'}" formControlName="Milestones" (onChange)="onChangeDD($event.value, 'Milestone')">
+                        <p-dropdown [options]="milestonesList" placeholder="Select milestone" optionLabel="label" class="p-fluid" formControlName="Milestones" (onChange)="onChangeDD($event.value, 'Milestone')">
                         </p-dropdown>
                         <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.Milestones.errors">
                             <div *ngIf="isValidCreateTaskForm.Milestones.errors.required" style="color:red;">Milestone is required.
@@ -39,7 +39,7 @@
                 <div class="p-col p-grid p-p-0">
                     <label for="Submilestones" class="p-col-12 p-m-0 p-md-2 p-mb-md-0 p-p-3"> Sub milestones:</label>
                     <div class="p-col-12 p-md-10">
-                        <p-dropdown #dd editable="true" [options]="subMilestonesList" [style]="{'width':'100%'}" formControlName="SubMilestones" optionLabel="label" (onChange)="onChangeDD($event.value, 'SubMilestone')" (input)="onSearchChange($event.target.value)" (click)="clearFilter(dd)">
+                        <p-dropdown #dd editable="true" [showClear]="true" [options]="subMilestonesList" class="p-fluid" formControlName="SubMilestones" optionLabel="label" (onChange)="onChangeDD($event.value, 'SubMilestone')" (input)="onSearchChange($event.target.value)">
                         </p-dropdown>
                         <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.SubMilestones.errors">
                             <div style="color: red;" *ngIf="isValidCreateTaskForm.SubMilestones.errors">Sub Milestone is required.</div>
@@ -49,7 +49,7 @@
                         </div>
                         <div>
                             <div style="color: #C53E3E;">Preferably PUB ID </div>
-                            <div>{{this.create_task_form.value.SubMilestones.length}} / 30</div>
+                            <div>{{this.create_task_form.value.SubMilestones ? this.create_task_form.value.SubMilestones.length : 0}} / 30</div>
                         </div>
                     </div>
                 </div>
@@ -84,21 +84,21 @@
                     <label for="EndDate" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"> End Date:</label>
                     <div class="p-col-12 p-md-8 p-grid p-d-flex">
                         <div class="p-col">
-                            <p-calendar [style]="{'border': '1px solid !important'}" [minDate]="minDateValue" placeholder="Select Start Date" formControlName="StartDate" [maxDate]="maxDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
-                                [showIcon]="true" (onClose)="onCloseStartDate()" [yearNavigator]="true">
+                            <p-calendar [style]="{'border': '1px solid !important'}" [minDate]="create_task_form.value.StartDate" placeholder="Select End Date" formControlName="EndDate" [maxDate]="maxDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
+                                [showIcon]="true" [yearNavigator]="true">
                             </p-calendar>
-                            <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.StartDate.errors">
-                                <div style="color: red;">Start Date is required.</div>
+                            <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.EndDate.errors">
+                                <div style="color: red;">End Date is required.</div>
                             </div>
                         </div>
                         <div class="p-col">
                             <div class="p-d-flex">
-                                <input placeholder="Select Start Time" style="padding:8px;width: 75%;border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultEndTime" formControlName="EndTime" [value]="'07:00 PM'" [format]="12" readonly>
+                                <input placeholder="Select End Time" style="padding:8px;width: 75%;border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultEndTime" formControlName="EndTime" [value]="'07:00 PM'" [format]="12" readonly>
                                 <ngx-material-timepicker-toggle [for]="defaultEndTime"></ngx-material-timepicker-toggle>
                                 <ngx-material-timepicker #defaultEndTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(create_task_form.value.EndTime, 'endTime')" [ngxMaterialTimepickerTheme]="darkTheme">
                                 </ngx-material-timepicker>
                             </div>
-                            <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.StartTime.errors">
+                            <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.EndTime.errors">
                                 <div style="color: red;">End time is required.</div>
                             </div>
                         </div>

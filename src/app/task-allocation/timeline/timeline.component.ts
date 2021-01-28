@@ -64,7 +64,7 @@ import { IUserCapacity } from 'src/app/shared/usercapacity/interface/usercapacit
     GanttEdittaskComponent,
     ConflictAllocationComponent
   ],
-  encapsulation: ViewEncapsulation.None
+  // encapsulation: ViewEncapsulation.None
 })
 export class TimelineComponent
   implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
@@ -111,31 +111,48 @@ export class TimelineComponent
   public colors = [
     {
       key: "Not Confirmed",
-      value: "#FFD34E"
+      value: "#FFD34E",
+      visibility:false
+    },
+    {
+      key:"Planned",
+      value:"#FFD34E",
+      visibility:true
     },
     {
       key: "Not Started",
-      value: "#5F6273"
+      value: "#5F6273",
+      visibility:true
     },
     {
       key: "In Progress",
-      value: "#6EDC6C"
+      value: "#6EDC6C",
+      visibility:true
     },
     {
       key: "Completed",
-      value: "#3498DB"
+      value: "#3498DB",
+      visibility:true
     },
     {
       key: "Auto Closed",
-      value: "#8183CC"
+      value: "#8183CC",
+      visibility:true
     },
     {
       key: "Hold",
-      value: "#FF3E56"
+      value: "#FF3E56",
+      visibility:false
     },
     {
       key: "Not Saved",
-      value: "rgb(219, 23, 33)"
+      value: "rgb(219, 23, 33)",
+      visibility:false
+    },
+   {
+      key:"Equal allocation per day",
+      value:"indianred",
+      visibility:true
     }
   ];
 
@@ -399,7 +416,6 @@ export class TimelineComponent
     tempSubmilestones,
     milestone
   ) {
-    // debugger;
     let taskName = "";
     let bConsiderAllcoated = true;
     for (const milestoneTask of milestoneTasks) {
@@ -1955,7 +1971,7 @@ export class TimelineComponent
 
   async timeChange() {
     this.visualgraph = false;
-    this.loaderenable = true;
+    this.constants.loader.isWaitDisable = true;
     const isStartDate =
       this.dragClickedInput.indexOf("start_date") > -1 ? true : false;
     let type = isStartDate ? "start" : "end";
@@ -2004,7 +2020,7 @@ export class TimelineComponent
         this.GanttchartData = allTasks.data;
       }
 
-      this.loaderenable = false;
+      this.constants.loader.isWaitDisable = true;
       this.visualgraph = true;
       this.GanttchartData = allTasks.data;
       await this.ganttNotification();
@@ -2026,7 +2042,7 @@ export class TimelineComponent
       });
 
       this.GanttchartData = allTasks.data;
-      this.loaderenable = false;
+      this.constants.loader.isWaitDisable = true;
       this.visualgraph = true;
     }
     await this.showGanttChart(false);
@@ -2256,7 +2272,7 @@ export class TimelineComponent
   }
 
   confirmMilestone(task) {
-    this.loaderenable = true;
+    this.constants.loader.isWaitDisable = false;
     this.confirmMilestoneLoader = true;
     setTimeout(async () => {
       const rowNode: TreeNode = this.getNode(task);
@@ -2286,7 +2302,7 @@ export class TimelineComponent
           await this.setAsNextMilestoneCall(task, message);
         }
       }
-      this.loaderenable = false;
+      this.constants.loader.isWaitDisable = true;
       this.confirmMilestoneLoader = false;
     }, 100);
   }
@@ -2697,10 +2713,10 @@ export class TimelineComponent
 
   loadComponentRefresh() {
     this.visualgraph = false;
-    this.loaderenable = true;
+   this.constants.loader.isWaitDisable= false;
     setTimeout(() => {
       this.loadComponent();
-      this.loaderenable = false;
+      this.constants.loader.isWaitDisable= true;
       this.visualgraph = true;
     });
   }
@@ -2846,7 +2862,7 @@ export class TimelineComponent
   // **************************************************************************************************************************************
 
   CancelChanges(milestone, type) {
-    this.loaderenable = true;
+    this.constants.loader.isWaitDisable= false;
     if (type === "discardAll") {
       //this.loaderenable = false;
       this.changeInRestructure = false;
@@ -2882,7 +2898,7 @@ export class TimelineComponent
       );
       this.createGanttDataAndLinks(true);
       setTimeout(() => {
-        this.loaderenable = false;
+        this.constants.loader.isWaitDisable= true;
       }, 50);
     } else {
       this.tempmilestoneData.forEach(element => {
@@ -3035,7 +3051,7 @@ export class TimelineComponent
         true
       );
       this.createGanttDataAndLinks(true);
-      this.loaderenable = false;
+      this.constants.loader.isWaitDisable = true;
     }, 200);
   }
   // tslint:enable
@@ -3086,7 +3102,7 @@ export class TimelineComponent
 
   async editTask(task, rowNode, type?) {
     if (type == "Edit All") {
-      this.loaderenable = true;
+      this.constants.loader.isWaitDisable = false;
       setTimeout(() => {
         this.milestoneData.forEach(async (mil, index) => {
           if (mil.children && mil.children.length) {
@@ -3102,7 +3118,7 @@ export class TimelineComponent
             await this.editModeForTasks(mil, mil);
           }
         });
-        this.loaderenable = false;
+        this.constants.loader.isWaitDisable = true;
       }, 100);
     } else {
       task.assignedUsers.forEach(element => {
@@ -3295,31 +3311,6 @@ export class TimelineComponent
   // hide popup menu on production
   // ***********************************************************************************************
 
-  @HostListener("document:click", ["$event"])
-  clickout(event) {
-    if (event.target.className === "pi pi-ellipsis-v") {
-      if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        if (
-          this.tempClick !== event.target.parentElement.children[0].children[0]
-        ) {
-          this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = "";
-        } else {
-          this.tempClick = undefined;
-        }
-      } else {
-        this.tempClick = event.target.parentElement.children[0].children[0];
-        this.tempClick.style.display = "";
-      }
-    } else {
-      if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        this.tempClick = undefined;
-      }
-    }
-  }
-
   async budgetHrsChanged(event) {
     this.disableSave = true;
     event.editMode = true;
@@ -3443,7 +3434,6 @@ export class TimelineComponent
   ) {
     const allTaskNodes = node.task.nodes;
     const allTaskLinks = node.task.links;
-    // debugger;
     allTaskNodes.forEach(task => {
       let nextTasks = this.getNextPrevious(
         allTaskNodes,
@@ -3738,7 +3728,6 @@ export class TimelineComponent
   // *************************************************************************************************
   // tslint:disable
   showRestructure() {
-    this.loaderenable = true;
     const ref = this.dialogService.open(DragDropComponent, {
       data: {
         milestones: this.milestoneData,
@@ -3754,7 +3743,8 @@ export class TimelineComponent
     });
 
     ref.onClose.subscribe((restructureMilestones: any) => {
-      this.loaderenable = true;
+      this.constants.loader.isWaitDisable= false;
+      // this.loaderenable = true;
       let allReturnedTasks = [],
         tempSubmilestones = [];
       if (restructureMilestones) {
@@ -3793,7 +3783,8 @@ export class TimelineComponent
           }, 300);
         }
         this.postProcessRestructureChanges(allReturnedTasks, milestonesList);
-        this.loaderenable = false;
+        this.constants.loader.isWaitDisable= true;
+        // this.loaderenable = false;
       } else {
         this.CancelChanges(tempSubmilestones, "discardAll");
       }
@@ -4011,6 +4002,7 @@ export class TimelineComponent
         );
       }
       await this.changeDateOfEditedTask(node, type);
+      await this.prestackService.calcPrestackAllocation(resource, node);
       this.leaveAlertMsgs = await this.calcLeaveMsgs(resource, node, this.leaveAlertMsgs);
       await this.DateChange(node, type);
       this.displayLeaveMsgs(this.leaveAlertMsgs);
@@ -4319,6 +4311,7 @@ export class TimelineComponent
         return node.AssignedTo && node.AssignedTo.ID === objt.UserNamePG.ID;
       }
     );
+    await this.prestackService.calcPrestackAllocation(resource, nodeData);
     this.leaveAlertMsgs = await this.calcLeaveMsgs(resource, nodeData, this.leaveAlertMsgs);
     if (
       nodeData.IsCentrallyAllocated === "Yes" &&
@@ -4330,8 +4323,9 @@ export class TimelineComponent
   }
   // tslint:enable
 
-  async calcLeaveMsgs(resource, nodeData:IMilestoneTask, leaveMsgs) {
-    const resourceCapacity: IUserCapacity = await this.prestackService.calcPrestackAllocation(resource, nodeData);
+  async calcLeaveMsgs(resource, nodeData: IMilestoneTask, leaveMsgs) {
+    const resourceDetail = await this.prestackService.calcResourceCapacity(resource, nodeData);
+    const resourceCapacity = resourceDetail.capacity;
     if (resourceCapacity && resourceCapacity.leaves.length) {
       const resourceExists = leaveMsgs.find(r => r.resource === resourceCapacity.userName);
       if (resourceExists) {
@@ -5041,7 +5035,6 @@ export class TimelineComponent
       milestoneTask.AssignedTo.hasOwnProperty("ID") &&
       milestoneTask.AssignedTo.ID !== -1
     ) {
-      // debugger;
       switch (milestoneTask.skillLevel) {
         case 'Writer':
           writers.push({
@@ -5443,7 +5436,6 @@ export class TimelineComponent
     };
   }
   addUpdateTaskObject(milestoneTask) {
-    // debugger
     return {
       __metadata: { type: this.constants.listNames.Schedules.type },
       CommentsMT: milestoneTask.scope,
@@ -7109,7 +7101,6 @@ export class TimelineComponent
     submilestone,
     tempID
   ) {
-    // debugger;
     const submilestoneLabel = submilestone ? submilestone.title : "";
     const defaultDate = this.getDefaultDate();
     let taskObj: IMilestoneTask = {
@@ -7325,22 +7316,22 @@ export class TimelineComponent
       closable: false
     });
     ref.onClose.subscribe((allocation: any) => {
-      let task: any;
-      if (milestoneTask.type === "Milestone") {
-        const milestoneData: MilestoneTreeNode = this.milestoneData.find(
-          m => m.data.title === milestoneTask.milestone
-        );
-        const milestoneTasks: any[] = this.taskAllocateCommonService.getTasksFromMilestones(
-          milestoneData,
-          true,
-          this.milestoneData,
-          false
-        );
-        milestoneData.data.edited = true;
-        task = milestoneTasks.find(t => t.id === milestoneTask.id);
-      } else {
-        task = milestoneTask;
-      }
+      // let task: any;
+      // if (milestoneTask.type === "Milestone") {
+      const milestoneData: MilestoneTreeNode = this.milestoneData.find(
+        m => m.data.title === milestoneTask.milestone
+      );
+      // const milestoneTasks: any[] = this.taskAllocateCommonService.getTasksFromMilestones(
+      //   milestoneData,
+      //   true,
+      //   this.milestoneData,
+      //   false
+      // );
+      milestoneData.data.edited = true;
+      //   task = milestoneTasks.find(t => t.id === milestoneTask.id);
+      // } else {
+      //   task = milestoneTask;
+      // }
       this.prestackService.setAllocationPerDay(allocation, milestoneTask);
       if (allocation.allocationAlert) {
         this.commonService.showToastrMessage(

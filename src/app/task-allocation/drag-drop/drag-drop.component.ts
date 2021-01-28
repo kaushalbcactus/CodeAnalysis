@@ -57,7 +57,7 @@ export class DragDropComponent implements OnInit {
   milestones: null;
   resizeGraph: string = '';
   initialLoad: boolean = true;
-  grapLoading: boolean = false;
+  // grapLoading: boolean = false;
   subMilestoneHoritontal: boolean = true;
   tasksHoritontal: boolean = true;
   showSvg = false;
@@ -67,6 +67,9 @@ export class DragDropComponent implements OnInit {
   enableZoom: boolean = false;
   enablePaan: boolean = false;
   recentEventNode = undefined;
+  public layoutSettings = {
+    orientation: 'TB'
+  };
   public queryConfig = {
     data: null,
     url: '',
@@ -85,7 +88,7 @@ export class DragDropComponent implements OnInit {
 
   ngOnInit() {
     this.initialLoad = true;
-    this.setInitialWidth();
+   
     this.GetAllTasksMilestones();
 
     this.data = this.config.data.milestones;
@@ -208,7 +211,7 @@ export class DragDropComponent implements OnInit {
     this.minWidth = areaWidth;
   }
 
-  setStep(index: number) {
+  onTabOpen(index: number) {
     this.step = index;
     switch (this.step) {
       case 0:
@@ -579,8 +582,6 @@ export class DragDropComponent implements OnInit {
         this.milestonesGraph.links = [...reOrderData.Links];
       }
 
-     
-
       if (!this.initialLoad)
         this.GraphResize();
     }
@@ -805,6 +806,10 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
 
 
     this.mainloaderenable = false;
+
+    setTimeout(() => {
+      this.setInitialWidth();
+    },100);
 
   }
 
@@ -1557,7 +1562,8 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
   }
 
   GraphResize() {
-    this.grapLoading = true;
+    // this.constants.loader.isWaitDisable= false;
+    // this.grapLoading = true;
     setTimeout(() => {
       let uiDialog: any = document.querySelector('.allocation-drag-drop');
       switch (this.resizeGraph) {
@@ -1574,8 +1580,10 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
             this.width = this.minWidth;
 
           }
-
-          this.grapLoading = false;
+          setTimeout(() => {
+            this.constants.loader.isWaitDisable= true;
+          },500);
+          // this.grapLoading = false;
           this.moveToScrollView(this.resizeGraph);
 
           break;
@@ -1611,7 +1619,10 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
             }
           }
 
-          this.grapLoading = false;
+          // this.grapLoading = false;
+          setTimeout(() => {
+            this.constants.loader.isWaitDisable= true;
+          },500);
           this.moveToScrollView(this.resizeGraph);
           // }
           break;
@@ -1651,7 +1662,12 @@ this.sharedObject.oTaskAllocation.allTasks = arrResult.find(c => c.listName === 
             }
           }
 
-          this.grapLoading = false;
+          // this.grapLoading = false;
+          setTimeout(() => {
+            this.constants.loader.isWaitDisable= true;
+          },500);
+
+          
           this.moveToScrollView(this.resizeGraph);
           //  }
           break;

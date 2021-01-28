@@ -148,7 +148,7 @@ export class CreateTaskComponent implements OnInit {
       this.create_task_form.patchValue({
         ProjectCode: this.fteProjectsList[0]
       });
-      await this.getSubmilestones(this.create_task_form.value.ProjectCode.ProjectCode, this.create_task_form.value.Milestones.value);
+      await this.getSubmilestones(this.create_task_form.value.ProjectCode.ProjectCode, this.create_task_form.value.Milestones);
     } else {
       this.milestonesList = [];
     }
@@ -163,9 +163,10 @@ export class CreateTaskComponent implements OnInit {
         });
         if (this.fteProjectsList.length >= 2) {
           this.setMilestones(value);
-          this.getSubmilestones(this.create_task_form.value.ProjectCode.ProjectCode, this.create_task_form.value.Milestones.value);
+          this.getSubmilestones(this.create_task_form.value.ProjectCode.ProjectCode, this.create_task_form.value.Milestones);
         }
       } else if (ddType === 'Milestone') {
+        this.getSubmilestones(this.create_task_form.value.ProjectCode.ProjectCode, this.create_task_form.value.Milestones);
         this.updateSDate();
       } else if (ddType === 'SubMilestone') {
         this.createSubMilestone = false;
@@ -210,10 +211,10 @@ export class CreateTaskComponent implements OnInit {
   }
 
   updateSDate() {
-    const mindex = this.MONTH_NAMES.indexOf(this.create_task_form.value.Milestones.value);
+    const mindex = this.MONTH_NAMES.indexOf(this.create_task_form.value.Milestones);
     const cmIndex = new Date().getMonth();
     const year = new Date().getFullYear();
-    const month = this.create_task_form.value.Milestones.value;
+    const month = this.create_task_form.value.Milestones;
     if (mindex <= cmIndex) {
       const date = (this.MONTH_NAMES.indexOf(month) + 1) + '-' + new Date().getDate() + '-' + year;
       this.minDateValue = this.commonService.getLastWorkingDay(3, new Date(date));
@@ -289,8 +290,9 @@ export class CreateTaskComponent implements OnInit {
 
   checkSubMilestone(val) {
     if (val) {
-      const alphaExp = new RegExp(this.constantsService.REG_EXPRESSION.ALPHA_SPECIAL);
-      if (!alphaExp.test(val)) {
+      const sNewFileName = val.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+      if (val !== sNewFileName) {
+        this.commonService.showToastrMessage(this.constantsService.MessageType.error, 'Special characters are found in PUBID name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', false);
         return false;
       }
       const item = val + ':1:In Progress';
@@ -305,6 +307,7 @@ export class CreateTaskComponent implements OnInit {
       }
       return true;
     }
+    return true;
   }
 
   onFormSubmit(type: string) {
@@ -313,8 +316,6 @@ export class CreateTaskComponent implements OnInit {
     this.submitBtn.isClicked = true;
     if (type === 'createTask') {
       if(!this.checkSubMilestone(this.enteredSubMile)) {
-        this.commonService.showToastrMessage(this.constantsService.MessageType.error,
-          'Special characters are not allowed for submilestone', true);
         this.submitBtn.isClicked = false;
         return false;
       }
@@ -363,7 +364,7 @@ export class CreateTaskComponent implements OnInit {
       let taskObj = {};
       const taskLength = this.taskArrayList.length ? this.taskArrayList.length + 1 : '';
       taskObj = {
-        Title: this.create_task_form.value.ProjectCode.ProjectCode + ' ' + this.create_task_form.value.Milestones.value + ' ' +
+        Title: this.create_task_form.value.ProjectCode.ProjectCode + ' ' + this.create_task_form.value.Milestones + ' ' +
           this.create_task_form.value.ProjectCode.ServiceLevel + ' ' + taskLength.toString(),
         Entity: '',
         ProjectCode: this.create_task_form.value.ProjectCode.ProjectCode,
@@ -385,9 +386,8 @@ export class CreateTaskComponent implements OnInit {
             this.globalService.DashboardData.ResourceCategorization.find(c => c.ID ===
               this.globalService.currentUser.userId).TimeZone.Title : 5.5 : 5.5,
         TATStatus: 'No',
-        SubMilestones: this.create_task_form.value.SubMilestones.label ? this.create_task_form.value.SubMilestones.label :
-          this.create_task_form.value.SubMilestones,
-        Milestone: this.create_task_form.value.Milestones.label ? this.create_task_form.value.Milestones.value : '',
+        SubMilestones: this.create_task_form.value.SubMilestones,
+        Milestone: this.create_task_form.value.Milestones,
         AllowCompletion: 'No',
         TATBusinessDays: this.commonService.calcBusinessDays(new Date(this.create_task_form.value.StartDate),
           new Date(this.create_task_form.value.EndDate)),
@@ -427,25 +427,7 @@ export class CreateTaskComponent implements OnInit {
           this.commonService.showToastrMessage(this.constantsService.MessageType.error,errorMsg,false);
           return false;
         }
-        // const response = res[0].retItems;
-        // const fileUrl = this.globalService.sharePointPageObject.serverRelativeUrl + '/Lists/'
-        //   + this.constantsService.listNames.Schedules.name + '/' + response.ID + '_.000';
-        // let moveFileUrl = this.globalService.sharePointPageObject.serverRelativeUrl + '/Lists/'
-        //   + this.constantsService.listNames.Schedules.name + '/' + this.create_task_form.value.ProjectCode.ProjectCode;
-        // moveFileUrl = moveFileUrl + '/' + response.Milestone + '/' + response.ID + '_.000';
-        // const url = this.globalService.sharePointPageObject.webAbsoluteUrl
-        //   + "/_api/web/getfilebyserverrelativeurl('" + fileUrl + "')/moveto(newurl='" + moveFileUrl + "',flags=1)";
-        // // this.spServices.getChangeSetBodyMove(batchContents, changeSetId, url);
-        // const moveItemObj = Object.assign({}, this.queryConfig);
-        // moveItemObj.url = url; // this.spServices.getMoveURL(fileUrl, moveFileUrl);
-        // moveItemObj.listName = 'Move Item';
-        // moveItemObj.type = 'POST';
-        // batchUrl = [];
-        // batchUrl.push(moveItemObj);
-
-        // const moveToMilestoneRes: any = await this.spOperationsService.executeBatch(batchUrl);
-        // console.log('res ', moveToMilestoneRes);
-
+        
         this.commonService.showToastrMessage(this.constantsService.MessageType.success,'Task Created',false);
         this.refetchTaskList();
         this.constantsService.loader.isWaitDisable = true;

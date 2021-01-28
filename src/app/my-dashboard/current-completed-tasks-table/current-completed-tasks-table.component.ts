@@ -1,21 +1,30 @@
-import { Component, OnInit, Input, ViewChild, ChangeDetectorRef, Output, EventEmitter, HostListener } from '@angular/core';
-import { ConstantsService } from 'src/app/Services/constants.service';
-import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
-import { DatePipe } from '@angular/common';
-import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
-import { CommonService } from 'src/app/Services/common.service';
-import { ActivatedRoute } from '@angular/router';
-import { TimeSpentDialogComponent } from '../time-spent-dialog/time-spent-dialog.component';
-import { PreviosNextTasksDialogComponent } from '../previos-next-tasks-dialog/previos-next-tasks-dialog.component';
-import { AddEditCommentComponent } from '../add-edit-comment-dialog/add-edit-comment-dialog.component';
-import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
-import { FeedbackPopupComponent } from 'src/app/qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
-import { GlobalService } from 'src/app/Services/global.service';
-import { AllocationOverlayComponent } from 'src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component';
-import { Table } from 'primeng/table';
-import { MenuItem } from 'primeng/api';
-import { Dropdown } from 'primeng/dropdown';
+import {
+  Component,
+  OnInit,
+  Input,
+  ViewChild,
+  ChangeDetectorRef,
+  Output,
+  EventEmitter,
+  HostListener,
+} from "@angular/core";
+import { ConstantsService } from "src/app/Services/constants.service";
+import { MyDashboardConstantsService } from "../services/my-dashboard-constants.service";
+import { DatePipe } from "@angular/common";
+import { SPOperationService } from "src/app/Services/spoperation.service";
+import { DialogService, DynamicDialogConfig } from "primeng/dynamicdialog";
+import { CommonService } from "src/app/Services/common.service";
+import { ActivatedRoute } from "@angular/router";
+import { TimeSpentDialogComponent } from "../time-spent-dialog/time-spent-dialog.component";
+import { PreviosNextTasksDialogComponent } from "../previos-next-tasks-dialog/previos-next-tasks-dialog.component";
+import { AddEditCommentComponent } from "../add-edit-comment-dialog/add-edit-comment-dialog.component";
+import { ViewUploadDocumentDialogComponent } from "src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component";
+import { FeedbackPopupComponent } from "src/app/qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component";
+import { GlobalService } from "src/app/Services/global.service";
+import { AllocationOverlayComponent } from "src/app/shared/pre-stack-allocation/allocation-overlay/allocation-overlay.component";
+import { Table } from "primeng/table";
+import { MenuItem } from "primeng/api";
+import { Dropdown } from "primeng/dropdown";
 
 @Component({
   selector: "app-current-completed-tasks-table",
@@ -42,7 +51,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
   selectedType: any;
   tableloaderenable: boolean;
   selectedindex: any;
-  
+
   hideIcon: boolean = false;
   renameSub: boolean = false;
   public queryConfig = {
@@ -132,9 +141,11 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
         exportable: true,
       },
     ];
-  
-    this.hideIcon=  this.config.data ? true : false;
-    await this.processData(this.config.data ? this.config.data.allpopupTasks : this.allTasksData);
+
+    this.hideIcon = this.config.data ? true : false;
+    await this.processData(
+      this.config.data ? this.config.data.allpopupTasks : this.allTasksData
+    );
     this.loaderenable = false;
     this.initializeTableOptions();
   }
@@ -273,7 +284,6 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     this.TasksTable.exportCSV();
   }
 
-
   // *****************************************************************************************
   // Dialog to display task and time spent
   // *****************************************************************************************
@@ -392,7 +402,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
             this.loaderenable = true;
             this.commonService.SetNewrelic(
               "MyDashboard",
-              "MyCurrentCompletedTasks" ,
+              "MyCurrentCompletedTasks",
               "CompleteTask - " + this.route.snapshot.data.type,
               "POST"
             );
@@ -466,7 +476,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
 
     this.commonService.SetNewrelic(
       "MyDashboard",
-      "MyCurrentCompletedTasks" ,
+      "MyCurrentCompletedTasks",
       "UpdateComment - " + this.route.snapshot.data.type,
       "POST"
     );
@@ -780,12 +790,10 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     const array = [];
     this.subMilestonesArrayFormat.forEach((element) => {
       element
-        ? element.split(":")[0] == task.SubMilestones
-          ? array.push({ label: element.split(":")[0], value: element })
-          : ""
+        ? array.push({ label: element.split(":")[0], value: element })
         : "";
     });
-    this.subMilestonesList = array;
+    this.subMilestonesList = [...array];
   }
 
   onChangeDD(value: any) {
@@ -797,26 +805,21 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
   checkSubMilestone(val) {
     if (val) {
       const item = val + ":1:In Progress";
-      let submilestoneArray =  this.subMilestonesArrayFormat ? this.subMilestonesArrayFormat.map(
-        (e) => e.split(":")[0]
-      ) : [];
-      if (submilestoneArray && submilestoneArray.length > 0 &&  submilestoneArray.includes(this.taskArrayList[0].SubMilestones)) {
+      let submilestoneArray = this.subMilestonesArrayFormat
+        ? this.subMilestonesArrayFormat.map((e) => e.split(":")[0])
+        : [];
+      if (
+        submilestoneArray &&
+        submilestoneArray.length > 0 &&
+        submilestoneArray.includes(this.taskArrayList[0].SubMilestones)
+      ) {
         let subIndex = submilestoneArray.indexOf(
           this.taskArrayList[0].SubMilestones
         );
         this.subMilestonesArrayFormat[subIndex] = item;
-
       }
       return;
     }
-  }
-
-  clearFilter(dropdown: Dropdown) {
-    // if (dropdown.clearClick) {
-      this.subMilestone = '';
-      dropdown.resetFilter();
-      dropdown.focus();
-    // }
   }
 
   async renameSubmilestone(rowData) {
@@ -905,12 +908,6 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     if (batchUrl.length) {
       const res: any = await this.spOperations.executeBatch(batchUrl);
       console.log("res ", res);
-      // if (res[0].retItems.hasError) {
-      //   const errorMsg = res[0].retItems.message.value;
-      //   this.commonService.showToastrMessage(this.constants.MessageType.error,errorMsg,false);
-      //   return false;
-      // }
-
       this.commonService.showToastrMessage(
         this.constants.MessageType.success,
         "Task Submilestone Updated",
@@ -924,5 +921,4 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     this.enteredSubMile = "";
     this.renameSub = false;
   }
-
 }

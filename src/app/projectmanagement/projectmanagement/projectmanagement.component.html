@@ -95,7 +95,7 @@
                         <div class="p-col p-grid p-p-0">
                             <label for="BillingEntity" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Billing Entity</label>
                             <div class="p-col-12 p-md-8">
-                                <p-dropdown [options]="sowDropDown.BillingEntity" formControlName="cactusBillingEntity" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                                <p-dropdown [options]="sowDropDown.BillingEntity" formControlName="cactusBillingEntity" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true" class="p-fluid">
                                 </p-dropdown>
                                 <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['cactusBillingEntity'].disabled && !addSowForm.controls['cactusBillingEntity'].valid">
                                     Billing Entity is required</div>
@@ -104,7 +104,7 @@
                         <div class="p-col p-grid p-p-0">
                             <label for="PracticeArea" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Practice Area</label>
                             <div class="p-col-12 p-md-8">
-                                <p-multiSelect formControlName="businessVertical" [options]="sowDropDown.PracticeArea" [style]="{'width':'100%'}" defaultLabel="Please Select" [filter]="true" resetFilterOnHide="true"></p-multiSelect>
+                                <p-multiSelect formControlName="businessVertical" [options]="sowDropDown.PracticeArea" class="p-fluid" defaultLabel="Please Select" [filter]="true" resetFilterOnHide="true"></p-multiSelect>
                                 <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['businessVertical'].valid">
                                     Practice Area is required</div>
                             </div>
@@ -117,13 +117,13 @@
                             <label for="ClientPOC" class="p-col-12 p-m-0 p-md-2 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Client POC</label>
                             <div class="p-col-12 p-md-10">
                                 <div class="p-col-6 p-pl-0" style="float: left;">
-                                    <p-dropdown [options]="sowDropDown.POC" formControlName="poc" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                                    <p-dropdown [options]="sowDropDown.POC" formControlName="poc" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true" class="p-fluid">
                                     </p-dropdown>
                                     <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['poc'].valid">
                                         POC is required</div>
                                 </div>
                                 <div class="p-col-6 p-pr-0" style="float: left;">
-                                    <p-multiSelect [options]="sowDropDown.POCOptional" formControlName="pocOptional" [filter]="true" defaultLabel="Please Select" resetFilterOnHide="true" [style]="{'width':'100%'}"></p-multiSelect>
+                                    <p-multiSelect [options]="sowDropDown.POCOptional" formControlName="pocOptional" [filter]="true" defaultLabel="Please Select" resetFilterOnHide="true" class="p-fluid"></p-multiSelect>
                                 </div>
                             </div>
                         </div>
@@ -185,7 +185,7 @@
                         <div class="p-col p-grid p-p-0">
                             <label for="Currency" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Currency</label>
                             <div class="p-col-12 p-md-8">
-                                <p-dropdown class="mr-5" [options]="sowDropDown.Currency" formControlName="currency" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                                <p-dropdown class="p-fluid" [options]="sowDropDown.Currency" formControlName="currency" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true">
                                 </p-dropdown>
                                 <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['currency'].disabled && !addSowForm.controls['currency'].valid">
                                     Currency is required</div>
@@ -246,12 +246,12 @@
                             <label for="CM" class="p-col-12 p-m-0 p-md-2 p-mb-md-0 p-p-3"><span class="compulsory">*</span>CM</label>
                             <div class="p-col-12 p-md-10">
                                 <div class="p-col-6 p-pl-0" style="float: left;">
-                                    <p-multiSelect formControlName="cm" [options]="sowDropDown.CMLevel1" [style]="{'width':'100%'}" defaultLabel="Select Access" [filter]="true" resetFilterOnHide="true" [(ngModel)]="pmObject.OwnerAccess.selectedCMAccess"></p-multiSelect>
+                                    <p-multiSelect formControlName="cm" [options]="sowDropDown.CMLevel1" class="p-fluid" defaultLabel="Select Access" [filter]="true" resetFilterOnHide="true" [(ngModel)]="pmObject.OwnerAccess.selectedCMAccess"></p-multiSelect>
                                     <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['cm'].valid">
                                         CM access is required</div>
                                 </div>
                                 <div class="p-col-6 p-pr-0" style="float: left;">
-                                    <p-dropdown formControlName="cm2" [options]="sowDropDown.CMLevel2" placeholder="Select Owner" [showClear]="true" [style]="{'width':'100%'}" [filter]="true" resetFilterOnHide="true" [disabled]="true" [(ngModel)]="pmObject.OwnerAccess.selectedCMOwner"></p-dropdown>
+                                    <p-dropdown formControlName="cm2" [options]="sowDropDown.CMLevel2" placeholder="Select Owner" [showClear]="true" class="p-fluid" [filter]="true" resetFilterOnHide="true" [disabled]="true" [(ngModel)]="pmObject.OwnerAccess.selectedCMOwner"></p-dropdown>
                                     <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['cm2'].valid"> CM Owner is required.
                                     </div>
                                 </div>
@@ -264,10 +264,10 @@
                             <label for="Delivery" class="p-col-12 p-m-0 p-md-2 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Delivery</label>
                             <div class="p-col-12 p-md-10">
                                 <div class="p-col-6 p-pl-0" style="float: left;">
-                                    <p-multiSelect formControlName="delivery" [options]="sowDropDown.Delivery" [(ngModel)]="pmObject.OwnerAccess.selectedDeliveryAccess" [style]="{'width':'100%'}" defaultLabel="Select Access" inputId="Select Access" [filter]="true" resetFilterOnHide="true"></p-multiSelect>
+                                    <p-multiSelect formControlName="delivery" [options]="sowDropDown.Delivery" [(ngModel)]="pmObject.OwnerAccess.selectedDeliveryAccess" class="p-fluid" defaultLabel="Select Access" inputId="Select Access" [filter]="true" resetFilterOnHide="true"></p-multiSelect>
                                 </div>
                                 <div class="p-col-6 p-pr-0" style="float: left;">
-                                    <p-dropdown formControlName="deliveryOptional" [options]="sowDropDown.DeliveryOptional" [(ngModel)]="pmObject.OwnerAccess.selectedDeliveryOwner" placeholder="Select Owner" [disabled]="true" [showClear]="true" [filter]="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                                    <p-dropdown formControlName="deliveryOptional" [options]="sowDropDown.DeliveryOptional" [(ngModel)]="pmObject.OwnerAccess.selectedDeliveryOwner" placeholder="Select Owner" [disabled]="true" [showClear]="true" [filter]="true" resetFilterOnHide="true" class="p-fluid">
                                     </p-dropdown>
                                     <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['deliveryOptional'].valid">
                                         Delivery Owner is required.</div>
@@ -281,7 +281,7 @@
                         <div class="p-col p-grid p-p-0">
                             <label for="SOWOwner" class="p-col-12 p-m-0 p-md-2 p-mb-md-0 p-p-3"><span class="compulsory">*</span>SOW Owner</label>
                             <div class="p-col-12 p-md-10">
-                                <p-dropdown class="mr-5" formControlName="sowOwner" [options]="sowDropDown.SowOwner" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
+                                <p-dropdown formControlName="sowOwner" [options]="sowDropDown.SowOwner" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true" class="p-fluid">
                                 </p-dropdown>
                                 <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['sowOwner'].valid">
                                     SOW Owner is required</div>

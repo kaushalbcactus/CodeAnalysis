@@ -141,9 +141,14 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     text-decoration: none !important;
 }
 
-.p-accordion .p-accordion-header:not(.p-disabled).p-highlight .p-accordion-header-link {
+.p-accordion .p-accordion-header:not(.p-disabled).p-highlight .p-accordion-header-link,
+.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider:before {
     background: #c53e3e !important;
     color: #ffffff !important;
+}
+
+.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+    background: rgb(181 63 72 / 50%) !important;
 }
 
 .p-accordion .p-accordion-header:not(.p-disabled).p-highlight:hover .p-accordion-header-link {
@@ -227,8 +232,14 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 .p-dropdown:not(.p-disabled):hover,
 .p-multiselect:not(.p-disabled):hover,
 .p-inputtext:enabled:hover,
-.p-radiobutton .p-radiobutton-box.p-highlight {
+.p-radiobutton .p-radiobutton-box.p-highlight,
+.p-autocomplete.p-autocomplete-multiple .p-autocomplete-multiple-container:not(.p-disabled):hover,
+.p-autocomplete.p-autocomplete-multiple .p-autocomplete-multiple-container:not(.p-disabled).p-focus {
     border-color: #c53e3e !important;
+}
+
+.p-autocomplete.p-autocomplete-multiple .p-autocomplete-multiple-container:not(.p-disabled).p-focus {
+    box-shadow: inset 0 0 0 1px #db5a5a, inset 0 0 0 1px #db5a5a, inset 0 0 0 1px #db5a5a, inset 0 0 0 1px #db5a5a !important;
 }
 
 .p-button.p-button-text {
@@ -301,7 +312,8 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 }
 
 .p-fileupload .p-fileupload-buttonbar .p-button,
-.p-fileupload-row>div>.p-button {
+.p-fileupload-row>div>.p-button,
+.p-autocomplete-dropdown {
     background: #c53e3e !important;
     color: #ffffff !important;
 }
@@ -336,7 +348,8 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
  */
 
 .p-datatable.p-datatable-cactus .p-datatable-wrapper tbody.p-datatable-tbody>tr>td:last-child>div div.p-menu,
-.p-datatable.p-datatable-cactus .p-datatable-wrapper tbody.p-datatable-tbody>tr>td:last-child>div div.p-tieredmenu {
+.p-datatable.p-datatable-cactus .p-datatable-wrapper tbody.p-datatable-tbody>tr>td:last-child>div div.p-tieredmenu,
+.p-treetable-wrapper tbody.p-treetable-tbody>tr>td:last-child>div div.p-menu {
     top: inherit !important;
     left: inherit !important;
     right: 25px !important;
@@ -402,7 +415,9 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 .loader {
     color: #ffffff;
     font-size: 10px;
-    margin: 30px auto;
+    margin: auto;
+    margin-top: 25vh;
+    margin-bottom: 5vh;
     position: relative;
     text-indent: -9999em;
     -webkit-transform: translateZ(0);
@@ -665,8 +680,11 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 
 /* */
 
-i.pi.pi-ellipsis-v {
+i.pi.pi-ellipsis-v,
+.headerview,
+.fa-info-circle {
     font-size: 1.25em !important;
+    cursor: pointer !important;
 }
 
 .p-scrollpanel-wrapper,
@@ -677,7 +695,13 @@ i.pi.pi-ellipsis-v {
 .p-fieldset-content,
 .p-multiselect-empty-message,
 .mainlable,
-.p-multiselect-item {
+.p-multiselect-item,
+.p-autocomplete-item,
+.p-autocomplete.p-autocomplete-multiple .p-autocomplete-multiple-container .p-autocomplete-input-token input,
+.UserTasksRow,
+.tableHeader,
+form>div>div>label,
+form>div>div>div>label {
     font-size: 13px !important;
 }
 
@@ -685,4 +709,19 @@ i.pi.pi-ellipsis-v {
     font-size: 25px !important;
     color: #c53e3e !important;
     cursor: pointer !important;
+}
+
+.p-autocomplete.p-autocomplete-multiple .p-autocomplete-multiple-container .p-autocomplete-token {
+    background: rgb(240 58 58 / 12%) !important;
+    color: #c53e3e !important;
+}
+
+.p-treetable .p-treetable-thead>tr>th,
+.p-treetable .p-treetable-tbody>tr>td {
+    border-width: 1px !important;
+}
+
+.gantt_last_cell .contextMenu {
+    padding: 10px 20px;
+    background-color: beige;
 }

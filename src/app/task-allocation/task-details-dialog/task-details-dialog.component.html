@@ -2,128 +2,89 @@
                                                            View Details
 ************************************************************************************************ -->
 
-<div
-  fxLayout="column"
-  style="padding: 2vw;"
-  fxLayoutAlign="center center"
-  [hidden]="!modalloaderenable"
->
-  <div id="modalInnerLoader"></div>
-  <div id="modalInnerLoaderText">Loading...</div>
+
+<div class="p-d-flex p-flex-column" style="padding: 5vw;" *ngIf="modalloaderenable">
+    <div id="modalInnerLoader"></div>
+    <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
-<div [hidden]="modalloaderenable" fxLayout="column" fxLayoutGap="10px">
-  <p-card>
-    <p-header
-      style="
-        padding: 0.5em;
-        font-size: 1.5em;
-        color: #6f0b0b;
-        font-weight: 600;
-      "
-      ><i class="fa fa-book" aria-hidden="true"></i> &nbsp;&nbsp;
-      Documents</p-header
-    >
-    <div>
-      <div
-        *ngIf="DocumentArray.length === 0 && !modalloaderenable"
-        style="color: #c53e3e; font-size: 1em;"
-      >
-        *No Documents Available.
-      </div>
-      <p-table
-        [style]="{ 'margin-top': '1vh' }"
-        *ngIf="DocumentArray.length > 0"
-        [columns]="dbcols"
-        [(selection)]="selectedDocuments"
-        [value]="DocumentArray"
-      >
-        <ng-template pTemplate="header" let-columns>
-          <tr>
-            <th style="width: 3em;">
-              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-            </th>
-            <th *ngFor="let col of columns">
-              {{ col.header }}
-              <button
-                style="float: right; font-size: 12px;"
-                [hidden]="col.header !== 'Document Name'"
-                pButton
-                type="button"
-                label="Download"
-                (click)="downloadFile()"
-                class="ui-button-danger"
-              ></button>
-            </th>
-          </tr>
+
+<div class="p-col p-grid taskDetailsDialog p-flex-column p-mt-2" *ngIf="!modalloaderenable">
+    <p-panel class="p-mb-1">
+        <ng-template pTemplate="header">
+            <div class="p-col p-grid p-p-0 p-jc-center headerview">
+                <i class="fa fa-book p-mr-2 p-as-center" aria-hidden="true"></i>
+                <div class="p-as-center">Documents</div>
+            </div>
         </ng-template>
-        <ng-template pTemplate="body" let-rowData let-columns="columns">
-          <tr>
-            <td style="width: 3em;">
-              <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
-            </td>
-            <td *ngFor="let col of columns">
-              <a
-                href="{{ rowData.ServerRelativeUrl }}"
-                target="_blank"
-                style="color: #c53e3e; word-break: break-all;"
-                target="_blank"
-                *ngIf="col.field === 'Name'"
-                >{{ rowData[col.field] }}</a
-              >
-              <span *ngIf="col.field !== 'Name'">{{ rowData[col.field] }}</span>
-            </td>
-          </tr>
+        <ng-template pTemplate="content">
+            <p-table [style]="{ 'margin-top': '1vh' }" [columns]="dbcols" [(selection)]="selectedDocuments" [value]="DocumentArray" styleClass="p-datatable-cactus p-datatable-gridlines">
+                <ng-template pTemplate="header" let-columns>
+                    <tr>
+                        <th class="firstColumnWidth">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th *ngFor="let col of columns">
+                            <div class="p-grid p-jc-between">
+                                <div class="p-col p-as-center"> {{ col.header }}</div>
+                                <button *ngIf="DocumentArray.length > 0 " pButton pRipple [hidden]=" col.header !== 'Document Name'" type="button" label="Download" (click)="downloadFile()" icon="pi pi-downloadh" class="p-button-raised p-button-danger"></button>
+                            </div>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData let-columns="columns">
+                    <tr>
+                        <td>
+                            <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+                        </td>
+                        <td *ngFor="let col of columns">
+                            <a href="{{ rowData.ServerRelativeUrl }}" target="_blank" style="color: #c53e3e; word-break: break-all;" target="_blank" *ngIf="col.field === 'Name'">{{ rowData[col.field] }}</a>
+                            <span *ngIf="col.field !== 'Name'">{{ rowData[col.field] }}</span>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage" let-columns>
+                    <tr>
+                        <td [attr.colspan]="columns.length + 1">No Documents Available.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
         </ng-template>
-      </p-table>
-    </div>
-  </p-card>
-  <p-card>
-    <p-header
-      style="
-        padding: 0.5em;
-        font-size: 1.5em;
-        color: #6f0b0b;
-        font-weight: 600;
-        width: 100%;
-      "
-      ><i class="fa fa-commenting" aria-hidden="true"></i>&nbsp;&nbsp;
-      Comments</p-header
-    >
-    <div *ngIf="currentTask">
-      <span
-        *ngIf="!currentTask.TaskComments"
-        style="color: #c53e3e; font-size: 1em;"
-      >
-        * No notes or comments present for current task.
-      </span>
-      <span
-        *ngIf="currentTask.TaskComments"
-        [innerHTML]="currentTask.TaskComments"
-      >
-      </span>
-    </div>
-  </p-card>
-  <p-card>
-    <p-header
-      style="
-        padding: 0.5em;
-        font-size: 1.5em;
-        color: #6f0b0b;
-        font-weight: 600;
-      "
-      ><i class="fa fa-comments" aria-hidden="true"></i>&nbsp;&nbsp;
-      Scope</p-header
-    >
-    <div *ngIf="currentTask">
-      <span
-        *ngIf="!currentTask.CommentsMT"
-        style="color: #c53e3e; font-size: 1em;"
-      >
-        * No notes or comments present for current task.
-      </span>
-      <span *ngIf="currentTask.CommentsMT" [innerHTML]="currentTask.CommentsMT">
-      </span>
-    </div>
-  </p-card>
+    </p-panel>
+
+    <p-panel class="p-mb-1">
+        <ng-template pTemplate="header">
+            <div class="p-col p-grid p-p-0 p-jc-center headerview">
+                <i class="fa fa-commenting p-mr-2 p-as-center" aria-hidden="true"></i>
+                <div class="p-as-center">Comments</div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+            <div *ngIf="currentTask" class="p-my-3">
+                <span *ngIf="!currentTask.TaskComments" class="error">
+                   * No notes or comments present for current task.
+                </span>
+                <span *ngIf="currentTask.TaskComments" [innerHTML]="currentTask.TaskComments">
+                 </span>
+            </div>
+        </ng-template>
+    </p-panel>
+
+    <p-panel>
+        <ng-template pTemplate="header">
+            <div class="p-col p-grid p-p-0 p-jc-center headerview">
+                <i class="fa fa-comments p-mr-2 p-as-center" aria-hidden="true"></i>
+                <div class="p-as-center">Scope</div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+            <div *ngIf="currentTask" class="p-my-3">
+                <span *ngIf="!currentTask.CommentsMT" class="error">
+                   * No notes or comments present for current task.
+                </span>
+                <span *ngIf="currentTask.CommentsMT" [innerHTML]="currentTask.CommentsMT">
+                </span>
+            </div>
+        </ng-template>
+    </p-panel>
 </div>

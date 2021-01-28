@@ -1,138 +1,70 @@
-<div fxLayout="row" fxLayoutAlign="start center" style="width:100%;">
-
-    <div *ngIf="GanttChartView" fxLayout="column" fxLayoutAlign="center start" style="margin-top: 1vh;width: 100%;">
-
-        <!-- **********************************************************************************************************
-                                                         Heading buget Hours etc. Data
-           ********************************************************************************************************** -->
-        <div fxLayout="row" fxLayoutGap="20px" style="padding: 10px 0px 30px 0px;" fxLayoutAlign="space-around center">
-
-            <div fxLayout="row" id="timeline-header" fxLayoutAlign="center start">
-                <div class="table-header-cell-timeline">
-                    Budget Hrs
-                </div>
-                <div class="table-body-cell-timeline">
-                    <div id="projectBudgetHrs">{{oProjectDetails.budgetHours}}</div>
-                </div>
-                <div class="table-header-cell-timeline">
-                    Allocated Hrs
-                </div>
-                <div class="table-body-cell-timeline">
-                    <div id="allocatedHrs">{{oProjectDetails.allocatedHours}}</div>
-                </div>
-                <div class="table-header-cell-timeline">
-                    Spent Hrs
-                </div>
-                <div class="table-body-cell-timeline">
-                    <div id="spentHrs">{{oProjectDetails.hoursSpent}}</div>
-                </div>
-                <div class="table-header-cell-timeline">
-                    Available Hrs
-                </div>
-                <div class="table-body-cell-timeline" style="border-top-right-radius: 4px;border-bottom-right-radius: 4px;">
-                    <div id="availableBudgetHrs">{{oProjectDetails.availableHours}}</div>
-                </div>
+<div *ngIf="GanttChartView" class="p-col p-flex-column">
+    <div class="p-col p-grid p-p-0  p-jc-start">
+        <div class="p-grid p-m-1 p-pr-2 p-shadow-5 ">
+            <div class="p-grid p-pl-3 p-my-auto">
+                <span class="p-p-2">Budget Hrs</span>
+                <div class="p-p-2 p-text-center graybox" id="projectBudgetHrs">{{oProjectDetails.budgetHours}}</div>
             </div>
-
-            <div *ngIf="(oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing') && !projectDetails">
-                <button mat-raised-button type="button" (click)="showRestructure()">
-                    <mat-icon>create</mat-icon> Restructure
-                </button>
-
+            <div class="p-grid p-pl-3 p-my-auto">
+                <span class="p-p-2">Allocated Hrs</span>
+                <div class="p-p-2 p-text-center graybox" id="allocatedHrs">{{oProjectDetails.allocatedHours}}</div>
             </div>
-
-            <div>
-                <button type="button" mat-raised-button (click)="showVisualRepresentation()">
-                    <mat-icon *ngIf="visualgraph === true"> table_chart</mat-icon>
-                    <mat-icon *ngIf="visualgraph === false"> show_chart</mat-icon>
-                    {{ visualgraph === false ? 'Gantt Chart' : 'Table' }}
-                </button>
+            <div class="p-grid p-pl-3 p-my-auto">
+                <span class="p-p-2">Spent Hrs</span>
+                <div class="p-p-2 p-text-center graybox" id="spentHrs">{{oProjectDetails.hoursSpent}}</div>
             </div>
-            <!-- <div>
-                <button class="mr-20" type="button" mat-raised-button>Show Timeline</button>
-            </div> -->
-            <div *ngIf='visualgraph'>
-                <button class="mr-20" type="button" mat-raised-button (click)="zoomIn()"><mat-icon>zoom_in</mat-icon></button>
-                <button class="mr-20" type="button" mat-raised-button (click)="zoomOut()"><mat-icon>zoom_out</mat-icon></button>
-                <!-- <button class="mr-20" type="button" mat-raised-button (click)="ganttExportToExcel()">Export To
-                    Excel</button> -->
-                <i style="font-size: 1.8em;cursor: pointer;vertical-align: top;
-                    margin: 7px 15px 0px 0px;" (click)="ganttExportToExcel()" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
-                <p-dropdown #mySelect [options]="scales" [style]="{'width': '150px'}" [(ngModel)]="selectedScale" (onChange)="setScale(mySelect.value)" optionLabel="label"></p-dropdown>
+            <div class="p-grid p-pl-3 p-my-auto">
+                <span class="p-p-2">Available Hrs</span>
+                <div class="p-p-2 p-text-center graybox" id="availableBudgetHrs">{{oProjectDetails.availableHours}}</div>
             </div>
         </div>
-
-        <!-- **********************************************************************************************************
-                                                         Color Code Data
-           ********************************************************************************************************** -->
-
-        <div fxLayout="row" fxLayoutAlign="space-between center" class="" style="width: 100%;padding: 0px 0px 5px;">
-            <div>
-                <div class="input-color">
-                    <label>Planned</label>
-                    <div class="color-box" style="background-color: #FFD34E;"></div>
-                </div>
-                <div class="input-color">
-                    <label>Not Started</label>
-                    <div class="color-box" style="background-color: #5F6273;"></div>
-                </div>
-                <div class="input-color">
-                    <label>In Progress</label>
-                    <div class="color-box" style="background-color: #6EDC6C;"></div>
-                </div>
-                <div class="input-color">
-                    <label>Completed</label>
-                    <div class="color-box" style="background-color: #3498DB;"></div>
-                </div>
-                <div class="input-color">
-                    <label>Auto Closed</label>
-                    <div class="color-box" style="background-color: #8183CC;"></div>
-                </div>
-            </div>
-            <div>
-                <div class="input-color">
-                    <label>Equal allocation per day</label>
-                    <div class="color-box" style="background-color: indianred;"></div>
-                </div>
-                <!-- <div class="input-color">
-                  <label>Daily Split</label>
-                  <div class="color-box" style="background-color: rgb(160, 247, 142)"></div>
-              </div> -->
-            </div>
-            <div>
-                <div *ngIf="visualgraph" class="input-color" fxLayoutAlign="end center" style="margin-right: 10px;">
-                    <button mat-raised-button type="button" title="Refresh Gantt" (click)="loadComponentRefresh()">
-                        <mat-icon>refresh</mat-icon>
-                    </button>
-                </div>
-                <div *ngIf="changeInRestructure " class="input-color" fxLayoutAlign="end center" style="margin-right: 10px;">
-                    <button *ngIf="!projectDetails" mat-raised-button type="button" (click)="CancelChanges(projectDetails,'discardAll')" [disabled]="disableSave">
-                        <mat-icon>delete_forever</mat-icon> Discard All
-                    </button>
-                </div>
-
-                <div *ngIf="oProjectDetails.status !== 'On Hold' && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing'"
-                    class="input-color" fxLayoutAlign="end center">
-                    <button *ngIf="!projectDetails && !this.confirmMilestoneLoader" mat-raised-button type="button" [disabled]="disableSave" (click)="saveTasks()">
-                        <mat-icon>save</mat-icon> Save
-                    </button>
-                </div>
-            </div>
+        <div class="p-grid p-m-1">
+            <button *ngIf="(oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing') && !projectDetails"
+                pButton [ngClass]="visualgraph ? 'p-ml-3':' p-mx-3'" (click)="showRestructure()" pRipple icon="pi pi-pencil" type="button" label="Restructure" class="p-button-outlined p-button-danger"></button>
+            <button *ngIf="!visualgraph" pButton pRipple icon="pi pi-chart-line" type="button" label="Gantt Chart" class="p-button-outlined p-button-danger p-mr-3 chartButton" (click)="showVisualRepresentation()"></button>
+        </div>
+        <div class="p-grid p-m-1" *ngIf="visualgraph">
+            <button pButton pRipple icon="pi pi-table" type="button" label="Table" class="p-button-outlined p-button-danger p-mr-3 chartButton" (click)="showVisualRepresentation()"></button>
+            <button pButton pRipple type="button" icon="fa fa-search-plus" class="p-button-outlined p-button-danger p-mr-3 zoomIn" title="Zoom In" (click)="zoomIn()"></button>
+            <button pButton pRipple type="button" icon="fa fa-search-minus" class="p-button-outlined p-button-danger p-mr-3 zoomOut" title="Zoom Out" (click)="zoomOut()"></button>
+            <button pButton pRipple type="button" icon="pi pi-file-excel" class="p-button-outlined p-button-danger exportExcel p-mr-3" title="Export To Excel" (click)="ganttExportToExcel()"></button>
+            <p-dropdown [style]="{'width':'200px','padding': '3px'}" [options]="scales" scrollHeight="300px" [(ngModel)]="selectedScale" (onChange)="setScale(mySelect.value)" optionLabel="label"></p-dropdown>
 
         </div>
+    </div>
+    <div class="p-col p-mt-3 p-grid p-jc-between">
+        <div class="p-grid">
+            <div *ngFor="let TaskType of colors">
+                <div class="p-col p-grid" *ngIf="TaskType.visibility">
+                    <div class="p-ml-1" [style]="{'background-color': TaskType.value, 'width': '2rem','height': '1.2rem'}"></div>
+                    <label class="p-mx-2" [for]="TaskType.key">{{TaskType.key}}</label>
+                </div>
+            </div>
+        </div>
+        <div class="p-grid">
 
-        <div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" *ngIf="loaderenable">
+            <div>
+                <button *ngIf="visualgraph" pButton pRipple type="button" icon="pi pi-undo" class="p-button-outlined p-button-danger exportExcel p-mr-1" title="Refresh Gantt" (click)="loadComponentRefresh()"></button>
+                <button *ngIf="!projectDetails && !this.confirmMilestoneLoader && changeInRestructure" pButton pRipple type="button" icon="fa fa-trash" label="Discard All" class="p-button-outlined p-button-danger p-mr-1" (click)="CancelChanges(projectDetails,'discardAll')"
+                    [disabled]="disableSave"></button>
+            </div>
+
+
+            <div *ngIf="oProjectDetails.status !== 'On Hold' && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.projectType !== 'FTE-Writing'">
+                <button *ngIf="!projectDetails && !this.confirmMilestoneLoader" [disabled]="disableSave" pButton pRipple type="button" icon="pi pi-save" label="Save" class="p-button-outlined p-button-danger" (click)="saveTasks()"></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-col p-grid p-px-0">
+
+        <div class="p-d-flex p-flex-column" style="padding: 10vw;width: 100%;" *ngIf="loaderenable">
             <div id="scInnerLoader"></div>
-            <div id="scInnerLoaderText" *ngIf="!confirmMilestoneLoader">Loading...</div>
-            <div id="scConfirmLoaderText" *ngIf="confirmMilestoneLoader">Checking for allocation more than 10 hours...</div>
+            <div id="scInnerLoaderText">Loading...</div>
         </div>
 
-        <!-- **********************************************************************************************************
-                                                          Table View Data
-           ********************************************************************************************************** -->
-        <div fxLayout="row" class="taskAllocationTimeline" *ngIf="!loaderenable" fxLayoutAlign="center start" [hidden]="!tableView">
-
-            <p-treeTable [value]="milestoneData" [autoLayout]="true">
+        <div class="taskAllocationTimeline p-col p-p-0" *ngIf="!loaderenable" [hidden]="!tableView" hideshowMenu>
+            <p-treeTable [value]="milestoneData" [autoLayout]="true" styleClass="p-datatable-cactus p-datatable-gridlines">
 
                 <ng-template pTemplate="header">
                     <tr>
@@ -145,7 +77,7 @@
                         <th>Assign To</th>
                         <th>Type</th>
                         <th>Disable Cascade</th>
-                        <th> </th>
+                        <th class="lastColumnWidth"> </th>
                     </tr>
                 </ng-template>
 
@@ -160,7 +92,7 @@
 
                             <div id="nextMilestone" [title]=" rowData.type==='milestone' ? 'Set as Current Milestone':'Set as Current Sub-Milestone'" (click)="setForConfirmMilestone(rowData,rowNode)" *ngIf="(rowData.isNext === true && !rowData.subMilestonePresent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isCurrent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isNext &&   !changeInRestructure)  "
                                 style="display: inline;" [hidden]=" (rowData.type==='milestone' && (oProjectDetails.status ==='In Discussion' || oProjectDetails.projectType === 'FTE-Writing' || rowData.status === 'Completed' || rowData.id === -1)) || (rowData.type==='submilestone' &&  rowData.status !== 'Not Confirmed') || projectDetails ">
-                                <i class="pi pi-check" style="font-size: 2em;vertical-align: middle;"></i>
+                                <i class="pi pi-check p-ml-2" style="font-size:1.25em;vertical-align: middle;"></i>
                             </div>
                         </td>
 
@@ -179,13 +111,16 @@
                                     [yearNavigator]="true" (onClose)="DateChangePart(rowData,'start')" appendTo="body"
                                     [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}">
                                 </p-calendar>
-                                <input [disabled]="rowData.tat && rowData.itemType !=='Client Review'" readonly [ngxTimepicker]="picker"
-                                    [(ngModel)]="rowData.pUserStartTimePart" class="timePicker">
-                                <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
+                                <span class="p-col p-grid p-input-icon-right">
+                                    <i class="pi pi-clock" style="padding: 4px 8px;color: #c53e3e;"></i>
+                                    <input pInputText [disabled]="rowData.tat && rowData.itemType !=='Client Review'" readonly [ngxTimepicker]="picker"
+                                    [(ngModel)]="rowData.pUserStartTimePart" class="timePicker p-col-12 p-mt-2">
                                 <ngx-material-timepicker [preventOverlayClick]="true"
                                     (closed)="DateChangePart(rowData,'start')" #picker
                                     [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
                                 </ngx-material-timepicker>
+                                </span>
+
                             </span>
 
                         </td>
@@ -204,14 +139,21 @@
                                     [yearNavigator]="true" (onClose)="DateChangePart(rowData,'end')" appendTo="body"
                                     [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}">
                                 </p-calendar>
-                                <input #inputDate [disabled]="rowData.tat && rowData.itemType !=='Client Review'" readonly [ngxTimepicker]="picker"
+
+                                <span class="p-col p-grid p-input-icon-right">
+                                    <i class="pi pi-clock"  style="padding: 4px 8px;color: #c53e3e;"></i>
+                                    <input #inputDate pInputText [disabled]="rowData.tat && rowData.itemType !=='Client Review'" readonly [ngxTimepicker]="picker"
                                     [min]="rowData.pUserStartDatePart === rowData.pUserEndDatePart ? rowData.pUserStartTimePart :'12:00 am'"
-                                    [(ngModel)]="rowData.pUserEndTimePart" class="timePicker">
-                                <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
+                                    [(ngModel)]="rowData.pUserEndTimePart" class="timePicker p-col-12 p-mt-2">
+                               
                                 <ngx-material-timepicker [preventOverlayClick]="true"
                                     (closed)="DateChangePart(rowData,'end')" #picker
                                     [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
                                 </ngx-material-timepicker>
+                                </span>
+
+
+
                             </span>
                         </td>
 
@@ -219,15 +161,18 @@
                         <td style="text-align: center;" *ngIf="projectDetails">
                             <span>{{rowData.budgetHours}}</span>
                         </td>
-                        <td style="text-align: center;" *ngIf="!projectDetails">
-                            <div *ngIf="(rowData.type === 'milestone' && rowData.status !== 'Not Saved' && rowData.status !== 'Not Confirmed' && !rowData.isCurrent) || (rowData.type ==='task' && !rowData.editMode && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client')"
-                                style="float: left;margin-left: 22px;">{{rowData.budgetHours}}</div>
-                            <input type="number" class="form-control budgetHr" required="required" oninput="validity.valid||(value='0');" min="0" max="{{rowData.ExpectedBudgetHrs}}" value="0" step="0.25" *ngIf="(rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.editMode
+                        <td *ngIf="!projectDetails">
+                            <div class="p-d-flex p-ai-center">
+                                <div *ngIf="(rowData.type === 'milestone' && rowData.status !== 'Not Saved' && rowData.status !== 'Not Confirmed' && !rowData.isCurrent) || (rowData.type ==='task' && !rowData.editMode && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client')"
+                                    style="width: 100%; margin-left: 7px;">{{rowData.budgetHours}}</div>
+
+                                <input type="number" pInputText class="budgetHr" style="width: 100%;" required="required" oninput="validity.valid||(value='0');" min="0" max="{{rowData.ExpectedBudgetHrs}}" value="0" step="0.25" *ngIf="(rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.editMode
                               && (rowData.itemType !== 'Client Review' &&  rowData.itemType !== 'Send to client')) ||
-                              ((rowData.status ==='In Progress' || rowData.status ==='Not Started' || rowData.status ==='Not Confirmed' || rowData.status ==='Not Saved') && rowData.type === 'milestone')" required="required" style="border:none;border-radius: 0px;height: 25px;text-align: center;padding:0px;float: left;"
-                                [id]="rowData.id" (change)="budgetHrsChanged(rowData)" [(ngModel)]="rowData.budgetHours">
-                            <div class='overlayIcon' (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)" style="float: right;cursor: pointer;" title="Click to see allocation split" *ngIf="rowData.showAllocationSplit">
-                                <i class="fa fa-info-circle" aria-hidden="true"></i>
+                              ((rowData.status ==='In Progress' || rowData.status ==='Not Started' || rowData.status ==='Not Confirmed' || rowData.status ==='Not Saved') && rowData.type === 'milestone')" required="required" [id]="rowData.id" (change)="budgetHrsChanged(rowData)"
+                                    [(ngModel)]="rowData.budgetHours">
+                                <div class='overlayIcon p-ml-1' (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)" style="float: right;cursor: pointer;" title="Click to see allocation split" *ngIf="rowData.showAllocationSplit">
+                                    <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                </div>
                             </div>
                         </td>
                         <!-- spent Hrs -->
@@ -247,7 +192,7 @@
                         <td>
                             <span *ngIf="!rowData.editMode && (rowData.IsCentrallyAllocated !== 'Yes' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0))">
                                 {{rowData.AssignedTo.Title}}</span>
-                            <p-dropdown [style]="{'width':'100%'}" *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0))"
+                            <p-dropdown [style]="{'width':'100%'}" appendTo="body" *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone' && (rowData.IsCentrallyAllocated !== 'Yes' || rowData.slotType === 'Both' || (rowData.IsCentrallyAllocated === 'Yes' && rowData.title.indexOf('Slot') < 0))"
                                 #assignedTo class="txtTask" [options]="rowData.assignedUsers" [disabled]="rowData.status=== 'In Progress'" [panelStyle]="{minWidth:'15em' }" [(ngModel)]="rowData.AssignedTo" placeholder="Select Resource" [showClear]="true"
                                 [group]="true" filter="true" (onChange)="assignedToUserChanged(rowData)">
                                 <ng-template let-group pTemplate="group">
@@ -271,7 +216,7 @@
                         </td>
 
                         <!-- Menu option -->
-                        <td [style.backgroundColor]="rowData.color">
+                        <td class="lastColumnWidth" [style.backgroundColor]="rowData.color">
 
                             <!-- <div  *ngIf="!rowData.editMode && rowData.type === 'milestone' && rowData.status !== 'Completed' && rowData.status !== 'Auto Closed' && !changeInRestructure"
                                       style="text-align: center;">
@@ -286,7 +231,7 @@
                                 <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
                                 </p-menu>
 
-                                <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, rowNode);popupMenu.show($event);"></i>
+                                <i class="pi pi-ellipsis-v" (click)="openPopup(rowData, rowNode);popupMenu.show($event);"></i>
                             </div>
 
                             <div *ngIf="(!rowData.editMode && (rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' &&
@@ -296,14 +241,14 @@
                                 <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
                                 </p-menu>
 
-                                <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData,rowNode);popupMenu.show($event);"></i>
+                                <i class="pi pi-ellipsis-v" (click)="openPopup(rowData,rowNode);popupMenu.show($event);"></i>
                             </div>
 
                             <div *ngIf=" rowData.editMode && rowData.type === 'task' && rowData.status === 'Not Saved' && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client'">
                                 <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
                                 </p-menu>
 
-                                <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData,rowNode);popupMenu.show($event);"></i>
+                                <i class="pi pi-ellipsis-v" (click)="openPopup(rowData,rowNode);popupMenu.show($event);"></i>
                             </div>
                         </td>
                     </tr>
@@ -318,30 +263,31 @@
                 </ng-template>
 
             </p-treeTable>
-
-
         </div>
 
-        <!-- **********************************************************************************************************
-                                                         gantt chart Data
-           ********************************************************************************************************** -->
-        <div fxLayout="row" fxLayoutAlign=" start center" [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'" [hidden]="!visualgraph || loaderenable" style="width:100%">
-            <!--&& loaderenable === true-->
 
-            <div style="width:100%">
-                <!-- <ng-template #ganttcontainer></ng-template> -->
-                <app-gantt-chart #ganttcontainer [ganttData]='this.taskAllocateCommonService.ganttParseObject' [beforeTaskChanged]="onBeforeTaskChangedCall" [beforeTaskDrag]="onBeforeTaskDragCall" [taskClick]="onTaskClickCall" [afterTaskDrag]="onAfterTaskDragCall"></app-gantt-chart>
-            </div>
-        </div>
-        <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
 
-        <input [hidden]='true' readonly [ngxTimepicker]="ganttPicker" [(ngModel)]="taskTime" [min]="minTime" [max]="maxTime" class="timePicker">
-        <ngx-material-timepicker [preventOverlayClick]="true" (closed)="timeChange()" #ganttPicker (timeSet)="setTime($event)" [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
-        </ngx-material-timepicker>
     </div>
 
 
+    <!-- ***************************************************************************************
+                                                         gantt chart Data
+           *********************************************************************************** -->
+
+    <div [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'" [hidden]="!visualgraph || loaderenable">
+        <app-gantt-chart #ganttcontainer [ganttData]='this.taskAllocateCommonService.ganttParseObject' [beforeTaskChanged]="onBeforeTaskChangedCall" [beforeTaskDrag]="onBeforeTaskDragCall" [taskClick]="onTaskClickCall" [afterTaskDrag]="onAfterTaskDragCall"></app-gantt-chart>
+
+    </div>
+
+
+    <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
+
+    <input [hidden]='true' readonly [ngxTimepicker]="ganttPicker" [(ngModel)]="taskTime" [min]="minTime" [max]="maxTime" class="timePicker">
+    <ngx-material-timepicker [preventOverlayClick]="true" (closed)="timeChange()" #ganttPicker (timeSet)="setTime($event)" [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
+    </ngx-material-timepicker>
 </div>
+
+
 <div #reallocationMailTableID style="display:none">
     <table class="w580" width="580" cellpadding="5" cellspacing="0" border="0">
         <thead>
@@ -415,38 +361,45 @@
     </table>
 </div>
 
-<p-dialog [(visible)]="showBudgetHrs" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '30%', 'top':'0px'}" [closeOnEscape]="false" [closable]="false">
-    <p-header>
-        Change Budget Hours
-        <div class="footerBtn" fxLayout="row" fxLayoutAlign="end center">
-            <button type="button" pButton icon="pi pi-save" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="saveTask(true,null)" label="Save" class="saveTaskButton"></button>
-            <button type="button" pButton icon="pi pi-times" (click)="close()" label="Cancel" class="cancelBtn" style="background-color:ghostwhite;"></button>
-        </div>
-    </p-header>
-    <form>
-        <div class="p-grid mt-20">
-            <div class="p-col-4">
-                Budget Hrs
-            </div>
-            <div class="p-col-4">
-                <input type="number" pInputText [(ngModel)]="budgetHrs" [ngModelOptions]="{standalone: true}" (change)="setBudgetHours(budgetHrsTask)" oninput="validity.valid||(value='0');" min="0" max={{maxBudgetHrs}} value="0" step="0.25">
-            </div>
-        </div>
+<!-- *********************************************************************************************
+                                    // change budget dialog 
+    ******************************************************************************************** -->
+
+<p-dialog header=" Change Budget Hours" [(visible)]="showBudgetHrs" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '30%', 'top':'0px'}" [closeOnEscape]="false" [closable]="false">
+
+    <div class="pdialogButton p-col-12 p-grid p-jc-end">
+        <button class="p-mx-1 p-button-raised p-button-danger saveTaskButton" type="button" pButton icon="pi pi-save" [ngStyle]="{'cursor':'pointer' }" (click)="saveTask(true,null)" label="Save"></button>
+
+        <button type="button" pButton icon="pi pi-times" (click)="close();" label="Cancel" class="p-button-raised p-button-danger"></button>
+
+    </div>
+    <form class="p-mt-2 p-p-3">
+        <h6> Budget Hrs</h6>
+        <input class="p-col-12" type="number" pInputText [(ngModel)]="budgetHrs" [ngModelOptions]="{standalone: true}" (change)="setBudgetHours(budgetHrsTask)" oninput="validity.valid||(value='0');" min="0" max={{maxBudgetHrs}} value="0" step="0.25">
     </form>
 </p-dialog>
 
 
-<p-sidebar [(visible)]="displayBody" position="bottom" styleClass="ui-sidebar-lg resourcePanel" [showCloseIcon]="false" [closeOnEscape]="false" (onHide)="onClose()">
-    <app-resource-selection *ngIf="hideResourceSelection" #resourceSelect></app-resource-selection>
+<!-- *********************************************************************************************
+                            bottom sheet to display selected user details
+    ******************************************************************************************** -->
+
+<p-sidebar [(visible)]="displayBody" position="bottom" [showCloseIcon]="false" [closeOnEscape]="false" (onHide)="onClose()" [style]="{'height':'45vh', 'background':'#ead4d4'}">
+    <p-scrollPanel [style]="{height: '300px'}">
+        <app-resource-selection *ngIf="hideResourceSelection" #resourceSelect></app-resource-selection>
+    </p-scrollPanel>
 </p-sidebar>
 
-<!-- **********************************************************************************************************
+<!-- *********************************************************************************************
                                                          Comment Popup
-    ********************************************************************************************************** -->
-<p-dialog header="Any specific instructions for task" [closable]="false" [modal]="true" [style]="{width: '450px', minWidth: '300px'}" [(visible)]="displayComment">
-    <textarea *ngIf="displayComment" placeholder="Leave Comment" rows="8" cols="30" pInputTextarea autoResize="autoResize" style="width:100%;padding: 3%;" [(ngModel)]="task.scope"> </textarea>
-    <p-footer>
-        <button type="button" pButton icon="pi pi-check" style="background-color: #af0b14;border-color:#af0b14;" (click)="displayComment=false" label="Save"></button>
-        <button type="button" pButton icon="pi pi-times" (click)="cancelComment();displayComment=false" label="Cancel" class="ui-button-secondary"></button>
-    </p-footer>
+    ******************************************************************************************** -->
+<p-dialog header="Any specific instructions for task" appendTo="body" [closable]="false" [modal]="true" [style]="{width: '40vw'}" [(visible)]="displayComment">
+
+    <div class="pdialogButton p-col-12 p-grid p-jc-end">
+        <button class="p-mx-1 p-button-raised p-button-danger saveTaskButton" type="button" pButton icon="pi pi-check" [ngStyle]="{'cursor':'pointer' }" (click)="displayComment=false" label="Save"></button>
+
+        <button type="button" pButton icon="pi pi-times" (click)="cancelComment();displayComment=false" label="Cancel" class="p-button-raised p-button-danger"></button>
+
+    </div>
+    <textarea *ngIf="displayComment" class="p-mt-2" placeholder="Leave Comment" rows="8" cols="30" pInputTextarea autoResize="autoResize" class="p-fluid" [(ngModel)]="task.scope"> </textarea>
 </p-dialog>

@@ -351,15 +351,15 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
   async getPFDetails(projectCode) {
     const batchUrl = [];
-      const pfObj = Object.assign({}, this.queryConfig);
-      pfObj.url = this.spServices.getReadURL(
-        this.constantService.listNames.ProjectFinances.name,
-        this.fdConstantsService.fdComponent.projectFinances
-      );
-      pfObj.url = pfObj.url.replace("{{ProjectCode}}", projectCode);
-      pfObj.listName = this.constantService.listNames.ProjectFinances.name;
-      pfObj.type = "GET";
-      batchUrl.push(pfObj);
+    const pfObj = Object.assign({}, this.queryConfig);
+    pfObj.url = this.spServices.getReadURL(
+      this.constantService.listNames.ProjectFinances.name,
+      this.fdConstantsService.fdComponent.projectFinances
+    );
+    pfObj.url = pfObj.url.replace("{{ProjectCode}}", projectCode);
+    pfObj.listName = this.constantService.listNames.ProjectFinances.name;
+    pfObj.type = "GET";
+    batchUrl.push(pfObj);
     const res = await this.spServices.executeBatch(batchUrl);
     const arrResults = res.length ? res.map((a) => a.retItems) : [];
     this.pfDetails = arrResults[0][0];
@@ -368,17 +368,17 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
   async getInvoiceData(projectCode) {
     const batchUrl = [];
-      const invObj = Object.assign({}, this.queryConfig);
-      invObj.url = this.spServices.getReadURL(
-        this.constantService.listNames.InvoiceLineItems.name,
-        this.fdConstantsService.fdComponent.invoiceLineItemByProject
-      );
-      invObj.url = invObj.url.replace("{{ProjectCode}}", projectCode);
-      invObj.listName = this.constantService.listNames.InvoiceLineItems.name;
-      invObj.type = "GET";
-      batchUrl.push(invObj);
+    const invObj = Object.assign({}, this.queryConfig);
+    invObj.url = this.spServices.getReadURL(
+      this.constantService.listNames.InvoiceLineItems.name,
+      this.fdConstantsService.fdComponent.invoiceLineItemByProject
+    );
+    invObj.url = invObj.url.replace("{{ProjectCode}}", projectCode);
+    invObj.listName = this.constantService.listNames.InvoiceLineItems.name;
+    invObj.type = "GET";
+    batchUrl.push(invObj);
     const res = await this.spServices.executeBatch(batchUrl);
-    this.invDetails = res
+    this.invDetails = res;
     this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
   }
 
@@ -392,11 +392,17 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             this.projectCodes[p].SOWCode
           );
           await this.getInvoiceData(this.projectCodes[p].ProjectCode);
-          const invoiceTotalAmount = this.invDetails[0].retItems.length ? this.invDetails[0].retItems.map(e=> e.Amount).reduce((a,b)=> a+b , 0) : 0;
+          const invoiceTotalAmount = this.invDetails[0].retItems.length
+            ? this.invDetails[0].retItems
+                .map((e) => e.Amount)
+                .reduce((a, b) => a + b, 0)
+            : 0;
           const poDetail = await this.getPONumber(this.projectCodes[p]);
           const piInfo = await this.getMilestones(this.projectCodes[p]);
           const poc = this.getPOCName(this.projectCodes[p].PrimaryPOC);
-          const total: any = (data[pf][0].Budget * data[pf][0].HoursSpent).toFixed(2);
+          const total: any = (
+            data[pf][0].Budget * data[pf][0].HoursSpent
+          ).toFixed(2);
           const rate: any = parseFloat(data[pf][0].Budget).toFixed(2);
           this.hourlyBasedRes.push({
             Id: this.projectCodes[p].ID,
@@ -732,7 +738,9 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
           this.onSubmit(confirmInvoice, "confirmInvoice");
         }
       });
-      this.getConfirmMailContent(this.constantService.EMAIL_TEMPLATE_NAME.INVOICE_CONFIRM);
+      this.getConfirmMailContent(
+        this.constantService.EMAIL_TEMPLATE_NAME.INVOICE_CONFIRM
+      );
       this.getPIByTitle(this.selectedRowItem);
     } else if (this.hourlyDialog.title === "Edit Line item") {
       const ref = this.dialogService.open(EditInvoiceDialogComponent, {
@@ -922,19 +930,19 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
       ? this.selectedRowItem.HoursSpent
       : 0;
     let totalVal;
-    let totalAmount = rate * hrs; 
-    let finalHrs = 0;
+    let totalAmount = rate * hrs;
     let pendingAmount = 0;
     // let pendingHrs = 0;
 
-    if(Invoiceform.getRawValue().InvoiceAmount != 0 && Invoiceform.getRawValue().InvoiceAmount < (rate * hrs)) {
+    if (
+      Invoiceform.getRawValue().InvoiceAmount != 0 &&
+      Invoiceform.getRawValue().InvoiceAmount < rate * hrs
+    ) {
       totalVal = Invoiceform.getRawValue().InvoiceAmount;
-      finalHrs = totalVal/rate;
-      pendingAmount =  totalAmount - totalVal;
+      pendingAmount = totalAmount - totalVal;
       // pendingHrs = (pendingAmount/rate);
     } else {
       totalVal = totalAmount;
-      finalHrs = totalVal/rate;
       pendingAmount = 0;
     }
 
@@ -950,14 +958,20 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     }
 
     let url;
-    if(pendingAmount !== 0) {
+    if (pendingAmount !== 0) {
       url = this.spServices.getReadURL(
         this.constantService.listNames.InvoiceLineItems.name
       );
       this.commonService.setBatchObject(
         batchUrl,
         url,
-        this.getInvoiceLineItemData(invoiceform, piId, totalVal, pendingAmount, 'new'),
+        this.getInvoiceLineItemData(
+          invoiceform,
+          piId,
+          totalVal,
+          pendingAmount,
+          "new"
+        ),
         this.constantService.Method.POST,
         this.constantService.listNames.InvoiceLineItems.name
       );
@@ -965,26 +979,26 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
     // Update ProjectInformation
     // if(pendingAmount == 0) {
-      const piData = {
-        __metadata: {
-          type: this.constantService.listNames.ProjectInformation.type,
-        },
-        Status: this.constantService.projectStatus.AuditInProgress,
-        ProposeClosureDate: new Date(),
-        IsApproved: "Yes",
-      };
+    const piData = {
+      __metadata: {
+        type: this.constantService.listNames.ProjectInformation.type,
+      },
+      Status: this.constantService.projectStatus.AuditInProgress,
+      ProposeClosureDate: new Date(),
+      IsApproved: "Yes",
+    };
 
-      url = this.spServices.getItemURL(
-        this.constantService.listNames.ProjectInformation.name,
-        +piId.Id
-      );
-      this.commonService.setBatchObject(
-        batchUrl,
-        url,
-        piData,
-        this.constantService.Method.PATCH,
-        this.constantService.listNames.ProjectInformation.name
-      );
+    url = this.spServices.getItemURL(
+      this.constantService.listNames.ProjectInformation.name,
+      +piId.Id
+    );
+    this.commonService.setBatchObject(
+      batchUrl,
+      url,
+      piData,
+      this.constantService.Method.PATCH,
+      this.constantService.listNames.ProjectInformation.name
+    );
     // }
 
     // Update ProjectFinanceBreakup
@@ -1019,11 +1033,11 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
       __metadata: {
         type: this.constantService.listNames.ProjectBudgetBreakup.type,
       },
-      OriginalBudget: (this.projectBudgetBreakupData.OriginalBudget ? this.projectBudgetBreakupData.OriginalBudget : 0) + totalVal,
-      NetBudget: (this.projectBudgetBreakupData.NetBudget ? this.projectBudgetBreakupData.NetBudget : 0) + totalVal,
+      OriginalBudget: totalVal,
+      NetBudget: totalVal,
       Status: this.constantService.STATUS.APPROVED,
       ApprovalDate: Invoiceform.value.approvalDate,
-      BudgetHours: (this.projectBudgetBreakupData.BudgetHours ? this.projectBudgetBreakupData.BudgetHours : 0) + finalHrs,
+      BudgetHours: hrs,
     };
 
     url = this.spServices.getItemURL(
@@ -1142,15 +1156,33 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
       __metadata: {
         type: this.constantService.listNames.ProjectFinanceBreakup.type,
       },
-      Amount: (this.ProjectFinanceBreakupData.Amount ? this.ProjectFinanceBreakupData.Amount : 0) + totalVal,
-      AmountRevenue: (this.ProjectFinanceBreakupData.AmountRevenue ? this.ProjectFinanceBreakupData.AmountRevenue : 0) + totalVal,
+      Amount:
+        (this.ProjectFinanceBreakupData.Amount
+          ? this.ProjectFinanceBreakupData.Amount
+          : 0) + totalVal,
+      AmountRevenue:
+        (this.ProjectFinanceBreakupData.AmountRevenue
+          ? this.ProjectFinanceBreakupData.AmountRevenue
+          : 0) + totalVal,
     };
     if (Invoiceform.value.InvoiceType === "new") {
-      pfbData["TotalScheduled"] = (this.ProjectFinanceBreakupData.TotalScheduled ? this.ProjectFinanceBreakupData.TotalScheduled : 0) + totalVal;
-      pfbData["ScheduledRevenue"] = (this.ProjectFinanceBreakupData.ScheduledRevenue ? this.ProjectFinanceBreakupData.ScheduledRevenue : 0) + totalVal;
+      pfbData["TotalScheduled"] =
+        (this.ProjectFinanceBreakupData.TotalScheduled
+          ? this.ProjectFinanceBreakupData.TotalScheduled
+          : 0) + totalVal;
+      pfbData["ScheduledRevenue"] =
+        (this.ProjectFinanceBreakupData.ScheduledRevenue
+          ? this.ProjectFinanceBreakupData.ScheduledRevenue
+          : 0) + totalVal;
     } else {
-      pfbData["InvoicedRevenue"] = (this.ProjectFinanceBreakupData.InvoicedRevenue ? this.ProjectFinanceBreakupData.InvoicedRevenue : 0) + totalVal;
-      pfbData["TotalInvoiced"] = (this.ProjectFinanceBreakupData.TotalInvoiced ? this.ProjectFinanceBreakupData.TotalInvoiced : 0) + totalVal;
+      pfbData["InvoicedRevenue"] =
+        (this.ProjectFinanceBreakupData.InvoicedRevenue
+          ? this.ProjectFinanceBreakupData.InvoicedRevenue
+          : 0) + totalVal;
+      pfbData["TotalInvoiced"] =
+        (this.ProjectFinanceBreakupData.TotalInvoiced
+          ? this.ProjectFinanceBreakupData.TotalInvoiced
+          : 0) + totalVal;
     }
     return pfbData;
   }
@@ -1158,21 +1190,30 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
   getpfData(Invoiceform, totalVal, hrs) {
     const pfData = {
       __metadata: { type: this.constantService.listNames.ProjectFinances.type },
-      ApprovedBudget: (this.pfDetails.ApprovedBudget ? this.pfDetails.ApprovedBudget : 0) + totalVal,
-      BudgetHrs: this.selectedRowItem.BudgetHrs,
+      ApprovedBudget: totalVal,
+      BudgetHrs: hrs,
     };
     if (Invoiceform.value.InvoiceType === "new") {
-      pfData["InvoicesScheduled"] = (this.pfDetails.InvoicesScheduled ? this.pfDetails.InvoicesScheduled : 0) + totalVal;
-      pfData["ScheduledRevenue"] = (this.pfDetails.ScheduledRevenue ? this.pfDetails.ScheduledRevenue : 0) + totalVal;
+      pfData["InvoicesScheduled"] =
+        (this.pfDetails.InvoicesScheduled
+          ? this.pfDetails.InvoicesScheduled
+          : 0) + totalVal;
+      pfData["ScheduledRevenue"] =
+        (this.pfDetails.ScheduledRevenue
+          ? this.pfDetails.ScheduledRevenue
+          : 0) + totalVal;
     } else {
-      pfData["InvoicedRevenue"] = (this.pfDetails.InvoicedRevenue ? this.pfDetails.InvoicedRevenue : 0) + totalVal;
-      pfData["Invoiced"] = (this.pfDetails.Invoiced ? this.pfDetails.Invoiced : 0) + totalVal;
+      pfData["InvoicedRevenue"] =
+        (this.pfDetails.InvoicedRevenue ? this.pfDetails.InvoicedRevenue : 0) +
+        totalVal;
+      pfData["Invoiced"] =
+        (this.pfDetails.Invoiced ? this.pfDetails.Invoiced : 0) + totalVal;
     }
 
     return pfData;
   }
 
-  getInvoiceLineItemData(invoiceform, piId, totalVal,pendingAmount?,type?) {
+  getInvoiceLineItemData(invoiceform, piId, totalVal, pendingAmount?, type?) {
     const Invoiceform = invoiceform.ApproveInvoiceForm;
     const Invoice = invoiceform.Invoice;
     const InvoiceType = type ? type : Invoiceform.value.InvoiceType;

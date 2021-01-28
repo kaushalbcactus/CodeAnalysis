@@ -112,9 +112,9 @@ export class LeaveCalendarComponent implements OnInit {
   }
 
   // tslint:disable-next-line: use-life-cycle-interface
-  ngAfterViewInit() {
-    this.bindEvents();
-  }
+  // ngAfterViewInit() {
+  //   this.bindEvents();
+  // }
 
   // **************************************************************************************************
   //   to get leaves on button click
@@ -234,7 +234,7 @@ export class LeaveCalendarComponent implements OnInit {
     }
     this.leaves = [...this.leaves];
     this.CalendarLoader = false;
-
+    this.bindEvents();
   }
 
 }

@@ -42,7 +42,7 @@
     font-family: "PrimeIcons" !important;
     text-indent: 0 !important;
     font-weight: 50 !important;
-    font-size: 2.2em !important;
+    font-size: 1em !important;
 }
 
  ::ng-deep .fc-left .fc-icon {
@@ -327,4 +327,8 @@ th {
  ::ng-deep .fc .fc-toolbar .fc-button.fc-timeGridWeek-button.fc-button-active,
  ::ng-deep .fc .fc-toolbar .fc-button.fc-timeGridDay-button.fc-button-active {
     background: #d90000 !important;
+}
+
+::ng-deep .fc-AddnewEvent-button {
+    padding: 0px 7px !important;
 }

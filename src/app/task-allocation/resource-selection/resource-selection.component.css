@@ -1,15 +1,16 @@
-::ng-deep .ui-float-label {
+:host ::ng-deep .p-calendar-w-btn {
+    height: 33px !important;
+}
+
+
+/* ::ng-deep .ui-float-label {
     float: left !important;
 }
 
 
-/* ::ng-deep .ui-datepicker table td>a.ui-state-active,
-::ng-deep .ui-datepicker table td>span.ui-state-active, */
-
 ::ng-deep .customDate .ui-calendar-button,
 ::ng-deep .customDate .ui-button-icon-only
-/* ::ng-deep body .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight,
-::ng-deep body .ui-chkbox .ui-chkbox-box.ui-state-active  */
+
 
 {
     background-color: #C53E3E !important;
@@ -68,4 +69,4 @@
 
 .btnSubmit {
     margin-top: 0.5em!important;
-}
+} */

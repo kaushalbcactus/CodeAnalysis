@@ -58,7 +58,7 @@
 
                 <div class="p-mx-0 p-pr-0 p-grid" style="width: 18%;">
                     <span class="p-col p-pr-1 p-float-label">
-                        <p-calendar inputId="calendar" formControlName="rangeDates" selectionMode="range" [style]="{'width':'100%'}"
+                        <p-calendar inputId="calendar" formControlName="rangeDates" selectionMode="range" class="p-fluid"
                         numberOfMonths='1' dateFormat="M dd, yy" [showIcon]="true" [disabledDays]="[0,6]" (onClose)="fetchDataloader = false"
                         [readonlyInput]="true"  [style]="{'cursor': 'pointer'}"
                         [required]="true"></p-calendar>

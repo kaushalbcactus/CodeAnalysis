@@ -1,63 +1,61 @@
-<div fxLayout="row" fxLayoutAlign="center center" *ngIf=" !loaderenable  && SearchView ">
-    <mat-card class="Search-card">
-        <mat-card-content>
-            <form class="example-form" fxLayoutAlign="center center">
-                <mat-form-field style="width:80%;">
-                    <input matInput placeholder="Search Project" class="searchPrj" [formControl]="searchFormControl" (keydown)="SearchProject($event)">
-                    <button matSuffix mat-icon-button>
-                  <mat-icon class="searchIcon" (click)="getProjectDetails()" [style.color]=" !Searchenable ? '#b03f44'  :'#673AB7'" >search</mat-icon>
-                </button>
-                </mat-form-field>
-            </form>
-        </mat-card-content>
-    </mat-card>
+<!-- //   Search box to search project  -->
+<div class="p-col-5 p-mx-auto p-mt-6 p-p-4 p-shadow-24" *ngIf=" !loaderenable  && SearchView ">
+    <div class="p-col-12 vertical-container">
+        <form class="p-col p-grid p-as-center">
+            <span class=" p-col-11 p-float-label">
+              <input class="searchbox p-p-3 p-col-12" id="float-input-invalid" type="text" pInputText [formControl]="searchFormControl" (keydown)="SearchProject($event)" [ngClass]="errormessage ==='' ? '': ' ng-invalid ng-dirty'"> 
+              <label class="p-ml-3 " style="font-size:1em;" for="float-input-invalid">Search Project</label>
+            </span>
+            <button pButton pRipple type="button" (click)="getProjectDetails()" icon="pi pi-search" class="p-button-rounded p-button-danger p-button-outlined searchIcon p-my-3"></button>
+        </form>
+        <div [hidden]="errormessage ===''">
+            <p class="error" style="text-align: center;">{{errormessage}}</p>
+        </div>
+    </div>
+
 </div>
 
-<div fxLayout="row" fxLayoutAlign="center center" [hidden]="errormessage ===''">
-    <p style="color:#b03f44;font-size: 1.3em;">{{errormessage}}</p>
-</div>
-
-<div fxLayout="column" style="padding: 10vw;" fxLayoutAlign="center center" [hidden]="!loaderenable">
+<!-- //  loader displayed on page   -->
+<div class="p-d-flex p-flex-column" style="padding: 10vw;width: 100%;" *ngIf="loaderenable">
     <div id="scInnerLoader"></div>
     <div id="scInnerLoaderText">Loading...</div>
 </div>
 
-<div id="codeSection" *ngIf="!loaderenable  && timelineView">
-    <h1 class="floatLeft" id="formHeaderText">Project Code: {{globalObject.oTaskAllocation.oProjectDetails.projectCode}}({{globalObject.oTaskAllocation.oProjectDetails.wbjid}})</h1>
+<!-- //  header with project code and refresh and close view button   -->
+<div class="p-grid" id="codeSection" *ngIf="!loaderenable  && timelineView">
+    <div class="p-col p-text-left p-text-bold" style="font-size:22px;"> Project Code: {{globalObject.oTaskAllocation.oProjectDetails.projectCode}}({{globalObject.oTaskAllocation.oProjectDetails.wbjid}})</div>
+    <div class="p-col-fixed" style="width: 100px;">
 
-    <div class="floatRight">
-        <mat-icon (click)="getProjectDetails()" style="vertical-align: middle;color:#db1721;cursor: pointer; margin-right: 5px;">refresh</mat-icon>
-        <mat-icon (click)="showSearchSection()" style="vertical-align: middle;color:#db1721;cursor: pointer; ">navigation</mat-icon>
+        <button pButton pRipple type="button" (click)="getProjectDetails()" icon="pi pi-refresh" class="p-button-rounded p-button-danger p-button-outlined p-mx-1"></button>
+
+        <button pButton pRipple (click)="showSearchSection()" type="button" icon="pi pi-angle-double-up" class="p-button-rounded p-button-danger p-button-outlined"></button>
     </div>
-    <div class="clearBoth"></div>
 </div>
 
-<div fxLayout="column" class="matSectionPanel" fxLayoutAlign="center center" *ngIf="!loaderenable  && timelineView">
-    <!-- <app-resource-section (reloadResources)="reloadResourceArray($event)" fxLayout="row" style="width:98%;" fxLayoutAlign="center center"></app-resource-section> -->
-    <mat-accordion fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="space-around center" style="width:99%;" [multi]="true">
-        <!--********************************************************************************************
-                                             resources  panel
-         *******************************************************************************************-->
-        <mat-expansion-panel style="
-        border-radius: 0px;width:100%;" [expanded]="true">
-            <mat-expansion-panel-header fxLayoutAlign="center center" style=" background: #db1721;" [collapsedHeight]="customCollapsedHeight" [expandedHeight]="customCollapsedHeight">
-                <h4 style="width:100%;margin: 0%;">
-                    <mat-icon style="vertical-align: middle;">person</mat-icon> Resources
-                </h4>
-            </mat-expansion-panel-header>
-            <app-resources fxLayout="column" #loadResources (reloadTimeline)="reloadTimelineData($event)" style="width:100%;" fxLayoutAlign="start start"></app-resources>
-        </mat-expansion-panel>
-        <!--********************************************************************************************
-                                             TimeLine  panel
-         *******************************************************************************************-->
-        <mat-expansion-panel style="
-          border-radius: 0px;width:100%;" [expanded]="true">
-            <mat-expansion-panel-header fxLayoutAlign="center center" style=" background: #db1721;" [collapsedHeight]="customCollapsedHeight" [expandedHeight]="customCollapsedHeight">
-                <h4 style="width:100%;margin: 0%;">
-                    <mat-icon style="vertical-align: middle;">timeline</mat-icon> TimeLine
-                </h4>
-            </mat-expansion-panel-header>
-            <app-timeline fxLayout="row" (reloadResources)="reloadResourceArray($event)" fxLayoutAlign="center center" style="width:100%;padding-bottom:200px;"></app-timeline>
-        </mat-expansion-panel>
-    </mat-accordion>
+<!-- Accordion to show resource and timeline  -->
+
+<div class="" *ngIf="!loaderenable  && timelineView">
+    <p-accordion [multiple]="true">
+        <p-accordionTab [selected]="true">
+            <ng-template pTemplate="header">
+                <div class="p-col p-grid p-pt-1 p-pb-0 p-px-2">
+                    <div class="p-col p-p-0 p-text-center headerview"><i class="pi pi-user  p-mx-3"></i>Resources</div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <app-resources fxLayout="column" #loadResources (reloadTimeline)="reloadTimelineData($event)" style="width:100%;" fxLayoutAlign="start start"></app-resources>
+            </ng-template>
+        </p-accordionTab>
+
+        <p-accordionTab [selected]="true">
+            <ng-template pTemplate="header">
+                <div class="p-col p-grid p-pt-1 p-pb-0 p-px-2">
+                    <div class="p-col p-p-0 p-text-center  headerview"> <i class="pi pi-chart-line  p-mx-3"></i>Timeline</div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <app-timeline (reloadResources)="reloadResourceArray($event)" style="width:100%;"></app-timeline>
+            </ng-template>
+        </p-accordionTab>
+    </p-accordion>
 </div>

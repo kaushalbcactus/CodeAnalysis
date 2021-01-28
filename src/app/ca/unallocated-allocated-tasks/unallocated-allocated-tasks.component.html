@@ -197,9 +197,8 @@
                                 <!-- Assign To -->
                                 <td>
                                     <span *ngIf="!rowData.editMode  || ( rowData.editMode && (rowData.Status ==='In Progress' || rowData.Status ==='Completed'))"> {{rowData.AssignedTo.Title}}</span>
-                                    <p-dropdown #allocateResource *ngIf="rowData.editMode && (rowData.Status ==='Not Started' || rowData.Status ==='Not Saved')" class="resourceDropdown" [options]="rowData.displayselectedResources" [panelStyle]="{minWidth:'25em' }" [(ngModel)]="rowData.allocatedResource"
-                                        placeholder="Select Resource" resetFilterOnHide="true" [group]="true" filter="true" placeholder="Select Resource" (onShow)="fetchResources(rowData,allocateResource)" (onHide)="EditSlotEnable(rowData,Slot)" (onChange)="assignedToUserChanged(rowData)"
-                                        [style]="{'width':'100%'}">
+                                    <p-dropdown #allocateResource *ngIf="rowData.editMode && (rowData.Status ==='Not Started' || rowData.Status ==='Not Saved')" class="resourceDropdown p-fluid" [options]="rowData.displayselectedResources" [panelStyle]="{minWidth:'25em' }" [(ngModel)]="rowData.allocatedResource"
+                                        placeholder="Select Resource" resetFilterOnHide="true" [group]="true" filter="true" placeholder="Select Resource" (onShow)="fetchResources(rowData,allocateResource)" (onHide)="EditSlotEnable(rowData,Slot)" (onChange)="assignedToUserChanged(rowData)">
                                         <ng-template let-group pTemplate="group">
                                             <span style="margin-left:.25em">{{group.label}}</span>
                                         </ng-template>
