@@ -517,8 +517,13 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     margin-bottom: 0px !important;
 }
 
-.p-datatable-tbody>tr>td {
+.p-datatable-tbody>tr>td,
+.p-fileupload .p-fileupload-row>div {
     word-break: break-word !important;
+}
+
+.p-fileupload .p-fileupload-content {
+    padding: 0px !important;
 }
 
 

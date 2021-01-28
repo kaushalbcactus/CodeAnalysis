@@ -339,6 +339,7 @@ export class ClientReviewComponent implements OnInit {
       }
       this.pmObject.tabMenuItems[3].label = 'Client Review (' + this.pmObject.countObj.crCount + ')';
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
+      this.pmObject.clientReviewArray=[];
     }
 
     this.isCRTableHidden = false;
@@ -406,7 +407,6 @@ export class ClientReviewComponent implements OnInit {
   async closeTaskWithStatus(task, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
-
       const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
         data: {
           task,
@@ -418,6 +418,7 @@ export class ClientReviewComponent implements OnInit {
       });
       ref.onClose.subscribe(async (documents: any) => {
         if (documents) {
+          this.Constant.loader.isWaitDisable = false;
           const batchUrl = [];
           // update Task
           const taskObj = Object.assign({}, this.options);
@@ -483,17 +484,17 @@ export class ClientReviewComponent implements OnInit {
 
           const index = this.pmObject.clientReviewArray.findIndex(item => item.ID === task.ID);
           this.pmObject.clientReviewArray.splice(index, 1);
-          this.Constant.loader.isWaitDisable = false;
+          this.Constant.loader.isWaitDisable = true;
           this.pmObject.loading.ClientReview = true;
           this.pmObject.countObj.crCount = this.pmObject.countObj.crCount - 1;
           this.pmObject.clientReviewArray = [...this.pmObject.clientReviewArray];
         }
         else {
-          this.Constant.loader.isWaitDisable = false;
+          this.Constant.loader.isWaitDisable = true;
         }
       });
     } else {
-      this.Constant.loader.isWaitDisable = false;
+      this.Constant.loader.isWaitDisable = true;
 
       this.commonService.showToastrMessage(this.Constant.MessageType.info, task.Title + ' is already completed or closed or auto closed. Hence record is refreshed in 30 sec.', true);
       setTimeout(() => {
@@ -516,13 +517,15 @@ export class ClientReviewComponent implements OnInit {
     this.commonService.lazyLoadTask(event, crArray, this.filterColumns, this.pmConstant.filterAction.CLIENT_REVIEW);
   }
   storeRowData(rowData, menu) {
+    debugger
     this.selectedCRTask = rowData;
-    menu.model[3].visible = this.selectedOption.name === 'Closed' ? false : true;
+    menu.model[3].visible = this.selectedOption === 'Closed' ? false : true;
   }
   
   onChangeSelect(event) {
+
     this.isCRInnerLoaderHidden = false;
-    if (this.selectedOption.name === 'Not Started') {
+    if (this.selectedOption === 'Not Started') {
       this.getCRClient();
     } else {
       const startDate = new Date();

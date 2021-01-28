@@ -253,7 +253,9 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.loaderenable = true;
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() {
+  
+  }
 
   // *****************************************************************************************************
   //  Switch tab on click

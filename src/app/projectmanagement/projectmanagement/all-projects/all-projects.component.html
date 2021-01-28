@@ -62,7 +62,7 @@
                 <tr>
                     <td>{{rowIndex+1}}</td>
                     <td>
-                        <a *ngIf="showNavigateSOW" href="javascript:void(0)" (click)="navigateToSOW(task)">{{task.SOWCode}}</a>
+                        <a class="error" *ngIf="showNavigateSOW" href="javascript:void(0)" (click)="navigateToSOW(task)">{{task.SOWCode}}</a>
                         <span *ngIf="!showNavigateSOW">{{task.SOWCode}}</span>
                     </td>
                     <td>{{task.ProjectCode}}</td>

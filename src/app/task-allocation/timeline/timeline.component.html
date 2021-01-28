@@ -28,7 +28,7 @@
             <button pButton pRipple type="button" icon="fa fa-search-plus" class="p-button-outlined p-button-danger p-mr-3 zoomIn" title="Zoom In" (click)="zoomIn()"></button>
             <button pButton pRipple type="button" icon="fa fa-search-minus" class="p-button-outlined p-button-danger p-mr-3 zoomOut" title="Zoom Out" (click)="zoomOut()"></button>
             <button pButton pRipple type="button" icon="pi pi-file-excel" class="p-button-outlined p-button-danger exportExcel p-mr-3" title="Export To Excel" (click)="ganttExportToExcel()"></button>
-            <p-dropdown [style]="{'width':'200px','padding': '3px'}" [options]="scales" scrollHeight="300px" [(ngModel)]="selectedScale" (onChange)="setScale(mySelect.value)" optionLabel="label"></p-dropdown>
+            <p-dropdown #mySelect [style]="{'width':'200px','padding': '3px'}" [options]="scales" scrollHeight="300px" [(ngModel)]="selectedScale" (onChange)="setScale(mySelect.value)" optionLabel="label"></p-dropdown>
 
         </div>
     </div>
@@ -172,6 +172,8 @@
                                     [(ngModel)]="rowData.budgetHours">
                                 <div class='overlayIcon p-ml-1' (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)" style="float: right;cursor: pointer;" title="Click to see allocation split" *ngIf="rowData.showAllocationSplit">
                                     <i class="fa fa-info-circle" aria-hidden="true"></i>
+                                    <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
+
                                 </div>
                             </div>
                         </td>
@@ -276,11 +278,8 @@
 
     <div [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'" [hidden]="!visualgraph || loaderenable">
         <app-gantt-chart #ganttcontainer [ganttData]='this.taskAllocateCommonService.ganttParseObject' [beforeTaskChanged]="onBeforeTaskChangedCall" [beforeTaskDrag]="onBeforeTaskDragCall" [taskClick]="onTaskClickCall" [afterTaskDrag]="onAfterTaskDragCall"></app-gantt-chart>
-
+        <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
     </div>
-
-
-    <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
 
     <input [hidden]='true' readonly [ngxTimepicker]="ganttPicker" [(ngModel)]="taskTime" [min]="minTime" [max]="maxTime" class="timePicker">
     <ngx-material-timepicker [preventOverlayClick]="true" (closed)="timeChange()" #ganttPicker (timeSet)="setTime($event)" [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">

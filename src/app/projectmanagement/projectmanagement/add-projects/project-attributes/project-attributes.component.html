@@ -281,13 +281,13 @@
 
             <div class="p-col p-grid p-p-1">
                 <div class="p-col p-grid p-p-0">
-                    <label for="comments" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Comments</label>
-                    <div class="p-col-12 p-md-8">
+                    <label for="comments" [ngClass]=" showEditSave ? 'p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3' :'p-col-12 p-m-0 p-md-2 p-mb-md-0 p-p-3'">Comments</label>
+                    <div [ngClass]="showEditSave ? 'p-col-12 p-md-8':'p-col-12 p-md-10'">
                         <textarea [rows]="2" [cols]="80" formControlName="comments" pInputTextarea></textarea>
                     </div>
                 </div>
                 <div class="p-col p-grid p-p-0" *ngIf="showEditSave">
-                    <label for="sowfile" class="p-col-12 p-m-0 p-md-10 p-mb-md-0 p-p-3">Project SOW</label>
+                    <label for="sowfile" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">Project SOW</label>
                     <div class="p-col-12 p-md-8">
                         <div class="file-upload" #fileuploderView>
                             <div class="file-select">
