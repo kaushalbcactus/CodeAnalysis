@@ -7,7 +7,7 @@ import { DatePipe } from '@angular/common';
 import { QMSConstantsService } from '../services/qmsconstants.service';
 import { QMSCommonService } from '../services/qmscommon.service';
 import { Table } from 'primeng/table';
-
+import { Router } from "@angular/router";
 @Component({
   selector: 'app-user-feedback',
   templateUrl: './user-feedback.component.html',
@@ -23,7 +23,7 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
   @Output() setAverageRating = new EventEmitter<string>();
   @Output() feedbackData = new EventEmitter<any>();
   @ViewChild('uf', { static: false }) userFeedbackTable: Table;
-
+  showOverlay: boolean = true;
   isOptionFilter: boolean;
   public hideTable = false;
   public hideLoader = true;
@@ -48,10 +48,11 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
   public displayedColumns: string[] = ['Created', 'Title', 'FeedbackType', 'Author', 'EvalutorSkill', 'AverageRating', 'Comments', 'ParameterRating', 'Value'];
   constructor(private spService: SPOperationService, private globalConstant: ConstantsService, private qmsConstant: QMSConstantsService,
     public global: GlobalService, private datepipe: DatePipe, public commonService: CommonService,
-    private qmsCommon: QMSCommonService, private cdr: ChangeDetectorRef,
+    private qmsCommon: QMSCommonService, private cdr: ChangeDetectorRef, private router: Router
   ) { }
 
   ngOnInit() {
+    this.showOverlay = this.router.url.includes('managerView') ? false : true;
     this.UFColumns = [
       { field: 'Date', header: 'Date', visibility: true, exportable: true, Type: 'datetime', dbName: 'Created', options: []  },
       { field: 'Task', header: 'Task', visibility: true, exportable: true, Type: 'string', dbName: 'Task', options: [] },

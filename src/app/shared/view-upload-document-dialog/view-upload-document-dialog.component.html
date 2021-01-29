@@ -1,5 +1,6 @@
 <!-- <p-tabView> -->
-<p-tabMenu [ngStyle]="{'padding': this.config.data === undefined ? '10px':''}" [model]="items" [activeItem]="activeItem">
+    <!-- [ngStyle]="{'padding': this.config.data === undefined ? '10px':''}"  -->
+<p-tabMenu [model]="items" [activeItem]="activeItem">
 </p-tabMenu>
 
 <div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="loaderenable">

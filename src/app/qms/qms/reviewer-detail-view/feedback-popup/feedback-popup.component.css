@@ -155,3 +155,7 @@
   float: right;
   margin-top: -4px;
 }
+
+::ng-deep .p-rating-icon, ::ng-deep .p-rating-icon:hover, ::ng-deep .p-rating .p-rating-icon.pi-star {
+  color : #C53E3E !important;
+}
