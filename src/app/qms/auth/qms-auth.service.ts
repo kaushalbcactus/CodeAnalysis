@@ -43,7 +43,7 @@ export class QmsAuthService {
   async initialize() {
     this.qmsConstant.qmsTab.list = [];
     this.qmsConstant.qmsTab.list.push(
-      { label: 'Personal Feedback', routerLink: 'personalFeedback', value: 'PersonalFeedback' }
+      { label: 'Personal Feedback', routerLink: 'personalFeedback', value: 'PersonalFeedback', command: (event) => {this.qmsConstant.mainRouter = event.item} }
     )
     let resource = [];
     let batchUrl = [];
@@ -80,13 +80,13 @@ export class QmsAuthService {
     if (!this.hideReviewerTaskPending) {
       // this.navLinks.push({ routerLink: ['/qms/pendingFeedback'], label: 'Pending Feedback', value: 'PendingFeedback' });
       this.qmsConstant.qmsTab.list.push(
-        { label: 'Pending Feedback', routerLink: 'pendingFeedback', value: 'PendingFeedback' }
+        { label: 'Pending Feedback', routerLink: 'pendingFeedback', value: 'PendingFeedback', command: (event) => {this.qmsConstant.mainRouter = event.item} }
       );
     }
 
     // this.navLinks.push({ routerLink: ['/qms/clientFeedback'], label: 'Client Feedback', value: 'clientFeedback' });
     this.qmsConstant.qmsTab.list.push(
-      { label: 'Client Feedback', routerLink: 'clientFeedback', value: 'clientFeedback' }
+      { label: 'Client Feedback', routerLink: 'clientFeedback', value: 'clientFeedback', command: (event) => {this.qmsConstant.mainRouter = event.item} }
     );
     return true;
   }
@@ -154,7 +154,7 @@ export class QmsAuthService {
     if (!this.hideManager) {
       // this.navLinks.push({ routerLink: ['/qms/managerView'], label: '', value: 'ManagerView' });
       this.qmsConstant.qmsTab.list.push(
-        { label: 'Manager View', routerLink: 'managerView', value: 'ManagerView' }
+        { label: 'Manager View', routerLink: 'managerView', value: 'ManagerView', command: (event) => {this.qmsConstant.mainRouter = event.item} }
       )
     }
   }
@@ -170,7 +170,7 @@ export class QmsAuthService {
     if (!this.hideAdmin) {
       // this.navLinks.push({ routerLink: ['/qms/adminView'], label: 'Admin View', value: 'AdminView' });
       this.qmsConstant.qmsTab.list.push(
-        { label: 'Admin View', routerLink: 'adminView', value: 'AdminView' }
+        { label: 'Admin View', routerLink: 'adminView', value: 'AdminView', command: (event) => {this.qmsConstant.mainRouter = event.item} }
       )
     }
   }

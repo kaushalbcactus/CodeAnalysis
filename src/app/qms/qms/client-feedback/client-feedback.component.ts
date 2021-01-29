@@ -1,19 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-
+import { Component, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
+import { MenuItem } from "primeng/api";
 @Component({
-  selector: 'app-client-feedback',
-  templateUrl: './client-feedback.component.html',
-  styleUrls: ['./client-feedback.component.css']
+  selector: "app-client-feedback",
+  templateUrl: "./client-feedback.component.html",
+  styleUrls: ["./client-feedback.component.css"],
 })
 export class ClientFeedbackComponent implements OnInit {
-  public navLinks = [  {routerLink: ['/qms/clientFeedback/clientDissatisfaction'], label: 'Dissatisfaction'},
-                       {routerLink: ['/qms/clientFeedback/cfpositiveFeedback'], label: 'Positive'},
-                    ];
+  internalRouter: MenuItem;
+  public navLinks = [
+    { routerLink: "clientDissatisfaction", label: "Dissatisfaction" , command: (event) => {this.internalRouter = event.item} },
+    { routerLink: "cfpositiveFeedback", label: "Positive" , command: (event) => {this.internalRouter = event.item}},
+  ];
   // Initialize tab value
-  public selectedTab = 'externalFeedback';
-  constructor() { }
+  constructor(private router: Router) {}
 
   ngOnInit() {
+    this.internalRouter = this.navLinks.find((c) =>
+      this.router.url.includes(c.routerLink)
+    )
+      ? this.navLinks.find((c) => this.router.url.includes(c.routerLink))
+      : this.navLinks[0];
   }
-
 }

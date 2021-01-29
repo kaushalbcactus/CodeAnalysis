@@ -18,7 +18,8 @@
     </div>
   </div>
 </div>
-<div class="searchText"></div>
+
+<div class="clear"></div>
 <div id="adminContent">
   <!-- Success or Alert message placeholder-->
   <!-- <ngb-alert *ngIf="successMessage" type="success" (close)="successMessage = null">{{ successMessage }}</ngb-alert>
@@ -121,10 +122,11 @@
   ></app-feedback-popup> -->
 </div>
 
-<div class="tableLoader" [hidden]="hideLoader">
-  <div id="mainLoader"></div>
-  <div id="mainLoaderText">Loading...</div>
+<div class="p-d-flex p-flex-column" style="padding:5vw;" *ngIf="!hideLoader">
+  <div id="modalInnerLoader"></div>
+  <div id="modalInnerLoaderText">Loading...</div>
 </div>
+
 
 <!-- <p-tabMenu [model]="navLinks" class="innerTab personalTabs">
   <ng-template pTemplate="link" let-link let-i="index">

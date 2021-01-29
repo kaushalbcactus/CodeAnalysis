@@ -678,7 +678,7 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     height: 38px !important;
 }
 
-.dailyAllocationOverlayComp .p-overlaypanel {
+.dailyAllocationOverlayComp .p-overlaypanel, .ratingOverlayComp .p-overlaypanel {
     top: inherit !important;
     right: 8vw !important;
     left: inherit !important;

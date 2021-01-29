@@ -1,5 +1,5 @@
-<p-overlayPanel class="ratingOverlayComp" #op2 [dismissable]="true" [showCloseIcon]="true">
-  <p-table #viewRating class="overlayTable" [columns]="cols" [value]="ratings" [style]="{width: '300px'}" [paginator]="true" [rows]="5" >
+<p-overlayPanel [style]="{'width':'500px'}" class="ratingOverlayComp" #op2 [dismissable]="true" [showCloseIcon]="true">
+  <p-table #viewRating class="overlayTable" [columns]="cols" [value]="ratings" [style]="{'font-size':'13px'}" [paginator]="true" [rows]="3" >
       <ng-template pTemplate="header">
           <tr>
             <th width="80%">

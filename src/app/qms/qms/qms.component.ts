@@ -23,7 +23,7 @@ export class QMSComponent implements OnInit {
       this.globalService.currentTitle = "QMS";
     }, 100);
 
-    this.activeItem = this.qmsConstantsService.qmsTab.list.find(c=>  this.router.url.includes(c.routerLink))
+    this.qmsConstantsService.mainRouter = this.qmsConstantsService.qmsTab.list.find(c=>  this.router.url.includes(c.routerLink))
       ?this.qmsConstantsService.qmsTab.list.find(c=>  this.router.url.includes(c.routerLink))
       : this.qmsConstantsService.qmsTab.list[0];
 
@@ -31,13 +31,13 @@ export class QMSComponent implements OnInit {
   }
 
    onActivate() {
-    console.log(this.activeItem)
-    setTimeout(() => {
-    this.activeItem = this.qmsConstantsService.qmsTab.list.find(c=>  this.router.url.includes(c.routerLink))
-      ?this.qmsConstantsService.qmsTab.list.find(c=>  this.router.url.includes(c.routerLink))
-      : this.qmsConstantsService.qmsTab.list[0];
+    // console.log(this.activeItem)
+    // setTimeout(() => {
+    // this.activeItem = this.qmsConstantsService.qmsTab.list.find(c=>  this.router.url.includes(c.routerLink))
+    //   ?this.qmsConstantsService.qmsTab.list.find(c=>  this.router.url.includes(c.routerLink))
+    //   : this.qmsConstantsService.qmsTab.list[0];
 
-      console.log(this.activeItem)
-    }, 100);
+    //   console.log(this.activeItem)
+    // }, 100);
   }
 }
