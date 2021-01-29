@@ -4,9 +4,15 @@
 <div class="p-col p-grid p-justify-between mainPage unallocated-allocated-dropdown">
     <p-dropdown [options]="DropdownOptions" class="mainfilter" [(ngModel)]="selectedTab" (onChange)="getProperties()"></p-dropdown>
 
-    <button mat-raised-button type="button" [disabled]="disableSave" (click)="saveTasks(taskTable)">
-    <mat-icon>save</mat-icon> Save
-</button>
+    <div class="p-col p-col p-grid p-jc-end">
+        <div class="p-mr-3">
+            <span class="p-input-icon-left p-ml-auto">
+                <i class="pi pi-search"></i>
+                <input pInputText type="text" (input)="taskTable.filterGlobal($event.target.value, 'contains')" placeholder="Global Filter" />
+            </span>
+        </div>
+        <button pButton pRipple type="button" icon="pi pi-save" [disabled]="disableSave" (click)="saveTasks(taskTable)" label="save" class="p-button-raised p-button-danger"></button>
+    </div>
 </div>
 
 <div class="p-dir-col p-align-center" style="padding-top: 10vw;" [hidden]="!loaderenable">
@@ -18,14 +24,14 @@
     <p-table #taskTable class="slotTable" dataKey="Id" [columns]="displayedColumns" [value]="caGlobal.dataSource" sortMode="multiple" [lazy]="true" (onLazyLoad)="lazyLoadTask($event)" [paginator]="true" [rows]="10" [totalRecords]="caGlobal.totalRecords" rowExpandMode="multiple"
         [loading]="caGlobal.loading" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)" [lazyLoadOnInit]="false" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
         [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" [stateKey]="selectedTab" [globalFilterFields]="filterColumns">
-        <ng-template pTemplate="caption">
+        <!-- <ng-template pTemplate="caption">
             <div class="p-d-flex">
                 <span class="p-input-icon-left p-ml-auto">
                     <i class="pi pi-search"></i>
                     <input pInputText type="text" (input)="taskTable.filterGlobal($event.target.value, 'contains')" placeholder="Global Filter" />
                 </span>
             </div>
-        </ng-template>
+        </ng-template> -->
         <ng-template pTemplate="header" let-columns>
             <tr class="slotTableTr">
                 <th class="firstColumnWidth"></th>
