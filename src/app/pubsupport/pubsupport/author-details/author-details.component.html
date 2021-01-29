@@ -41,7 +41,7 @@
                 <b>No Data available.</b>
             </p>
             <p-table [value]="authorsFiles" *ngIf="authorsFiles.length" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="InactiveProjects">
+            [style]="{'font-size':'13px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="InactiveProjects">
                 <ng-template pTemplate="header">
                     <tr>
                         <th>Project Name</th>

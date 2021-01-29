@@ -106,7 +106,7 @@
 <div *ngIf="pmObject.isProjectRightSideVisible" class="ng-right-side-overlay">
     <p-sidebar [(visible)]="pmObject.isProjectRightSideVisible" position="right" [baseZIndex]="10000" [style]="{width:'28em'}">
         <p-scrollPanel [style]="{'width': '100%', 'height': '95vh'}">
-            <p-table [value]="projectViewDataArray" [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-sm p-datatable-gridlines">
+            <p-table [value]="projectViewDataArray" [style]="{'font-size':'13px'}" styleClass="p-datatable-cactus p-datatable-sm p-datatable-gridlines">
                 <ng-template pTemplate="header">
                     <tr>
                         <th>Name</th>
@@ -416,7 +416,7 @@
     </div>
 
     <p-table #dt2 *ngIf="!expensedataloaderEnable" [columns]="ExpenseCols" [value]="projectExpenses" [paginator]="true" [rows]="10" (sortFunction)="customSort($event)" [customSort]="true" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-        [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines">
+        [style]="{'font-size':'13px'}" styleClass="p-datatable-cactus p-datatable-gridlines">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th style="width: 4em;">S.No</th>
