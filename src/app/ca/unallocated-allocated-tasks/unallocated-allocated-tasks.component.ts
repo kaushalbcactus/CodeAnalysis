@@ -316,9 +316,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
   getAllocateTaskScope(task, Slot) {
+    debugger;
     this.tempSlot = Slot;
     this.displayCommentenable = true;
-    this.taskTitle = task.Title;
+    this.taskTitle = task.Title ? task.Title : task.ProjectCode +' ' + task.Milestone +' '+ task.TaskName;
     this.taskType = task.Type && task.Type === 'Slot' ? task.Type : 'Task';
 
     this.caGlobal.taskScope = task.TaskScope ? task.TaskScope : '';

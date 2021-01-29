@@ -148,20 +148,25 @@
 
                                     <span [title]="rowData.UserStart |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode  || (rowData.editMode && (rowData.Status ==='Completed' || rowData.Status ==='In Progress'))">{{rowData.UserStart |  date:' d MMM, y, h:mm a' }}</span>
                                     <span *ngIf="rowData.editMode && (rowData.Status === 'Not Saved' || rowData.Status === 'Not Started')" style="display: flex;">
-                                        <p-calendar id="calenderIcon" [(ngModel)]="rowData.UserStartDatePart"
+                                        <p-calendar class="p-col" id="calenderIcon" [(ngModel)]="rowData.UserStartDatePart"
                                             [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
                                             yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
                                             [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true"
                                             [yearNavigator]="true" (onClose)="DateChangePart(rowData,Slot,'start')" appendTo="body"
                                             [inputStyle]="{'width': '75%', 'min-width': '75%','padding':'0px'}">
                                         </p-calendar>
-                                        <input  readonly [ngxTimepicker]="picker"
-                                            [(ngModel)]="rowData.UserStartTimePart" class="p-ml-1 timePicker">
-                                        <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
+
+                                        <span class="p-col p-grid p-input-icon-right">
+                                            <i class="pi pi-clock"  style="padding: 4px 8px;color: #c53e3e;"></i>
+                                            <input #inputDate pInputText  readonly [ngxTimepicker]="picker"
+                                          
+                                            [(ngModel)]="rowData.UserStartTimePart" class="timePicker p-col-12 p-mt-2">
+                                       
                                         <ngx-material-timepicker [preventOverlayClick]="true"
-                                            (closed)="DateChangePart(rowData,Slot,'start')" #picker
+                                        (closed)="DateChangePart(rowData,Slot,'start')" #picker
                                             [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
                                         </ngx-material-timepicker>
+                                        </span>
                                     </span>
 
                                 </td>
@@ -171,21 +176,25 @@
                                     <span [title]="rowData.UserEnd |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode  || (rowData.editMode && rowData.Status ==='Completed')">{{rowData.UserEnd |  date:' d MMM, y, h:mm a' }}</span>
                                     <span *ngIf="rowData.editMode && rowData.Status !=='Completed'" style="display: flex;">
 
-                                        <p-calendar id="calenderIcon" [(ngModel)]="rowData.UserEndDatePart"
+                                        <p-calendar class="p-col" id="calenderIcon" [(ngModel)]="rowData.UserEndDatePart"
                                             [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
                                             yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
                                             [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true"
                                             [yearNavigator]="true" (onClose)="DateChangePart(rowData,Slot,'end')" appendTo="body"
                                             [inputStyle]="{'width': '75%', 'min-width': '75%','padding':'0px'}">
                                         </p-calendar>
-                                        <input #inputDate  readonly [ngxTimepicker]="picker"
+
+                                        <span class="p-col p-grid p-input-icon-right">
+                                            <i class="pi pi-clock"  style="padding: 4px 8px;color: #c53e3e;"></i>
+                                            <input #inputDate pInputText  readonly [ngxTimepicker]="picker"
                                             [min]="rowData.UserStartDatePart === rowData.UserEndDatePart ? rowData.UserStartTimePart :'12:00 am'"
-                                            [(ngModel)]="rowData.UserEndTimePart" class="p-ml-1  timePicker">
-                                        <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
+                                            [(ngModel)]="rowData.UserEndTimePart" class="timePicker p-col-12 p-mt-2">
+                                       
                                         <ngx-material-timepicker [preventOverlayClick]="true"
-                                            (closed)="DateChangePart(rowData,Slot,'start')" #picker
+                                        (closed)="DateChangePart(rowData,Slot,'start')" #picker
                                             [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
                                         </ngx-material-timepicker>
+                                        </span>
                                     </span>
                                 </td>
                                 <!-- Budget Hrs -->
