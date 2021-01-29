@@ -29,57 +29,22 @@
     <!-- <i class="pi pi-info-circle p-my-2 p-mr-2" (click)="op2.show($event)" style="font-size:1.5em;cursor: pointer;"></i> -->
     <button pButton pRipple type="button" (click)="op2.show($event)" icon="pi pi-info" class="p-button-outlined p-button-danger p-mr-2"></button>
 
-    <p-overlayPanel appendTo="body" #op2 [dismissable]="true" [style]="{'padding':'0em 0em 1em 1em'}">
-        <span style="font-size:1.5em;font-weight: 500;color:#C53E3E">Task : </span>
-        <div>
-            <div class="input-color">
-                <label>Planned</label>
-                <div class="color-box" style="background-color: #FFD34E;"></div>
-            </div>
-            <div class="input-color">
-                <label>Not Started</label>
-                <div class="color-box" style="background-color: #5F6273;"></div>
-            </div>
-            <div class="input-color">
-                <label>In Progress</label>
-                <div class="color-box" style="background-color: #6EDC6C;"></div>
-            </div>
-            <div class="input-color">
-                <label>Completed</label>
-                <div class="color-box" style="background-color: #3498DB;"></div>
-            </div>
-            <div class="input-color">
-                <label>Auto Closed</label>
-                <div class="color-box" style="background-color: #8183CC;"></div>
-            </div>
-            <div class="input-color">
-                <label>On Hold</label>
-                <div class="color-box" style="background-color: #FF3E56;"></div>
+    <p-overlayPanel appendTo="body" #op2 [dismissable]="true">
+
+        <h5 class="p-mx-4 error">Task : </h5>
+        <div class="p-col p-grid p-mx-2">
+            <div *ngFor="let taskType of TasksTypeArrayCode" class="p-field-checkbox">
+                <div class="p-ml-2" [style]="{'background-color': taskType.ColorIndicator, 'width': '1.2rem','height': '1.2rem', 'border-radius':'2px'}"></div>
+                <label class="p-m-2" [for]="taskType.key">{{taskType.name}}</label>
             </div>
         </div>
-        <span style="font-size:1.5em;font-weight: 500;color:#C53E3E">Adhoc : </span>
-        <div>
-            <div class="input-color">
-                <label>Leave</label>
-                <div class="color-box" style="background-color: #D6CFC7;"></div>
-            </div>
-            <div class="input-color">
-                <label>Client Meeting / Training</label>
-                <div class="color-box" style="background-color: 	 #ff8566;"></div>
-            </div>
-            <div class="input-color">
-                <label>Internal Meeting</label>
-                <div class="color-box" style="background-color: #795C32;"></div>
-            </div>
-            <div class="input-color">
-                <label>Training</label>
-                <div class="color-box" style="background-color: rgb(68, 92, 173);"></div>
-            </div>
-            <div class="input-color">
-                <label>Admin</label>
-                <div class="color-box" style="background-color: rgb(235, 89, 45);"></div>
-            </div>
 
+        <h5 class="error p-mx-4 ">Adhoc : </h5>
+        <div class="p-col p-grid p-mx-2">
+            <div *ngFor="let taskType of AdhocTaskArrayCode" class="p-field-checkbox">
+                <div class="p-ml-2" [style]="{'background-color': taskType.ColorIndicator, 'width': '1.2rem','height': '1.2rem', 'border-radius':'2px'}"></div>
+                <label class="p-m-2" [for]="taskType.key">{{taskType.name}}</label>
+            </div>
         </div>
     </p-overlayPanel>
 
@@ -105,7 +70,7 @@
 //  dialog to to display data
 ************************************************************************************************** -->
 
-<p-dialog *ngIf="taskdisplay" header="{{taskName}}" [contentStyle]="{'max-height':'90vh'}" [style]="{'width':task.Task === 'Adhoc' ? '80vw': '100vw'}" [positionTop]="task.Task === 'Adhoc' ? '': '0'" [modal]="true" [draggable]="false" appendTo='body' [closable]="false"
+<p-dialog *ngIf="taskdisplay" header="{{taskName}}" [contentStyle]="{'max-height':'90%'}" [style]="{'width':task.Task === 'Adhoc' ? '80vw': '100vw'}" [positionTop]="task.Task === 'Adhoc' ? '': '0'" [modal]="true" [draggable]="false" appendTo='body' [closable]="false"
     [(visible)]="taskdisplay">
 
     <div class="p-col-12 p-grid p-jc-end pdialogButton">
@@ -156,189 +121,182 @@
 ************************************************************************************************** -->
 
 
-    <mat-accordion *ngIf="task.Task !== 'Adhoc'">
+    <p-accordion class="p-mt-2" *ngIf="task.Task !== 'Adhoc'" (onOpen)="setStep($event.index)">
+
+
         <!--****************************************************************************************** 
         //  dialog to display task properties
         ****************************************************************************************** -->
 
-        <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)">
-            <mat-expansion-panel-header>
-                <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
-                    <mat-icon>event_note</mat-icon>&nbsp;&nbsp; Task Properties
-                </mat-panel-title>
-                <ng-template matExpansionPanelContent>
 
-                    <div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
-                        <div id="modalInnerLoader"></div>
-                        <div id="modalInnerLoaderText">Loading...</div>
-                    </div>
-                    <table [hidden]="modalloaderenable" style="width:100%;margin:10px 0px 0px 0px;">
-                        <tr>
-                            <th>Project Name:</th>
-                            <td>{{task.ProjectName}}</td>
-                            <th rowspan="2">Assigned To:</th>
-                            <td rowspan="2">{{task.AssignedTo.Title}}</td>
-                        </tr>
-                        <tr>
-                            <th>Project Scope:</th>
-                            <td><a style="cursor: pointer;color: #b11e1e;" (click)="goToProjectScope(task)"> {{task.ProjectCode}}_Scope.docx </a> </td>
-                        </tr>
-                        <tr>
-                            <th>Start Date:</th>
-                            <td>
-                                <span *ngIf="task.projectType ===constants.PROJECTTYPES.FTE && SelectedStatus === constants.STATUS.NOT_STARTED && task.StartTime;else isStartConstant">
-                                    <p-calendar [(ngModel)]="task.StartDate" appendTo="body" dateFormat="M dd, yy" (onClose)="onCloseStartDate()" [disabledDays]="[0,6]" [yearNavigator]="true" yearRange="{{yearRangePastNext}}" placeholder="Select Start Date">
-                                    </p-calendar>
-                                    <input style="color: #333333; background: #ffffff;  padding: 0.429em;margin: 0px 8px 0px 10px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultStartTime" [(ngModel)]="task.StartTime" [format]="12"
-                                        readonly>
-    
-                                    <ngx-material-timepicker #defaultStartTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(task.StartTime, 'startTime')" [ngxMaterialTimepickerTheme]="darkTheme">
-                                    </ngx-material-timepicker>
-                                    </span>
+        <p-accordionTab [selected]="step === 0">
+            <ng-template pTemplate="header">
+                <div class="p-col p-grid p-mt-0 p-p-0">
+                    <h5 class="p-col p-px-2 p-pb-0 p-pt-1 p-m-0"><i class="pi pi-book p-mr-1" style="font-weight: bold;"></i>Task Properties</h5>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="modalloaderenable">
+                    <div id="modalInnerLoader"></div>
+                    <div id="modalInnerLoaderText">Loading...</div>
+                </div>
 
-                                <ng-template #isStartConstant>
-                                    {{task.StartDate | date :'medium'}}
-                                </ng-template>
-                            </td>
-                            <th>End Date:</th>
-                            <td>
-                                <span *ngIf="task.projectType ===constants.PROJECTTYPES.FTE && SelectedStatus !==constants.STATUS.NOT_CONFIRMED  && task.DueTime;else isEndConstant">
-    <p-calendar [style]="{'border': '1px solid !important'}" placeholder="Select Due Date" (onClose)="onCloseDueDate()" [minDate]="task.StartDate" [(ngModel)]="task.DueDateDT" [disabledDays]="[0,6]" dateFormat="M dd, yy" appendTo="body" [monthNavigator]="true"
-    [yearNavigator]="true" yearRange="{{yearRangePastNext}}">
+                <table *ngIf="!modalloaderenable" class="p-col-12 p-datatable-cactus p-datatable-gridlines">
+                    <tr>
+                        <th>Project Name:</th>
+                        <td>{{task.ProjectName}}</td>
+                        <th rowspan="2">Assigned To:</th>
+                        <td rowspan="2">{{task.AssignedTo.Title}}</td>
+                    </tr>
+                    <tr>
+                        <th>Project Scope:</th>
+                        <td><a style="cursor: pointer;color: #b11e1e;" (click)="goToProjectScope(task)"> {{task.ProjectCode}}_Scope.docx </a> </td>
+                    </tr>
+                    <tr>
+                        <th>Start Date:</th>
+                        <td>
+                            <span *ngIf="task.projectType ===constants.PROJECTTYPES.FTE && SelectedStatus === constants.STATUS.NOT_STARTED && task.StartTime;else isStartConstant">
+                            <p-calendar [(ngModel)]="task.StartDate" appendTo="body" dateFormat="M dd, yy" (onClose)="onCloseStartDate()" [disabledDays]="[0,6]" [yearNavigator]="true" yearRange="{{yearRangePastNext}}" placeholder="Select Start Date">
+                            </p-calendar>
+                            <input style="color: #333333; background: #ffffff;  padding: 0.429em;margin: 0px 8px 0px 10px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultStartTime" [(ngModel)]="task.StartTime" [format]="12"
+                                readonly>
+
+                            <ngx-material-timepicker #defaultStartTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(task.StartTime, 'startTime')" [ngxMaterialTimepickerTheme]="darkTheme">
+                            </ngx-material-timepicker>
+                            </span>
+
+                            <ng-template #isStartConstant>
+                                {{task.StartDate | date :'medium'}}
+                            </ng-template>
+                        </td>
+                        <th>End Date:</th>
+                        <td>
+                            <span *ngIf="task.projectType ===constants.PROJECTTYPES.FTE && SelectedStatus !==constants.STATUS.NOT_CONFIRMED  && task.DueTime;else isEndConstant">
+<p-calendar [style]="{'border': '1px solid !important'}" placeholder="Select Due Date" (onClose)="onCloseDueDate()" [minDate]="task.StartDate" [(ngModel)]="task.DueDateDT" [disabledDays]="[0,6]" dateFormat="M dd, yy" appendTo="body" [monthNavigator]="true"
+[yearNavigator]="true" yearRange="{{yearRangePastNext}}">
 </p-calendar>
 <input style="color: #333333; background: #ffffff;  padding: 0.429em;margin: 0px 8px 0px 10px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultEndTime" [(ngModel)]="task.DueTime" [format]="12"
-    readonly>
+readonly>
 <ngx-material-timepicker #defaultEndTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(task.DueTime, 'dueTime')" [ngxMaterialTimepickerTheme]="darkTheme">
 </ngx-material-timepicker>
 </span>
 
-                                <ng-template #isEndConstant>
-                                    {{task.DueDateDT | date :'medium'}}
-                                </ng-template>
+                            <ng-template #isEndConstant>
+                                {{task.DueDateDT | date :'medium'}}
+                            </ng-template>
 
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Milestone:</th>
-                            <td>{{task.Milestone}}</td>
-                            <th>Task / Scope / Allocated Time:</th>
-                            <td>{{task.Task}} / <span *ngIf="task.Comments">[{{task.Comments}}] /</span> {{task.ExpectedTime}}
-
-                                <app-allocation-overlay appendTo="body" #dailyAllocateOP></app-allocation-overlay>
-                                <span appendTo="body" class='overlayIcon' (click)="this.showOverlayPanel($event, task, dailyAllocateOP)" style="cursor: pointer;" title="Click to see allocation split" *ngIf="task.showAllocationSplit">
-                                    <i   appendTo="body" class="fa fa-info-circle" aria-hidden="true"></i>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Milestone:</th>
+                        <td>{{task.Milestone}}</td>
+                        <th>Task / Scope / Allocated Time:</th>
+                        <td>
+                            <div class="p-col p-grid">
+                                <span class="p-col p-grid p-ai-center">
+                                {{task.Task}} / <span *ngIf="task.Comments">[{{task.Comments}}] /</span> {{task.ExpectedTime}}
                                 </span>
-
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Status:</th>
-                            <td>
-
-                                <span *ngIf="task.Status !== 'Not Started' && task.Status !== 'In Progress'">
-                                    {{task.Status}} </span>
-                                <p-dropdown [hidden]="task.Status !== 'Not Started' && task.Status !== 'In Progress'" [options]="statusOptions" [(ngModel)]="SelectedStatus" appendTo="body" class="p-fluid"></p-dropdown>
-
-                            </td>
-                            <th>Time Spent:</th>
-                            <td>{{task.TimeSpent}} Hours</td>
-                        </tr>
-                        <tr>
-                            <th>Previous Tasks:</th>
-                            <td>
-                                <div *ngFor="let task of tasks">
-                                    <span *ngIf="task.TaskType === 'Previous Task'">
-                                        {{task.Title}}
-                                        <span *ngIf="task.SubMilestones && task.SubMilestones !=='Default'">
-                                            - {{task.SubMilestones}}
-                                        </span> ({{task.AssignedTo.Title}} - {{task.Status}})
-                                    </span>
-                                </div>
-                            </td>
-                            <th>Next Tasks:</th>
-                            <td>
-                                <div *ngFor="let task of tasks">
-                                    <span *ngIf="task.TaskType === 'Next Task'">
-                                        {{task.Title}}
-                                        <span *ngIf="task.SubMilestones && task.SubMilestones !=='Default' ">
-                                            - {{task.SubMilestones}}
-                                        </span> ({{task.AssignedTo.Title}} - {{task.Status}})
-                                    </span>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </ng-template>
-            </mat-expansion-panel-header>
+                                <span class='p-col overlayIcon' appendTo="body" (click)="showOverlayPanel($event, task, dailyAllocateOP)" style="cursor: pointer;" title="Click to see allocation split">
+                                    <i [hidden]="hideIcon" style="font-size: 17px;" class="fa fa-info-circle" aria-hidden="true"></i>
+                                    <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
+                                </span>
+                            </div>
 
 
-        </mat-expansion-panel>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Status:</th>
+                        <td>
 
+                            <span *ngIf="task.Status !== 'Not Started' && task.Status !== 'In Progress'">
+                            {{task.Status}} </span>
+                            <p-dropdown [hidden]="task.Status !== 'Not Started' && task.Status !== 'In Progress'" [options]="statusOptions" [(ngModel)]="SelectedStatus" appendTo="body" class="p-fluid"></p-dropdown>
+
+                        </td>
+                        <th>Time Spent:</th>
+                        <td>{{task.TimeSpent}} Hours</td>
+                    </tr>
+                    <tr>
+                        <th>Previous Tasks:</th>
+                        <td>
+                            <div *ngFor="let task of tasks">
+                                <span *ngIf="task.TaskType === 'Previous Task'">
+                                {{task.Title}}
+                                <span *ngIf="task.SubMilestones && task.SubMilestones !=='Default'">
+                                    - {{task.SubMilestones}}
+                                </span> ({{task.AssignedTo.Title}} - {{task.Status}})
+                                </span>
+                            </div>
+                        </td>
+                        <th>Next Tasks:</th>
+                        <td>
+                            <div *ngFor="let task of tasks">
+                                <span *ngIf="task.TaskType === 'Next Task'">
+                                {{task.Title}}
+                                <span *ngIf="task.SubMilestones && task.SubMilestones !=='Default' ">
+                                    - {{task.SubMilestones}}
+                                </span> ({{task.AssignedTo.Title}} - {{task.Status}})
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </ng-template>
+        </p-accordionTab>
         <!--****************************************************************************************** 
         //  dialog to display Time spent
         ****************************************************************************************** -->
 
-        <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)">
-            <mat-expansion-panel-header>
-                <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
-                    <mat-icon>timer</mat-icon>&nbsp;&nbsp; Time Spent
-                </mat-panel-title>
+        <p-accordionTab [selected]="step === 1">
+            <ng-template pTemplate="header">
+                <div class="p-col p-grid p-mt-0 p-p-0">
+                    <h5 class="p-col p-px-2 p-pb-0 p-pt-1 p-m-0"><i class="pi pi-clock p-mr-1" style="font-weight: bold;"></i>Time Spent</h5>
 
-                <ng-template matExpansionPanelContent>
-                    <app-time-spent-dialog [taskData]="task"></app-time-spent-dialog>
-                </ng-template>
-
-            </mat-expansion-panel-header>
-
-
-        </mat-expansion-panel>
-
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <app-time-spent-dialog [taskData]="task"></app-time-spent-dialog>
+            </ng-template>
+        </p-accordionTab>
         <!--****************************************************************************************** 
         //  dialog to add /view comment
         ****************************************************************************************** -->
 
-        <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)">
-            <mat-expansion-panel-header>
-                <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
-                    <mat-icon>comment</mat-icon> &nbsp;&nbsp; View / Add Comments
-                </mat-panel-title>
+        <p-accordionTab [selected]="step === 2">
+            <ng-template pTemplate="header">
+                <div class="p-col p-grid p-mt-0 p-p-0">
+                    <h5 class="p-col p-px-2 p-pb-0 p-pt-1 p-m-0"><i class="pi pi-comments p-mr-1" style="font-weight: bold;"></i>View / Add Comments</h5>
 
-                <ng-template matExpansionPanelContent>
-                    <app-add-edit-comment-dialog [taskData]="task"></app-add-edit-comment-dialog>
-                </ng-template>
-
-            </mat-expansion-panel-header>
-
-
-        </mat-expansion-panel>
-
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <app-add-edit-comment-dialog [taskData]="task"></app-add-edit-comment-dialog>
+            </ng-template>
+        </p-accordionTab>
         <!--****************************************************************************************** 
         //  dialog to add /view Document
         ****************************************************************************************** -->
 
-        <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)">
-            <mat-expansion-panel-header>
-                <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
-                    <mat-icon>folder</mat-icon> &nbsp;&nbsp; View / Add Documents
-                </mat-panel-title>
+        <p-accordionTab [selected]="step === 3">
+            <ng-template pTemplate="header">
+                <div class="p-col p-grid p-mt-0 p-p-0">
+                    <h5 class="p-col p-px-2 p-pb-0 p-pt-1 p-m-0"><i class="pi pi-folder p-mr-1" style="font-weight: bold;"></i>View / Add Documents</h5>
 
-            </mat-expansion-panel-header>
-            <ng-template matExpansionPanelContent>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content">
                 <app-view-upload-document-dialog [taskData]="task"></app-view-upload-document-dialog>
             </ng-template>
-
-        </mat-expansion-panel>
-    </mat-accordion>
-
-
+        </p-accordionTab>
+    </p-accordion>
     <!--**************************************************************************************************
 //  footer button for adhoc task
 ************************************************************************************************** -->
-    <p-footer *ngIf="task.Task === 'Adhoc'">
-        <!-- <button type="button" pButton icon="fa fa-trash" (click)="MarkAsDelete(); taskdisplay=false" label="Delete" style=" background-color: #C53E3E !important;
-        border:1px solid #C53E3E;"></button> -->
+    <!-- <p-footer *ngIf="task.Task === 'Adhoc'">
+
         <button type="button" pButton icon="pi pi-times" (click)="taskdisplay=false" label="Close" class="ui-button-secondary"></button>
-    </p-footer>
+    </p-footer> -->
 </p-dialog>
 
 

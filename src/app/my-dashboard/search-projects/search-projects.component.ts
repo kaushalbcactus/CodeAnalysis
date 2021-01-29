@@ -373,7 +373,6 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.response.push(prjResInfo);
     this.response.push(prjResReponse);
     this.ProjectDetails.cmLevel1 = this.response[1][0].CMLevel1;
-
     this.projectResource.CMMembers = this.response[1].map(c => c).map(c => c.CMLevel1)[0].results ?
       this.response[1].map(c => c).map(c => c.CMLevel1).map(c => c.results)[0].map(c => c.Title).join(', ') + ', '
       + this.response[1][0].CMLevel2.Title : this.response[1][0].CMLevel2.Title;

@@ -4,13 +4,14 @@
     color: #ffffff !important;
 }
 
-::ng-deep .p-overlaypanel:after,
+
+/* ::ng-deep .p-overlaypanel:after,
 ::ng-deep .p-overlaypanel:before {
     margin-left: -21px !important;
-}
+} */
 
 ::ng-deep .p-dropdown-items-wrapper {
-    overflow: hidden;
+    overflow: hidden !important;
 }
 
 :host ::ng-deep #CalendarInnerLoader {
@@ -61,11 +62,12 @@
     padding: 0px !important;
 }
 
- ::ng-deep .timeLineButton {
+
+/* ::ng-deep .timeLineButton {
     position: fixed !important;
     width: 100% !important;
     margin: -50px !important;
-}
+} */
 
 @media (min-width: 1400px) {
      :host ::ng-deep .p-menu {
@@ -133,49 +135,37 @@
     text-decoration: none !important;
 } */
 
-::ng-deep .ui-accordion-header-text {
-    text-decoration: none !important;
-}
 
-::ng-deep .ui-dialog-title {
+/* ::ng-deep .ui-accordion-header-text {
+    text-decoration: none !important;
+} */
+
+
+/* ::ng-deep .ui-dialog-title {
     font-size: 1em !important;
     color: #C53E3E !important;
-}
+} */
 
-::ng-deep .mat-expansion-panel-header {
+
+/* ::ng-deep .mat-expansion-panel-header {
     height: 40px !important;
     background-color: #cdcdcd !important;
     border-bottom-right-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
     font-size: 1em !important;
     font-weight: 500 !important;
-}
+} */
 
-.mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]).cdk-keyboard-focused,
+
+/* .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]).cdk-keyboard-focused,
 .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]).cdk-program-focused,
 .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]):hover {
     background-color: #ededed !important;
-}
+} */
 
-table,
-th,
-td {
-    border: 1px solid black !important;
-    border-collapse: collapse !important;
-}
 
-th,
-td {
-    padding: 5px !important;
-    text-align: left !important;
-    font-size: 1.1em !important;
-}
+/* 
 
-th {
-    color: #C53E3E !important;
-    font-weight: 500 !important;
-    width: 12vw !important;
-}
 
 .input-color {
     position: relative !important;
@@ -196,6 +186,26 @@ th {
 
  ::ng-deep .ui-state-highlight {
     background-color: #C53E3E !important;
+} */
+
+table,
+th,
+td {
+    border: 1px solid black !important;
+    border-collapse: collapse !important;
+}
+
+th,
+td {
+    padding: 5px !important;
+    text-align: left !important;
+    font-size: 1.1em !important;
+}
+
+th {
+    color: #C53E3E !important;
+    font-weight: 500 !important;
+    width: 12vw !important;
 }
 
 ::ng-deep .popper,
@@ -316,16 +326,10 @@ th {
     cursor: pointer !important;
 }
 
-.overlayIcon {
-    /* float: right !important; */
-    margin-left: 20px !important;
-    font-size: 0.75em !important;
-    margin-top: 1px !important;
-}
 
-::ng-deep .timeline-dropdown>.p-dropdown>.p-dropdown-label {
+/* ::ng-deep .timeline-dropdown>.p-dropdown>.p-dropdown-label {
     padding: 6px !important;
-}
+} */
 
 ::ng-deep .fc .fc-toolbar .fc-button.fc-dayGridMonth-button.fc-button-active,
  ::ng-deep .fc .fc-toolbar .fc-button.fc-timeGridWeek-button.fc-button-active,
