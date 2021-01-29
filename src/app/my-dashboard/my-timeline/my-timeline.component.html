@@ -25,8 +25,10 @@
 
 
 
-<div class="dropdowninfo" style=" position: absolute !important; right:310px;">
-    <i class="pi pi-info-circle" (click)="op2.show($event)" style="font-size:1.5em;cursor: pointer; vertical-align: middle;padding-right: 5px;"></i>
+<div class="p-col p-grid p-mr-2 p-ai-center dropdowninfo" style=" position: absolute !important; right:250px;">
+    <!-- <i class="pi pi-info-circle p-my-2 p-mr-2" (click)="op2.show($event)" style="font-size:1.5em;cursor: pointer;"></i> -->
+    <button pButton pRipple type="button" (click)="op2.show($event)" icon="pi pi-info" class="p-button-outlined p-button-danger p-mr-2"></button>
+
     <p-overlayPanel appendTo="body" #op2 [dismissable]="true" [style]="{'padding':'0em 0em 1em 1em'}">
         <span style="font-size:1.5em;font-weight: 500;color:#C53E3E">Task : </span>
         <div>
@@ -81,7 +83,7 @@
         </div>
     </p-overlayPanel>
 
-    <p-dropdown [style]="{'min-width':'10.5em'}" appendTo="body" [options]="taskTypes" (onChange)="onTaskTypeChange()" [(ngModel)]="selectedType" optionLabel="name" class="timeline-dropdown"></p-dropdown>
+    <p-dropdown [style]="{'min-width':'10.5em', 'height':'38px'}" appendTo="body" [options]="taskTypes" (onChange)="onTaskTypeChange()" [(ngModel)]="selectedType" optionLabel="name" class="timeline-dropdown"></p-dropdown>
     <div #apeendMenuTest> </div>
 </div>
 

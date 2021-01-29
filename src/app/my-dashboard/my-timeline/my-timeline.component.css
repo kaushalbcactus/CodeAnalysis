@@ -9,6 +9,10 @@
     margin-left: -21px !important;
 }
 
+::ng-deep .p-dropdown-items-wrapper {
+    overflow: hidden;
+}
+
 :host ::ng-deep #CalendarInnerLoader {
     border: 10px solid #f3f3f3;
     border-radius: 50%;

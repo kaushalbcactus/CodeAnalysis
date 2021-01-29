@@ -51,7 +51,7 @@ export class MyTimelineComponent implements OnInit {
   items: MenuItem[];
   statusOptions: SelectItem[];
   modalloaderenable: boolean = true;
-  selectedType = { name: "All", value: "All" };
+  selectedType = "All";
   // selectedType = { name: "Not Completed", value: "Not Completed" };
   taskTypes: { name: string; value: string; }[];
   CalendarLoader: boolean = true;
@@ -327,13 +327,12 @@ export class MyTimelineComponent implements OnInit {
     //***********************************************************************************************
     // Get Tasks
     //**************************************************************************************************
-
-    if (this.selectedType.name === 'All' || this.selectedType.name === 'Completed' || this.selectedType.name === 'Not Completed' || this.selectedType.name === 'Planned') {
+    if (this.selectedType === 'All' || this.selectedType === 'Completed' || this.selectedType === 'Not Completed' || this.selectedType === 'Planned') {
       let MyTimelineObj = Object.assign({}, this.queryConfig);
       let MyTimelineUrl = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimeline);
       MyTimelineUrl.filter = MyTimelineUrl.filter.replace(/{{userId}}/gi, this.sharedObject.selectedUser ? this.sharedObject.selectedUser.toString() : this.sharedObject.currentUser.userId.toString());
-      MyTimelineUrl.filter += this.selectedType.name === 'Completed' ? MyTimelineUrl.filterCompleted : this.selectedType.name === 'Not Completed' ?
-        MyTimelineUrl.filterNotCompleted : this.selectedType.name === 'Planned' ? MyTimelineUrl.filterPlanned : MyTimelineUrl.filterAll;
+      MyTimelineUrl.filter += this.selectedType === 'Completed' ? MyTimelineUrl.filterCompleted : this.selectedType === 'Not Completed' ?
+        MyTimelineUrl.filterNotCompleted : this.selectedType === 'Planned' ? MyTimelineUrl.filterPlanned : MyTimelineUrl.filterAll;
       //  MyTimeline.filter.substring(0, MyTimeline.filter.lastIndexOf("and"));
       MyTimelineUrl.filter += MyTimelineUrl.filterDate.replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
       MyTimelineObj.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name, MyTimelineUrl);
@@ -355,7 +354,7 @@ export class MyTimelineComponent implements OnInit {
     //***********************************************************************************************
     // Get Adhoc Tasks
     //**********************************************************************************************
-    if (this.selectedType.name === 'All' || this.selectedType.name === 'Adhoc') {
+    if (this.selectedType === 'All' || this.selectedType === 'Adhoc') {
       let MyAdhocTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.AdhocTasks);
 
       MyAdhocTask.filter = MyAdhocTask.filter.replace(/{{userId}}/gi, this.sharedObject.selectedUser ? this.sharedObject.selectedUser.toString() : this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1])
@@ -392,7 +391,8 @@ export class MyTimelineComponent implements OnInit {
         allDay: element.TATStatus && element.TATStatus === "Yes" ? true : (element.Task === 'Adhoc' && element.CommentsMT === "Administrative Work") ? true : false
 
       }
-      this.events.push(eventObj);
+
+      this.events = [...this.events, eventObj];
     });
 
     this.allLeaves.forEach(element => {
@@ -404,7 +404,7 @@ export class MyTimelineComponent implements OnInit {
         "backgroundColor": "#D6CFC7",
         allDay: true,
       };
-      this.events.push(eventObj);
+      this.events = [...this.events, eventObj];
 
     });
 
