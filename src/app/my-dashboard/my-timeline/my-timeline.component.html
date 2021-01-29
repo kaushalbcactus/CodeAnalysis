@@ -155,6 +155,7 @@
 //  dialog to load different component 
 ************************************************************************************************** -->
 
+
     <mat-accordion *ngIf="task.Task !== 'Adhoc'">
         <!--****************************************************************************************** 
         //  dialog to display task properties
@@ -222,10 +223,12 @@
                             <td>{{task.Milestone}}</td>
                             <th>Task / Scope / Allocated Time:</th>
                             <td>{{task.Task}} / <span *ngIf="task.Comments">[{{task.Comments}}] /</span> {{task.ExpectedTime}}
-                                <span class='overlayIcon' appendTo="body" (click)="this.showOverlayPanel($event, task, dailyAllocateOP)" style="cursor: pointer;" title="Click to see allocation split" *ngIf="task.showAllocationSplit">
-                                    <i class="fa fa-info-circle" aria-hidden="true"></i>
-                                </span>
+
                                 <app-allocation-overlay appendTo="body" #dailyAllocateOP></app-allocation-overlay>
+                                <span appendTo="body" class='overlayIcon' (click)="this.showOverlayPanel($event, task, dailyAllocateOP)" style="cursor: pointer;" title="Click to see allocation split" *ngIf="task.showAllocationSplit">
+                                    <i   appendTo="body" class="fa fa-info-circle" aria-hidden="true"></i>
+                                </span>
+
                             </td>
                         </tr>
                         <tr>
