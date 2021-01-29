@@ -6623,7 +6623,7 @@ export class TimelineComponent
 
         if(prevWriteTasks.length && newAddedWriteTasks.length) {
           newAddedWriteTasks.forEach((a,index)=>{
-            writeTransition = (!writers.some(e=> e.ID == a.AssignedTo.ID) && allResources.some(r=> r.UserNamePG.ID == a.AssignedTo.ID));
+            writeTransition = (!writers.some(e=> e.ID == a.AssignedTo.ID) && allResources.some(r=> r.UserNamePG.ID == a.AssignedTo.ID) && a.Reason=="");
             if(!writeTransition && index > -1) {
               newAddedWriteTasks.splice(index, 1);
             }
@@ -6632,7 +6632,7 @@ export class TimelineComponent
 
         if(prevReviewTasks.length && newAddedReviewTasks.length) {
           newAddedReviewTasks.forEach((a,index)=>{
-            reviewTransition = (!reviewers.some(e=> e.ID == a.AssignedTo.ID) && allResources.some(r=> r.UserNamePG.ID == a.AssignedTo.ID));
+            reviewTransition = (!reviewers.some(e=> e.ID == a.AssignedTo.ID) && allResources.some(r=> r.UserNamePG.ID == a.AssignedTo.ID) && a.Reason=="");
             if(!reviewTransition && index > -1) {
               newAddedReviewTasks.splice(index, 1);
             }
@@ -6660,12 +6660,14 @@ export class TimelineComponent
               this.transitionCancel = false;
               this.milestoneData = updatedMilestones.milestoneData;
               if(milestones.length == 1) { 
+                milestones = [];
+                this.transitionCancel = false;
                 this.transitionMil = [];
+                this.disableSave = true;
                 await this.generateSaveTasks();
               }
             } else {
               this.transitionCancel = true;
-              this.disableSave = false;
             }
           }); 
         }

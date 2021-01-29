@@ -347,7 +347,7 @@ export class TaskAllocationCommonService {
       ganttOverlay: data.AllocationPerDay ? this.allocationConstant.allocationSplitColumn : '',
       ganttMenu: '',
       ExpectedBudgetHrs: data.type == 'task' ? await this.setMaxBudgetHrs(taskObj) : '',
-      Reason:''
+      Reason: data.Reason ? data.Reason : ""
     };
     return ganttObject;
   }
