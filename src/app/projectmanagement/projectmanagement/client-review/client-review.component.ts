@@ -517,7 +517,6 @@ export class ClientReviewComponent implements OnInit {
     this.commonService.lazyLoadTask(event, crArray, this.filterColumns, this.pmConstant.filterAction.CLIENT_REVIEW);
   }
   storeRowData(rowData, menu) {
-    debugger
     this.selectedCRTask = rowData;
     menu.model[3].visible = this.selectedOption === 'Closed' ? false : true;
   }

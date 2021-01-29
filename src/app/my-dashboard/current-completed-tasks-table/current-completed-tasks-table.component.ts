@@ -513,7 +513,7 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
           : [],
       },
       header: this.formatModalTitle(task),
-      width: "80vw",
+      width: "90vw",
       contentStyle: {
         "min-height": "30vh",
         "max-height": "90vh",

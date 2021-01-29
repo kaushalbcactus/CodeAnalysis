@@ -7521,32 +7521,25 @@ export class TimelineComponent
       ? rowData.allocationPerDay
       : "";
     dailyAllocateOP.showOverlay(event, allocationPerDay, target);
-debugger
     if (!this.tableView) {
-      // setTimeout(() => {
-      //   let panel: any = document.querySelector(
-      //     ".dailyAllocationOverlayComp > div"
-      //   );
-      //   let panelContainer: any = document.getElementsByClassName(
-      //     "routerOutlet"
-      //   )
-      //     ? document.getElementsByClassName("routerOutlet")[0]
-      //     : null;
-
-      //     // document.getElementById("s4-workspace");
-      //   let topAdject = 0;
-      //   if (panelContainer) {
-      //     topAdject =
-      //       panelContainer.scrollTop > 0
-      //         ? panelContainer.scrollTop - panel.clientHeight
-      //         : 0;
-      //     if (topAdject < 0) {
-      //       topAdject = panelContainer.scrollTop;
-      //     }
-      //   }
-      //   panel.style.top = event.pageY + topAdject + "px";
-      //   panel.style.left = event.pageX + "px";
-      // }, 50);
+      setTimeout(() => {
+        let panel: any = document.querySelector(
+          ".dailyAllocationOverlayComp > div"
+        );
+        let panelContainer: any = document.getElementById("s4-workspace");
+        let topAdject = 0;
+        if (panelContainer) {
+          topAdject =
+            panelContainer.scrollTop > 0
+              ? panelContainer.scrollTop - panel.clientHeight
+              : 0;
+          if (topAdject < 0) {
+            topAdject = panelContainer.scrollTop;
+          }
+        }
+        panel.style.top = event.pageY + topAdject + "px";
+        panel.style.left = event.pageX + "px";
+      }, 50);
     }
   }
 

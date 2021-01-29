@@ -9,8 +9,7 @@
         <p-dropdown class="p-mr-3 projectType" [options]="overAllValues" [(ngModel)]="selectedOption" styleClass="custom-dropDown-allprojects" optionLabel="name" (onChange)="onChangeSelect($event)"></p-dropdown>
     </div>
     <div class="p-d-flex">
-        <mat-icon class="p-mr-3" style="font-size: 2.8em; 
-        cursor: pointer;" [hidden]="hideExcelWithBudget" title="Export To Excel with Budget & Currency" (click)="convertToExcelFile(allProjectRef)"> local_atm</mat-icon>
+        <button [hidden]="hideExcelWithBudget" pButton pRipple type="button" icon="pi pi-dollar" class="p-mt-2 p-button-outlined p-button-danger currencyDownload" title="Export To Excel with Budget & Currency" (click)="convertToExcelFile(allProjectRef)"></button>
         <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(allProjectRef)" title="Export To Excel" class="p-mt-2 fa fa-fw fa-file-excel-o"></i>
     </div>
 </div>

@@ -333,7 +333,6 @@ export class SendToClientComponent implements OnInit {
       filter: currentFilter,
       top: 4200
     };
-debugger;
     this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'GetSchedules', "GET");
     this.scArrays.taskItems = await this.spServices.readItems(this.Constant.listNames.Schedules.name, queryOptions);
     const projectCodeTempArray = [];

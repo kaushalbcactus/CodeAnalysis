@@ -1,7 +1,10 @@
 import { Component, OnInit, ViewChild, Input, ViewEncapsulation, ApplicationRef, NgZone } from '@angular/core';
+// import dayGridPlugin from '@fullcalendar/daygrid';
+// import timeGridPlugin from '@fullcalendar/timegrid';
+// import bootstrapPlugin from '@fullcalendar/bootstrap';
+// import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import bootstrapPlugin from '@fullcalendar/bootstrap';
 import interactionPlugin from '@fullcalendar/interaction';
 import { DialogService} from 'primeng/dynamicdialog';
 import { MenuModule } from 'primeng/menu';
@@ -151,13 +154,14 @@ export class MyTimelineComponent implements OnInit {
     this.options = {
 
       // listPlugin
-      plugins: [dayGridPlugin, timeGridPlugin, bootstrapPlugin, interactionPlugin],
+      // plugins: [dayGridPlugin, timeGridPlugin, bootstrapPlugin, interactionPlugin],
+      plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
       defaultDate: new Date(),
       weekends: false,
       header: {
         left: ' prev title next',
         center: '',
-        right: 'AddnewEvent today,dayGridMonth,timeGridWeek,timeGridDay,'
+        right: 'today,dayGridMonth,timeGridWeek,timeGridDay,'
 
         // right: 'AddnewEvent NotCompletedButton,completedButton,PlannedButton today,dayGridMonth,timeGridWeek,timeGridDay,'
         // // listWeek

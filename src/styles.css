@@ -526,6 +526,11 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     padding: 0px !important;
 }
 
+.graybox {
+    background: #efefef !important;
+    min-width: 50px;
+}
+
 
 /* file upload new ui  */
 

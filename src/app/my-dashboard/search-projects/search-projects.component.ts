@@ -375,12 +375,12 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.ProjectDetails.cmLevel1 = this.response[1][0].CMLevel1;
 
     this.projectResource.CMMembers = this.response[1].map(c => c).map(c => c.CMLevel1)[0].results ?
-      this.response[1].map(c => c).map(c => c.CMLevel1).map(c => c.results)[0].map(c => c.Title) + ', '
+      this.response[1].map(c => c).map(c => c.CMLevel1).map(c => c.results)[0].map(c => c.Title).join(', ') + ', '
       + this.response[1][0].CMLevel2.Title : this.response[1][0].CMLevel2.Title;
 
     this.projectResource.PMMembers = this.response[1].map(c => c).map(c => c.DeliveryLevel1)[0]
       .results ? this.response[1].map(c => c).map(c => c.DeliveryLevel1).map(c => c.results)[0].map(c =>
-        c.Title) + ', ' + this.response[1][0].DeliveryLevel2.Title : this.response[1][0].DeliveryLevel2.Title;
+        c.Title).join(', ') + ', ' + this.response[1][0].DeliveryLevel2.Title : this.response[1][0].DeliveryLevel2.Title;
 
     this.projectResource.PrimaryResource = this.response[0].map(c => c).map(c => c.PrimaryResMembers)
       .find(c => c.results) !== undefined ? this.response[0].map(c => c).map(c => c.PrimaryResMembers)

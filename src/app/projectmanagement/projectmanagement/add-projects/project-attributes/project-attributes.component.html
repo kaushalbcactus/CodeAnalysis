@@ -152,7 +152,9 @@
                     <label for="ActiveCM" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Active CM</label>
                     <div class="p-col-12 p-md-8 p-d-flex">
                         <div class="p-col-6 p-pl-0">
-                            <p-multiSelect [options]="pmObject.OwnerAccess.cmLevel1" formControlName="selectedActiveCM1" [filter]="true" defaultLabel="Please Select" resetFilterOnHide="true" [style]="{width:'100%'}">
+                            <p-multiSelect *ngIf="addProjectAttributesForm.controls.selectedActiveCM1.value" [options]="pmObject.OwnerAccess.cmLevel1" formControlName="selectedActiveCM1" [filter]="true" defaultLabel="Please Select" resetFilterOnHide="true" optionLabel="label" [style]="{width:'100%'}">
+                            </p-multiSelect>
+                            <p-multiSelect *ngIf="!addProjectAttributesForm.controls.selectedActiveCM1.value" [options]="pmObject.OwnerAccess.cmLevel1" formControlName="selectedActiveCM1" [filter]="true" defaultLabel="Please Select" resetFilterOnHide="true" optionLabel="label" [style]="{width:'100%'}">
                             </p-multiSelect>
                             <div class="error" *ngIf="!addProjectAttributesForm.controls['selectedActiveCM1'].valid&&addProjectAttributesForm.controls['selectedActiveCM1'].touched">
                                 CM Access is required</div>
@@ -169,13 +171,14 @@
                     <label for="ActiveDelivery" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Active Delivery</label>
                     <div class="p-col-12 p-md-8 p-d-flex">
                         <div class="p-col-6 p-pl-0">
-                            <p-multiSelect [options]="pmObject.OwnerAccess.deliveryLevel1" formControlName="selectedActiveAD1" [filter]="true" defaultLabel="Please Select" resetFilterOnHide="true" [style]="{width:'100%'}">
+                            <p-multiSelect *ngIf="addProjectAttributesForm.controls.selectedActiveAD1.value" [options]="pmObject.OwnerAccess.deliveryLevel1" formControlName="selectedActiveAD1" optionLabel="label" [filter]="true" defaultLabel="Please Select" [style]="{width:'100%'}">
                             </p-multiSelect>
-
+                            <p-multiSelect *ngIf="!addProjectAttributesForm.controls.selectedActiveAD1.value" [options]="pmObject.OwnerAccess.deliveryLevel1" formControlName="selectedActiveAD1" optionLabel="label" [filter]="true" defaultLabel="Please Select" [style]="{width:'100%'}">
+                            </p-multiSelect>
                         </div>
 
                         <div class="p-col-6 p-pr-0">
-                            <p-dropdown [options]="pmObject.OwnerAccess.deliveryLevel2" formControlName="selectedActiveAD2" [filter]="true" [showClear]="true" placeholder="Please Select" resetFilterOnHide="true" [disabled]=true [style]="{width:'100%'}"></p-dropdown>
+                            <p-dropdown [options]="pmObject.OwnerAccess.deliveryLevel2" formControlName="selectedActiveAD2" [filter]="true" [showClear]="true" placeholder="Please Select" [disabled]=true [style]="{width:'100%'}"></p-dropdown>
                             <div class="error" *ngIf="!addProjectAttributesForm.controls['selectedActiveAD2'].valid&&addProjectAttributesForm.controls['selectedActiveAD2'].touched">
                                 Delivery Owner is required</div>
                         </div>
