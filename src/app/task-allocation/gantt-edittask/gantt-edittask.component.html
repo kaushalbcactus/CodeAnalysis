@@ -16,7 +16,7 @@
                 <div class="p-col p-grid p-pl-3">
                     <span class="p-col-12 p-p-0 p-input-icon-right">
                         <i class="pi pi-clock error"  style="padding: 0px 4px;"></i>
-                        <input class="p-col-12" style="min-height: 38px;" placeholder="Select Start Time" pInputText [ngxTimepicker]="startDateTimepicker" formControlName="startDateTimePart" readonly>
+                        <input class="p-col-12" placeholder="Select Start Time" pInputText [ngxTimepicker]="startDateTimepicker" formControlName="startDateTimePart" readonly>
                         <ngx-material-timepicker [preventOverlayClick]="true" #startDateTimepicker [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
                         </ngx-material-timepicker>
                     </span>
@@ -33,7 +33,7 @@
                 <div class="p-col p-grid p-pl-3">
                     <span class="p-col-12 p-p-0 p-input-icon-right">
                         <i class="pi pi-clock error"  style="padding: 0px 4px;"></i>
-                        <input class="p-col-12" style="min-height: 38px;" placeholder="Select End Time" pInputText [ngxTimepicker]="endDateTimepicker" formControlName="endDateTimePart" readonly>
+                        <input class="p-col-12"  placeholder="Select End Time" pInputText [ngxTimepicker]="endDateTimepicker" formControlName="endDateTimePart" readonly>
                         <ngx-material-timepicker [preventOverlayClick]="true" #endDateTimepicker [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
                         </ngx-material-timepicker>
                     </span>
@@ -63,7 +63,7 @@
         <div class="p-col p-grid">
             <label for="Resource" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"> Resource:</label>
             <div class="p-col-12 p-md-8">
-                <p-dropdown appendTo="body" class="p-fluid" [style]="{'height': '38px'}" [options]="assignedUsers" placeholder="Select Resource" [showClear]="true" [group]="true" filter="true" formControlName="resource" resetFilterOnHide="true">
+                <p-dropdown appendTo="body" class="p-fluid" [style]="{'height': '35px'}" [options]="assignedUsers" placeholder="Select Resource" [showClear]="true" [group]="true" filter="true" formControlName="resource" resetFilterOnHide="true">
                     <ng-template let-group pTemplate="group">
                         <span style="margin-left:.25em">{{group.label}}</span>
                     </ng-template>
