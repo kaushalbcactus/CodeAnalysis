@@ -426,7 +426,7 @@ export class ReviewerDetailViewComponent implements OnInit {
         task
       },
       header: 'Rate Work',
-      width: '38vw',
+      width: '50vw',
       contentStyle: { 'min-height': '30vh', 'max-height': '90vh', 'overflow-y': 'auto' }
     });
     ref.onClose.subscribe((feedbackdata: any) => {

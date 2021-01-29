@@ -6,7 +6,7 @@
 
 <div class="pfTable">
     <p-table #cfp id="pfTable" width="100%" [columns]="CFColumns" [value]="CFRows" exportFilename="Client Positive Feedback" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-        [style]="{'font-size':'13px','min-height': '400px'}" styleClass="p-datatable-cactus p-datatable-gridlines" [hidden]="hideTable">
+        [style]="{'font-size':'13px'}" styleClass="p-datatable-cactus p-datatable-gridlines" [hidden]="hideTable">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field" [ngStyle]="{'width':col.field === '' ? '3em' : col.field === 'ID' ? '8em' : ''}">
@@ -38,7 +38,7 @@
         </ng-template>
         <ng-template pTemplate="body" let-rowData let-columns="columns">
             <tr>
-                <td *ngFor="let col of columns">
+                <td *ngFor="let col of columns;let i=index;first as isFirst;" [ngStyle]="{'background-color': isFirst  ? ( rowData.SurveyResponse ?  '#e04646': '#fdfd77'):'', 'border': isFirst  ? '1px solid #c8c8c8' :'','text-align': isFirst  ? 'center':''}">
                     <ng-container *ngIf="col.field != 'Title' && col.field != 'SentDate' && col.field != 'SentBy' && col.field != 'Status' && col.field != 'Actions' &&  col.field != ''">
                         {{rowData[col.field]}}
                     </ng-container>
