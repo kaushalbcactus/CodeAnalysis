@@ -6616,14 +6616,14 @@ export class TimelineComponent
         });
 
 
-        let addedMilestoneTasks = transitionMilestone ? this.taskAllocateCommonService.getTasksFromMilestones(transitionMilestone.milestoneArray, false, milestoneData, false) : [];
+        let addedMilestoneTasks = Object.keys(transitionMilestone).length ? this.taskAllocateCommonService.getTasksFromMilestones(transitionMilestone.milestoneArray, false, milestoneData, false) : [];
       
         let newAddedWriteTasks = addedMilestoneTasks.length ? addedMilestoneTasks.filter(t=> t.itemType == 'Write') : [];   
         let newAddedReviewTasks = addedMilestoneTasks.length ? addedMilestoneTasks.filter(t=> t.itemType == 'Review-Write') : []
 
         if(prevWriteTasks.length && newAddedWriteTasks.length) {
           newAddedWriteTasks.forEach((a,index)=>{
-            writeTransition = (!writers.some(e=> e.ID == a.AssignedTo.ID) && allResources.some(r=> r.UserNamePG.ID == a.AssignedTo.ID) && a.Reason=="");
+            writeTransition = (!writers.some(e=> e.ID == a.AssignedTo.ID) && allResources.some(r=> r.UserNamePG.ID == a.AssignedTo.ID) && (a.Reason=="" || a.Reason==undefined));
             if(!writeTransition && index > -1) {
               newAddedWriteTasks.splice(index, 1);
             }
@@ -6632,7 +6632,7 @@ export class TimelineComponent
 
         if(prevReviewTasks.length && newAddedReviewTasks.length) {
           newAddedReviewTasks.forEach((a,index)=>{
-            reviewTransition = (!reviewers.some(e=> e.ID == a.AssignedTo.ID) && allResources.some(r=> r.UserNamePG.ID == a.AssignedTo.ID) && a.Reason=="");
+            reviewTransition = (!reviewers.some(e=> e.ID == a.AssignedTo.ID) && allResources.some(r=> r.UserNamePG.ID == a.AssignedTo.ID) && (a.Reason=="" || a.Reason==undefined));
             if(!reviewTransition && index > -1) {
               newAddedReviewTasks.splice(index, 1);
             }

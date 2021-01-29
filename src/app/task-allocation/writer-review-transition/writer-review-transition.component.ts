@@ -114,8 +114,21 @@ export class WriterReviewTransitionComponent implements OnInit {
 
   saveTransition() {
 
-    let addedMilestone = this.newAddedWriteTasks.length ? Array.from(new Set(this.newAddedWriteTasks.map(e=> e.milestone))) : Array.from(new Set(this.newAddedReviewTasks.map(e=> e.milestone)))
-    this.milestoneData.forEach((mil, index) => {
+    if(this.writerArr.length && (this.writerReason == undefined || this.writerReason == null)) {
+      this.commonService.showToastrMessage(
+        this.constants.MessageType.error,
+        "Please Select Writer Transition Reason",
+        false
+      )
+    } else if(this.reviewerArr.length && (this.reviewerReason == undefined || this.reviewerReason == null)) {
+      this.commonService.showToastrMessage(
+        this.constants.MessageType.error,
+        "Please Select Reviewer Transition Reason",
+        false
+      )
+    } else {
+      let addedMilestone = this.newAddedWriteTasks.length ? Array.from(new Set(this.newAddedWriteTasks.map(e=> e.milestone))) : Array.from(new Set(this.newAddedReviewTasks.map(e=> e.milestone)))
+      this.milestoneData.forEach((mil, index) => {
 
       if(mil.data.type == 'milestone' && mil.data.title == addedMilestone[0] && mil.children) {
         mil.children.forEach(submilestone => {
@@ -128,25 +141,12 @@ export class WriterReviewTransitionComponent implements OnInit {
           }
         });
       }
-    });
-    
-    let obj: any = {
-      milestoneData: this.milestoneData
-    };
-
-    this.writerArr.length && this.writerReason == undefined
-      ? this.commonService.showToastrMessage(
-          this.constants.MessageType.error,
-          "Please Select Writer Transition Reason",
-          false
-        )
-      : this.reviewerArr.length && this.reviewerReason == undefined
-      ? this.commonService.showToastrMessage(
-          this.constants.MessageType.error,
-          "Please Select Reviewer Transition Reason",
-          false
-        )
-      : this.dialogRef.close(obj);
+      });
+      let obj: any = {
+        milestoneData: this.milestoneData
+      };
+      this.dialogRef.close(obj);
+    }
   }
 
   close() {
