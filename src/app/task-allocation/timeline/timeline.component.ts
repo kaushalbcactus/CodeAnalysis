@@ -248,6 +248,7 @@ export class TimelineComponent
   maxTime: any;
   leaveAlertMsgs: any[] = [];
   transitionMil = [];
+  transitionCancel: boolean = false;
   constructor(
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -6579,15 +6580,13 @@ export class TimelineComponent
   async isWriterReviewTransition(mil,milestoneData) {
     let writeTransition = false;
     let reviewTransition = false;
-    let milestones: any;
-    let count = 0;
+    let milestones: any = [];
     let allMilestones = milestoneData.filter(m=>m.data.type == 'milestone').map(e=> e.data.title);
     let allResources = this.sharedObject.oTaskAllocation.oResources;
     let addedMilestone = milestoneData.filter(m => m.data.type == 'milestone' && m.data.edited); 
 
       if(addedMilestone.length) {
         if(!mil.length) {
-          milestones = [];
           addedMilestone.forEach((ele)=>{
             let alltasks = this.taskAllocateCommonService.getTasksFromMilestones(ele, false, milestoneData, false)
             if(alltasks.filter(t => (t.itemType == 'Write' || t.itemType == 'Review-Write') && t.edited).length) {
@@ -6595,7 +6594,9 @@ export class TimelineComponent
             }
           })
         } else {
-          mil.shift();
+          if(!this.transitionCancel) {
+            mil.shift();
+          }
           milestones = mil;
         }
   
@@ -6656,11 +6657,15 @@ export class TimelineComponent
           });
           ref.onClose.subscribe(async (updatedMilestones: any) => {
             if(updatedMilestones) {
+              this.transitionCancel = false;
               this.milestoneData = updatedMilestones.milestoneData;
               if(milestones.length == 1) { 
                 this.transitionMil = [];
                 await this.generateSaveTasks();
               }
+            } else {
+              this.transitionCancel = true;
+              this.disableSave = false;
             }
           }); 
         }
