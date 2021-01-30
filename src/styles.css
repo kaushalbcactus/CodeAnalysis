@@ -330,6 +330,9 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 
 .firstColumnWidth {
     width: 4em !important;
+    padding: 0px !important;
+    vertical-align: middle !important;
+    text-align: center !important;
 }
 
 .lastColumnWidth {
@@ -517,8 +520,18 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     margin-bottom: 0px !important;
 }
 
-.p-datatable-tbody>tr>td {
+.p-datatable-tbody>tr>td,
+.p-fileupload .p-fileupload-row>div {
     word-break: break-word !important;
+}
+
+.p-fileupload .p-fileupload-content {
+    padding: 0px !important;
+}
+
+.graybox {
+    background: #efefef !important;
+    min-width: 50px;
 }
 
 
@@ -665,10 +678,11 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 .p-splitbutton,
 .p-calendar-w-btn,
 .p-button.p-button-icon-only {
-    height: 38px !important;
+    height: 35px !important;
 }
 
-.dailyAllocationOverlayComp .p-overlaypanel {
+.dailyAllocationOverlayComp .p-overlaypanel,
+.ratingOverlayComp .p-overlaypanel {
     top: inherit !important;
     right: 8vw !important;
     left: inherit !important;

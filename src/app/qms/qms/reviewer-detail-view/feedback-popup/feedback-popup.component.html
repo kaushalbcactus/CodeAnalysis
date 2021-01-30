@@ -31,24 +31,6 @@
                 [(ngModel)]="task.selectedTemplate"
                 appendTo="body"
               >
-                <ng-template let-items pTemplate="selectedItem">
-                  <span style="vertical-align: middle;">{{
-                    items.value.Title
-                  }}</span>
-                </ng-template>
-                <ng-template let-item pTemplate="item">
-                  <div
-                    class="ui-helper-clearfix"
-                    style="position: relative; height: 25px;"
-                  >
-                    <div
-                      title="{{ item.value.Tooltip }}"
-                      style="font-size: 14px; margin-top: 4px;"
-                    >
-                      {{ item.value.Title }}
-                    </div>
-                  </div>
-                </ng-template>
               </p-dropdown>
             </td>
           </tr>
@@ -85,55 +67,21 @@
                   [cancel]="false"
                   (onRate)="updateRating(task)"
                 ></p-rating>
-                <!-- <ngb-rating [(rate)]="matrixObj.rating" min="0" max="5" (rateChange)="updateRating(task)"> -->
-
-                <!-- <ng-template let-fill="fill" let-index="index">
-                                        <span class="star" [class.filled]="fill === 100">&#9733;</span
-                      >
-                    </ng-template>
-                  </ngb-rating> -->
               </td>
             </ng-container>
           </tr>
         </tbody>
       </table>
-      <!-- <textarea
-            #popupComments
-            maxlength="1000"
-            matInput
-            placeholder="Please share your feedback"
-            class="example-full-width"
-            [(ngModel)]="task.feedbackComment"
-          ></textarea> -->
       <span class="ui-float-label">
         <textarea id="float-input" rows="7" cols="90" pInputTextarea   [(ngModel)]="task.feedbackComment"></textarea>
         <label for="float-input">Please share your feedback</label>
       </span>
-      <!-- <span style="float: right;">{{ task.feedbackComment.length }} / 1000</span> -->
-      <!-- <span style="clear: both;"></span> -->
-
-      <!-- <mat-form-field class="example-full-width">
-          <textarea
-            #popupComments
-            maxlength="1000"
-            matInput
-            placeholder="Comments"
-            class="example-full-width"
-            [(ngModel)]="task.feedbackComment"
-          ></textarea>
-          <mat-hint align="start"
-            ><strong>Please share your feedback</strong>
-          </mat-hint>
-          <mat-hint align="end"
-            >{{ task.feedbackComment.length }} / 1000</mat-hint
-          >
-        </mat-form-field> -->
     </div>
   </p-accordionTab>
 </p-accordion>
 <div class="footer">
   <div>
-    <button
+    <!-- <button
       *ngIf="
         scorecardTasks?.currentTask?.Milestone !== 'Draft 1' &&
         scorecardTasks.tasks.length === 1
@@ -150,7 +98,15 @@
       (click)="saveRatingFeedback()"
     >
       Submit
-    </button>
+    </button> -->
+
+    <button *ngIf="
+    scorecardTasks?.currentTask?.Milestone !== 'Draft 1' &&
+    scorecardTasks.tasks.length === 1
+  " type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="p-button-raised p-button-danger"></button>
+  
+    <button class="p-mx-1 p-button-raised p-button-danger" type="button" pButton icon="pi pi-save" id="saveFeedback" [ngStyle]="{'cursor':'pointer' }" (click)="saveRatingFeedback()" label="Submit"></button>
+
   </div>
 </div>
 <!-- </p-dialog> -->

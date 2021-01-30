@@ -124,6 +124,7 @@
                                 <div class='overlayIcon' (click)="this.showOverlayPanel($event, rowData, dailyAllocateOP)" style="float: right;cursor: pointer;" title="Click to see allocation split" *ngIf="rowData.showAllocationSplit">
                                     <i class="fa fa-info-circle" aria-hidden="true"></i>
                                 </div>
+                                <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
                             </td>
                             <td>{{rowData.Days}}</td>
                             <td *ngIf="rowData.showTime">
@@ -178,9 +179,7 @@
                 </p-treeTable>
             </div>
         </div>
-        <div>
-            <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
-        </div>
+
         <div class="standard-generated-fetch-section" [hidden]="isStandardFetchTableHidden">
             <div class="container">
                 <div class="row">

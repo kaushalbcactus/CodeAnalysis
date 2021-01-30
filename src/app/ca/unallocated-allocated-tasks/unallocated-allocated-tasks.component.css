@@ -82,13 +82,6 @@
     border: 1px solid #c53e3e !important;
 } */
 
-::ng-deep .timePicker {
-    width: 30% !important;
-    padding: 5px !important;
-    border: 1px solid #a6a6a6 !important;
-    border-radius: 4px !important;
-}
-
 ::ng-deep .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider {
     background-color: #c53e3e !important;
 }
@@ -111,7 +104,7 @@
 
 :host ::ng-deep .slotTableTr>th {
     position: sticky;
-    top: 11.5vh !important;
+    top: 4.5vh !important;
     z-index: 99 !important;
     border: 1px solid #e4e4e4 !important;
 }
@@ -130,12 +123,6 @@
     background: #e4e4e4;
     color: #000001;
     border: 1px solid #cdcdcd !important;
-}
-
- ::ng-deep .slotTable .p-datatable-header {
-    position: sticky;
-    top: 4.2vh !important;
-    z-index: 99 !important;
 }
 
 :host ::ng-deep .unallocated-allocated-dropdown {

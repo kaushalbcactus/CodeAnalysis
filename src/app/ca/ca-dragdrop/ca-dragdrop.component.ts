@@ -22,6 +22,10 @@ export class CaDragdropComponent implements OnInit {
     type: '',
     listName: ''
   };
+
+  public layoutSettings = {
+    orientation: 'TB'
+  };
   response: any;
   mainloaderenable: boolean;
   curve = shape.curveLinear;

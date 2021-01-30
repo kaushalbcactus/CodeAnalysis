@@ -1,6 +1,7 @@
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { Injectable } from '@angular/core';
 import { GlobalService } from 'src/app/Services/global.service';
+import { MenuItem } from "primeng/api";
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,9 @@ import { GlobalService } from 'src/app/Services/global.service';
 export class QMSConstantsService {
 
   constructor(private globalConstant: ConstantsService, private global: GlobalService) { }
+
+  public mainRouter : MenuItem;
+  public internalRouter : MenuItem;
 
   public qmsTab = {
     list: []

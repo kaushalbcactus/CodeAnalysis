@@ -4,23 +4,14 @@
 </div>
 
 <div class="p-grid p-col-12 p-justify-end" [hidden]='hidePopupTable' style="position: fixed!important;margin: -55px 0 0 -18px !important;">
-
-
-    <button style="margin: 0px 10px 0px 0px;" pButton type="button" id='deleteBtn' label="Submit" class="ui-button-danger" (click)="deleteCD()" [disabled]="!cdDelete.selectedReason" [hidden]="qc.actionClicked !== 'delete'"></button>
-
-
-    <button style="margin: 0px 10px 0px 0px;" pButton type="button" id='saveBtn' label="Save" class="ui-button-danger savebtn" (click)="closeCD($event)" [disabled]="!qc.resourceIdentifiedComments && !qc.selectedSegregation && !qc.selectedAccountableGroup && !qc.selectedBusinessImpact && !qc.selectedCDCategory && !qc.rcaComments && !qc.caComments && !qc.paComments"
+    <button pButton type="button" id='deleteBtn' label="Delete" class="p-mx-1 p-button-raised p-button-danger" (click)="deleteCD()" [disabled]="!cdDelete.selectedReason" [hidden]="qc.actionClicked !== 'delete'"></button>
+    <button pButton type="button" id='saveBtn' label="Save" class="p-mx-1 p-button-raised p-button-danger" (click)="closeCD($event)" [disabled]="!qc.resourceIdentifiedComments && !qc.selectedSegregation && !qc.selectedAccountableGroup && !qc.selectedBusinessImpact && !qc.selectedCDCategory && !qc.rcaComments && !qc.caComments && !qc.paComments"
         [hidden]="qc.actionClicked !== 'close'"></button>
-
-
-
-    <button style="margin: 0px 10px 0px 0px;" pButton type="button" id='closeBtn' label="Submit" class="ui-button-danger savebtn" (click)="closeCD($event)" [disabled]="!qc.selectedSegregation || !qc.selectedAccountableGroup || !qc.selectedBusinessImpact || !qc.selectedCDCategory || !qc.rcaComments || !qc.caComments || !qc.paComments || !qc.selectedSegregation"
+    <button pButton type="button" id='closeBtn' label="Submit" class="p-mx-1 p-button-raised p-button-danger" (click)="closeCD($event)" [disabled]="!qc.selectedSegregation || !qc.selectedAccountableGroup || !qc.selectedBusinessImpact || !qc.selectedCDCategory || !qc.rcaComments || !qc.caComments || !qc.paComments || !qc.selectedSegregation"
         [hidden]="qc.actionClicked !== 'close'"></button>
+    <button pButton type="button" id='deleteBtn' label="Confirm" class="p-mx-1 p-button-raised p-button-danger" (click)="updateValidity(qc.actionClicked)" [disabled]="qc.actionClicked === 'reject' && !qc.newRejectionComments" [hidden]="qc.actionClicked !== 'valid' && qc.actionClicked !== 'invalid' && qc.actionClicked !== 'reject'"></button>
+    <button type="button" pButton (click)="close();" label="Cancel" class="p-button-raised p-button-danger"></button>
 
-
-    <button style="margin: 0px 10px 0px 0px;" pButton type="button" id='deleteBtn' label="Confirm" class="ui-button-danger savebtn" (click)="updateValidity(qc.actionClicked)" [disabled]="qc.actionClicked === 'reject' && !qc.newRejectionComments" [hidden]="qc.actionClicked !== 'valid' && qc.actionClicked !== 'invalid' && qc.actionClicked !== 'reject'"></button>
-
-    <button pButton type="button" label="Cancel" class="ui-button-danger" (click)="close()"></button>
 </div>
 
 

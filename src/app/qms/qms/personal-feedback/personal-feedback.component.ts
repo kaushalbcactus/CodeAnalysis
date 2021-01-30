@@ -4,6 +4,8 @@ import { DataService } from '../../../Services/data.service';
 import { QMSConstantsService } from '../services/qmsconstants.service';
 import { QMSCommonService } from '../services/qmscommon.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { MenuItem } from 'primeng/api';
+
 
 @Component({
   selector: 'app-personal-feedback',
@@ -11,11 +13,12 @@ import { CommonService } from 'src/app/Services/common.service';
   styleUrls: ['./personal-feedback.component.css']
 })
 export class PersonalFeedbackComponent implements OnInit {
+  internalRouter : MenuItem
   public navLinks = [
-    { routerLink: ['internalFeedback'], label: 'Feedback For Me' },
-    { routerLink: ['externalFeedback'], label: 'Client Dissatisfaction' },
-    { routerLink: ['positiveFeedback'], label: 'Positive Feedback' },
-    { routerLink: ['feedbackByMe'], label: 'Feedback By Me' },
+    { routerLink: 'internalFeedback', label: 'Feedback For Me' , command: (event) => {this.internalRouter = event.item} },
+    { routerLink: 'externalFeedback', label: 'Client Dissatisfaction' , command: (event) => {this.internalRouter = event.item} },
+    { routerLink: 'positiveFeedback', label: 'Positive Feedback' , command: (event) => {this.internalRouter = event.item} },
+    { routerLink: 'feedbackByMe', label: 'Feedback By Me', command: (event) => {this.internalRouter = event.item} },
   ];
   // Initialize tab value
   public selectedTab = 'Feedback For Me';
@@ -28,6 +31,9 @@ export class PersonalFeedbackComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.internalRouter = this.navLinks.find(c=>  this.router.url.includes(c.routerLink))
+      ?this.navLinks.find(c=>  this.router.url.includes(c.routerLink))
+      : this.navLinks[0];
   }
 
   /**

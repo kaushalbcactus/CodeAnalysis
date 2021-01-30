@@ -1,7 +1,7 @@
-::ng-deep .p-overlaypanel:after,
+/* ::ng-deep .p-overlaypanel:after,
 ::ng-deep .p-overlaypanel:before {
     margin-left: -35px !important;
-}
+} */
 
 
 /* ::ng-deep .selectedDateButton {

@@ -7,7 +7,7 @@ import { DatePipe } from '@angular/common';
 import { QMSConstantsService } from '../services/qmsconstants.service';
 import { QMSCommonService } from '../services/qmscommon.service';
 import { Table } from 'primeng/table';
-
+import { Router } from "@angular/router";
 @Component({
   selector: 'app-user-feedback',
   templateUrl: './user-feedback.component.html',
@@ -23,7 +23,7 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
   @Output() setAverageRating = new EventEmitter<string>();
   @Output() feedbackData = new EventEmitter<any>();
   @ViewChild('uf', { static: false }) userFeedbackTable: Table;
-
+  showOverlay: boolean = true;
   isOptionFilter: boolean;
   public hideTable = false;
   public hideLoader = true;
@@ -48,20 +48,21 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
   public displayedColumns: string[] = ['Created', 'Title', 'FeedbackType', 'Author', 'EvalutorSkill', 'AverageRating', 'Comments', 'ParameterRating', 'Value'];
   constructor(private spService: SPOperationService, private globalConstant: ConstantsService, private qmsConstant: QMSConstantsService,
     public global: GlobalService, private datepipe: DatePipe, public commonService: CommonService,
-    private qmsCommon: QMSCommonService, private cdr: ChangeDetectorRef,
+    private qmsCommon: QMSCommonService, private cdr: ChangeDetectorRef, private router: Router
   ) { }
 
   ngOnInit() {
+    this.showOverlay = this.router.url.includes('managerView') ? false : true;
     this.UFColumns = [
       { field: 'Date', header: 'Date', visibility: true, exportable: true, Type: 'datetime', dbName: 'Created', options: []  },
-      { field: 'Task', header: 'Task', visibility: true, exportable: true, Type: 'string', dbName: 'SubMilestones', options: [] },
+      { field: 'Task', header: 'Task', visibility: true, exportable: true, Type: 'string', dbName: 'Task', options: [] },
       { field: 'Type', header: 'Type', visibility: true, exportable: true, Type: 'string', dbName: 'FeedbackType', options: [] },
       { field: 'Feedbackby', header: 'Feedback By', visibility: true, exportable: true, Type: 'string', dbName: 'Feedbackby', options: [] },
       { field: 'Rating', header: 'Rating', visibility: true, exportable: true, Type: 'string', dbName: 'AverageRating', options: [] },
-      { field: 'EvaluatorSkill', header: 'Evaluator Skill', visibility: true, exportable: true, Type: 'EvaluatorSkill', dbName: 'resource', options: [] },
-      { field: 'Comments', header: 'Comments', visibility: true, exportable: true, Type: 'string', dbName: 'CommentsMT', options: [] },
-      { field: 'Parameters', header: 'Parameters', visibility: false, exportable: true, Type: 'string', dbName: 'resource', options: [] },
-      { field: 'Score', header: 'Score', visibility: false, exportable: true, Type: 'string', dbName: 'resource', options: [] }
+      { field: 'EvaluatorSkill', header: 'Evaluator Skill', visibility: true, exportable: true, Type: 'string', dbName: 'EvaluatorSkill', options: [] },
+      { field: 'Comments', header: 'Comments', visibility: true, exportable: true, Type: 'string', dbName: 'Comments', options: [] },
+      { field: 'Parameters', header: 'Parameters', visibility: false, exportable: true, Type: 'string', dbName: '', options: [] },
+      { field: 'Score', header: 'Score', visibility: false, exportable: true, Type: 'string', dbName: '', options: [] }
     ];
   }
   // colFilters(colData) {
@@ -259,7 +260,7 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
     this.UFRows = [...feedbacks];
     this.originalScorecard = [...this.UFRows];
     this.feedbackData.emit(this.UFRows);
-    this.UFColumns = this.commonService.MainfilterForTable(this.UFColumns, arrScorecard);
+    this.UFColumns = this.commonService.MainfilterForTable(this.UFColumns, this.UFRows);
     // this.colFilters(arrScorecard);
     this.hideTable = false;
     this.hideLoader = true;
@@ -278,7 +279,7 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
     this.UFRows = [...feedbacks];
     // this.originalScorecard = [...this.UFRows];
     this.feedbackData.emit(this.UFRows);
-    this.UFColumns = this.commonService.MainfilterForTable(this.UFColumns, newScorecard);
+    this.UFColumns = this.commonService.MainfilterForTable(this.UFColumns, this.UFRows);
     // this.colFilters(newScorecard);
   }
 
@@ -315,24 +316,24 @@ export class UserFeedbackComponent implements OnInit, AfterViewChecked {
 
   showOverlayPanel(event, rowData, ratingOP, target?) {
     ratingOP.showOverlay(event, rowData, event.target.parentElement);
-    setTimeout(() => {
-      let panel: any = document.querySelector(
-        ".ratingOverlayComp > div"
-      );
-      let panelContainer: any = document.getElementById("s4-workspace");
-      let topAdject = -250;
-      if (panelContainer) {
-        topAdject =
-          panelContainer.scrollTop > 0
-            ? panelContainer.scrollTop - panel.clientHeight
-            : 0;
-        if (topAdject < 0) {
-          topAdject = panelContainer.scrollTop;
-        }
-      }
-      panel.style.top = event.pageY + topAdject + "px";
-      // panel.style.left = event.pageX + "px";
-    }, 50);
+    // setTimeout(() => {
+    //   let panel: any = document.querySelector(
+    //     ".ratingOverlayComp > div"
+    //   );
+    //   let panelContainer: any = document.getElementById("s4-workspace");
+    //   let topAdject = -250;
+    //   if (panelContainer) {
+    //     topAdject =
+    //       panelContainer.scrollTop > 0
+    //         ? panelContainer.scrollTop - panel.clientHeight
+    //         : 0;
+    //     if (topAdject < 0) {
+    //       topAdject = panelContainer.scrollTop;
+    //     }
+    //   }
+    //   panel.style.top = event.pageY + topAdject + "px";
+    //   // panel.style.left = event.pageX + "px";
+    // }, 50);
   }
 
 }

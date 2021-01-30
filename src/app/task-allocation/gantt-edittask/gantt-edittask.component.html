@@ -16,7 +16,7 @@
                 <div class="p-col p-grid p-pl-3">
                     <span class="p-col-12 p-p-0 p-input-icon-right">
                         <i class="pi pi-clock error"  style="padding: 0px 4px;"></i>
-                        <input class="p-col-12" style="min-height: 38px;" placeholder="Select Start Time" pInputText [ngxTimepicker]="startDateTimepicker" formControlName="startDateTimePart" readonly>
+                        <input class="p-col-12" placeholder="Select Start Time" pInputText [ngxTimepicker]="startDateTimepicker" formControlName="startDateTimePart" readonly>
                         <ngx-material-timepicker [preventOverlayClick]="true" #startDateTimepicker [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
                         </ngx-material-timepicker>
                     </span>
@@ -33,7 +33,7 @@
                 <div class="p-col p-grid p-pl-3">
                     <span class="p-col-12 p-p-0 p-input-icon-right">
                         <i class="pi pi-clock error"  style="padding: 0px 4px;"></i>
-                        <input class="p-col-12" style="min-height: 38px;" placeholder="Select End Time" pInputText [ngxTimepicker]="endDateTimepicker" formControlName="endDateTimePart" readonly>
+                        <input class="p-col-12"  placeholder="Select End Time" pInputText [ngxTimepicker]="endDateTimepicker" formControlName="endDateTimePart" readonly>
                         <ngx-material-timepicker [preventOverlayClick]="true" #endDateTimepicker [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
                         </ngx-material-timepicker>
                     </span>
@@ -43,28 +43,27 @@
     </div>
 
     <div class="p-col p-grid p-px-1 p-py-0">
-        <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
+
         <div class="p-col p-grid">
             <label for=" BudgetHrs" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3">  Budget Hrs:</label>
             <div class="p-col-12 p-md-8 p-grid p-m-0">
                 <ng-container *ngIf="!isViewAllocation">
                     <input class="p-col" type="number" oninput="validity.valid||(value='0');" pInputText formControlName="budgetHrs" min="0" max={{maxBudgetHrs}} value="0" step="0.25">
                     <button pButton pRipple type="button" title="Click to see allocation split" icon='pi pi-info-circle' (click)="this.showOverlayPanel($event, dailyAllocateOP)" *ngIf="task.showAllocationSplit" class="p-button-outlined p-button-danger overlayIconGantt"></button>
+
                 </ng-container>
                 <ng-container *ngIf="isViewAllocation">
                     <input class="p-col" type="number" oninput="validity.valid||(value='0');" pInputText formControlName="budgetHrs" min="0" max={{maxBudgetHrs}} value="0" step="0.25">
                     <button pButton pRipple type="button" (click)="viewAllocation('')" icon='pi pi-sliders-h' *ngIf="task.showAllocationSplit" class="p-button-outlined p-button-danger p-mx-1 viewAllocation"></button>
                     <button pButton pRipple type="button" title="Click to see allocation split" icon='pi pi-info-circle' (click)="this.showOverlayPanel($event, dailyAllocateOP)" *ngIf="task.showAllocationSplit" class="p-button-outlined p-button-danger overlayIconGantt"></button>
-
-
-
                 </ng-container>
+                <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
             </div>
         </div>
         <div class="p-col p-grid">
             <label for="Resource" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"> Resource:</label>
             <div class="p-col-12 p-md-8">
-                <p-dropdown appendTo="body" class="p-fluid" [style]="{'height': '38px'}" [options]="assignedUsers" placeholder="Select Resource" [showClear]="true" [group]="true" filter="true" formControlName="resource" resetFilterOnHide="true">
+                <p-dropdown appendTo="body" class="p-fluid" [style]="{'height': '35px'}" [options]="assignedUsers" placeholder="Select Resource" [showClear]="true" [group]="true" filter="true" formControlName="resource" resetFilterOnHide="true">
                     <ng-template let-group pTemplate="group">
                         <span style="margin-left:.25em">{{group.label}}</span>
                     </ng-template>

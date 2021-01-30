@@ -831,11 +831,21 @@ export class CommonService {
   sortData(array: any) {
     return array.sort((a, b) => {
       if (a.label && a.label !== null && b.label && b.label !== null) {
-        if (a.label.toLowerCase() < b.label.toLowerCase()) {
-          return -1;
-        }
-        if (a.label.toLowerCase() > b.label.toLowerCase()) {
-          return 1;
+        if(typeof a.label === "string") {
+          if (a.label.toLowerCase() < b.label.toLowerCase()) {
+            return -1;
+          }
+          if (a.label.toLowerCase() > b.label.toLowerCase()) {
+            return 1;
+          }
+        } 
+        else if(typeof a.label === "number") {
+          if (a.label < b.label) {
+            return -1;
+          }
+          if (a.label > b.label) {
+            return 1;
+          }
         }
       }
       return 0;

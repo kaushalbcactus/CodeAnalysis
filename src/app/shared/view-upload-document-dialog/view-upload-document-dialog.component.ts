@@ -120,7 +120,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       this.ModifiedSelectedTaskName === "Client Review"
         ? this.data.closeTaskEnable
         : false;
-
     if (this.selectedTask.PrevTasks) {
       this.items = [
         {
@@ -253,7 +252,9 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.loaderenable = true;
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() {
+  
+  }
 
   // *****************************************************************************************************
   //  Switch tab on click

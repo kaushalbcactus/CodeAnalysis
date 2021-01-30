@@ -77,7 +77,7 @@
 
 
             <ngx-graph *ngIf="!tasksHoritontal" [view]="[taskWidth,taskHeight]" class="p-grid chart-container" id="taskChart" [links]="links" [nodes]="nodes" [legend]="false" [curve]="curve" [enableZoom]="enableZoom" [draggingEnabled]="false" [panningEnabled]="enablePaan"
-                [autoCenter]="true" [orientation]="TB" [style.overflow-x]="taskWidth > minWidth ? 'scroll' : ''" [style.overflow-y]="taskHeight > taskMaxHeight ? 'scroll' : ''">
+                [autoCenter]="true" [layoutSettings]="layoutSettings" [style.overflow-x]="taskWidth > minWidth ? 'scroll' : ''" [style.overflow-y]="taskHeight > taskMaxHeight ? 'scroll' : ''">
 
                 <ng-template #defsTemplate>
                     <svg:marker id="arrow2" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">

@@ -333,7 +333,6 @@ export class SendToClientComponent implements OnInit {
       filter: currentFilter,
       top: 4200
     };
-
     this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'GetSchedules', "GET");
     this.scArrays.taskItems = await this.spServices.readItems(this.Constant.listNames.Schedules.name, queryOptions);
     const projectCodeTempArray = [];
@@ -456,7 +455,7 @@ export class SendToClientComponent implements OnInit {
       }
 
       if (tempSendToClientArray.length) {
-        this.scArrays = await this.commonService.MainfilterForTable(this.displayedColumns,tempSendToClientArray);
+        this.displayedColumns = await this.commonService.MainfilterForTable(this.displayedColumns,tempSendToClientArray);
       }
       this.pmObject.sendToClientArray = tempSendToClientArray;
       const tableRef: any = this.sct;

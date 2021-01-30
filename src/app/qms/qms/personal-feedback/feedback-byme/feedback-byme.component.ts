@@ -81,15 +81,15 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
 
   protected async initialiseFeedback() {
     this.feedbackColumns = [
-      { field: 'Date', header: 'Date', visibility: false, Type: 'datetime', dbName: 'Created', options: [] },
-      { field: 'Task', header: 'Task', visibility: false, Type: 'string', dbName: 'Title', options: [] },
-      { field: 'Type', header: 'Type', visibility: false, Type: 'string', dbName: 'FeedbackType', options: [] },
-      { field: 'Feedbackfor', header: 'Feedback For', visibility: false, Type: 'string', dbName: 'Feedbackfor', options: [] },
-      { field: 'FeedbackBy', header: 'Feedback By', visibility: true, Type: 'string', dbName: 'FeedbackBy', options: [] },
-      { field: 'Rating', header: 'Rating', visibility: false, Type: 'number', dbName: 'AverageRating', options: [] },
-      { field: 'Comments', header: 'Comments', visibility: false, Type: 'string', dbName: 'Comments', options: [] },
-      { field: 'Parameters', header: 'Parameters', visibility: true, Type: 'string', dbName: 'Parameters', options: [] },
-      { field: 'Score', header: 'Score', visibility: true, Type: 'string', dbName: 'Score', options: [] }
+      { field: 'Date', header: 'Date', visibility: true, Type: 'datetime', dbName: 'Created', options: [] },
+      { field: 'Task', header: 'Task', visibility: true, Type: 'string', dbName: 'Title', options: [] },
+      { field: 'Type', header: 'Type', visibility: true, Type: 'string', dbName: 'FeedbackType', options: [] },
+      { field: 'Feedbackfor', header: 'Feedback For', visibility: true, Type: 'string', dbName: 'Feedbackfor', options: [] },
+      { field: 'FeedbackBy', header: 'Feedback By', visibility: false, Type: 'string', dbName: 'FeedbackBy', options: [] },
+      { field: 'Rating', header: 'Rating', visibility: true, Type: 'number', dbName: 'AverageRating', options: [] },
+      { field: 'Comments', header: 'Comments', visibility: true, Type: 'string', dbName: 'Comments', options: [] },
+      { field: 'Parameters', header: 'Parameters', visibility: false, Type: 'string', dbName: 'Parameters', options: [] },
+      { field: 'Score', header: 'Score', visibility: false, Type: 'string', dbName: 'Score', options: [] }
     ];
     this.hideDetail = false;
     this.feedbackRows = [];
@@ -295,7 +295,7 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
         arrScorecard = await this.getScorecardItems(filterObj.count, '', '', resourceID);
       }
       this.bindTable(arrScorecard);
-      this.feedbackColumns = this.commonService.MainfilterForTable(this.feedbackColumns, arrScorecard);
+      this.feedbackColumns = this.commonService.MainfilterForTable(this.feedbackColumns, this.feedbackRows);
       // this.colFilters(arrScorecard);
       this.showTable();
     }, 500);
@@ -329,7 +329,7 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
       if (obj.tableData.filteredValue) {
         this.commonService.updateOptionValues(obj);
       } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-        this.feedbackColumns = this.commonService.MainfilterForTable(this.feedbackColumns,obj.tableData)
+        this.feedbackColumns = this.commonService.MainfilterForTable(this.feedbackColumns, obj.tableData)
         // this.colFilters(obj.tableData.value);
         this.isOptionFilter = false;
       }

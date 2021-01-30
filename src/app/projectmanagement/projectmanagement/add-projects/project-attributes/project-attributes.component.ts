@@ -240,26 +240,26 @@ export class ProjectAttributesComponent implements OnInit {
         .get("pubSupportStatus")
         .setValue(projObj.PUBSupportStatus);
     }
-    if (projObj.ActiveCM1.length) {
-      this.addProjectAttributesForm
-        .get("selectedActiveCM1")
-        .setValue(projObj.ActiveCM1);
-    }
-    if (projObj.ActiveCM2) {
-      this.addProjectAttributesForm
-        .get("selectedActiveCM2")
-        .setValue(projObj.ActiveCM2);
-    }
-    if (projObj.ActiveDelivery1.length) {
-      this.addProjectAttributesForm
-        .get("selectedActiveAD1")
-        .setValue(projObj.ActiveDelivery1);
-    }
-    if (projObj.ActiveDelivery2) {
-      this.addProjectAttributesForm
-        .get("selectedActiveAD2")
-        .setValue(projObj.ActiveDelivery2);
-    }
+    // if (projObj.ActiveCM1.length) {
+    //   this.addProjectAttributesForm
+    //     .get("selectedActiveCM1")
+    //     .setValue(projObj.ActiveCM1);
+    // }
+    // if (projObj.ActiveCM2) {
+    //   this.addProjectAttributesForm
+    //     .get("selectedActiveCM2")
+    //     .setValue(projObj.ActiveCM2);
+    // }
+    // if (projObj.ActiveDelivery1.length) {
+    //   this.addProjectAttributesForm
+    //     .get("selectedActiveAD1")
+    //     .setValue(projObj.ActiveDelivery1);
+    // }
+    // if (projObj.ActiveDelivery2) {
+    //   this.addProjectAttributesForm
+    //     .get("selectedActiveAD2")
+    //     .setValue(projObj.ActiveDelivery2);
+    // }
     if (projObj.ProjectTitle) {
       this.addProjectAttributesForm
         .get("projectTitle")
@@ -1185,7 +1185,9 @@ export class ProjectAttributesComponent implements OnInit {
   }
 
   async GetRulesOnChange() {
+
     if (this.showEditSave) {
+      this.isProjectAttributeTableHidden=true;
       await this.pmCommonService.FilterRules();
       this.addProjectAttributesForm
         .get("selectedActiveCM1")
@@ -1199,6 +1201,7 @@ export class ProjectAttributesComponent implements OnInit {
       this.addProjectAttributesForm
         .get("selectedActiveAD2")
         .setValue(this.pmObject.OwnerAccess.selectedDeliveryOwner);
+        this.isProjectAttributeTableHidden=false;
     }
   }
 }

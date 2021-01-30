@@ -1,7 +1,7 @@
 <div id="reviewerContent">
 
     <p-table #rd id="reviewerTable" [columns]="ReviewerDetailColumns" [value]="ReviewerDetail" [hidden]="hideTable" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {​​​​​​​​first}​​​​​​​​ to {​​​​​​​​last}​​​​​​​​ of {​​​​​​​​totalRecords}​​​​​​​​ entries"
-     styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="reviewerTable">
+    [style]="{'font-size':'13px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="reviewerTable">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field">
@@ -75,7 +75,8 @@
     <!-- <app-feedback-popup #feedbackPopup (setSuccessMessage)="callParentSuccessMsg($event)"  (bindTableEvent)="bindReviewerTable($event)"></app-feedback-popup> -->
 </div>
 
-<div class="tableLoader" [hidden]='hideLoader'>
-    <div id="mainLoader"></div>
-    <div id="mainLoaderText">Loading...</div>
-</div>
+
+<div class="p-d-flex p-flex-column" style="padding:5vw;" *ngIf="!hideLoader">
+    <div id="modalInnerLoader"></div>
+    <div id="modalInnerLoaderText">Loading...</div>
+  </div>

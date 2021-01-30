@@ -8,7 +8,7 @@
             [resetFilterOnHide]="true"
             optionLabel='type'
             placeholder='Select filter'
-            (onChange)='filterByDrafts($event.value, filterYears, filterQuarters)'
+            (onChange)='filterByDrafts($event, filterYears, filterQuarters)'
             [(ngModel)]="filterObj.filterSelectedValue">
         </p-dropdown>
       </div>
@@ -33,7 +33,7 @@
             filter="true" 
             [resetFilterOnHide]="true"
             placeholder='Select Quarter'
-            (onChange)='filterByQuarter($event.value)'
+            (onChange)='filterByQuarter($event)'
             [(ngModel)]="filterObj.quarterSelected">
         </p-dropdown>
        </div>

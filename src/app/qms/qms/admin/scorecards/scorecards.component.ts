@@ -132,7 +132,7 @@ export class ScorecardsComponent implements OnInit {
       this.filterObj.filteredResources = [];
       // tslint:disable
       // Filter resource based on resource categorization list - Tasks column of resource
-      let filteredResources = this.resources.filter(t => t.Tasks.results.filter(type => type.Title === this.filterObj.selectedTaskType.value).length > 0);
+      let filteredResources = this.resources.filter(t => t.Tasks.results.filter(type => type.Title === this.filterObj.selectedTaskType).length > 0);
       filteredResources.forEach(element => {
         this.filterObj.filteredResources.push(element);
       });
