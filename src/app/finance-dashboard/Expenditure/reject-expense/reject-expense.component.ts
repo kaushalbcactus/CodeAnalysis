@@ -132,16 +132,16 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
 
     createRCECols() {
         this.rejectCancelExpenseCols = [
-            { field: 'ProjectCode', header: 'Project', visibility: true },
-            { field: 'ClientLegalEntity', header: 'Client', visibility: true },
-            { field: 'Category', header: 'Category', visibility: true },
+            { field: 'ProjectCode', header: 'Project', visibility: true, Type: 'string', dbName: 'ProjectCode', options: [] },
+            { field: 'ClientLegalEntity', header: 'Client', visibility: true, Type: 'string', dbName: 'ClientLegalEntity', options: [] },
+            { field: 'Category', header: 'Category', visibility: true, Type: 'string', dbName: 'Category', options: [] },
             // { field: 'PONumber', header: 'PO Number', visibility:true },
-            { field: 'ExpenseType', header: 'Expense Type', visibility: true },
-            { field: 'ClientAmount', header: 'Client Amount', visibility: true },
-            { field: 'ClientCurrency', header: 'Client Currency', visibility: true },
-            { field: 'ApproverComments', header: 'Approver Comments', visibility: true },
-            { field: 'ActionBy', header: 'Actioned By', visibility: true },
-            { field: 'ModifiedDate', header: 'Actioned Date', visibility: true, exportable: false },
+            { field: 'ExpenseType', header: 'Expense Type', visibility: true, Type: 'string', dbName: 'ExpenseType', options: [] },
+            { field: 'ClientAmount', header: 'Client Amount', visibility: true, Type: 'number', dbName: 'ClientAmount', options: [] },
+            { field: 'ClientCurrency', header: 'Client Currency', visibility: true, Type: 'number', dbName: 'ClientCurrency', options: [] },
+            { field: 'ApproverComments', header: 'Approver Comments', visibility: true, Type: 'string', dbName: 'ApproverComments', options: [] },
+            { field: 'ActionBy', header: 'Actioned By', visibility: true, Type: 'string', dbName: 'ActionBy', options: [] },
+            { field: 'ModifiedDate', header: 'Actioned Date', visibility: true, exportable: false, Type: 'date', dbName: 'ModifiedDate', options: [] },
             { field: 'ModifiedDateFormat', header: 'Actioned Date', visibility: false },
             { field: 'SOWCode', header: 'SOW Code', visibility: false },
             { field: 'SOWName', header: 'SOW Name', visibility: false },
@@ -162,7 +162,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
             // { field: 'DollarAmount', header: 'Dollar Amount', visibility: false },
             // { field: 'InvoiceID', header: 'Invoice ID', visibility: false },
             // { field: 'POLookup', header: 'PO Lookup', visibility: false },
-            { field: '', header: '', visibility: true },
+            // { field: '', header: '', visibility: true },
         ];
     }
 
@@ -237,7 +237,8 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
         }
         this.rejectExpenses = [...this.rejectExpenses];
         this.isPSInnerLoaderHidden = true;
-        this.createColFieldValues(this.rejectExpenses);
+        //this.createColFieldValues(this.rejectExpenses);
+        this.rejectCancelExpenseCols = this.commonService.MainfilterForTable(this.rejectCancelExpenseCols, this.rejectExpenses);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -275,26 +276,26 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
         CreatedBy: []
     }
 
-    createColFieldValues(resArray) {
+    // createColFieldValues(resArray) {
 
-        this.pendinExpenseColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; })));
-        this.pendinExpenseColArray.Category = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
-        const ClientAmount = this.uniqueArrayObj(resArray.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
-        this.pendinExpenseColArray.ClientAmount = this.fdDataShareServie.customSort(ClientAmount, 1, 'label');
-        this.pendinExpenseColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.Created = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Created, value: a.Created }; return b; }).filter(ele => ele.label));
+    //     this.pendinExpenseColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+    //     this.pendinExpenseColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
+    //     this.pendinExpenseColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; })));
+    //     this.pendinExpenseColArray.Category = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
+    //     this.pendinExpenseColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
+    //     const ClientAmount = this.uniqueArrayObj(resArray.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
+    //     this.pendinExpenseColArray.ClientAmount = this.fdDataShareServie.customSort(ClientAmount, 1, 'label');
+    //     this.pendinExpenseColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
+    //     this.pendinExpenseColArray.Created = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Created, value: a.Created }; return b; }).filter(ele => ele.label));
 
-        const modified = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ModifiedDate, 'MMM d, y'), value: a.ModifiedDate }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.ModifiedDate = modified.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
+    //     const modified = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ModifiedDate, 'MMM d, y'), value: a.ModifiedDate }; return b; }).filter(ele => ele.label)));
+    //     this.pendinExpenseColArray.ModifiedDate = modified.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
 
 
-        this.pendinExpenseColArray.ActionBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ActionBy, value: a.ActionBy }; return b; }).filter(ele => ele.label)));
-        //this.pendinExpenseColArray.Modified = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Modified, value: a.Modified }; return b; }).filter(ele => ele.label));
-        this.pendinExpenseColArray.CreatedBy = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }).filter(ele => ele.label));
-    }
+    //     this.pendinExpenseColArray.ActionBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ActionBy, value: a.ActionBy }; return b; }).filter(ele => ele.label)));
+    //     //this.pendinExpenseColArray.Modified = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Modified, value: a.Modified }; return b; }).filter(ele => ele.label));
+    //     this.pendinExpenseColArray.CreatedBy = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }).filter(ele => ele.label));
+    // }
 
     uniqueArrayObj(array: any) {
         let sts: any = '';
@@ -355,27 +356,27 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
         }
     }
 
-    isOptionFilter: boolean;
-    optionFilter(event: any) {
-        if (event.target.value) {
-            this.isOptionFilter = false;
-        }
-    }
+    // isOptionFilter: boolean;
+    // optionFilter(event: any) {
+    //     if (event.target.value) {
+    //         this.isOptionFilter = false;
+    //     }
+    // }
 
-    ngAfterViewChecked() {
-        if (this.rejectExpenses.length && this.isOptionFilter) {
-            let obj = {
-                tableData: this.canRejExpenseTable,
-                colFields: this.pendinExpenseColArray,
-            }
-            if (obj.tableData.filteredValue) {
-                this.commonService.updateOptionValues(obj);
-            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-                this.createColFieldValues(obj.tableData.value);
-                this.isOptionFilter = false;
-            }
-        }
-        this.cdr.detectChanges();
-    }
+    // ngAfterViewChecked() {
+    //     if (this.rejectExpenses.length && this.isOptionFilter) {
+    //         let obj = {
+    //             tableData: this.canRejExpenseTable,
+    //             colFields: this.pendinExpenseColArray,
+    //         }
+    //         if (obj.tableData.filteredValue) {
+    //             this.commonService.updateOptionValues(obj);
+    //         } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+    //             this.createColFieldValues(obj.tableData.value);
+    //             this.isOptionFilter = false;
+    //         }
+    //     }
+    //     this.cdr.detectChanges();
+    // }
 
 }

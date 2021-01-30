@@ -218,19 +218,18 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
 
     createANBCols() {
         this.approvedNonBillableCols = [
-            { field: 'Number', header: 'Ref. Number', visibility: true },
-            { field: 'ProjectCode', header: 'Project Code', visibility: true },
-            { field: 'VendorName', header: 'Vendor Name', visibility: true },
-            { field: 'ExpenseType', header: 'Expense Type', visibility: true },
-            { field: 'PaymentMode', header: 'Payment Mode', visibility: true },
-            { field: 'ClientAmount', header: 'Client Amount', visibility: true },
-            { field: 'ClientCurrency', header: 'Client Currency', visibility: true },
-            { field: 'PayingEntity', header: 'Paying Entity', visibility: true },
-            { field: 'Status', header: 'Status', visibility: true },
-            { field: 'ApproverComments', header: 'Approver Comments', visibility: true },
+            { field: 'Number', header: 'Ref. Number', visibility: true,  Type: 'string', dbName: 'Number', options: []},
+            { field: 'ProjectCode', header: 'Project Code', visibility: true , Type: 'string', dbName: 'ProjectCode', options: []},
+            { field: 'VendorName', header: 'Vendor Name', visibility: true , Type: 'string', dbName: 'VendorName', options: []},
+            { field: 'ExpenseType', header: 'Expense Type', visibility: true , Type: 'string', dbName: 'ExpenseType', options: []},
+            { field: 'PaymentMode', header: 'Payment Mode', visibility: true, Type: 'string', dbName: 'PaymentMode', options: [] },
+            { field: 'ClientAmount', header: 'Client Amount', visibility: true, Type: 'string', dbName: 'ClientAmount', options: [] },
+            { field: 'ClientCurrency', header: 'Client Currency', visibility: true, Type: 'string', dbName: 'ClientCurrency', options: [] },
+            { field: 'PayingEntity', header: 'Paying Entity', visibility: true, Type: 'string', dbName: 'PayingEntity', options: [] },
+            { field: 'Status', header: 'Status', visibility: true, Type: 'string', dbName: 'Status', options: [] },
+            { field: 'ApproverComments', header: 'Approver Comments', visibility: true, Type: 'string', dbName: 'ApproverComments', options: [] },
             { field: 'ModifiedDateFormat', header: 'Approval / Billable Date', visibility: false },
-            { field: 'ModifiedDate', header: 'Approval / Billable Date', visibility: true, exportable: false },
-
+            { field: 'ModifiedDate', header: 'Approval / Billable Date', visibility: true, exportable: false, Type: 'date', dbName: 'ModifiedDate', options: [] },
             { field: 'Category', header: 'Category', visibility: false },
             { field: 'RequestType', header: 'Request Type', visibility: false },
             { field: 'DateSpend', header: 'Date Spend', visibility: false },
@@ -244,7 +243,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             { field: 'ApproverComments', header: 'Approver Comments', visibility: false },
             { field: 'ApproverFileUrl', header: 'Approver File Url', visibility: false },
             { field: 'PayingEntity', header: 'Paying Entity', visibility: false },
-            { field: '', header: '', visibility: true },
+            // { field: '', header: '', visibility: true },
         ];
     }
 
@@ -328,7 +327,8 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         }
         this.approvedNonBillableRes = [...this.approvedNonBillableRes];
         this.isPSInnerLoaderHidden = true;
-        this.createColFieldValues(this.approvedNonBillableRes);
+        // this.createColFieldValues(this.approvedNonBillableRes);
+        this.approvedNonBillableCols = this.commonService.MainfilterForTable(this.approvedNonBillableCols, this.approvedNonBillableRes);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -797,27 +797,27 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             }
         }
     }
-    optionFilter(event: any) {
-        if (event.target.value) {
-            this.isOptionFilter = false;
-        }
-    }
+    // optionFilter(event: any) {
+    //     if (event.target.value) {
+    //         this.isOptionFilter = false;
+    //     }
+    // }
 
     // tslint:disable-next-line: use-lifecycle-interface
-    ngAfterViewChecked() {
-        if (this.approvedNonBillableRes.length && this.isOptionFilter) {
-            const obj = {
-                tableData: this.approvedNBTable,
-                colFields: this.anonBillableColArray
-            };
-            if (obj.tableData.filteredValue) {
-                this.commonService.updateOptionValues(obj);
-            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-                this.createColFieldValues(obj.tableData.value);
-                this.isOptionFilter = false;
-            }
-        }
-        this.cdr.detectChanges();
-    }
+    // ngAfterViewChecked() {
+    //     if (this.approvedNonBillableRes.length && this.isOptionFilter) {
+    //         const obj = {
+    //             tableData: this.approvedNBTable,
+    //             colFields: this.anonBillableColArray
+    //         };
+    //         if (obj.tableData.filteredValue) {
+    //             this.commonService.updateOptionValues(obj);
+    //         } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+    //             this.createColFieldValues(obj.tableData.value);
+    //             this.isOptionFilter = false;
+    //         }
+    //     }
+    //     this.cdr.detectChanges();
+    // }
 
 }

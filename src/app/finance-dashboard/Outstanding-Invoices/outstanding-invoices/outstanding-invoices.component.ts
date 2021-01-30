@@ -294,35 +294,22 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
   createOutstandingInvoiceCols() {
     this.outstandingInCols = [
-      { field: "ClientLegalEntity", header: "Client", visibility: true },
-      { field: "InvoiceStatus", header: "Invoice Status", visibility: true },
-      {
-        field: "DisplayInvoiceWithAuxiliary",
-        header: "Invoice Number",
-        visibility: true,
-      },
-      { field: "POName", header: "PO Name", visibility: true },
-      { field: "PONumber", header: "PO Number", visibility: true },
-      {
-        field: "InvoiceDate",
-        header: "Invoice Date",
-        visibility: true,
-        exportable: false,
-      },
-      { field: "InvoiceDateFormat", header: "Invoice Date", visibility: false },
-      { field: "Amount", header: "Amount", visibility: true },
-      { field: "Currency", header: "Currency", visibility: true },
-      { field: "POC", header: "POC", visibility: true },
-      { field: "ModifiedBy", header: "Modified By", visibility: true },
+      { field: "ClientLegalEntity", header: "Client", visibility: true, Type: 'string', dbName: 'ClientLegalEntity', options: [] },
+      { field: "InvoiceStatus", header: "Invoice Status", visibility: true, Type: 'string', dbName: 'InvoiceStatus', options: [] },
+      { field: "DisplayInvoiceWithAuxiliary", header: "Invoice Number", visibility: true, Type: 'string', dbName: 'DisplayInvoiceWithAuxiliary', options: [] },
+      { field: "POName", header: "PO Name", visibility: true, Type: 'string', dbName: 'POName', options: [] },
+      { field: "PONumber", header: "PO Number", visibility: true, Type: 'string', dbName: 'PONumber', options: [] },
+      { field: "InvoiceDate", header: "Invoice Date", visibility: true, exportable: false, Type: 'date', dbName: 'InvoiceDate', options: [] },
+      { field: "Amount", header: "Amount", visibility: true, Type: 'number', dbName: 'Amount', options: [] },
+      { field: "Currency", header: "Currency", visibility: true, Type: 'string', dbName: 'Currency', options: [] },
+      { field: "POC", header: "POC", visibility: true, Type: 'string', dbName: 'POC', options: [] },
+      { field: "ModifiedBy", header: "Modified By", visibility: true, Type: 'string', dbName: 'ModifiedBy', options: [] },
       { field: "PaymentURL", header: "Payment URL", visibility: false },
+      { field: "InvoiceDateFormat", header: "Invoice Date", visibility: false },
       { field: "MainPOC", header: "Main POC", visibility: false },
       { field: "Template", header: "Template", visibility: false },
       { field: "DisputeReason", header: "Dispute Reason", visibility: false },
-      {
-        field: "DisputeComments",
-        header: "Dispute Comments",
-        visibility: false,
-      },
+      { field: "DisputeComments", header: "Dispute Comments", visibility: false, },
       { field: "Reason", header: "Reason", visibility: false },
       { field: "State", header: "State", visibility: false },
       { field: "AdditionalInfo", header: "Additional Info", visibility: false },
@@ -331,7 +318,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
       { field: "IsTaggedFully", header: "Is Tagged Fully", visibility: false },
       { field: "Modified", header: "Modified", visibility: false },
       { field: "Created", header: "Created", visibility: false },
-      { field: "", header: "", visibility: true },
+      // { field: "", header: "", visibility: true },
     ];
 
     this.invoiceCols = [
@@ -459,7 +446,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
       });
     }
     this.outstandingInvoicesRes = [...this.outstandingInvoicesRes];
-    this.createColFieldValues(this.outstandingInvoicesRes);
+    //this.createColFieldValues(this.outstandingInvoicesRes);
+    this.outstandingInCols = this.commonService.MainfilterForTable(this.outstandingInCols, this.outstandingInvoicesRes);
     if (
       this.outInvTable.filteredValue &&
       this.outInvTable.filters.DisplayInvoiceWithAuxiliary
@@ -471,12 +459,12 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
           )
       )
         ? this.outstandingInvoicesRes
-            .filter((c) =>
-              this.outInvTable.filters.DisplayInvoiceWithAuxiliary[0].value.includes(
-                c.DisplayInvoiceWithAuxiliary
-              )
+          .filter((c) =>
+            this.outInvTable.filters.DisplayInvoiceWithAuxiliary[0].value.includes(
+              c.DisplayInvoiceWithAuxiliary
             )
-            .map((c) => c.DisplayInvoiceWithAuxiliary)
+          )
+          .map((c) => c.DisplayInvoiceWithAuxiliary)
         : [];
       this.outInvTable.filter(
         this.DisplayInvoiceWithAuxiliaryArray,
@@ -924,8 +912,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
       } else if (this.confirmDialog.title === "View Project Details") {
         window.open(
           this.globalService.sharePointPageObject.webAbsoluteUrl +
-            "/dashboard#/projectMgmt?ProjectCode=" +
-            data.ProjectCode
+          "/dashboard#/projectMgmt?ProjectCode=" +
+          data.ProjectCode
         );
       }
     }
@@ -1612,7 +1600,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         invObj.data = invData;
         batchUrl.push(invObj);
       }
-     
+
       console.log(batchUrl);
       this.commonService.SetNewrelic(
         "Finance-Dashboard",
@@ -1721,7 +1709,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     invObj.type = "PATCH";
     invObj.data = invData;
     batchUrl.push(invObj);
-    
+
     this.commonService.SetNewrelic(
       "Finance-Dashboard",
       "outstanding-invoices",
@@ -1778,9 +1766,9 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
       this.commonService.showToastrMessage(
         this.constantService.MessageType.success,
         "Auxiliary Name for " +
-          this.selectedRowItem.InvoiceNumber +
-          " " +
-          " updated sucessfully.",
+        this.selectedRowItem.InvoiceNumber +
+        " " +
+        " updated sucessfully.",
         true
       );
       this.formSubmit.isSubmit = false;
@@ -1790,9 +1778,9 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
       this.commonService.showToastrMessage(
         this.constantService.MessageType.success,
         this.selectedRowItem.ProjectCode +
-          " " +
-          " Detached successfully from " +
-          this.parentData.InvoiceNumber,
+        " " +
+        " Detached successfully from " +
+        this.parentData.InvoiceNumber,
         true
       );
       this.reFetchData();
@@ -1846,31 +1834,31 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     }
   }
 
-  isOptionFilter: boolean;
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
+  // isOptionFilter: boolean;
+  // optionFilter(event: any) {
+  //   if (event.target.value) {
+  //     this.isOptionFilter = false;
+  //   }
+  // }
 
-  ngAfterViewChecked() {
-    if (this.outstandingInvoicesRes.length && this.isOptionFilter) {
-      let obj = {
-        tableData: this.outInvTable,
-        colFields: this.outInvoiceColArray,
-      };
-      if (obj.tableData.filteredValue) {
-        this.commonService.updateOptionValues(obj);
-      } else if (
-        obj.tableData.filteredValue === null ||
-        obj.tableData.filteredValue === undefined
-      ) {
-        this.createColFieldValues(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-    }
-    this.cdr.detectChanges();
-  }
+  // ngAfterViewChecked() {
+  //   if (this.outstandingInvoicesRes.length && this.isOptionFilter) {
+  //     let obj = {
+  //       tableData: this.outInvTable,
+  //       colFields: this.outInvoiceColArray,
+  //     };
+  //     if (obj.tableData.filteredValue) {
+  //       this.commonService.updateOptionValues(obj);
+  //     } else if (
+  //       obj.tableData.filteredValue === null ||
+  //       obj.tableData.filteredValue === undefined
+  //     ) {
+  //       this.createColFieldValues(obj.tableData.value);
+  //       this.isOptionFilter = false;
+  //     }
+  //   }
+  //   this.cdr.detectChanges();
+  // }
 
   //*************************************************************************************************
   // regenerate invoice for line item
@@ -1920,8 +1908,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
       this.commonService.showToastrMessage(
         this.constantService.MessageType.error,
         "Unable to generate invoice for " +
-          lineItem.InvoiceNumber +
-          ", proforma html not found.",
+        lineItem.InvoiceNumber +
+        ", proforma html not found.",
         true
       );
       this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;

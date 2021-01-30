@@ -307,18 +307,18 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     createPECols() {
         this.pendingExpeseCols = [
-            { field: 'RequestType', header: 'Request Type', visibility: true },
-            { field: 'ProjectCode', header: 'Project', visibility: true },
-            { field: 'VendorName', header: 'Vendor Freelancer', visibility: true },
-            { field: 'ClientLegalEntity', header: 'Client', visibility: true },
-            { field: 'Category', header: 'Category', visibility: true },
+            { field: 'RequestType', header: 'Request Type', visibility: true, Type: 'string', dbName: 'RequestType', options: [] },
+            { field: 'ProjectCode', header: 'Project', visibility: true, Type: 'string', dbName: 'ProjectCode', options: [] },
+            { field: 'VendorName', header: 'Vendor Freelancer', visibility: true, Type: 'string', dbName: 'VendorName', options: [] },
+            { field: 'ClientLegalEntity', header: 'Client', visibility: true, Type: 'string', dbName: 'ClientLegalEntity', options: [] },
+            { field: 'Category', header: 'Category', visibility: true, Type: 'string', dbName: 'Category', options: [] },
             // { field: 'PONumber', header: 'PO Number', visibility:true },
-            { field: 'ExpenseType', header: 'Expense Type', visibility: true },
-            { field: 'ClientAmount', header: 'Client Amount', visibility: true },
-            { field: 'ClientCurrency', header: 'Client Currency', visibility: true },
-            { field: 'CreatedDate', header: 'Date Created', visibility: true, exportable: false },
-            { field: 'CreatedDateFormat', header: 'Date Created', visibility: false },
-            { field: 'CreatedBy', header: 'Created By', visibility: true },
+            { field: 'ExpenseType', header: 'Expense Type', visibility: true, Type: 'string', dbName: 'ExpenseType', options: [] },
+            { field: 'ClientAmount', header: 'Client Amount', visibility: true, Type: 'string', dbName: 'ClientAmount', options: [] },
+            { field: 'ClientCurrency', header: 'Client Currency', visibility: true, Type: 'string', dbName: 'ClientCurrency', options: [] },
+            { field: 'CreatedDate', header: 'Date Created', visibility: true, exportable: false, Type: 'date', dbName: 'CreatedDate', options: [] },
+            { field: 'CreatedDateFormat', header: 'Date Created', visibility: false, Type: 'string', dbName: 'ProjectCode', options: [] },
+            { field: 'CreatedBy', header: 'Created By', visibility: true, Type: 'string', dbName: 'CreatedBy', options: [] },
             { field: 'Modified', header: 'Modified Date', visibility: false, exportable: false },
             { field: 'ModifiedDateFormat', header: 'Modified Date', visibility: false },
             { field: 'ModifiedBy', header: 'Modified By', visibility: false },
@@ -334,12 +334,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             { field: 'ApproverComments', header: 'Approver Comments', visibility: false },
             { field: 'ApproverFileUrl', header: 'Approver File Url', visibility: false },
             { field: 'PayingEntity', header: 'Paying Entity', visibility: false },
-            // { field: 'AuthorId', header: 'Author Id', visibility: false },
-
-            // { field: 'DollarAmount', header: 'Dollar Amount', visibility: false },
-            // { field: 'InvoiceID', header: 'Invoice ID', visibility: false },
-            // { field: 'POLookup', header: 'PO Lookup', visibility: false },
-            { field: '', header: '', visibility: true },
+            //{ field: '', header: '', visibility: true },
         ];
     }
 
@@ -471,7 +466,8 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         }
         this.pendingExpenses = [...this.pendingExpenses];
         this.isPSInnerLoaderHidden = true;
-        this.createColFieldValues(this.pendingExpenses);
+        //this.createColFieldValues(this.pendingExpenses);
+        this.pendingExpeseCols = this.commonService.MainfilterForTable(this.pendingExpeseCols, this.pendingExpenses);
     }
 
     getSowTitle(pi: any) {
@@ -1108,26 +1104,26 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             }
         }
     }
-    optionFilter(event: any) {
-        if (event.target.value) {
-            this.isOptionFilter = false;
-        }
-    }
+    // optionFilter(event: any) {
+    //     if (event.target.value) {
+    //         this.isOptionFilter = false;
+    //     }
+    // }
 
-    ngAfterViewChecked() {
-        if (this.pendingExpenses.length && this.isOptionFilter) {
-            const obj = {
-                tableData: this.pendingEnpenseTable,
-                colFields: this.pendinExpenseColArray
-            };
-            if (obj.tableData.filteredValue) {
-                this.commonService.updateOptionValues(obj);
-            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-                this.createColFieldValues(obj.tableData.value);
-                this.isOptionFilter = false;
-            }
-        }
-        this.cdr.detectChanges();
-    }
+    // ngAfterViewChecked() {
+    //     if (this.pendingExpenses.length && this.isOptionFilter) {
+    //         const obj = {
+    //             tableData: this.pendingEnpenseTable,
+    //             colFields: this.pendinExpenseColArray
+    //         };
+    //         if (obj.tableData.filteredValue) {
+    //             this.commonService.updateOptionValues(obj);
+    //         } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+    //             this.createColFieldValues(obj.tableData.value);
+    //             this.isOptionFilter = false;
+    //         }
+    //     }
+    //     this.cdr.detectChanges();
+    // }
 
 }
