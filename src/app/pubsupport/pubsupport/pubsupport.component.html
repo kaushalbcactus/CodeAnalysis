@@ -46,12 +46,12 @@
             let-rowIndex="rowIndex">
             <tr>
                 <td>
-                    <a href="#" [pRowToggler]="projectItem">
+                    <a class="error" href="#" [pRowToggler]="projectItem">
                         <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
                     </a>
                 </td>
                 <td>
-                    <a style="color:#d7181f"
+                    <a class="error"
                         (click)="goToProjectDetails(projectItem, plistIndex)">{{projectItem.ProjectCode}}</a>
                 </td>
                 <td>{{projectItem.ClientLegalEntity}}</td>
@@ -74,7 +74,7 @@
                 </td>
                 <td>
                     <ng-container>
-                        <a style="color:#d7181f" (click)="openAuthorModal(projectItem)">Author Details</a>
+                        <a class="error" (click)="openAuthorModal(projectItem)">Author Details</a>
                     </ng-container>
                 </td>
                 <td class="lastColumnWidth">

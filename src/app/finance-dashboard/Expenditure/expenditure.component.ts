@@ -163,7 +163,13 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
   resCatEmails: any = [];
 
   async ngOnInit() {
-
+    this.fdConstantsService.internalRouter = this.fdConstantsService.fdComponent.tabs.expenditureMenu.find(
+      (c) => this.router.url.includes(c.routerLink)
+    )
+      ? this.fdConstantsService.fdComponent.tabs.expenditureMenu.find((c) =>
+          this.router.url.includes(c.routerLink)
+        )
+      : this.fdConstantsService.fdComponent.tabs.expenditureMenu[0];
     // Testing for observable
     // this.subscription = this.everysec$.subscribe(sec => console.log(sec));
 

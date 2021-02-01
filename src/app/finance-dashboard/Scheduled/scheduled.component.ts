@@ -29,31 +29,17 @@ export class ScheduledComponent implements OnInit {
     private datePipe: DatePipe,
     public fdConstantsService: FdConstantsService
   ) {
-    // router.events.subscribe((event: RouterEvent) => {
-    //   // this.navigationInterceptor(event)
-    // })
 
-  }
-
-  // Shows and hides the loading spinner during RouterEvent changes
-  navigationInterceptor(event: RouterEvent): void {
-    if (event instanceof NavigationStart) {
-      console.log('NavigationStart ', NavigationStart)
-    }
-    if (event instanceof NavigationEnd) {
-      console.log('NavigationEnd ', NavigationEnd);
-    }
-
-    // Set loading state to false in both of the below events to hide the spinner in case a request fails
-    if (event instanceof NavigationCancel) {
-      console.log('NavigationCancel ', NavigationCancel);
-    }
-    if (event instanceof NavigationError) {
-      console.log('NavigationError ', NavigationError);
-    }
   }
 
   ngOnInit() {
+    this.fdConstantsService.internalRouter = this.fdConstantsService.fdComponent.tabs.scheduleMenu.find(
+      (c) => this.router.url.includes(c.routerLink)
+    )
+      ? this.fdConstantsService.fdComponent.tabs.scheduleMenu.find((c) =>
+          this.router.url.includes(c.routerLink)
+        )
+      : this.fdConstantsService.fdComponent.tabs.scheduleMenu[0];
 
     // SetDefault Values
     const next3Months = this.commonService.getNextWorkingDay(65, new Date());

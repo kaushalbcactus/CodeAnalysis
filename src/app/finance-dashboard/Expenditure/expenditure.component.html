@@ -1,15 +1,20 @@
-<div class="ui-g ui-fluid mtb-20">
-    <div [hidden]='fdConstantsService.fdComponent.hideDatesSection' class="ui-g-12 ui-md-4">
-        <p-calendar [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true" dateFormat="M dd, yy" placeholder="Select Start & End Date" showButtonBar="true" (onClose)="SelectedDateRange()" (onClearClick)="setDefault()"></p-calendar>
-    </div>
-    <div class="ui-g-12 ui-md-2">
-        <button pButton type="button" class="fdBtn" label="Request expense" (click)="requestExpense()"></button>
-    </div>
-    <div style="clear: both;"></div>
-</div>
 
-<!-- Tabmenu list -->
-<p-tabMenu [model]="fdConstantsService.fdComponent.tabs.expenditureMenu"></p-tabMenu>
+<div  class="p-col-12 p-md-12 p-lg-12 f-left">
+    <div style="display: -webkit-inline-box;">
+        <div class="box" style="height: 42px !important;">
+            <!-- Tabmenu list -->   
+            <p-tabMenu [model]="fdConstantsService.fdComponent.tabs.expenditureMenu" style="margin-right: 20px" [activeItem]="fdConstantsService.internalRouter"></p-tabMenu>
+        </div>
+        <div [hidden]='fdConstantsService.fdComponent.hideDatesSection' style="margin-left: 20px;" class="box">
+            <p-calendar [style]="{width:'300px'}" [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true" dateFormat="M dd, yy" placeholder="Select Start & End Date" showButtonBar="true" (onClose)="SelectedDateRange()" (onClearClick)="setDefault()"></p-calendar>
+        </div>
+        <div class="box" style="margin-left: 20px;">
+            <button pButton type="button" class="fdBtn" label="Request expense" (click)="requestExpense()"></button>
+        </div>
+    </div>
+</div>
+<div style="clear: both;"></div>
+
 
 <!-- Request Expense -->
 <p-dialog header="Add Expenditure" [(visible)]="showHideREModal" [modal]="true" [contentStyle]="{'max-height':'450px'}" [responsive]="true" [style]="{'width': '55%'}" (onHide)="cancelFormSub('addExpenditure')">

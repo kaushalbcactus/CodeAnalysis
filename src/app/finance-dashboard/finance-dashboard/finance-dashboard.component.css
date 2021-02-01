@@ -168,6 +168,12 @@ textarea {
     text-align: right;
 }
 
+.f-left {
+    float:left;
+    padding-left: 0px !important ;
+    padding-bottom: 0px !important ;
+}
+
 .inner-detail {
     display: -webkit-inline-box;
     width: 100%;
@@ -767,10 +773,6 @@ figure {
 
 .clear {
     clear: both;
-}
-
-.error {
-    color: red !important;
 }
 
 button.ui-datepicker-trigger.ui-calendar-button {

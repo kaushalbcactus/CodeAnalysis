@@ -2,100 +2,78 @@
   <div id="scInnerLoader"></div>
   <div id="scInnerLoaderText">Loading...</div>
 </div>
-
-<div class="ui-g">
-  <div class="ui-g-6">
-    Select PO &nbsp;
-    <p-dropdown
-      resetFilterOnHide="true"
-      [options]="purchaseOrders"
-      [(ngModel)]="selectedPurchaseNumber"
-      filter="true"
-      placeholder="Select PO"
-      optionLabel="Number"
-      [showClear]="true"
-      (onChange)="onChange($event)"
-    >
-      <ng-template let-item pTemplate="selectedItem">
-        <span style="vertical-align: middle;"
-          >{{ item.label }}
-          {{ item.value.NameST ? " -- " + item.value.NameST : "" }}
-        </span>
-      </ng-template>
-      <ng-template let-item pTemplate="item">
-        <div class="ui-helper-clearfix" style="position: relative;">
-          <div
-            style="
-              font-size: 14px;
-              float: left;
-              margin-top: 4px;
-              width: 300px;
-              line-height: 20px;
-            "
-          >
-            {{ item.label }}
-            {{ item.value.NameST ? " -- " + item.value.NameST : "" }}
-          </div>
-        </div>
-      </ng-template>
-    </p-dropdown>
-  </div>
-  <div class="ui-g-6 f-right">
-    <div style="display: -webkit-inline-box;">
-      <div class="box" style="margin-right: 20px;">
-        <button
-          type="button"
-          class="fdBtn"
-          pButton
-          icon="fa fa-plus-circle"
-          iconPos="left"
-          label="Add to Proforma"
-          (click)="addProforma()"
-        ></button>
-      </div>
-      <div class="box">
-        <i
-          style="font-size: 1.8em; cursor: pointer;"
-          (click)="fdDataShareServie.convertToExcelFile(cnf)"
-          title="Export To Excel"
-          class="fa fa-fw fa-file-excel-o"
-        ></i>
-      </div>
+<div class="p-col-6 f-left">
+  <div style="display: -webkit-inline-box;">
+    <div class="box">
+      Select PO &nbsp;
+      <p-dropdown
+        resetFilterOnHide="true"
+        [options]="purchaseOrders"
+        [(ngModel)]="selectedPurchaseNumber"
+        filter="true"
+        placeholder="Select PO"
+        optionLabel="NameNumber"
+        [showClear]="true"
+        (onChange)="onChange($event)"
+      >
+        
+      </p-dropdown>
     </div>
   </div>
-  <!-- <div class="ui-g-3">
-        <div class="box">
-            <i style="font-size: 1.8em;cursor: pointer;" (click)=" fdDataShareServie.convertToExcelFile(cnf)"
-                title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
-        </div>
-    </div> -->
 </div>
+<div class="p-col-6 f-right">
+  <div style="display: -webkit-inline-box;">
+    <div class="box" style="margin-right: 20px;">
+      <button
+        type="button"
+        class="fdBtn"
+        pButton
+        icon="fa fa-plus-circle"
+        iconPos="left"
+        label="Add to Proforma"
+        (click)="addProforma()"
+      ></button>
+    </div>
+    <div class="box">
+      <i
+        style="font-size: 1.8em; cursor: pointer;"
+        (click)="fdDataShareServie.convertToExcelFile(cnf)"
+        title="Export To Excel"
+        class="fa fa-fw fa-file-excel-o"
+      ></i>
+    </div>
+  </div>
+</div>
+<div class="clear"></div>
 
-<div class="ui-g">
-  <div class="ui-g-3">
-    Revenue Balance : &nbsp;
-    <label style="margin: 0 8px;" *ngIf="selectedPurchaseNumber">{{
-      po.revenuBalance
-    }}</label>
-  </div>
-  <div class="ui-g-3">
-    OOP Balance : &nbsp;
-    <label style="margin: 0 8px;" *ngIf="selectedPurchaseNumber">{{
-      po.oopBalance
-    }}</label>
-  </div>
-  <div class="ui-g-3">
-    # Item : &nbsp;
-    <label *ngIf="selectedAllRowData" style="color: red; margin: 0 8px;">{{
-      selectedAllRowData.length
-    }}</label>
-  </div>
-  <div class="ui-g-3">
-    Total Amount : &nbsp;
-    <label *ngIf="selectedAllRowData" style="color: red; margin: 0 8px;">{{
-      selectedTotalAmt
-    }}</label>
-  </div>
+
+<div class="p-grid">
+  
+    <div class="p-col-3">
+      Revenue Balance : &nbsp;
+      <label style="margin: 0 8px;" *ngIf="selectedPurchaseNumber">{{
+        po.revenuBalance
+      }}</label>
+    </div>
+    <div class="p-col-3">
+      OOP Balance : &nbsp;
+      <label style="margin: 0 8px;" *ngIf="selectedPurchaseNumber">{{
+        po.oopBalance
+      }}</label>
+    </div>
+    <div class="p-col-3">
+      # Item : &nbsp;
+      <label *ngIf="selectedAllRowData" style="color: red; margin: 0 8px;">{{
+        selectedAllRowData.length
+      }}</label>
+    </div>
+    <div class="p-col-3">
+      Total Amount : &nbsp;
+      <label *ngIf="selectedAllRowData" style="color: red; margin: 0 8px;">{{
+        selectedTotalAmt
+      }}</label>
+    </div>
+  
 </div>
 
 <div class="financeTable">

@@ -378,6 +378,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 pocItem.pocName = pocName;
             }
             if (poItem) {
+                poItem.NameNumber = poItem.NameST ? poItem.Number + ' - ' + poItem.NameST : poItem.Number;
                 this.purchaseOrders.push(poItem);
             }
         }

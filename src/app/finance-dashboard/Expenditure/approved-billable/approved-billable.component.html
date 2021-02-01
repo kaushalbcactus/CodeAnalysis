@@ -1,26 +1,17 @@
-<div class="p-col">
-    <div class="p-col-12 p-md-12 p-lg-12 f-right">
-        <div style="display: -webkit-inline-box;">
-            <div class="box" style="margin-right: 20px;" *ngIf="constantService.userPermission.isFDUserAdmin">
+
+<div class="p-col-12 p-md-12 p-lg-12 f-right">
+    <div style="display: -webkit-inline-box;">
+        <div class="box" style="margin-right: 20px;" *ngIf="constantService.userPermission.isFDUserAdmin">
                 <button pButton type="button" class="fdBtn cls_schoopInv" label="Schedule OOP Invoice"
                     (click)="openPopup('scheduleOopModal')" style="float:left"></button>
-            </div>
-            <div class="box" style="margin-right: 20px;" *ngIf="constantService.userPermission.isFDUserAdmin">
+        </div>
+        <div class="box" *ngIf="constantService.userPermission.isFDUserAdmin">
                 <button pButton type="button" class="fdBtn cls_mafab" label="Mark As Payment"
                     (click)="openPopup('markAsPaymentModal')" style="float:left"></button>
-            </div>
-            <div class="box">
-                <i [hidden]="isLoaderenable && approvedBillableRes.length === 0"
-                    style="font-size: 1.8em;cursor: pointer;vertical-align: -webkit-baseline-middle;"
-                    (click)=" fdDataShareServie.convertToExcelFile(ab)" title="Export To Excel"
-                    class="fa fa-fw fa-file-excel-o cls_exportab"></i>
-            </div>
         </div>
     </div>
-    <div style="clear: both;"></div>
 </div>
-
-
+<div style="clear: both;"></div>
 
 
 <!--**********************************************************************************************
@@ -34,11 +25,12 @@
 
 
 <div class="financeTable" [hidden]="isLoaderenable && approvedBillableRes.length === 0">
-    <p-table #ab [columns]="approvedBillableCols" [value]="approvedBillableRes" [paginator]="true" [rows]="10"
+    <p-table #ab [columns]="approvedBillableCols" [value]="approvedBillableRes" 
+        [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" 
+        [paginator]="true" [rows]="10"
         [(selection)]="selectedAllRowsItem" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
         selectionMode="" exportFilename="Approved_Billable_Expenses" class="cls_abmaintable"
-        [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true"
-        currentPageReportTemplate="Showing {​​​​​​​​first}​​​​​​​​ to {​​​​​​​​last}​​​​​​​​ of {​​​​​​​​totalRecords}​​​​​​​​ entries"
         styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="financeTable">
         <ng-template pTemplate="header" let-columns let-rowData="rowData">
             <tr>
@@ -74,7 +66,10 @@
                         </p-columnFilter>
                     </div>
                 </th>
-                <th class="lastColumnWidth"></th>
+                <th class="lastColumnWidth">
+                    <i (click)=" fdDataShareServie.convertToExcelFile(ab)" title="Export To Excel"
+                    class="pi pi-file-excel tableExportIcon cls_exportab"></i>
+                </th>
             </tr>
             <!-- <tr>
                 <th></th>

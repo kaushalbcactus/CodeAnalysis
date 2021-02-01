@@ -11,7 +11,6 @@ export class QMSConstantsService {
   constructor(private globalConstant: ConstantsService, private global: GlobalService) { }
 
   public mainRouter : MenuItem;
-  public internalRouter : MenuItem;
 
   public qmsTab = {
     list: []

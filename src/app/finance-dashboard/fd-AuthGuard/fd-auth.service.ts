@@ -35,19 +35,19 @@ export class FdAuthService {
         this.constantService.userPermission.isFDUserAdmin = true;
         // this.constantsService.loader.isPSInnerLoaderHidden = false;
         this.fdConstantsService.fdComponent.tabs.topMenu = [
-            { label: 'Expenditure', routerLink: ['expenditure'] },
-            { label: 'Scheduled', routerLink: ['scheduled'] }
+            { label: 'Expenditure', routerLink: ['expenditure'], command: (event) => {this.fdConstantsService.mainRouter = event.item}  },
+            { label: 'Scheduled', routerLink: ['scheduled'], command: (event) => {this.fdConstantsService.mainRouter = event.item} }
         ];
         this.fdConstantsService.fdComponent.tabs.expenditureMenu = [
-            { label: 'Pending Expense', routerLink: ['pending'] },
-            { label: 'Cancelled/Rejected', routerLink: ['cancelled-reject'] },
-            { label: 'Approved(Non Billable)', routerLink: ['approvedNonBillable'] },
-            { label: 'Approved(Billable)', routerLink: ['approvedBillable'] }
+            { label: 'Pending Expense', routerLink: ['pending'], command: (event) => {this.fdConstantsService.internalRouter = event.item} },
+            { label: 'Cancelled/Rejected', routerLink: ['cancelled-reject'], command: (event) => {this.fdConstantsService.internalRouter = event.item} },
+            { label: 'Approved(Non Billable)', routerLink: ['approvedNonBillable'], command: (event) => {this.fdConstantsService.internalRouter = event.item} },
+            { label: 'Approved(Billable)', routerLink: ['approvedBillable'], command: (event) => {this.fdConstantsService.internalRouter = event.item}}
         ];
         // Scheduled Tabs
         this.fdConstantsService.fdComponent.tabs.scheduleMenu = [
-            { label: 'Deliverable Based / FTE', routerLink: ['deliverablebased-fte'] },
-            { label: 'OOP', routerLink: ['oop'] },
+            { label: 'Deliverable Based / FTE', routerLink: ['deliverablebased-fte'], command: (event) => {this.fdConstantsService.internalRouter = event.item} },
+            { label: 'OOP', routerLink: ['oop'], command: (event) => {this.fdConstantsService.internalRouter = event.item} },
         ];
         this.common.SetNewrelic('Finance-Dashboard', 'fd-auth', 'getUserInfo');
         this.globalObject.userInfo = await this.spOperationsServices.getUserInfo(this.globalObject.currentUser.userId);
@@ -59,31 +59,19 @@ export class FdAuthService {
             if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1) {
                 // All 
                 this.fdConstantsService.fdComponent.tabs.topMenu.push(
-                    { label: 'Confirmed', routerLink: ['confirmed'] },
-                    { label: 'Proforma', routerLink: ['proforma'] },
-                    { label: 'Outstanding Invoices', routerLink: ['outstanding-invoices'] },
-                    { label: 'Paid Invoices', routerLink: ['paid-invoices'] },
+                    { label: 'Confirmed', routerLink: ['confirmed'], command: (event) => {this.fdConstantsService.mainRouter = event.item} },
+                    { label: 'Proforma', routerLink: ['proforma'], command: (event) => {this.fdConstantsService.mainRouter = event.item} },
+                    { label: 'Outstanding Invoices', routerLink: ['outstanding-invoices'], command: (event) => {this.fdConstantsService.mainRouter = event.item} },
+                    { label: 'Paid Invoices', routerLink: ['paid-invoices'], command: (event) => {this.fdConstantsService.mainRouter = event.item} },
                 );
-                // All Expenditure Menus
-                // this.fdConstantsService.fdComponent.tabs.expenditureMenu.push(
-                //     { label: 'Cancelled/Rejected', routerLink: ['cancelled-reject'] },
-                //     { label: 'Approved(Non Billable)', routerLink: ['approvedNonBillable'] },
-                //     { label: 'Approved(Billable)', routerLink: ['approvedBillable'] }
-                // );
 
                 // All Scheduled Tabs
                 this.fdConstantsService.fdComponent.tabs.scheduleMenu.push(
-                    { label: 'Hourly Based', routerLink: ['hourly-based'] },
+                    { label: 'Hourly Based', routerLink: ['hourly-based'], command: (event) => {this.fdConstantsService.internalRouter = event.item} },
                 )
                 this.isUserManager = true;
                 this.isUserExpenseApprovers = true;
             } else if (groups.indexOf('ExpenseApprovers') > -1) {
-                // All Expenditure Menus
-                // this.fdConstantsService.fdComponent.tabs.expenditureMenu.push(
-                //     { label: 'Cancelled/Rejected', routerLink: ['cancelled-reject'] },
-                //     { label: 'Approved(Non Billable)', routerLink: ['approvedNonBillable'] },
-                //     { label: 'Approved(Billable)', routerLink: ['approvedBillable'] }
-                // );
                 this.isUserExpenseApprovers = true;
                 this.isUserManager = false;
             } else if (groups.indexOf('ExpenseApprovers') == -1 && groups.indexOf('Invoice_Team') == -1 && groups.indexOf('Managers') == -1) {
