@@ -1,35 +1,39 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { AdminObjectService } from '../services/admin-object.service';
-import { AdminConstantService } from '../services/admin-constant.service';
-import { GlobalService } from 'src/app/Services/global.service';
+import { Component, OnInit, ViewEncapsulation } from "@angular/core";
+import { AdminObjectService } from "../services/admin-object.service";
+import { AdminConstantService } from "../services/admin-constant.service";
+import { GlobalService } from "src/app/Services/global.service";
+import { MenuItem } from "primeng/api";
+import { Router } from "@angular/router";
 
 @Component({
-  selector: 'app-admin',
-  templateUrl: './admin.component.html',
-  styleUrls: ['./admin.component.css'],
-  encapsulation: ViewEncapsulation.None
+  selector: "app-admin",
+  templateUrl: "./admin.component.html",
+  styleUrls: ["./admin.component.css"],
+  encapsulation: ViewEncapsulation.None,
 })
 export class AdminComponent implements OnInit {
+  activeItem: MenuItem;
   /**
    * @description
    * Entry point for all admin module.
    */
-  public navLinks = [
-    { routerLink: ['/admin/clientMasterData'], label: 'Client Master', value: 'ClientMasterData' },
-    { routerLink: ['/admin/userProfile'], label: 'User Profile', value: 'UserProfileManagement' },
-    { routerLink: ['/admin/attribute'], label: 'Attribute', value: 'AttributeManagement' },
-    { routerLink: ['/admin/entitlement'], label: 'Entitlement', value: 'EntitlementManagement' }
-    // { routerLink: ['/admin/rules'], label: 'Rules', value: 'Rules' },
-    // { routerLink: ['/admin/referenceData'], label: 'Reference Data', value: 'ReferenceData' }
-  ];
   constructor(
     public adminObject: AdminObjectService,
     public adminConstantService: AdminConstantService,
-    public globalObject: GlobalService
-  ) { }
+    public globalService: GlobalService,
+    private router: Router
+  ) {}
   ngOnInit() {
-    this.globalObject.currentTitle = 'Admin';
+    setTimeout(() => {
+      this.globalService.currentTitle = "Admin";
+    }, 100);
 
+    this.adminConstantService.mainRouter = this.adminConstantService.DefaultMenu.List.find(
+      (c) => this.router.url.includes(c.routerLink)
+    )
+      ? this.adminConstantService.DefaultMenu.List.find((c) =>
+          this.router.url.includes(c.routerLink)
+        )
+      : this.adminConstantService.DefaultMenu.List[0];
   }
-
 }

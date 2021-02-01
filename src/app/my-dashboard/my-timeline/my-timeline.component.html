@@ -7,24 +7,11 @@
     <div id="CalendarInnerLoaderText">Loading...</div>
 </div>
 
-
-<!--**************************************************************************************************
-//  Plus icon to add booking
-************************************************************************************************** -->
-
-<button type="button" #hiddenButton id="hiddenButton" style="display: none" pButton icon="fa fa-fw fa-list" label="Show" (click)="menuPopup.toggle($event)"></button>
-<p-menu #menuPopup [appendTo]="apeendMenuTest" class='menuPopup' [style]="{'width':'16em'}" [popup]="true" [model]="items"></p-menu>
-
-
-
-
 <!--**************************************************************************************************
 //  color codes for different status
 ************************************************************************************************** -->
 
-
-
-<div class="p-col p-grid p-mr-2 p-ai-center dropdowninfo" style=" position: absolute !important; right:250px;">
+<div *ngIf="!CalendarLoader" class="p-col p-grid p-mr-2 p-ai-center dropdowninfo" style=" position: absolute !important; right:250px;">
     <!-- <i class="pi pi-info-circle p-my-2 p-mr-2" (click)="op2.show($event)" style="font-size:1.5em;cursor: pointer;"></i> -->
     <button pButton pRipple type="button" (click)="op2.show($event)" icon="pi pi-info" class="p-button-outlined p-button-danger p-mr-2"></button>
 
@@ -50,9 +37,12 @@
     <p-dropdown [style]="{'min-width':'10.5em'}" appendTo="body" [options]="taskTypes" (onChange)="onTaskTypeChange()" [(ngModel)]="selectedType" optionLabel="name" class="timeline-dropdown"></p-dropdown>
 
 
-    <button pButton pRipple type="button" (click)="menuPopup.toggle($event)" icon="pi pi-plus" class="p-button-outlined p-button-danger p-mx-2"></button>
-    <p-menu #menuPopup [style]="{'width':'16em'}" [popup]="true" [model]="items"></p-menu>
 
+    <div #plusIcon>
+        <button pButton pRipple type="button" (click)="menuPopup.toggle($event)" icon="pi pi-plus" class="p-button-outlined p-button-danger p-mx-2"></button>
+        <p-menu styleClass="timeline-plusIcon" #menuPopup [appendTo]="plusIcon" [popup]="true" [model]="items"></p-menu>
+
+    </div>
 </div>
 
 <!--**************************************************************************************************
@@ -64,9 +54,7 @@
 
 
 <ng-template #calendarPopover>
-
     <h3>{{toolData .title}}</h3>
-
 </ng-template>
 
 <!--**************************************************************************************************
@@ -82,7 +70,6 @@
         <button type="button" pButton icon="pi pi-save" id="saveTime" (click)="UpdateTask()" [disabled]="(task.projectType !== constants.PROJECTTYPES.FTE && (task.Status === SelectedStatus  ||  SelectedStatus === undefined)) || (task.projectType === constants.PROJECTTYPES.FTE && (task.Status === constants.STATUS.COMPLETED  ||  SelectedStatus === undefined))"
             class="p-mx-1 p-button-raised p-button-danger" label="Update"></button>
         <button type="button" pButton icon="pi pi-times" (click)="cancel();taskdisplay=false" label="Cancel" class="p-button-raised p-button-danger"></button>
-
     </div>
 
     <!--*************************************************************************************************

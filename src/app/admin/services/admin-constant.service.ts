@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { MenuItem } from "primeng/api";
 import { filter } from 'rxjs/operators';
 
 @Injectable({
@@ -6,6 +7,11 @@ import { filter } from 'rxjs/operators';
 })
 export class AdminConstantService {
   constructor() {}
+
+  public mainRouter : MenuItem;
+  public internalRouter : MenuItem;
+
+  
   public QUERY = {
     GET_PROJECT_INFO_BY_USERROLE: {
       select:

@@ -1,6 +1,2 @@
-<div class="tableLoader" [hidden]='adminObject.isMainLoaderHidden'>
-    <div id="mainLoader"></div>
-    <div id="mainLoaderText">Loading...</div>
-</div>
-<p-tabMenu [model]="this.adminConstantService.DefaultMenu.List"></p-tabMenu>
+<p-tabMenu [model]="adminConstantService.DefaultMenu.List" [activeItem]="adminConstantService.mainRouter"></p-tabMenu>
 <router-outlet></router-outlet>

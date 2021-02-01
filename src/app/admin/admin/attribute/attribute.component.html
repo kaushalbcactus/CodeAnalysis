@@ -1,9 +1,9 @@
 <div class="mt-10">
-  <p-tabMenu [model]="navLinks">
-    <ng-template pTemplate="link" let-link let-i="index">
-      {{link.label}}
-    </ng-template>
-  </p-tabMenu>
+    <p-tabMenu [model]="navLinks" [activeItem]="internalRouter">
+        <ng-template pTemplate="link" let-link let-i="index">
+            {{link.label}}
+        </ng-template>
+    </p-tabMenu>
 </div>
 <router-outlet>
 </router-outlet>

@@ -1,4 +1,4 @@
-.mt-20 {
+/* .mt-20 {
     margin-top: 20px !important;
 }
 .mt-10 {
@@ -19,10 +19,7 @@
 .icon-big{
     font-size: 1.8em !important;
 }
-/* form {
-    width: 70%;
-    margin: 0 auto;
-} */
+
 
 .ui-dialog-content {
     overflow-y:auto;
@@ -56,16 +53,14 @@ form{
 }
 .td-none{text-decoration: none}
 .tableLoader{
-    position: fixed; /* or absolute */
-    /* top: 20%;
-    left: 50%;
-    z-index: 9999; */
+    position: fixed; 
+
     width:100%;
     left:0;right:0;top:0;bottom:0;
     background-color: rgba(255,255,255,0.7);
     z-index:9999;
   }
-  /** Loader **/
+
 
     .ng-invalid.ng-dirty:not(form), .ng-invalid:not(form).form-submitted {
         border: solid 2px lightcoral;
@@ -186,7 +181,7 @@ form{
     .card-section .card .footer div {
         display: inline-block;
     }
-    /* Css for fixing scroll menu */
+
     .ui-table-scrollable-header {
         overflow: visible!important;
     }
@@ -223,7 +218,7 @@ form{
     .ui-datepicker:not(.ui-datepicker-inline) {
         top: 0px !important;
     }
-    /* Css for fixing scroll menu end here */
+
     .pr-20 {
         padding-right: 20px;
     }
@@ -258,4 +253,4 @@ form{
     .adminBtn>span.ui-button-text.ui-clickable {
         color: #fff;
     }
-    
+     */

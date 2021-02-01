@@ -28,37 +28,55 @@ export class AdminAuthService {
       console.log('groups ', groups);
       this.adminConstantService.DefaultMenu.List = [];
       this.adminConstantService.DefaultMenu.List = [
-        { label: 'Client Master', routerLink: ['clientMasterData'] },
-        { label: 'User Profile', routerLink: ['userProfile'] }
+        { label: 'Client Master', routerLink: 'clientMasterData' , command: (event) => {
+          this.adminConstantService.mainRouter = event.item;
+        } },
+        { label: 'User Profile', routerLink: 'userProfile' , command: (event) => {
+          this.adminConstantService.mainRouter = event.item;
+        } }
       ]
       if (groups.indexOf('SPTeam') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('Attribute_Admin') > -1) {
         if (groups.indexOf('Attribute_Admin') > -1) {
           this.adminConstantService.userRole.SPMAA = true;
         }
         this.adminConstantService.DefaultMenu.List.push(
-          { label: 'Attribute', routerLink: ['attribute'] }
+          { label: 'Attribute', routerLink: 'attribute' , command: (event) => {
+            this.adminConstantService.mainRouter = event.item;
+          } }
         )
       }
       if (groups.indexOf('SPTeam') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('Entitlement_Admin') > -1 || groups.indexOf('Permission_Admin') > -1) {
         this.adminConstantService.DefaultMenu.List.push(
-          { label: 'Entitlement', routerLink: ['entitlement'] }
+          { label: 'Entitlement', routerLink: 'entitlement'  , command: (event) => {
+            this.adminConstantService.mainRouter = event.item;
+          }}
         )
 
         this.adminConstantService.EntitleMentMenu.List = [];
         if (groups.indexOf('Entitlement_Admin') > -1) {
           this.adminConstantService.userRole.SPMEA = true;
           this.adminConstantService.EntitleMentMenu.List.push(
-            { label: 'User to Role Mapping', routerLink: ['userRoleMapping'] },
-            { label: 'Role to User Mapping', routerLink: ['roleUserMapping'] },
-            { label: 'Copy Permission', routerLink: ['copyPermission'] },
+            { label: 'User to Role Mapping', routerLink: 'userRoleMapping'  , command: (event) => {
+              this.adminConstantService.internalRouter = event.item;
+            } },
+            { label: 'Role to User Mapping', routerLink: 'roleUserMapping' , command: (event) => {
+              this.adminConstantService.internalRouter = event.item;
+            } },
+            { label: 'Copy Permission', routerLink: 'copyPermission' , command: (event) => {
+              this.adminConstantService.internalRouter = event.item;
+            } },
           )
         }
 
         if (groups.indexOf('Permission_Admin') > -1) {
           this.adminConstantService.userRole.SPMPA = true;
           this.adminConstantService.EntitleMentMenu.List.push(
-            { label: 'Add Access', routerLink: ['addAccess'] },
-            { label: 'Remove Access', routerLink: ['removeAccess'] },
+            { label: 'Add Access', routerLink: 'addAccess'  , command: (event) => {
+              this.adminConstantService.internalRouter = event.item;
+            }},
+            { label: 'Remove Access', routerLink: 'removeAccess' , command: (event) => {
+              this.adminConstantService.internalRouter = event.item;
+            } },
 
             // { label: 'Add User To SOW', routerLink: ['addUserToSow'] },
             // { label: 'Add User To Projects', routerLink: ['addUserToProjects'] },
@@ -72,12 +90,22 @@ export class AdminAuthService {
           this.adminConstantService.userRole.SPMAA = true;
           this.adminConstantService.EntitleMentMenu.List = [];
           this.adminConstantService.EntitleMentMenu.List.push(
-            { label: 'User to Role Mapping', routerLink: ['userRoleMapping'] },
-            { label: 'Role to User Mapping', routerLink: ['roleUserMapping'] },
-            { label: 'Copy Permission', routerLink: ['copyPermission'] },
+            { label: 'User to Role Mapping', routerLink: 'userRoleMapping' , command: (event) => {
+              this.adminConstantService.internalRouter = event.item;
+            } },
+            { label: 'Role to User Mapping', routerLink: 'roleUserMapping' , command: (event) => {
+              this.adminConstantService.internalRouter = event.item;
+            } },
+            { label: 'Copy Permission', routerLink: 'copyPermission' , command: (event) => {
+              this.adminConstantService.internalRouter = event.item;
+            } },
 
-            { label: 'Add Access', routerLink: ['addAccess'] },
-            { label: 'Remove Access', routerLink: ['removeAccess'] },
+            { label: 'Add Access', routerLink: 'addAccess' , command: (event) => {
+              this.adminConstantService.internalRouter = event.item;
+            }},
+            { label: 'Remove Access', routerLink: 'removeAccess' , command: (event) => {
+              this.adminConstantService.internalRouter = event.item;
+            } },
 
 
             // { label: 'Add User To SOW', routerLink: ['addUserToSow'] },
@@ -86,7 +114,9 @@ export class AdminAuthService {
           if (groups.indexOf('SPTeam') > -1) {
             this.adminConstantService.userRole.SPTeam = true;
             this.adminConstantService.EntitleMentMenu.List.push(
-              { label: 'Add Group Description', routerLink: ['addGroupDescription'] }
+              { label: 'Add Group Description', routerLink: 'addGroupDescription' , command: (event) => {
+                this.adminConstantService.internalRouter = event.item;
+              } }
             )
           }
           if (groups.indexOf('Managers') > -1) {

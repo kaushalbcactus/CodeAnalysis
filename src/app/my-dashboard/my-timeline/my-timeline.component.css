@@ -2,6 +2,13 @@
     background-color: #C53E3E !important;
     border: 1px solid #C53E3E !important;
     color: #ffffff !important;
+    height: 35px !important;
+}
+
+::ng-deep .timeline-plusIcon {
+    top: inherit !important;
+    margin: 0px 10px !important;
+    left: inherit !important;
 }
 
 
@@ -56,10 +63,6 @@
 
  ::ng-deep .fc-icon-plus:before {
     content: "\e90d" !important;
-}
-
- ::ng-deep .fc-AddnewEvent-button {
-    padding: 0px !important;
 }
 
 
@@ -329,8 +332,4 @@ th {
  ::ng-deep .fc .fc-toolbar .fc-button.fc-timeGridWeek-button.fc-button-active,
  ::ng-deep .fc .fc-toolbar .fc-button.fc-timeGridDay-button.fc-button-active {
     background: #d90000 !important;
-}
-
-::ng-deep .fc-AddnewEvent-button {
-    padding: 0px 7px !important;
 }

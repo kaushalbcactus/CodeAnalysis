@@ -4,16 +4,20 @@
 </div>
 
 
-<div class='UserButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="modalloaderenable">
 
-    <button *ngIf="!showEditClient" type="button" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SaveClientDetails()" label="Save"></button>
-    <button *ngIf="showEditClient" type="button" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SaveClientDetails()" label="Update"></button>
 
-    <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
+<div class="pdialogButton p-col-12 p-grid p-jc-end" *ngIf="!modalloaderenable">
+
+    <button *ngIf="!showEditClient" type="button" pButton icon="pi pi-save" id="saveClient" (click)="SaveClientDetails()" label="Save" class="p-mx-1 p-button-raised p-button-danger"></button>
+    <button *ngIf="showEditClient" type="button" pButton icon="pi pi-save" id="saveClient" (click)="SaveClientDetails()" label="Update" class="p-mx-1 p-button-raised p-button-danger"></button>
+
+    <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="p-button-raised p-button-danger"></button>
 
 </div>
 
-<div fxLayout="row" *ngIf="!modalloaderenable" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
+
+
+<div *ngIf="!modalloaderenable" #scrollDown>
 
     <form [formGroup]='addClient' class="p-col">
 
@@ -253,17 +257,17 @@
                     <!-- <textarea [rows]="7" [cols]="30" formControlName="notes" pInputTextarea maxlength="1000"></textarea> -->
                     <textarea [rows]="5" [cols]="30" formControlName="notes" pInputTextarea maxlength="1000" autoResize="autoResize" style="width: 100%;"></textarea> <br>
                     <span *ngIf="addClient.value.notes">{{addClient.value.notes.length}}/1000</span>
-                    <span *ngIf="addClient.value.notes && addClient.value.notes.length >= '1000'" style="color:red;float: right;">You have enter
+                    <span *ngIf="addClient.value.notes && addClient.value.notes.length >= '1000'" class="error" style="float: right;">You have enter
                         maximum length of Notes</span>
                 </div>
             </div>
             <div class="p-grid p-col-8" style="padding: 0.5em 0.5em 0.5em 0em;">
                 <div class="p-col-2" style="padding: 0.5em 0.5em 0.5em 0em;">&nbsp;Address</div>
                 <div class="p-col-10 AddressText" style="padding: 0.5em 0.5em 0.5em 0.2em;">
-                    <input type="text" formControlName="address1" pInputText>
-                    <input type="text" formControlName="address2" pInputText>
-                    <input type="text" formControlName="address3" pInputText>
-                    <input type="text" formControlName="address4" pInputText>
+                    <input class="p-col-12 p-mb-1" type="text" formControlName="address1" pInputText>
+                    <input class="p-col-12 p-mb-1" type="text" formControlName="address2" pInputText>
+                    <input class="p-col-12 p-mb-1" type="text" formControlName="address3" pInputText>
+                    <input class="p-col-12 p-mb-1" type="text" formControlName="address4" pInputText>
 
                 </div>
             </div>

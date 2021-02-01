@@ -77,6 +77,7 @@ export class ClientMasterdataComponent implements OnInit {
   providedPONumber: string;
   showTable: boolean;
   showPOInput: boolean;
+  loaderenable: boolean;
 
 
   /**
@@ -196,6 +197,7 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   ngOnInit() {
+    this.constantsService.loader.isPSInnerLoaderHidden= true;
     this.showTable = true;
     this.AllValues = [
       { name: 'Open', value: 'Open' },
@@ -210,19 +212,18 @@ export class ClientMasterdataComponent implements OnInit {
         field: "ClientLegalEntity",
         header: "Client Legal Entity",
         visibility: true,
+         Type:'string',dbName:'ClientLegalEntity', options:[]
       },
-      { field: "BillingEntity", header: "Billing Entity", visibility: true },
-      { field: "Bucket", header: "Bucket", visibility: true },
-      { field: "Acronym", header: "Acronym", visibility: true },
-      { field: "Market", header: "Market", visibility: true },
-      { field: "InvoiceName", header: "Invoice Name", visibility: true },
-      // { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
-      // { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
+      { field: "BillingEntity", header: "Billing Entity", visibility: true, Type:'string',dbName:'BillingEntity', options:[] },
+      { field: "Bucket", header: "Bucket", visibility: true, Type:'string',dbName:'Bucket', options:[] },
+      { field: "Acronym", header: "Acronym", visibility: true , Type:'string',dbName:'Acronym', options:[]},
+      { field: "Market", header: "Market", visibility: true, Type:'string',dbName:'Market', options:[] },
+      { field: "InvoiceName", header: "Invoice Name", visibility: true, Type:'string',dbName:'InvoiceName', options:[] },
       {
         field: "LastUpdatedFormat",
         header: "Last Updated Date",
-        visibility: false,
-      },
+        visibility: false, Type:'',dbName:'', options:[]
+      }
     ];
     this.subDivisionDetailsColumns = [
       { field: "SubDivision", header: "Sub-Division", visibility: true },
@@ -288,7 +289,7 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async loadClientTable() {
-    this.constantsService.loader.isPSInnerLoaderHidden = false;
+  this.loaderenable= true;
     // this.constantsService.loader.isPSInnerLoaderHidden = false;
     const tempArray = [];
     let getClientLegalInfo: any = {};
@@ -383,9 +384,10 @@ export class ClientMasterdataComponent implements OnInit {
         tempArray.push(obj);
       });
       this.clientMasterDataRows = tempArray;
-      this.colFilters(this.clientMasterDataRows);
+      this.clientMasterDataColumns = this.common.MainfilterForTable(this.clientMasterDataColumns,this.clientMasterDataRows);
+
     }
-    this.constantsService.loader.isPSInnerLoaderHidden = true;
+    this.loaderenable=false;
     this.adminConstants.toastMsg.SPMAA = false;
   }
   /**
@@ -399,89 +401,6 @@ export class ClientMasterdataComponent implements OnInit {
    * @param colData Pass colData as a parameter which contains an array of column object.
    *
    */
-  colFilters(colData) {
-    this.adminObject.clientMasterDataColArray.ClientLegalEntity = this.common.sortData(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity };
-          return b;
-        })
-      )
-    );
-    const lastUpdatedArray = this.common.sortDateArray(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = {
-            label: this.datepipe.transform(a.LastUpdated, "MMM dd, yyyy"),
-            value: a.LastUpdated,
-          };
-          return b;
-        })
-      )
-    );
-    this.adminObject.clientMasterDataColArray.LastUpdated = lastUpdatedArray.map(
-      (a) => {
-        const b = {
-          label: this.datepipe.transform(a, "MMM dd, yyyy"),
-          value: new Date(new Date(a).toDateString()),
-        };
-        return b;
-      }
-    );
-    this.adminObject.clientMasterDataColArray.LastModifiedBy = this.common.sortData(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy };
-          return b;
-        })
-      )
-    );
-
-    this.adminObject.clientMasterDataColArray.BillingEntity = this.common.sortData(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.BillingEntity, value: a.BillingEntity };
-          return b;
-        })
-      )
-    );
-
-    this.adminObject.clientMasterDataColArray.Bucket = this.common.sortData(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.Bucket, value: a.Bucket };
-          return b;
-        })
-      )
-    );
-
-    this.adminObject.clientMasterDataColArray.Acronym = this.common.sortData(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.Acronym, value: a.Acronym };
-          return b;
-        })
-      )
-    );
-
-    this.adminObject.clientMasterDataColArray.Market = this.common.sortData(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.Market, value: a.Market };
-          return b;
-        })
-      )
-    );
-
-    this.adminObject.clientMasterDataColArray.InvoiceName = this.common.sortData(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.InvoiceName, value: a.InvoiceName };
-          return b;
-        })
-      )
-    );
-  }
 
   /**
    * Construct a method to load the newly created item into the table without refreshing the whole page.
@@ -554,7 +473,7 @@ export class ClientMasterdataComponent implements OnInit {
         this.clientMasterDataRows.unshift(obj);
       }
       this.clientMasterDataRows = [...this.clientMasterDataRows];
-      this.colFilters(this.clientMasterDataRows);
+      this.clientMasterDataColumns = this.common.MainfilterForTable(this.clientMasterDataColumns,this.clientMasterDataRows);
     }
   }
   /**
@@ -632,7 +551,7 @@ export class ClientMasterdataComponent implements OnInit {
    * @param itemName pass the item name from which list we want to delete record.
    */
   async confirmUpdate(data, updateData, listName, type, itemName) {
-    this.constantsService.loader.isPSInnerLoaderHidden = false;
+    // this.constantsService.loader.isPSInnerLoaderHidden = false;
     this.common.SetNewrelic("admin", "admin-clientMaster", "UpdateCLE");
     const result = await this.spServices.updateItem(
       listName,
@@ -653,7 +572,7 @@ export class ClientMasterdataComponent implements OnInit {
           (x) => x.ID === data.ID
         );
         this.clientMasterDataRows.splice(clientIndex, 1);
-        this.colFilters(this.clientMasterDataRows);
+        this.clientMasterDataColumns = this.common.MainfilterForTable(this.clientMasterDataColumns,this.clientMasterDataRows);
         break;
       case this.adminConstants.DELETE_LIST_ITEM.SUB_DIVISION:
         this.common.showToastrMessage(
@@ -690,7 +609,7 @@ export class ClientMasterdataComponent implements OnInit {
         this.POFilters(this.PORows);
         break;
     }
-    this.constantsService.loader.isPSInnerLoaderHidden = true;
+    // this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
@@ -702,7 +621,7 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async showSubDivision() {
-    this.constantsService.loader.isPSInnerLoaderHidden = false;
+    // this.constantsService.loader.isPSInnerLoaderHidden = false;
     const tempArray = [];
     this.subDivisionDetailsRows = [];
     const getSubDivisionInfo = Object.assign(
@@ -742,7 +661,7 @@ export class ClientMasterdataComponent implements OnInit {
       this.subDivisionDetailsRows = tempArray;
       this.subDivisionFilters(this.subDivisionDetailsRows);
     }
-    this.constantsService.loader.isPSInnerLoaderHidden = true;
+    // this.constantsService.loader.isPSInnerLoaderHidden = true;
     this.showSubDivisionDetails = true;
   }
 
@@ -864,7 +783,7 @@ export class ClientMasterdataComponent implements OnInit {
   async showPOC() {
 
     this.resetPOCTable();
-    this.constantsService.loader.isPSInnerLoaderHidden = false;
+    // this.constantsService.loader.isPSInnerLoaderHidden = false;
     const tempArray = [];
     this.POCRows = [];
     const getPocInfo = Object.assign(
@@ -916,7 +835,7 @@ export class ClientMasterdataComponent implements OnInit {
       this.POCRows = tempArray;
       this.POCFilters(this.POCRows);
     }
-    this.constantsService.loader.isPSInnerLoaderHidden = true;
+    // this.constantsService.loader.isPSInnerLoaderHidden = true;
     this.showPointofContact = true;
   }
 
@@ -1088,11 +1007,11 @@ export class ClientMasterdataComponent implements OnInit {
     setTimeout(() => {
       this.resetPOTable();
     },100)
-    this.constantsService.loader.isPSInnerLoaderHidden = false;
+    // this.constantsService.loader.isPSInnerLoaderHidden = false;
     this.PORows = [];
     const results = await this.getAllActivePOData();
     this.PORows = await this.setPODataObject(results);
-    this.constantsService.loader.isPSInnerLoaderHidden = true;
+    // this.constantsService.loader.isPSInnerLoaderHidden = true;
     this.showPurchaseOrder = true;
   }
 
@@ -1555,31 +1474,31 @@ export class ClientMasterdataComponent implements OnInit {
     cmd.exportCSV();
   }
 
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
+  // optionFilter(event: any) {
+  //   if (event.target.value) {
+  //     this.isOptionFilter = false;
+  //   }
+  // }
 
-  // tslint:disable-next-line: use-life-cycle-interface
-  ngAfterViewChecked() {
-    if (this.clientMasterDataRows.length && this.isOptionFilter) {
-      const obj = {
-        tableData: this.clientMasterTable,
-        colFields: this.adminObject.clientMasterDataColArray,
-      };
-      if (obj.tableData.filteredValue) {
-        this.common.updateOptionValues(obj);
-      } else if (
-        obj.tableData.filteredValue === null ||
-        obj.tableData.filteredValue === undefined
-      ) {
-        this.colFilters(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-      this.cdr.detectChanges();
-    }
-  }
+  // // tslint:disable-next-line: use-life-cycle-interface
+  // ngAfterViewChecked() {
+  //   if (this.clientMasterDataRows.length && this.isOptionFilter) {
+  //     const obj = {
+  //       tableData: this.clientMasterTable,
+  //       colFields: this.adminObject.clientMasterDataColArray,
+  //     };
+  //     if (obj.tableData.filteredValue) {
+  //       this.common.updateOptionValues(obj);
+  //     } else if (
+  //       obj.tableData.filteredValue === null ||
+  //       obj.tableData.filteredValue === undefined
+  //     ) {
+  //       this.colFilters(obj.tableData.value);
+  //       this.isOptionFilter = false;
+  //     }
+  //     this.cdr.detectChanges();
+  //   }
+  // }
 
   /**
    * Construct a method to save or update the client legal entity into `ClientLegalEntity` list.
@@ -1599,7 +1518,7 @@ export class ClientMasterdataComponent implements OnInit {
    */
   async saveClient(clientDetails) {
     // write the save logic using rest api.
-    this.constantsService.loader.isPSInnerLoaderHidden = false;
+    // this.constantsService.loader.isPSInnerLoaderHidden = false;
     const clientData = await this.getClientData(clientDetails);
 
     console.log("printclientData");
@@ -1691,7 +1610,7 @@ export class ClientMasterdataComponent implements OnInit {
       await this.loadRecentRecords(this.currClientObj.ID, this.showEditClient);
     }
     this.showaddClientModal = false;
-    this.constantsService.loader.isPSInnerLoaderHidden = true;
+    // this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
   /**
    * Construct a method to add item into `CLEBucketMapping` list.
@@ -2370,13 +2289,13 @@ export class ClientMasterdataComponent implements OnInit {
 
   async onChangeSelect(event) {
     if (this.selectedOption.name === 'Open') {
-      this.constantsService.loader.isPSInnerLoaderHidden = false;
+      // this.constantsService.loader.isPSInnerLoaderHidden = false;
       this.showTable = false;
       this.showPOInput = false;
       const results = await this.getAllActivePOData();
       this.PORows = await this.setPODataObject(results);
       this.showTable = true;
-      this.constantsService.loader.isPSInnerLoaderHidden = true;
+      // this.constantsService.loader.isPSInnerLoaderHidden = true;
     } else {
       this.showTable = false;
       this.PORows = [];
@@ -2386,10 +2305,10 @@ export class ClientMasterdataComponent implements OnInit {
   }
 
   async searchClosedPO(event) {
-    this.constantsService.loader.isPSInnerLoaderHidden = false;
+    // this.constantsService.loader.isPSInnerLoaderHidden = false;
     await this.getPOList();
     this.showTable = true;
-    this.constantsService.loader.isPSInnerLoaderHidden = true;
+    // this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
 
   async getPOList() {
