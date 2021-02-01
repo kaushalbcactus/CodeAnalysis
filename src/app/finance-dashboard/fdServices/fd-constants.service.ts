@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GlobalService } from '../../Services/global.service';
 import { ConstantsService } from '../../Services/constants.service';
-
+import { MenuItem } from "primeng/api";
 @Injectable({
     providedIn: 'root'
 })
@@ -11,7 +11,8 @@ export class FdConstantsService {
         private constantService: ConstantsService,
         private globalObject: GlobalService
     ) { }
-
+    public mainRouter : MenuItem;
+    public internalRouter : MenuItem;
     fdComponent = {
         hideDatesSection: true,
         tabs: {

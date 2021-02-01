@@ -5,7 +5,7 @@
 </div>
 
 
-<div class="ui-g">
+<!-- <div class="ui-g">
     <div class="ui-g-3"></div>
     <div class="ui-g-3"></div>
     <div class="ui-g-3"></div>
@@ -18,23 +18,36 @@
             <button type="button" class="fdBtn" pButton label="Sent to AP" (click)="sentToAP()"></button>
         </div>
         <div class="box">
-            <i (click)=" fdDataShareServie.convertToExcelFile(outi)" title="Export To Excel"
-                class="fa fa-fw fa-file-excel-o excel-icon"></i>
+           
+        </div>
+    </div>
+</div> -->
+
+<div class="p-col-12 p-md-12 p-lg-12 f-right">
+    <div style="display: -webkit-inline-box;">
+        <div class="box" style="margin-right: 20px">
+            <button type="button" class="fdBtn" pButton icon="pi pi-caret-up" iconPos="left"
+                label="Upload Payment Receipt" (click)="uploadReceipts()"></button>
+        </div>
+        <div class="box">
+            <button type="button" class="fdBtn" pButton label="Sent to AP" (click)="sentToAP()"></button>
         </div>
     </div>
 </div>
+<div style="clear: both;"></div>
 
 <div class="financeTable">
-    <p-table #outi dataKey="Id" [columns]="outstandingInCols" [value]="outstandingInvoicesRes" [paginator]="true"
-        [rows]="10" [(selection)]="selectedRowData" selectionMode="multiple" (onRowSelect)="onRowSelect($event)"
-        exportFilename="Outstanding_Invoices" [(first)]="pageNumber" (onPage)="paginate($event)"
+    <p-table #outi dataKey="Id" [columns]="outstandingInCols" [value]="outstandingInvoicesRes"
+        [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [paginator]="true" [rows]="10"
+        [(selection)]="selectedRowData" selectionMode="" (onRowSelect)="onRowSelect($event)"
+        exportFilename="Outstanding_Invoices"
         rowExpandMode="multiple" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)"
-        [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true"
-        currentPageReportTemplate="Showing {​​​​​​​​first}​​​​​​​​ to {​​​​​​​​last}​​​​​​​​ of {​​​​​​​​totalRecords}​​​​​​​​ entries"
+        
         styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="outstandingTable">
         <ng-template pTemplate="header" let-columns>
             <tr>
-                <th>S.No</th>
+                <th class="firstColumnWidth">S.No</th>
                 <th class="firstColumnWidth">
                     <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                 </th>
@@ -66,7 +79,10 @@
                         </p-columnFilter>
                     </div>
                 </th>
-                <th class="lastColumnWidth"></th>
+                <th class="lastColumnWidth">
+                    <i (click)=" fdDataShareServie.convertToExcelFile(outi)" title="Export To Excel"
+                    class="pi pi-file-excel tableExportIcon"></i>
+                </th>
             </tr>
             <!-- 
             <tr>
@@ -113,8 +129,7 @@
         <ng-template pTemplate="body" let-rowData let-expanded="expanded" let-columns="columns" let-rowIndex="rowIndex">
             <tr>
                 <td>
-                    {{rowIndex+1}}
-                    <a href="#" [pRowToggler]="rowData" style="vertical-align: middle;">
+                    <a class="error" href="#" [pRowToggler]="rowData" style="vertical-align: middle;">
                         <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
                     </a>
                 </td>
@@ -130,7 +145,7 @@
                         {{rowData[col.field] | date:'MMM dd, yyyy' }}
                     </ng-container>
                     <ng-container *ngIf="col.field === 'DisplayInvoiceWithAuxiliary'">
-                        <a *ngIf="rowData['FileURL']" [href]="rowData['FileURL']" target="_blank">
+                        <a *ngIf="rowData['FileURL']" class="error" [href]="rowData['FileURL']" target="_blank">
                             {{rowData[col.field]}}</a>
                         <p *ngIf="!rowData['FileURL']">{{rowData[col.field]}}</p>
                     </ng-container>
@@ -144,7 +159,7 @@
                         </div>
                     </ng-container> -->
                 </td>
-                <td>
+                <td class="lastColumnWidth">
                     <div>
                         <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu">
                         </p-menu>
@@ -326,7 +341,7 @@
     <form>
         <div class="ui-g">
             <div class="ui-g-12">
-                Are you sure you want to confirm the Send To AP ?
+                Are you sure you want to mark invoice as Sent To AP ?
             </div>
         </div>
     </form>

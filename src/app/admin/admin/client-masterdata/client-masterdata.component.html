@@ -3,8 +3,6 @@
     <div id="scInnerLoaderText">Loading...</div>
 </div>
 
-
-
 <div class="p-my-1 p-col p-grid p-jc-end" *ngIf="!loaderenable">
     <button pButton pRipple *ngIf="isUserSPMCA" (click)="addEditClentLegalEntity('Add New Client Legal Entity', null)" icon="pi pi-plus" type="button" label="Add New Client" class="p-button-outlined p-button-danger p-mr-2"></button>
     <a (click)="downloadExcel(cmd)" class="download-worksheet td-none error"><i class="pi pi-file-excel" style="font-size: 2.2em;" 

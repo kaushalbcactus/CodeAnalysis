@@ -254,7 +254,7 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     background-color: #c53e3e !important;
 }
 
-.p-steps .p-steps-item.p-highlight .p-steps-title {
+.p-steps .p-steps-item.p-highlight .p-steps-title, .p-button.p-button-text {
     color: #9a1111 !important;
     background: white !important;
     padding: 0px 6px !important;
