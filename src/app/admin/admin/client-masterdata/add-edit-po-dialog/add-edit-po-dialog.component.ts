@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
@@ -14,6 +14,7 @@ import { CommonService } from 'src/app/Services/common.service';
   styleUrls: ['./add-edit-po-dialog.component.css']
 })
 export class AddEditPoDialogComponent implements OnInit {
+  @ViewChild("fileuploderView", { static: false }) fileuploderView: ElementRef;
   PORows = [];
   showeditPO = false;
   PoForm: FormGroup;
@@ -435,6 +436,12 @@ export class AddEditPoDialogComponent implements OnInit {
     this.selectedFile = null;
     if (event.target.files && event.target.files.length > 0) {
       this.selectedFile = event.target.files;
+      this.fileuploderView.nativeElement.getElementsByClassName('file-select-name')[0].innerText =this.selectedFile.name;
+      this.fileuploderView.nativeElement.classList.add('active');
+    }
+    else{
+      this.fileuploderView.nativeElement.classList.remove('active');
+      this.fileuploderView.nativeElement.getElementsByClassName('file-select-name')[0].innerText = 'No file chosen...';
     }
   }
 

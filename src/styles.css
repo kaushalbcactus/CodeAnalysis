@@ -715,7 +715,8 @@ i.pi.pi-ellipsis-v,
 .UserTasksRow,
 .tableHeader,
 form>div>div>label,
-form>div>div>div>label {
+form>div>div>div>label,
+.formfont {
     font-size: 13px !important;
 }
 
@@ -738,4 +739,12 @@ form>div>div>div>label {
 .gantt_last_cell .contextMenu {
     padding: 10px 20px;
     background-color: beige;
+}
+
+.pdialogButton>button {
+    cursor: pointer !important;
+}
+
+.p-radiobutton-label {
+    margin-bottom: inherit !important;
 }

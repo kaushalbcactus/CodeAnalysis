@@ -8,8 +8,8 @@
 
 <div class="pdialogButton p-col-12 p-grid p-jc-end" *ngIf="!modalloaderenable">
 
-    <button *ngIf="!showEditClient" type="button" pButton icon="pi pi-save" id="saveClient" (click)="SaveClientDetails()" label="Save" class="p-mx-1 p-button-raised p-button-danger"></button>
-    <button *ngIf="showEditClient" type="button" pButton icon="pi pi-save" id="saveClient" (click)="SaveClientDetails()" label="Update" class="p-mx-1 p-button-raised p-button-danger"></button>
+
+    <button *ngIf="showEditClient" type="button" pButton icon="pi pi-save" id="saveClient" (click)="SaveClientDetails()" [label]=" showEditClient ? 'Update':'Save'" class="p-mx-1 p-button-raised p-button-danger"></button>
 
     <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="p-button-raised p-button-danger"></button>
 
@@ -19,7 +19,7 @@
 
 <div *ngIf="!modalloaderenable" #scrollDown>
 
-    <form [formGroup]='addClient' class="p-col">
+    <form [formGroup]='addClient' class="p-col formfont">
 
         <div class="p-grid">
             <div class="p-grid p-col">

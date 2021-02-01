@@ -52,7 +52,6 @@ export class TimeSpentDialogComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-debugger;
     this.data = this.config.data === undefined ? this.taskData : this.config.data;
     if (this.data !== undefined) {
       if (this.config.data) {

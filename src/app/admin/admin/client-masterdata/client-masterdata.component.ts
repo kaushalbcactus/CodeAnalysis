@@ -3,28 +3,16 @@ import {
   OnInit,
   ApplicationRef,
   NgZone,
-  ViewEncapsulation,
   ViewChild,
-  ChangeDetectorRef,
-  ViewChildren,
-  QueryList,
 } from "@angular/core";
-import { DatePipe, PlatformLocation, LocationStrategy } from "@angular/common";
-import {
-  FormBuilder,
-  FormGroup,
-  FormControl,
-  Validators,
-  NgForm,
-  ControlContainer,
-} from "@angular/forms";
+import { DatePipe, PlatformLocation } from "@angular/common";
+import { FormBuilder } from "@angular/forms";
 import { AdminCommonService } from "../../services/admin-common.service";
 import { AdminConstantService } from "../../services/admin-constant.service";
 import { AdminObjectService } from "../../services/admin-object.service";
 import { ConstantsService } from "src/app/Services/constants.service";
 import { SPOperationService } from "src/app/Services/spoperation.service";
 import { Router } from "@angular/router";
-import { removeSummaryDuplicates } from "@angular/compiler";
 import { GlobalService } from "src/app/Services/global.service";
 import { CommonService } from "src/app/Services/common.service";
 import { DialogService } from "primeng/dynamicdialog";
@@ -33,9 +21,8 @@ import { AddEditSubdivisionComponent } from "./add-edit-subdivision/add-edit-sub
 import { AddEditPocComponent } from "./add-edit-poc/add-edit-poc.component";
 import { AddEditPoDialogComponent } from "./add-edit-po-dialog/add-edit-po-dialog.component";
 import { ChangeBudgetDialogComponent } from "./change-budget-dialog/change-budget-dialog.component";
-import { PMObjectService } from "src/app/projectmanagement/services/pmobject.service";
-import { Table } from 'primeng/table';
-import { MultiSelect } from 'primeng/multiselect';
+import { Table } from "primeng/table";
+
 
 @Component({
   selector: "app-client-masterdata",
@@ -52,39 +39,24 @@ import { MultiSelect } from 'primeng/multiselect';
  *
  */
 export class ClientMasterdataComponent implements OnInit {
-
-  // for PO  reset 
-  @ViewChild('poTable', { static: false }) poTable: Table;
-  @ViewChildren('poName') poName: QueryList<MultiSelect>;
-  @ViewChildren('poNo') poNo: QueryList<MultiSelect>;
-  @ViewChildren('poRevenur') poRevenur: QueryList<MultiSelect>;
-  @ViewChildren('poOOP') poOOP: QueryList<MultiSelect>;
-  @ViewChildren('poLUpdated') poLUpdated: QueryList<MultiSelect>;
-  @ViewChildren('poLUpdatedBy') poLUpdatedBy: QueryList<MultiSelect>;
+  // for PO  reset
+  @ViewChild("poTable", { static: false }) poTable: Table;
   modalloaderenable: boolean;
 
-
   //for poc reset
-  @ViewChild('poc', { static: false }) poc: Table;
-  @ViewChildren('pocFName') pocFName: QueryList<MultiSelect>;
-  @ViewChildren('pocLName') pocLName: QueryList<MultiSelect>;
-  @ViewChildren('pocEmail') pocEmail: QueryList<MultiSelect>;
-  @ViewChildren('pocLUpdated') pocLUpdated: QueryList<MultiSelect>;
-  @ViewChildren('pocLUpdatedBy') pocLUpdatedBy: QueryList<MultiSelect>;
+  @ViewChild("poc", { static: false }) poc: Table;
   groupITInfo: any;
-  AllValues: { name: string; value: string; }[];
+  AllValues: { name: string; value: string }[];
   selectedOption: any;
   providedPONumber: string;
   showTable: boolean;
   showPOInput: boolean;
   loaderenable: boolean;
 
-
   /**
    * Construct a method to create an instance of required component.
    *
    * @param datepipe This is instance referance of `DatePipe` component.
-   * @param frmbuilder This is instance referance of `FormBuilder` component.
    * @param adminCommonService This is instance referance of `AdminCommonService` component.
    * @param adminConstants This is instance referance of `AdminConstantService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
@@ -99,7 +71,6 @@ export class ClientMasterdataComponent implements OnInit {
    */
   constructor(
     private datepipe: DatePipe,
-    private frmbuilder: FormBuilder,
     private adminCommonService: AdminCommonService,
     private adminConstants: AdminConstantService,
     public adminObject: AdminObjectService,
@@ -111,7 +82,6 @@ export class ClientMasterdataComponent implements OnInit {
     private zone: NgZone,
     private globalObject: GlobalService,
     private common: CommonService,
-    private cdr: ChangeDetectorRef,
     public dialogService: DialogService
   ) {
     // Browser back button disabled & bookmark issue solution
@@ -197,84 +167,235 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   ngOnInit() {
-    this.constantsService.loader.isPSInnerLoaderHidden= true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
     this.showTable = true;
     this.AllValues = [
-      { name: 'Open', value: 'Open' },
-      { name: 'Closed', value: 'Closed' }
+      { name: "Open", value: "Open" },
+      { name: "Closed", value: "Closed" },
     ];
     this.selectedOption = this.AllValues[0];
     this.showPOInput = false;
-    this.providedPONumber = '';
+    this.providedPONumber = "";
 
     this.clientMasterDataColumns = [
       {
         field: "ClientLegalEntity",
         header: "Client Legal Entity",
         visibility: true,
-         Type:'string',dbName:'ClientLegalEntity', options:[]
+        Type: "string",
+        dbName: "ClientLegalEntity",
+        options: [],
       },
-      { field: "BillingEntity", header: "Billing Entity", visibility: true, Type:'string',dbName:'BillingEntity', options:[] },
-      { field: "Bucket", header: "Bucket", visibility: true, Type:'string',dbName:'Bucket', options:[] },
-      { field: "Acronym", header: "Acronym", visibility: true , Type:'string',dbName:'Acronym', options:[]},
-      { field: "Market", header: "Market", visibility: true, Type:'string',dbName:'Market', options:[] },
-      { field: "InvoiceName", header: "Invoice Name", visibility: true, Type:'string',dbName:'InvoiceName', options:[] },
+      {
+        field: "BillingEntity",
+        header: "Billing Entity",
+        visibility: true,
+        Type: "string",
+        dbName: "BillingEntity",
+        options: [],
+      },
+      {
+        field: "Bucket",
+        header: "Bucket",
+        visibility: true,
+        Type: "string",
+        dbName: "Bucket",
+        options: [],
+      },
+      {
+        field: "Acronym",
+        header: "Acronym",
+        visibility: true,
+        Type: "string",
+        dbName: "Acronym",
+        options: [],
+      },
+      {
+        field: "Market",
+        header: "Market",
+        visibility: true,
+        Type: "string",
+        dbName: "Market",
+        options: [],
+      },
+      {
+        field: "InvoiceName",
+        header: "Invoice Name",
+        visibility: true,
+        Type: "string",
+        dbName: "InvoiceName",
+        options: [],
+      },
       {
         field: "LastUpdatedFormat",
         header: "Last Updated Date",
-        visibility: false, Type:'',dbName:'', options:[]
-      }
+        visibility: false,
+        Type: "",
+        dbName: "",
+        options: [],
+      },
     ];
     this.subDivisionDetailsColumns = [
-      { field: "SubDivision", header: "Sub-Division", visibility: true },
+      {
+        field: "SubDivision",
+        header: "Sub-Division",
+        visibility: true,
+        Type: "string",
+        dbName: "SubDivision",
+        options: [],
+      },
       {
         field: "LastUpdated",
         header: "Last Updated",
         visibility: true,
         exportable: false,
+        Type: "date",
+        dbName: "LastUpdated",
+        options: [],
       },
-      { field: "LastUpdatedBy", header: "Last Updated By", visibility: true },
+      {
+        field: "LastUpdatedBy",
+        header: "Last Updated By",
+        visibility: true,
+        Type: "string",
+        dbName: "LastUpdatedBy",
+        options: [],
+      },
       {
         field: "LastUpdatedFormat",
         header: "Last Updated Date",
         visibility: false,
+        Type: "",
+        dbName: "",
+        options: [],
       },
     ];
     this.POCColumns = [
-      { field: "FName", header: "First Name", visibility: true },
-      { field: "LName", header: "Last Name", visibility: true },
-      { field: "EmailAddress", header: "Email", visibility: true },
+      {
+        field: "FName",
+        header: "First Name",
+        visibility: true,
+        Type: "string",
+        dbName: "FName",
+        options: [],
+      },
+      {
+        field: "LName",
+        header: "Last Name",
+        visibility: true,
+        Type: "string",
+        dbName: "LName",
+        options: [],
+      },
+      {
+        field: "EmailAddress",
+        header: "Email",
+        visibility: true,
+        Type: "string",
+        dbName: "EmailAddress",
+        options: [],
+      },
       {
         field: "LastUpdated",
         header: "Last Updated",
         visibility: true,
         exportable: false,
+        Type: "date",
+        dbName: "LastUpdated",
+        options: [],
       },
-      { field: "LastUpdatedBy", header: "Last Updated By", visibility: true },
+      {
+        field: "LastUpdatedBy",
+        header: "Last Updated By",
+        visibility: true,
+        Type: "string",
+        dbName: "LastUpdatedBy",
+        options: [],
+      },
       {
         field: "LastUpdatedFormat",
         header: "Last Updated Date",
         visibility: false,
+        Type: "",
+        dbName: "",
+        options: [],
       },
     ];
     this.POColumns = [
-      { field: "PoName", header: "Po Name", visibility: true },
-      { field: "PoNumber", header: "Po Number", visibility: true },
-      { field: "AmountRevenue", header: "Revenue", visibility: true },
-      { field: "AmountOOP", header: "OOP", visibility: true },
-      { field: "BalancedRevenue", header: "Balanced Revenue", visibility: false,exportable: true },
-      { field: "BalancedOOP", header: "Balanced OOP", visibility: false ,exportable: true},
+      {
+        field: "PoName",
+        header: "Po Name",
+        visibility: true,
+        Type: "string",
+        dbName: "PoName",
+        options: [],
+      },
+      {
+        field: "PoNumber",
+        header: "Po Number",
+        visibility: true,
+        Type: "string",
+        dbName: "PoNumber",
+        options: [],
+      },
+      {
+        field: "AmountRevenue",
+        header: "Revenue",
+        visibility: true,
+        Type: "number",
+        dbName: "AmountRevenue",
+        options: [],
+      },
+      {
+        field: "AmountOOP",
+        header: "OOP",
+        visibility: true,
+        Type: "number",
+        dbName: "AmountOOP",
+        options: [],
+      },
+      {
+        field: "BalancedRevenue",
+        header: "Balanced Revenue",
+        visibility: false,
+        exportable: true,
+        Type: "",
+        dbName: "",
+        options: [],
+      },
+      {
+        field: "BalancedOOP",
+        header: "Balanced OOP",
+        visibility: false,
+        exportable: true,
+        Type: "",
+        dbName: "",
+        options: [],
+      },
       {
         field: "LastUpdated",
         header: "Last Updated",
         visibility: true,
         exportable: false,
+        Type: "date",
+        dbName: "LastUpdated",
+        options: [],
       },
-      { field: "LastUpdatedBy", header: "Last Updated By", visibility: true },
+      {
+        field: "LastUpdatedBy",
+        header: "Last Updated By",
+        visibility: true,
+        Type: "string",
+        dbName: "LastUpdatedBy",
+        options: [],
+      },
       {
         field: "LastUpdatedFormat",
         header: "Last Updated Date",
         visibility: false,
+        Type: "",
+        dbName: "",
+        options: [],
       },
     ];
     this.loadClientTable();
@@ -289,7 +410,7 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async loadClientTable() {
-  this.loaderenable= true;
+    this.loaderenable = true;
     // this.constantsService.loader.isPSInnerLoaderHidden = false;
     const tempArray = [];
     let getClientLegalInfo: any = {};
@@ -307,7 +428,6 @@ export class ClientMasterdataComponent implements OnInit {
         groups.indexOf("SPTeam") > -1 ||
         groups.indexOf("Managers") > -1 ||
         groups.indexOf("Client_Admin") > -1
-        
       ) {
         this.isUserSPMCA = true;
         getClientLegalInfo = Object.assign(
@@ -318,8 +438,7 @@ export class ClientMasterdataComponent implements OnInit {
           /{{isActive}}/gi,
           this.adminConstants.LOGICAL_FIELD.YES
         );
-      }
-       else if(groups.indexOf("FinanceMembers") > -1) {
+      } else if (groups.indexOf("FinanceMembers") > -1) {
         getClientLegalInfo = Object.assign(
           {},
           this.adminConstants.QUERY.GET_ALL_CLIENT_LEGAL_ENTITY_BY_ACTIVE
@@ -328,8 +447,7 @@ export class ClientMasterdataComponent implements OnInit {
           /{{isActive}}/gi,
           this.adminConstants.LOGICAL_FIELD.YES
         );
-       }
-       else {
+      } else {
         this.isUserSPMCA = false;
         getClientLegalInfo = Object.assign(
           {},
@@ -384,10 +502,12 @@ export class ClientMasterdataComponent implements OnInit {
         tempArray.push(obj);
       });
       this.clientMasterDataRows = tempArray;
-      this.clientMasterDataColumns = this.common.MainfilterForTable(this.clientMasterDataColumns,this.clientMasterDataRows);
-
+      this.clientMasterDataColumns = this.common.MainfilterForTable(
+        this.clientMasterDataColumns,
+        this.clientMasterDataRows
+      );
     }
-    this.loaderenable=false;
+    this.loaderenable = false;
     this.adminConstants.toastMsg.SPMAA = false;
   }
   /**
@@ -473,7 +593,10 @@ export class ClientMasterdataComponent implements OnInit {
         this.clientMasterDataRows.unshift(obj);
       }
       this.clientMasterDataRows = [...this.clientMasterDataRows];
-      this.clientMasterDataColumns = this.common.MainfilterForTable(this.clientMasterDataColumns,this.clientMasterDataRows);
+      this.clientMasterDataColumns = this.common.MainfilterForTable(
+        this.clientMasterDataColumns,
+        this.clientMasterDataRows
+      );
     }
   }
   /**
@@ -572,7 +695,11 @@ export class ClientMasterdataComponent implements OnInit {
           (x) => x.ID === data.ID
         );
         this.clientMasterDataRows.splice(clientIndex, 1);
-        this.clientMasterDataColumns = this.common.MainfilterForTable(this.clientMasterDataColumns,this.clientMasterDataRows);
+        this.clientMasterDataColumns = this.common.MainfilterForTable(
+          this.clientMasterDataColumns,
+          this.clientMasterDataRows
+        );
+        this.clientMasterDataRows = [...this.clientMasterDataRows];
         break;
       case this.adminConstants.DELETE_LIST_ITEM.SUB_DIVISION:
         this.common.showToastrMessage(
@@ -584,7 +711,11 @@ export class ClientMasterdataComponent implements OnInit {
           (x) => x.ID === data.ID
         );
         this.subDivisionDetailsRows.splice(subDivisionindex, 1);
-        this.subDivisionFilters(this.subDivisionDetailsRows);
+        this.subDivisionDetailsColumns = this.common.MainfilterForTable(
+          this.subDivisionDetailsColumns,
+          this.subDivisionDetailsRows
+        );
+        this.subDivisionDetailsRows= [...this.subDivisionDetailsColumns];
         break;
       case this.adminConstants.DELETE_LIST_ITEM.POINT_OF_CONTACT:
         this.common.showToastrMessage(
@@ -595,8 +726,13 @@ export class ClientMasterdataComponent implements OnInit {
           true
         );
         const pocindex = this.POCRows.findIndex((x) => x.ID === data.ID);
+        debugger;
         this.POCRows.splice(pocindex, 1);
-        this.POCFilters(this.POCRows);
+        this.POCColumns = this.common.MainfilterForTable(
+          this.POCColumns,
+          this.POCRows
+        );
+        this.POCRows = [...this.POCRows];
         break;
       case this.adminConstants.DELETE_LIST_ITEM.PURCHASE_ORDER:
         this.common.showToastrMessage(
@@ -606,7 +742,11 @@ export class ClientMasterdataComponent implements OnInit {
         );
         const poindex = this.PORows.findIndex((x) => x.ID === data.ID);
         this.PORows.splice(poindex, 1);
-        this.POFilters(this.PORows);
+        this.POColumns = this.common.MainfilterForTable(
+          this.POColumns,
+          this.PORows
+        );
+        this.PORows = [...this.PORows];
         break;
     }
     // this.constantsService.loader.isPSInnerLoaderHidden = true;
@@ -659,61 +799,15 @@ export class ClientMasterdataComponent implements OnInit {
         tempArray.push(obj);
       });
       this.subDivisionDetailsRows = tempArray;
-      this.subDivisionFilters(this.subDivisionDetailsRows);
+      this.subDivisionDetailsColumns = this.common.MainfilterForTable(
+        this.subDivisionDetailsColumns,
+        this.subDivisionDetailsRows
+      );
     }
     // this.constantsService.loader.isPSInnerLoaderHidden = true;
     this.showSubDivisionDetails = true;
   }
 
-  /**
-   * Construct a method to map the array values into particular column dropdown.
-   *
-   * @description
-   *
-   * This method will extract the column object value from an array and stores into the column dropdown array and display
-   * the values into the SubDivision,LastUpdated and LastUpdatedBy column dropdown.
-   *
-   * @param colData Pass colData as a parameter which contains an array of column object.
-   *
-   */
-  subDivisionFilters(colData) {
-    this.adminObject.subDivisionDetailsColArray.SubDivision = this.common.sortData(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.SubDivision, value: a.SubDivision };
-          return b;
-        })
-      )
-    );
-    const lastUpdatedArray = this.common.sortDateArray(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = {
-            label: this.datepipe.transform(a.LastUpdated, "MMM dd, yyyy"),
-            value: a.LastUpdated,
-          };
-          return b;
-        })
-      )
-    );
-    this.adminObject.subDivisionDetailsColArray.LastUpdated = lastUpdatedArray.map(
-      (a) => {
-        const b = {
-          label: this.datepipe.transform(a, "MMM dd, yyyy"),
-          value: new Date(new Date(a).toDateString()),
-        };
-        return b;
-      }
-    );
-    this.adminObject.subDivisionDetailsColArray.LastUpdatedBy = this.common.sortData(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy };
-          return b;
-        })
-      )
-    );
-  }
   /**
    * Construct a method to store current selected row data into variable `currSubDivisionObj`.
    *
@@ -781,9 +875,7 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async showPOC() {
-
-    this.resetPOCTable();
-    // this.constantsService.loader.isPSInnerLoaderHidden = false;
+    this.resetTable(this.poc);
     const tempArray = [];
     this.POCRows = [];
     const getPocInfo = Object.assign(
@@ -833,101 +925,16 @@ export class ClientMasterdataComponent implements OnInit {
         tempArray.push(obj);
       });
       this.POCRows = tempArray;
-      this.POCFilters(this.POCRows);
+
+      this.POCColumns = this.common.MainfilterForTable(
+        this.POCColumns,
+        this.POCRows
+      );
     }
     // this.constantsService.loader.isPSInnerLoaderHidden = true;
     this.showPointofContact = true;
   }
 
-
-
-
-  resetPOCTable(){
-    this.poc.reset();
-    this.pocFName['_results'].forEach(ds => {
-      ds.value = null;
-      ds.updateLabel();
-    });
-    this.pocLName['_results'].forEach(ds => {
-      ds.value = null;
-      ds.updateLabel();
-    });
-    this.pocEmail['_results'].forEach(ds => {
-      ds.value = null;
-      ds.updateLabel();
-    });
-    this.pocLUpdated['_results'].forEach(ds => {
-      ds.value = null;
-      ds.updateLabel();
-    });
-    this.pocLUpdatedBy['_results'].forEach(ds => {
-      ds.value = null;
-      ds.updateLabel();
-    });
-  }
-  /**
-   * Construct a method to map the array values into particular column dropdown.
-   *
-   * @description
-   *
-   * This method will extract the column object value from an array and stores into the column dropdown array and display
-   * the values into the FName,LName,EmailAddress,LastUpdated and LastUpdatedBy column dropdown.
-   *
-   * @param colData Pass colData as a parameter which contains an array of column object.
-   *
-   */
-  POCFilters(colData) {
-    this.adminObject.POCColArray.FName = this.common.sortData(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.FName, value: a.FName };
-          return b;
-        })
-      )
-    );
-    this.adminObject.POCColArray.LName = this.common.sortData(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.LName, value: a.LName };
-          return b;
-        })
-      )
-    );
-    this.adminObject.POCColArray.EmailAddress = this.common.sortData(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.EmailAddress, value: a.EmailAddress };
-          return b;
-        })
-      )
-    );
-    const lastUpdatedArray = this.common.sortDateArray(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = {
-            label: this.datepipe.transform(a.LastUpdated, "MMM dd, yyyy"),
-            value: a.LastUpdated,
-          };
-          return b;
-        })
-      )
-    );
-    this.adminObject.POCColArray.LastUpdated = lastUpdatedArray.map((a) => {
-      const b = {
-        label: this.datepipe.transform(a, "MMM dd, yyyy"),
-        value: new Date(new Date(a).toDateString()),
-      };
-      return b;
-    });
-    this.adminObject.POCColArray.LastUpdatedBy = this.common.sortData(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy };
-          return b;
-        })
-      )
-    );
-  }
   /**
    * Construct a method to store current selected row data into variable `currPOCObj`.
    *
@@ -940,13 +947,13 @@ export class ClientMasterdataComponent implements OnInit {
   pocMenu(data) {
     this.currPOCObj = data;
     //if (this.isUserSPMCA) {
-      this.pocItems = [
-        {
-          label: "Edit",
-          command: (e) => this.addEditPOC("Edit Point Of Contact", data),
-        },
-        { label: "Delete", command: (e) => this.deletePOC() },
-      ];
+    this.pocItems = [
+      {
+        label: "Edit",
+        command: (e) => this.addEditPOC("Edit Point Of Contact", data),
+      },
+      { label: "Delete", command: (e) => this.deletePOC() },
+    ];
     // } else {
     //   this.pocItems = [
     //     {
@@ -1001,12 +1008,12 @@ export class ClientMasterdataComponent implements OnInit {
    */
   async showPO() {
     this.selectedOption = this.AllValues[0];
-    this.providedPONumber = '';
+    this.providedPONumber = "";
     this.showPOInput = false;
     this.showTable = true;
     setTimeout(() => {
-      this.resetPOTable();
-    },100)
+      this.resetTable(this.poTable);
+    }, 100);
     // this.constantsService.loader.isPSInnerLoaderHidden = false;
     this.PORows = [];
     const results = await this.getAllActivePOData();
@@ -1085,123 +1092,26 @@ export class ClientMasterdataComponent implements OnInit {
         obj.TotalLinked = item.TotalLinked;
         obj.TotalScheduled = item.TotalScheduled;
 
-        const RevenueBalanced =item.AmountRevenue - item.RevenueLinked;
+        const RevenueBalanced = item.AmountRevenue - item.RevenueLinked;
         const OOPBalanced = item.AmountOOP - item.OOPLinked;
         const InvRevenueBalanced = item.AmountRevenue - item.InvoicedRevenue;
         const InvOOPBalanced = item.AmountOOP - item.InvoicedOOP;
 
-        obj.BalancedRevenue = RevenueBalanced < InvRevenueBalanced
-            ? RevenueBalanced : InvRevenueBalanced;
-        obj.BalancedOOP =  OOPBalanced < InvOOPBalanced ? OOPBalanced : InvOOPBalanced;
+        obj.BalancedRevenue =
+          RevenueBalanced < InvRevenueBalanced
+            ? RevenueBalanced
+            : InvRevenueBalanced;
+        obj.BalancedOOP =
+          OOPBalanced < InvOOPBalanced ? OOPBalanced : InvOOPBalanced;
         obj.CMLevel2 = item.CMLevel2;
         tempArray.push(obj);
       });
-      this.POFilters(tempArray);
+      this.POColumns = this.common.MainfilterForTable(
+        this.POColumns,
+        tempArray
+      );
       return tempArray;
     }
-  }
-
-  resetPOTable(){
-    this.poTable.reset();
-    this.poName['_results'].forEach(ds => {
-      ds.value = null;
-      ds.updateLabel();
-    });
-    this.poNo['_results'].forEach(ds => {
-      ds.value = null;
-      ds.updateLabel();
-    });
-    this.poRevenur['_results'].forEach(ds => {
-      ds.value = null;
-      ds.updateLabel();
-    });
-    this.poOOP['_results'].forEach(ds => {
-      ds.value = null;
-      ds.updateLabel();
-    });
-    this.poLUpdated['_results'].forEach(ds => {
-      ds.value = null;
-      ds.updateLabel();
-    });
-    this.poLUpdatedBy['_results'].forEach(ds => {
-      ds.value = null;
-      ds.updateLabel();
-    });
-  }
-
-
-
-
-  /**
-   * Construct a method to map the array values into particular column dropdown.
-   *
-   * @description
-   *
-   * This method will extract the column object value from an array and stores into the column dropdown array and display
-   * the values into the PoName,LastUpdated and LastUpdatedBy column dropdown.
-   *
-   * @param colData Pass colData as a parameter which contains an array of column object.
-   *
-   */
-  POFilters(colData) {
-    this.adminObject.POColArray.PoName = this.common.sortData(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.PoName, value: a.PoName };
-          return b;
-        })
-      )
-    );
-    this.adminObject.POColArray.PoNumber = this.common.sortData(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.PoNumber, value: a.PoNumber };
-          return b;
-        })
-      )
-    );
-    this.adminObject.POColArray.AmountRevenue = this.common.sortNumberArray(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.AmountRevenue, value: a.AmountRevenue };
-          return b;
-        })
-      )
-    );
-    this.adminObject.POColArray.AmountOOP = this.common.sortNumberArray(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.AmountOOP, value: a.AmountOOP };
-          return b;
-        })
-      )
-    );
-    const lastUpdatedArray = this.common.sortDateArray(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = {
-            label: this.datepipe.transform(a.LastUpdated, "MMM dd, yyyy"),
-            value: a.LastUpdated,
-          };
-          return b;
-        })
-      )
-    );
-    this.adminObject.POColArray.LastUpdated = lastUpdatedArray.map((a) => {
-      const b = {
-        label: this.datepipe.transform(a, "MMM dd, yyyy"),
-        value: new Date(new Date(a).toDateString()),
-      };
-      return b;
-    });
-    this.adminObject.POColArray.LastUpdatedBy = this.common.sortData(
-      this.adminCommonService.uniqueArrayObj(
-        colData.map((a) => {
-          const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy };
-          return b;
-        })
-      )
-    );
   }
 
   // /**
@@ -1296,7 +1206,6 @@ export class ClientMasterdataComponent implements OnInit {
    *  Pass `true` to replace the item in the array
    */
   async loadRecentPORecords(ID, action) {
-
     const tempArray = [];
     const poGet = Object.assign({}, this.adminConstants.QUERY.GET_PO_BY_ID);
     poGet.filter = poGet.filter
@@ -1361,16 +1270,18 @@ export class ClientMasterdataComponent implements OnInit {
       obj.TotalLinked = item.TotalLinked;
       obj.TotalScheduled = item.TotalScheduled;
       obj.CMLevel2 = item.CMLevel2;
-      
-      const RevenueBalanced =item.AmountRevenue - item.RevenueLinked;
+
+      const RevenueBalanced = item.AmountRevenue - item.RevenueLinked;
       const OOPBalanced = item.AmountOOP - item.OOPLinked;
       const InvRevenueBalanced = item.AmountRevenue - item.InvoicedRevenue;
       const InvOOPBalanced = item.AmountOOP - item.InvoicedOOP;
 
-      obj.BalancedRevenue = RevenueBalanced < InvRevenueBalanced
-          ? RevenueBalanced : InvRevenueBalanced;
-      obj.BalancedOOP =  OOPBalanced < InvOOPBalanced ? OOPBalanced : InvOOPBalanced;
-
+      obj.BalancedRevenue =
+        RevenueBalanced < InvRevenueBalanced
+          ? RevenueBalanced
+          : InvRevenueBalanced;
+      obj.BalancedOOP =
+        OOPBalanced < InvOOPBalanced ? OOPBalanced : InvOOPBalanced;
 
       // If Create - add the new created item at position 0 in the array.
       // If Edit - Replace the item in the array and position at 0 in the array.
@@ -1378,14 +1289,20 @@ export class ClientMasterdataComponent implements OnInit {
         case this.adminConstants.ACTION.ADD:
           this.PORows.unshift(obj);
           this.PORows = [...this.PORows];
-          this.POFilters(this.PORows);
+          this.POColumns = this.common.MainfilterForTable(
+            this.POColumns,
+            this.PORows
+          );
           break;
         case this.adminConstants.ACTION.EDIT:
           const index = this.PORows.findIndex((x) => x.ID === obj.ID);
           this.PORows.splice(index, 1);
           this.PORows.unshift(obj);
           this.PORows = [...this.PORows];
-          this.POFilters(this.PORows);
+          this.POColumns = this.common.MainfilterForTable(
+            this.POColumns,
+            this.PORows
+          );
           break;
         case this.adminConstants.ACTION.GET:
           tempArray.push(obj);
@@ -1396,7 +1313,7 @@ export class ClientMasterdataComponent implements OnInit {
       return tempArray;
     }
 
-    this.resetPOTable();
+    this.resetTable(this.poTable);
     this.modalloaderenable = false;
   }
   /**
@@ -1473,32 +1390,6 @@ export class ClientMasterdataComponent implements OnInit {
   downloadExcel(cmd) {
     cmd.exportCSV();
   }
-
-  // optionFilter(event: any) {
-  //   if (event.target.value) {
-  //     this.isOptionFilter = false;
-  //   }
-  // }
-
-  // // tslint:disable-next-line: use-life-cycle-interface
-  // ngAfterViewChecked() {
-  //   if (this.clientMasterDataRows.length && this.isOptionFilter) {
-  //     const obj = {
-  //       tableData: this.clientMasterTable,
-  //       colFields: this.adminObject.clientMasterDataColArray,
-  //     };
-  //     if (obj.tableData.filteredValue) {
-  //       this.common.updateOptionValues(obj);
-  //     } else if (
-  //       obj.tableData.filteredValue === null ||
-  //       obj.tableData.filteredValue === undefined
-  //     ) {
-  //       this.colFilters(obj.tableData.value);
-  //       this.isOptionFilter = false;
-  //     }
-  //     this.cdr.detectChanges();
-  //   }
-  // }
 
   /**
    * Construct a method to save or update the client legal entity into `ClientLegalEntity` list.
@@ -1909,7 +1800,10 @@ export class ClientMasterdataComponent implements OnInit {
 
       this.subDivisionDetailsRows = [...this.subDivisionDetailsRows];
 
-      this.subDivisionFilters(this.subDivisionDetailsRows);
+      this.subDivisionDetailsColumns = this.common.MainfilterForTable(
+        this.subDivisionDetailsColumns,
+        this.subDivisionDetailsRows
+      );
     }
   }
 
@@ -2080,8 +1974,11 @@ export class ClientMasterdataComponent implements OnInit {
         this.POCRows.unshift(obj);
       }
       this.POCRows = [...this.POCRows];
-      this.resetPOCTable();
-      this.POCFilters(this.POCRows);
+      this.resetTable(this.poc);
+      this.POCColumns = this.common.MainfilterForTable(
+        this.POCColumns,
+        this.POCRows
+      );
     }
   }
 
@@ -2114,121 +2011,117 @@ export class ClientMasterdataComponent implements OnInit {
    */
 
   async savePO(poDetails, selectedFile) {
-    if(selectedFile) {
-    const tempFiles = [
-      new Object({ name: selectedFile[0].name, file: selectedFile[0] }),
-    ];
-    this.common.SetNewrelic("admin", "SavePO", "UploadFile");
-    this.common
-      .UploadFilesProgress(
-        tempFiles,
-        this.currClientObj.ListName +
-          "/" +
-          this.adminConstants.FOLDER_LOCATION.PO,
-        true
-      )
-      .then(async (uploadedfile) => {
-        if (
-          selectedFile.length > 0 &&
-          selectedFile.length === uploadedfile.length
-        ) {
-          if (!uploadedfile[0].hasOwnProperty("odata.error")) {
-            this.modalloaderenable = true;
-            this.common.showToastrMessage(
-              this.constantsService.MessageType.success,
-              "File uploaded sucessfully.",
-              false
-            );
-            const poData = await this.getPOData(poDetails, selectedFile[0]);
-            if (!this.showeditPO) {
-              this.common.SetNewrelic("admin", "client-masterdata", "savePO");
-              const results = await this.spServices.createItem(
-                this.constantsService.listNames.PO.name,
-                poData,
-                this.constantsService.listNames.PO.type
+    if (selectedFile) {
+      const tempFiles = [
+        new Object({ name: selectedFile[0].name, file: selectedFile[0] }),
+      ];
+      this.common.SetNewrelic("admin", "SavePO", "UploadFile");
+      this.common
+        .UploadFilesProgress(
+          tempFiles,
+          this.currClientObj.ListName +
+            "/" +
+            this.adminConstants.FOLDER_LOCATION.PO,
+          true
+        )
+        .then(async (uploadedfile) => {
+          if (
+            selectedFile.length > 0 &&
+            selectedFile.length === uploadedfile.length
+          ) {
+            if (!uploadedfile[0].hasOwnProperty("odata.error")) {
+              this.modalloaderenable = true;
+              this.common.showToastrMessage(
+                this.constantsService.MessageType.success,
+                "File uploaded sucessfully.",
+                false
               );
-              if (!results.hasOwnProperty("hasError") && !results.hasError) {
-                const poBreakUPData = await this.getPOBudgetBreakUPData(
-                  results,
-                  poDetails
+              const poData = await this.getPOData(poDetails, selectedFile[0]);
+              if (!this.showeditPO) {
+                this.common.SetNewrelic("admin", "client-masterdata", "savePO");
+                const results = await this.spServices.createItem(
+                  this.constantsService.listNames.PO.name,
+                  poData,
+                  this.constantsService.listNames.PO.type
                 );
+                if (!results.hasOwnProperty("hasError") && !results.hasError) {
+                  const poBreakUPData = await this.getPOBudgetBreakUPData(
+                    results,
+                    poDetails
+                  );
+                  this.common.SetNewrelic(
+                    "admin",
+                    "admin-clientMaster",
+                    "createPOBudgetreakup"
+                  );
+                  const poBreakUPResult = await this.spServices.createItem(
+                    this.constantsService.listNames.POBudgetBreakup.name,
+                    poBreakUPData,
+                    this.constantsService.listNames.POBudgetBreakup.type
+                  );
+                  if (
+                    !poBreakUPResult.hasOwnProperty("hasError") &&
+                    !poBreakUPResult.hasError
+                  ) {
+                    this.common.showToastrMessage(
+                      this.constantsService.MessageType.success,
+                      "The Po " +
+                        poDetails.value.poNumber +
+                        " is created successfully.",
+                      false
+                    );
+                  }
+                  await this.loadRecentPORecords(
+                    results.ID,
+                    this.adminConstants.ACTION.ADD
+                  );
+                }
+              }
+              if (this.showeditPO) {
                 this.common.SetNewrelic(
                   "admin",
                   "admin-clientMaster",
-                  "createPOBudgetreakup"
+                  "updatePO"
                 );
-                const poBreakUPResult = await this.spServices.createItem(
-                  this.constantsService.listNames.POBudgetBreakup.name,
-                  poBreakUPData,
-                  this.constantsService.listNames.POBudgetBreakup.type
+                const results = await this.spServices.updateItem(
+                  this.constantsService.listNames.PO.name,
+                  this.currPOObj.ID,
+                  poData,
+                  this.constantsService.listNames.PO.type
                 );
-                if (
-                  !poBreakUPResult.hasOwnProperty("hasError") &&
-                  !poBreakUPResult.hasError
-                ) {
-                  this.common.showToastrMessage(
-                    this.constantsService.MessageType.success,
-                    "The Po " +
-                      poDetails.value.poNumber +
-                      " is created successfully.",
-                    false
-                  );
-                }
+                this.common.showToastrMessage(
+                  this.constantsService.MessageType.success,
+                  "The Po " +
+                    this.currPOObj.PoNumber +
+                    " is updated successfully.",
+                  false
+                );
                 await this.loadRecentPORecords(
-                  results.ID,
-                  this.adminConstants.ACTION.ADD
+                  this.currPOObj.ID,
+                  this.adminConstants.ACTION.EDIT
                 );
               }
-            }
-            if (this.showeditPO) {
-              this.common.SetNewrelic(
-                "admin",
-                "admin-clientMaster",
-                "updatePO"
-              );
-              const results = await this.spServices.updateItem(
-                this.constantsService.listNames.PO.name,
-                this.currPOObj.ID,
-                poData,
-                this.constantsService.listNames.PO.type
-              );
+            } else {
               this.common.showToastrMessage(
-                this.constantsService.MessageType.success,
-                "The Po " +
-                  this.currPOObj.PoNumber +
-                  " is updated successfully.",
+                this.constantsService.MessageType.error,
+                "Error while uploading file.",
                 false
               );
-              await this.loadRecentPORecords(
-                this.currPOObj.ID,
-                this.adminConstants.ACTION.EDIT
-              );
             }
-          } else {
-            this.common.showToastrMessage(
-              this.constantsService.MessageType.error,
-              "Error while uploading file.",
-              false
-            );
           }
-        }
-      })
-      .catch((error) => {
-        console.log("Error while uploading" + error);
-        this.common.showToastrMessage(
-          this.constantsService.MessageType.error,
-          "Error while uploading file.",
-          false
-        );
-      });
+        })
+        .catch((error) => {
+          console.log("Error while uploading" + error);
+          this.common.showToastrMessage(
+            this.constantsService.MessageType.error,
+            "Error while uploading file.",
+            false
+          );
+        });
     } else {
       if (this.showeditPO) {
-        const poData = await this.getPOData(poDetails,'');
-        this.common.SetNewrelic(
-          "admin",
-          "admin-clientMaster",
-          "updatePO"
-        );
+        const poData = await this.getPOData(poDetails, "");
+        this.common.SetNewrelic("admin", "admin-clientMaster", "updatePO");
         const results = await this.spServices.updateItem(
           this.constantsService.listNames.PO.name,
           this.currPOObj.ID,
@@ -2237,9 +2130,7 @@ export class ClientMasterdataComponent implements OnInit {
         );
         this.common.showToastrMessage(
           this.constantsService.MessageType.success,
-          "The Po " +
-            this.currPOObj.PoNumber +
-            " is updated successfully.",
+          "The Po " + this.currPOObj.PoNumber + " is updated successfully.",
           false
         );
         await this.loadRecentPORecords(
@@ -2269,8 +2160,8 @@ export class ClientMasterdataComponent implements OnInit {
       CMLevel2Id: poDetails.value.cmLevel2,
       BuyingEntity: poDetails.value.poBuyingEntity,
     };
-    if(selectedFile) {
-      data['Link'] = selectedFile.name;
+    if (selectedFile) {
+      data["Link"] = selectedFile.name;
     }
     if (!this.showeditPO) {
       data.Currency = poDetails.value.currency;
@@ -2288,7 +2179,7 @@ export class ClientMasterdataComponent implements OnInit {
   }
 
   async onChangeSelect(event) {
-    if (this.selectedOption.name === 'Open') {
+    if (this.selectedOption.name === "Open") {
       // this.constantsService.loader.isPSInnerLoaderHidden = false;
       this.showTable = false;
       this.showPOInput = false;
@@ -2297,10 +2188,10 @@ export class ClientMasterdataComponent implements OnInit {
       this.showTable = true;
       // this.constantsService.loader.isPSInnerLoaderHidden = true;
     } else {
-      this.showTable = false;
+      // this.showTable = false;
       this.PORows = [];
       this.showPOInput = true;
-      this.providedPONumber = '';
+      this.providedPONumber = "";
     }
   }
 
@@ -2313,13 +2204,10 @@ export class ClientMasterdataComponent implements OnInit {
 
   async getPOList() {
     const poNumber = this.providedPONumber;
-    const getPO = Object.assign(
-      {},
-      this.adminConstants.QUERY.GET_PO_BY_CLOSED
-    );
+    const getPO = Object.assign({}, this.adminConstants.QUERY.GET_PO_BY_CLOSED);
     getPO.filter = getPO.filter
-    .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
-    .replace(/{{poNumber}}/gi, poNumber);
+      .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
+      .replace(/{{poNumber}}/gi, poNumber);
     this.common.SetNewrelic("admin", "admin-clientMaster", "getPO");
     const results = await this.spServices.readItems(
       this.constantsService.listNames.PO.name,
@@ -2327,7 +2215,6 @@ export class ClientMasterdataComponent implements OnInit {
     );
 
     this.PORows = await this.setPODataObject(results);
-
   }
 
   // **************************************************************************************************
@@ -2414,9 +2301,12 @@ export class ClientMasterdataComponent implements OnInit {
     );
     await this.spServices.executeBatch(batchURL);
     this.groupITInfo = await this.adminCommonService.getITInfo();
-        console.log('this.groupITInfo  ', this.groupITInfo);
-    await this.sendNotificationMail(this.constantsService.EMAIL_TEMPLATE_NAME.PO_BUDGET_UPDATED,'PO Budget Updated', this.adminObject)
-
+    console.log("this.groupITInfo  ", this.groupITInfo);
+    await this.sendNotificationMail(
+      this.constantsService.EMAIL_TEMPLATE_NAME.PO_BUDGET_UPDATED,
+      "PO Budget Updated",
+      this.adminObject
+    );
 
     this.common.showToastrMessage(
       this.constantsService.MessageType.success,
@@ -2556,7 +2446,7 @@ export class ClientMasterdataComponent implements OnInit {
               this.constantsService.MessageType.success,
               "File uploaded sucessfully.",
               false
-            );           
+            );
           } else {
             this.common.showToastrMessage(
               this.constantsService.MessageType.error,
@@ -2575,50 +2465,113 @@ export class ClientMasterdataComponent implements OnInit {
         );
       });
   }
-  
 
   async sendNotificationMail(val, header, selectedObj) {
     const queryText = val;
     let arrayTo = [];
     const objEmailBody = [];
 
-    const mailSubject = this.currPOObj.PoName + ' - ' + header;
+    const mailSubject = this.currPOObj.PoName + " - " + header;
 
-      objEmailBody.push({ key: '@@ClientName@@', value: this.currClientObj.ClientLegalEntity });
-        objEmailBody.push({ key: '@@PO@@', value: this.currPOObj.PoName });
-        // objEmailBody.push({ key: '@@POC@@', value: this.currPOObj.POCLookup });
-        objEmailBody.push({ key: '@@Currency@@', value: this.currClientObj.Currency });
-        objEmailBody.push({ key: '@@TotalBudget@@', value: this.adminObject.oldBudget.Amount });
-        objEmailBody.push({ key: '@@NetBudget@@', value: this.adminObject.oldBudget.AmountRevenue });
-        objEmailBody.push({ key: '@@OOPBudget@@', value: this.adminObject.oldBudget.AmountOOP });
-        objEmailBody.push({ key: '@@TaxBudget@@', value: this.adminObject.oldBudget.AmountTax });
-        objEmailBody.push({ key: '@@AddendumTotalvalue@@', value: this.adminObject.newBudget.Amount });
-        objEmailBody.push({ key: '@@AddendumNetvalue@@', value: this.adminObject.newBudget.AmountRevenue });
-        objEmailBody.push({ key: '@@AddendumOOPvalue@@', value: this.adminObject.newBudget.AmountOOP });
-        objEmailBody.push({ key: '@@AddendumTaxvalue@@', value: this.adminObject.newBudget.AmountTax });
-        objEmailBody.push({ key: '@@NewTotalBudget@@', value: this.adminObject.finalBudget.Amount });
-        objEmailBody.push({ key: '@@NewNetBudget@@', value: this.adminObject.finalBudget.AmountRevenue });
-        objEmailBody.push({ key: '@@NewOOPBudget@@', value: this.adminObject.finalBudget.AmountOOP });
-        objEmailBody.push({ key: '@@NewTaxBudget@@', value: this.adminObject.finalBudget.AmountTax });
-  
+    objEmailBody.push({
+      key: "@@ClientName@@",
+      value: this.currClientObj.ClientLegalEntity,
+    });
+    objEmailBody.push({ key: "@@PO@@", value: this.currPOObj.PoName });
+    // objEmailBody.push({ key: '@@POC@@', value: this.currPOObj.POCLookup });
+    objEmailBody.push({
+      key: "@@Currency@@",
+      value: this.currClientObj.Currency,
+    });
+    objEmailBody.push({
+      key: "@@TotalBudget@@",
+      value: this.adminObject.oldBudget.Amount,
+    });
+    objEmailBody.push({
+      key: "@@NetBudget@@",
+      value: this.adminObject.oldBudget.AmountRevenue,
+    });
+    objEmailBody.push({
+      key: "@@OOPBudget@@",
+      value: this.adminObject.oldBudget.AmountOOP,
+    });
+    objEmailBody.push({
+      key: "@@TaxBudget@@",
+      value: this.adminObject.oldBudget.AmountTax,
+    });
+    objEmailBody.push({
+      key: "@@AddendumTotalvalue@@",
+      value: this.adminObject.newBudget.Amount,
+    });
+    objEmailBody.push({
+      key: "@@AddendumNetvalue@@",
+      value: this.adminObject.newBudget.AmountRevenue,
+    });
+    objEmailBody.push({
+      key: "@@AddendumOOPvalue@@",
+      value: this.adminObject.newBudget.AmountOOP,
+    });
+    objEmailBody.push({
+      key: "@@AddendumTaxvalue@@",
+      value: this.adminObject.newBudget.AmountTax,
+    });
+    objEmailBody.push({
+      key: "@@NewTotalBudget@@",
+      value: this.adminObject.finalBudget.Amount,
+    });
+    objEmailBody.push({
+      key: "@@NewNetBudget@@",
+      value: this.adminObject.finalBudget.AmountRevenue,
+    });
+    objEmailBody.push({
+      key: "@@NewOOPBudget@@",
+      value: this.adminObject.finalBudget.AmountOOP,
+    });
+    objEmailBody.push({
+      key: "@@NewTaxBudget@@",
+      value: this.adminObject.finalBudget.AmountTax,
+    });
+
     arrayTo = this.getTosList();
-    const mailBody = await this.adminCommonService.getTemplate(queryText, objEmailBody, mailSubject, arrayTo);
-    this.spServices.sendMail(arrayTo.join(','), this.globalObject.currentUser.email, mailSubject, mailBody);
+    const mailBody = await this.adminCommonService.getTemplate(
+      queryText,
+      objEmailBody,
+      mailSubject,
+      arrayTo
+    );
+    this.spServices.sendMail(
+      arrayTo.join(","),
+      this.globalObject.currentUser.email,
+      mailSubject,
+      mailBody
+    );
   }
 
   getTosList() {
     const itApprovers = this.groupITInfo.results;
     let arrayTo = [];
     if (itApprovers.length) {
-        for (const i in itApprovers) {
-            if (itApprovers[i].Email && itApprovers[i].Email !== undefined && itApprovers[i].Email !== '') {
-                arrayTo.push(itApprovers[i].Email);
-            }
+      for (const i in itApprovers) {
+        if (
+          itApprovers[i].Email &&
+          itApprovers[i].Email !== undefined &&
+          itApprovers[i].Email !== ""
+        ) {
+          arrayTo.push(itApprovers[i].Email);
         }
+      }
     }
-    arrayTo = [...new Set(arrayTo)]
-    console.log('arrayTo ', arrayTo);
+    arrayTo = [...new Set(arrayTo)];
+    console.log("arrayTo ", arrayTo);
     return arrayTo;
   }
 
+  resetTable(table: Table) {
+    table.filteredValue = null;
+    for (var key in table.filters) {
+      if (table.filters[key][0].value !== null) {
+        table.filters[key][0].value = null;
+      }
+    }
+  }
 }

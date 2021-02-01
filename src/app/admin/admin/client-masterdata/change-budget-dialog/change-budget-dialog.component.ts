@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
@@ -15,6 +15,7 @@ import { DatePipe } from '@angular/common';
   styleUrls: ['./change-budget-dialog.component.css']
 })
 export class ChangeBudgetDialogComponent implements OnInit {
+  @ViewChild("fileuploderView", { static: false }) fileuploderView: ElementRef;
   currPOObj: any;
   isBudgetFormSubmit = false;
   changeBudgetForm: FormGroup;
@@ -398,6 +399,14 @@ export class ChangeBudgetDialogComponent implements OnInit {
         'ddMMyyyyhhmmss') + '.' + fileName.split(/\.(?=[^\.]+$)/)[1];
       this.SelectedFile.push(new Object({ name: fileName, file: this.selectedFile }));
       console.log(this.SelectedFile);
+
+      this.fileuploderView.nativeElement.getElementsByClassName('file-select-name')[0].innerText = this.selectedFile.name;
+      this.fileuploderView.nativeElement.classList.add('active');
+
+    }
+    else{
+      this.fileuploderView.nativeElement.classList.remove('active');
+      this.fileuploderView.nativeElement.getElementsByClassName('file-select-name')[0].innerText = 'No file chosen...';
     }
            
   }
