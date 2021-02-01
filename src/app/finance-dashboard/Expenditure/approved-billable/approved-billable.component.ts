@@ -177,16 +177,16 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     text: ''
   };
   expenseForm: any;
-    mailContentRes: any;
-    selectedProjectInfo: any;
-    cleForselectedPI: any;
-    cmLevelIdList: any = [];
-    selectedPI: any = [];
-    cleData: any = [];
-    currentUserInfoData: any;
-    groupITInfo: any;
-    groupInfo: any;
-    resCatEmails: any = [];
+  mailContentRes: any;
+  selectedProjectInfo: any;
+  cleForselectedPI: any;
+  cmLevelIdList: any = [];
+  selectedPI: any = [];
+  cleData: any = [];
+  currentUserInfoData: any;
+  groupITInfo: any;
+  groupInfo: any;
+  resCatEmails: any = [];
 
 
   async ngOnInit() {
@@ -234,10 +234,10 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
   cleInfo() {
     this.subscription.add(this.fdDataShareServie.defaultCLEData.subscribe((res) => {
-        if (res) {
-            this.cleData = res;
-            console.log('Client Legal Entity ', this.cleData);
-        }
+      if (res) {
+        this.cleData = res;
+        console.log('Client Legal Entity ', this.cleData);
+      }
     }));
   }
   poInfo() {
@@ -275,44 +275,26 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   createABCols() {
     this.approvedBillableCols = [
       // { field: '', header: '' },
-      { field: "Number", header: "Ref. Number", visibility: true },
-      { field: "ProjectCode", header: "Project Code", visibility: true },
-      { field: "VendorName", header: "Vendor Name", visibility: true },
-      { field: "ExpenseType", header: "Expense Type", visibility: true },
-      { field: "ClientCurrency", header: "Client Currency", visibility: true },
-      { field: "ClientAmount", header: "Client Amount", visibility: true },
-      { field: "Status", header: "Status", visibility: true },
-
-      { field: "Category", header: "Category", visibility: false },
-      { field: "PaymentMode", header: "Payment Mode", visibility: false },
-      { field: "RequestType", header: "Request Type", visibility: false },
-      { field: "DateSpend", header: "Date Spend", visibility: false },
-      {
-        field: "ClientLegalEntity",
-        header: "Client Legal Entity",
-        visibility: false,
-      },
-      { field: "SOWCode", header: "SOW Code", visibility: false },
-      { field: "SOWName", header: "SOW Name", visibility: false },
-      { field: "Notes", header: "Notes", visibility: false },
-      { field: "FileURL", header: "File URL", visibility: false },
-      {
-        field: "ClientApprovalFileURL",
-        header: "Client Approval File URL",
-        visibility: false,
-      },
-      {
-        field: "ApproverComments",
-        header: "Approver Comments",
-        visibility: false,
-      },
-      {
-        field: "ApproverFileUrl",
-        header: "Approver File Url",
-        visibility: false,
-      },
-      { field: "PayingEntity", header: "Paying Entity", visibility: false },
-      { field: "", header: "", visibility: true },
+      { field: "Number", header: "Ref. Number", visibility: true, Type: 'string', dbName: 'Number', options: [] },
+      { field: "ProjectCode", header: "Project Code", visibility: true, Type: 'string', dbName: 'ProjectCode', options: [] },
+      { field: "VendorName", header: "Vendor Name", visibility: true, Type: 'string', dbName: 'VendorName', options: [] },
+      { field: "ExpenseType", header: "Expense Type", visibility: true, Type: 'string', dbName: 'ExpenseType', options: [] },
+      { field: "ClientCurrency", header: "Client Currency", visibility: true, Type: 'string', dbName: 'ClientCurrency', options: [] },
+      { field: "ClientAmount", header: "Client Amount", visibility: true, Type: 'string', dbName: 'ClientAmount', options: [] },
+      { field: "Status", header: "Status", visibility: true, Type: 'string', dbName: 'Status', options: [] },
+      { field: "Category", header: "Category", visibility: false, Type: 'string', dbName: 'Category', options: [] },
+      { field: "PaymentMode", header: "Payment Mode", visibility: false, Type: 'string', dbName: 'PaymentMode', options: [] },
+      { field: "RequestType", header: "Request Type", visibility: false, Type: 'string', dbName: 'RequestType', options: [] },
+      { field: "DateSpend", header: "Date Spend", visibility: false, Type: 'string', dbName: 'DateSpend', options: [] },
+      { field: "ClientLegalEntity", header: "Client Legal Entity", visibility: false, Type: 'string', dbName: 'ClientLegalEntity', options: [] },
+      { field: "SOWCode", header: "SOW Code", visibility: false, Type: 'string', dbName: 'SOWCode', options: [] },
+      { field: "SOWName", header: "SOW Name", visibility: false, Type: 'string', dbName: 'SOWName', options: [] },
+      { field: "Notes", header: "Notes", visibility: false, Type: 'string', dbName: 'Notes', options: [] },
+      { field: "FileURL", header: "File URL", visibility: false, Type: 'string', dbName: 'FileURL', options: [] },
+      { field: "ClientApprovalFileURL", header: "Client Approval File URL", visibility: false, Type: 'string', dbName: 'ClientApprovalFileURL', options: [] },
+      { field: "ApproverComments", header: "Approver Comments", visibility: false, Type: 'string', dbName: 'ApproverComments', options: [] },
+      { field: "ApproverFileUrl", header: "Approver File Url", visibility: false, Type: 'string', dbName: 'ApproverFileUrl', options: [] },
+      { field: "PayingEntity", header: "Paying Entity", visibility: false, Type: 'string', dbName: 'PayingEntity', options: [] }
     ];
   }
 
@@ -432,7 +414,8 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
       });
     }
     this.approvedBillableRes = [...this.approvedBillableRes];
-    this.createColFieldValues(this.approvedBillableRes);
+    //this.createColFieldValues(this.approvedBillableRes);
+    this.approvedBillableCols = this.commonService.MainfilterForTable(this.approvedBillableCols, this.approvedBillableRes);
     this.isLoaderenable = false;
   }
 
@@ -638,9 +621,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     console.log("this.selectedAllRowsItem ", this.selectedAllRowsItem);
     const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
     if (groups.indexOf('ExpenseApprovers') > -1 || groups.indexOf('Managers') > -1) {
-      if(data.Status == 'Approved' || data.Status == 'Approved Payment Pending') {
+      if (data.Status == 'Approved' || data.Status == 'Approved Payment Pending') {
         this.items = [
-            { label: 'Reject Expense', command: (e) => this.openMenuContent(e, data) }
+          { label: 'Reject Expense', command: (e) => this.openMenuContent(e, data) }
         ];
       }
     }
@@ -652,10 +635,10 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   openMenuContent(event, data) {
     console.log(JSON.stringify(data));
     this.rowItemDetails = data;
-    if(event.item.label == "Details") {
+    if (event.item.label == "Details") {
       this.rightSideBar = !this.rightSideBar;
     }
-    else if(event.item.label == "Reject Expense") {
+    else if (event.item.label == "Reject Expense") {
       this.cancelRejectDialog.title = event.item.label;
       this.cancelRejectDialog.text = event.item.label.replace(' Expense', '');
       this.approveRejectExpenseDialog();
@@ -664,41 +647,41 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
   approveRejectExpenseDialog() {
     const ref = this.dialogService.open(ApproveRejectExpenseDialogComponent, {
-        data: {
-          expenseDialog: this.cancelRejectDialog,
-          selectedRowItem:  this.rowItemDetails
-        },
-        header: this.cancelRejectDialog.title,
-        contentStyle: { height: '450px !important' },
-        width: '50%',
-        closable: false,
-      });
-      ref.onClose.subscribe(async expense => {
-          if(expense) {
-            this.expenseForm = expense.form;
-            this.mailContentRes = expense.mailContent;
-            await this.rejectSubmit(expense.type, expense.form);
-          }
-      })
+      data: {
+        expenseDialog: this.cancelRejectDialog,
+        selectedRowItem: this.rowItemDetails
+      },
+      header: this.cancelRejectDialog.title,
+      contentStyle: { height: '450px !important' },
+      width: '50%',
+      closable: false,
+    });
+    ref.onClose.subscribe(async expense => {
+      if (expense) {
+        this.expenseForm = expense.form;
+        this.mailContentRes = expense.mailContent;
+        await this.rejectSubmit(expense.type, expense.form);
+      }
+    })
   }
 
-  rejectSubmit(type: string,expenseForm) {
+  rejectSubmit(type: string, expenseForm) {
     const batchUrl = [];
     if (type === 'Reject Expense') {
 
       // console.log('form is submitting ..... expenseForm ', expenseForm.value);
       const speInfoObj = {
-          ApproverComments: expenseForm.value.ApproverComments,
-          Status: 'Rejected'
+        ApproverComments: expenseForm.value.ApproverComments,
+        Status: 'Rejected'
       };
       speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
       // let data = [];
-          const rejectExpenseObj = Object.assign({}, this.queryConfig);
-          rejectExpenseObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +this.rowItemDetails.Id);
-          rejectExpenseObj.listName = this.constantService.listNames.SpendingInfo.name;
-          rejectExpenseObj.type = 'PATCH';
-          rejectExpenseObj.data = speInfoObj;
-          batchUrl.push(rejectExpenseObj);
+      const rejectExpenseObj = Object.assign({}, this.queryConfig);
+      rejectExpenseObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +this.rowItemDetails.Id);
+      rejectExpenseObj.listName = this.constantService.listNames.SpendingInfo.name;
+      rejectExpenseObj.type = 'PATCH';
+      rejectExpenseObj.data = speInfoObj;
+      batchUrl.push(rejectExpenseObj);
       this.submitForm(batchUrl, type);
     }
   }
@@ -899,11 +882,11 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
       : 0;
     const totalBudget = this.pfListItem[0].Budget
       ? parseFloat(this.pfListItem[0].Budget) +
-        Amount
+      Amount
       : 0 + Amount;
     const oopBudget = this.pfListItem[0].OOPBudget
       ? parseFloat(this.pfListItem[0].OOPBudget) +
-        Amount
+      Amount
       : 0 + Amount;
     const pfScheduledOOP =
       parseFloat(oldScheduledOOP) +
@@ -914,11 +897,11 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
     const totalInvoiced = this.pfListItem[0].Invoiced
       ? parseFloat(this.pfListItem[0].Invoiced) +
-        Amount
+      Amount
       : 0 + Amount;
     const oopInvoiced = this.pfListItem[0].InvoicedOOP
       ? parseFloat(this.pfListItem[0].InvoicedOOP) +
-        Amount
+      Amount
       : 0 + Amount;
 
     if (InvoiceType === "new") {
@@ -1014,7 +997,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   }
 
   // PBB
-  getPBBData(ScheduleInvoiceForm,InvoiceType) {
+  getPBBData(ScheduleInvoiceForm, InvoiceType) {
     return {
       __metadata: {
         type: this.constantService.listNames.ProjectBudgetBreakup.type,
@@ -1094,7 +1077,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
       );
       this.reFetchData();
     } else if (type === "Reject Expense") {
-      this.commonService.showToastrMessage(this.constantService.MessageType.success,'Submitted.',false);
+      this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Submitted.', false);
       // this.displayModal = false;
       this.sendMailToSelectedLineItems(type);
       // this.reFetchData();
@@ -1109,183 +1092,183 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
   getPIorClient(rowItem) {
     if (rowItem.ProjectCode && rowItem.ClientLegalEntity) {
-        const pc = rowItem.ProjectCode;
-        console.log('Project Code is ', pc);
-        this.selectedProjectInfo = this.getPIByTitle(pc);
-        console.log('this.selectedProjectInfo ', this.selectedProjectInfo);
-        this.getResCatByCMLevel();
-        this.cleForselectedPI = this.getCleByPC(pc);
+      const pc = rowItem.ProjectCode;
+      console.log('Project Code is ', pc);
+      this.selectedProjectInfo = this.getPIByTitle(pc);
+      console.log('this.selectedProjectInfo ', this.selectedProjectInfo);
+      this.getResCatByCMLevel();
+      this.cleForselectedPI = this.getCleByPC(pc);
     } else {
-        this.cleForselectedPI = this.getCleByPC(rowItem.ProjectCode);
-        console.log('this.cleForselectedPI ', this.cleForselectedPI);
-        this.getResCatByCMLevel();
+      this.cleForselectedPI = this.getCleByPC(rowItem.ProjectCode);
+      console.log('this.cleForselectedPI ', this.cleForselectedPI);
+      this.getResCatByCMLevel();
     }
   }
 
   getResCatByCMLevel() {
-      this.cmLevelIdList = [];
-      for (let l = 0; l < this.selectedPI.length; l++) {
-          const elements = this.selectedPI[l];
-          if (Array.isArray(elements)) {
-              for (let e = 0; e < elements.length; e++) {
-                  const ele = elements[e];
-                  this.cmLevelIdList.push(ele);
-              }
-          } else {
-              this.cmLevelIdList.push(elements);
-          }
+    this.cmLevelIdList = [];
+    for (let l = 0; l < this.selectedPI.length; l++) {
+      const elements = this.selectedPI[l];
+      if (Array.isArray(elements)) {
+        for (let e = 0; e < elements.length; e++) {
+          const ele = elements[e];
+          this.cmLevelIdList.push(ele);
+        }
+      } else {
+        this.cmLevelIdList.push(elements);
       }
-      console.log('this.cmLevelIdList ', this.cmLevelIdList);
-      this.resCatEmails = [];
-      this.resourceCatData();
+    }
+    console.log('this.cmLevelIdList ', this.cmLevelIdList);
+    this.resCatEmails = [];
+    this.resourceCatData();
   }
 
   resourceCatData() {
-      for (let c = 0; c < this.cmLevelIdList.length; c++) {
-          const element = this.cmLevelIdList[c];
-          // this.resCatEmails.push(this.getResourceData(element))
-          const item = this.getResourceData(element);
-          item ? this.resCatEmails.push(item) : '';
-          // if (item) {
-          //     this.resCatEmails.push(item);
-          // }
-      }
-      console.log('resCatEmails ', this.resCatEmails);
+    for (let c = 0; c < this.cmLevelIdList.length; c++) {
+      const element = this.cmLevelIdList[c];
+      // this.resCatEmails.push(this.getResourceData(element))
+      const item = this.getResourceData(element);
+      item ? this.resCatEmails.push(item) : '';
+      // if (item) {
+      //     this.resCatEmails.push(item);
+      // }
+    }
+    console.log('resCatEmails ', this.resCatEmails);
   }
 
   getResourceData(ele) {
-      const found = this.rcData.find((x) => {
-          if (x.UserNamePG.ID === ele.ID) {
-              return x;
-          }
-      });
-      return found ? found : '';
+    const found = this.rcData.find((x) => {
+      if (x.UserNamePG.ID === ele.ID) {
+        return x;
+      }
+    });
+    return found ? found : '';
   }
 
   getCleByPC(title) {
-      const found = this.cleData.find((x) => {
-          if (x.Title === title) {
-              if (x.CMLevel1.hasOwnProperty('results')) {
-                  this.selectedPI = x.CMLevel1.results;
-              }
-              return x;
-          }
-      });
-      return found ? found : '';
+    const found = this.cleData.find((x) => {
+      if (x.Title === title) {
+        if (x.CMLevel1.hasOwnProperty('results')) {
+          this.selectedPI = x.CMLevel1.results;
+        }
+        return x;
+      }
+    });
+    return found ? found : '';
   }
 
   getPIByTitle(title) {
-      const found = this.projectInfoData.find((x) => {
-          if (x.ProjectCode === title) {
-              if (x.CMLevel1.hasOwnProperty('results')) {
-                  this.selectedPI = x.CMLevel1.results;
-              }
-              console.log('this.selectedPI ', this.selectedPI);
-              return x;
-          }
-      });
-      return found ? found : '';
+    const found = this.projectInfoData.find((x) => {
+      if (x.ProjectCode === title) {
+        if (x.CMLevel1.hasOwnProperty('results')) {
+          this.selectedPI = x.CMLevel1.results;
+        }
+        console.log('this.selectedPI ', this.selectedPI);
+        return x;
+      }
+    });
+    return found ? found : '';
   }
 
   getAuthor(id) {
-      const found = this.rcData.find((x) => {
-          if (x.UserNamePG.ID === id) {
-              return x;
-          }
-      });
-      return found ? found : '';
+    const found = this.rcData.find((x) => {
+      if (x.UserNamePG.ID === id) {
+        return x;
+      }
+    });
+    return found ? found : '';
   }
 
   replaceContent(mailContent, key, value) {
-      return mailContent.replace(new RegExp(key, 'g'), value);
+    return mailContent.replace(new RegExp(key, 'g'), value);
   }
 
   sendApproveCanRejExpMail(expense, type: string) {
-      // let isCleData = this.getCleByPC(expense.projectCode);
-      const isCleData = this.cleForselectedPI;
-      const author = this.getAuthor(expense.AuthorId);
-      const val1 = isCleData.hasOwnProperty('ClientLegalEntity') ? expense.ProjectCode + ' (' + isCleData.ClientLegalEntity + ')' : expense.ProjectCode;
+    // let isCleData = this.getCleByPC(expense.projectCode);
+    const isCleData = this.cleForselectedPI;
+    const author = this.getAuthor(expense.AuthorId);
+    const val1 = isCleData.hasOwnProperty('ClientLegalEntity') ? expense.ProjectCode + ' (' + isCleData.ClientLegalEntity + ')' : expense.ProjectCode;
 
-      // var mailTemplate =  data.Status === "Approved" ? "ApproveExpense" :  data.Status === "Cancelled" ? "CancelExpense" : "RejectExpense";
-      const mailSubject = expense.ProjectCode + ' : Expense Rejected';
+    // var mailTemplate =  data.Status === "Approved" ? "ApproveExpense" :  data.Status === "Cancelled" ? "CancelExpense" : "RejectExpense";
+    const mailSubject = expense.ProjectCode + ' : Expense Rejected';
 
-      let mailContent = this.mailContentRes[0].retItems[0].ContentMT;
-      mailContent = this.replaceContent(mailContent, '@@Val1@@', val1);
-      mailContent = this.replaceContent(mailContent, '@@Val2@@', expense.Category);
-      mailContent = this.replaceContent(mailContent, '@@Val4@@', expense.ExpenseType);
-      mailContent = this.replaceContent(mailContent, '@@Val5@@', expense.Currency + ' ' + parseFloat(expense.Amount).toFixed(2));
-      mailContent = this.replaceContent(mailContent, '@@Val6@@', expense.ClientAmount ? expense.ClientCurrency + ' ' + parseFloat(expense.ClientAmount).toFixed(2) : '--');
-      mailContent = this.replaceContent(mailContent, '@@Val7@@', expense.Notes);
-      mailContent = this.replaceContent(mailContent, '@@Val10@@', this.expenseForm.value.ApproverComments ? this.expenseForm.value.ApproverComments : this.expenseForm.value.ApproverComments);
+    let mailContent = this.mailContentRes[0].retItems[0].ContentMT;
+    mailContent = this.replaceContent(mailContent, '@@Val1@@', val1);
+    mailContent = this.replaceContent(mailContent, '@@Val2@@', expense.Category);
+    mailContent = this.replaceContent(mailContent, '@@Val4@@', expense.ExpenseType);
+    mailContent = this.replaceContent(mailContent, '@@Val5@@', expense.Currency + ' ' + parseFloat(expense.Amount).toFixed(2));
+    mailContent = this.replaceContent(mailContent, '@@Val6@@', expense.ClientAmount ? expense.ClientCurrency + ' ' + parseFloat(expense.ClientAmount).toFixed(2) : '--');
+    mailContent = this.replaceContent(mailContent, '@@Val7@@', expense.Notes);
+    mailContent = this.replaceContent(mailContent, '@@Val10@@', this.expenseForm.value.ApproverComments ? this.expenseForm.value.ApproverComments : this.expenseForm.value.ApproverComments);
 
-      mailContent = this.replaceContent(mailContent, '@@Val0@@', expense.Id);
-      mailContent = this.replaceContent(mailContent, '@@Val13@@', author.hasOwnProperty('UserNamePG') ? author.UserNamePG.Title : 'Member');
-      mailContent = this.replaceContent(mailContent, '@@Val14@@', this.currentUserInfoData.Title);
+    mailContent = this.replaceContent(mailContent, '@@Val0@@', expense.Id);
+    mailContent = this.replaceContent(mailContent, '@@Val13@@', author.hasOwnProperty('UserNamePG') ? author.UserNamePG.Title : 'Member');
+    mailContent = this.replaceContent(mailContent, '@@Val14@@', this.currentUserInfoData.Title);
 
-      const ccUser = this.getCCList(type, expense);
-      // ccUser.push(this.currentUserInfoData.Email);
-      const tos = this.getTosList(type, expense);
-      this.commonService.SetNewrelic('Finance-Dashboard', 'approve-billable', 'sendApproveCanRejExpMail','POST');
-      this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
-      this.reFetchData();
+    const ccUser = this.getCCList(type, expense);
+    // ccUser.push(this.currentUserInfoData.Email);
+    const tos = this.getTosList(type, expense);
+    this.commonService.SetNewrelic('Finance-Dashboard', 'approve-billable', 'sendApproveCanRejExpMail', 'POST');
+    this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
+    this.reFetchData();
   }
 
   getCCList(type: string, expense) {
-      let arrayCC = [];
-      const itApprovers = this.groupITInfo.results;
-      const approvers = this.groupInfo.results;
-      if (type === 'Reject Expense') {
-          // Current User
-          arrayCC.push(this.currentUserInfoData.Email);
-          // Expense Approver Member
-          if (approvers.length) {
-              for (const i in approvers) {
-                  if (approvers[i].Email !== undefined && approvers[i].Email !== '') {
-                      arrayCC.push(approvers[i].Email);
-                  }
-              }
+    let arrayCC = [];
+    const itApprovers = this.groupITInfo.results;
+    const approvers = this.groupInfo.results;
+    if (type === 'Reject Expense') {
+      // Current User
+      arrayCC.push(this.currentUserInfoData.Email);
+      // Expense Approver Member
+      if (approvers.length) {
+        for (const i in approvers) {
+          if (approvers[i].Email !== undefined && approvers[i].Email !== '') {
+            arrayCC.push(approvers[i].Email);
           }
-          // Invoice Team Member
-          if (itApprovers.length) {
-              arrayCC = arrayCC.concat(this.fdDataShareServie.getITMember(itApprovers));
-          }
+        }
       }
+      // Invoice Team Member
+      if (itApprovers.length) {
+        arrayCC = arrayCC.concat(this.fdDataShareServie.getITMember(itApprovers));
+      }
+    }
 
-      arrayCC = arrayCC.filter(this.onlyUnique);
-      console.log('arrayCC ', arrayCC);
-      return arrayCC;
+    arrayCC = arrayCC.filter(this.onlyUnique);
+    console.log('arrayCC ', arrayCC);
+    return arrayCC;
   }
 
   getTosList(type: string, expense) {
-      let arrayTo = [];
-      const approvers = this.groupInfo.results;
-      if (type === 'Reject Expense' || type === 'Approve Expense') {
-          // Creator
-          arrayTo.push(expense.AuthorEMail);
+    let arrayTo = [];
+    const approvers = this.groupInfo.results;
+    if (type === 'Reject Expense' || type === 'Approve Expense') {
+      // Creator
+      arrayTo.push(expense.AuthorEMail);
 
-          // CS Team Member
-          if (this.resCatEmails.length) {
-              arrayTo = arrayTo.concat(this.fdDataShareServie.getCSMember(this.resCatEmails));
-          }
-
-      } else if (type === 'Cancel Expense') {
-          // Expense Approver Member
-          if (approvers.length) {
-              for (const i in approvers) {
-                  if (approvers[i].Email !== undefined && approvers[i].Email !== '') {
-                      arrayTo.push(approvers[i].Email);
-                  }
-              }
-          }
+      // CS Team Member
+      if (this.resCatEmails.length) {
+        arrayTo = arrayTo.concat(this.fdDataShareServie.getCSMember(this.resCatEmails));
       }
-      // arrayTo.push(this.currentUserInfoData.Email);
-      arrayTo = arrayTo.filter(this.onlyUnique);
-      console.log('arrayTo ', arrayTo);
-      return arrayTo;
+
+    } else if (type === 'Cancel Expense') {
+      // Expense Approver Member
+      if (approvers.length) {
+        for (const i in approvers) {
+          if (approvers[i].Email !== undefined && approvers[i].Email !== '') {
+            arrayTo.push(approvers[i].Email);
+          }
+        }
+      }
+    }
+    // arrayTo.push(this.currentUserInfoData.Email);
+    arrayTo = arrayTo.filter(this.onlyUnique);
+    console.log('arrayTo ', arrayTo);
+    return arrayTo;
   }
 
   onlyUnique(value, index, self) {
-      return self.indexOf(value) === index;
+    return self.indexOf(value) === index;
   }
 
 
@@ -1293,30 +1276,30 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   updateStsToBilled(arrRet: any) {
     const batchURL = [];
     let pendingAmount = this.scheduleInvoiceForm ? this.scheduleInvoiceForm.getRawValue().Amount - this.scheduleInvoiceForm.getRawValue().TagAmount : 0;
-      for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
-        const element = this.selectedAllRowsItem[j];
-        const clientAmt = element.ClientAmount - pendingAmount;
-        const amt = element.Amount - pendingAmount;
-        const spObj = {
-          __metadata: { type: this.constantService.listNames.SpendingInfo.type },
-          Status: element.Status.replace("Approved", "Billed"),
-          InvoiceID: arrRet[0].retItems.ID.toString(),
-        };
-        if(this.scheduleInvoiceType !== 'new') {
-          spObj['ClientAmount'] = clientAmt.toString();
-          spObj['Amount'] = amt.toString();
-        }
-        const url = this.spServices.getItemURL(
-          this.constantService.listNames.SpendingInfo.name,
-          element.Id
-        );
-        this.commonService.setBatchObject(
-          batchURL,
-          url,
-          spObj,
-          this.constantService.Method.PATCH,
-          this.constantService.listNames.SpendingInfo.name
-        );
+    for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
+      const element = this.selectedAllRowsItem[j];
+      const clientAmt = element.ClientAmount - pendingAmount;
+      const amt = element.Amount - pendingAmount;
+      const spObj = {
+        __metadata: { type: this.constantService.listNames.SpendingInfo.type },
+        Status: element.Status.replace("Approved", "Billed"),
+        InvoiceID: arrRet[0].retItems.ID.toString(),
+      };
+      if (this.scheduleInvoiceType !== 'new') {
+        spObj['ClientAmount'] = clientAmt.toString();
+        spObj['Amount'] = amt.toString();
+      }
+      const url = this.spServices.getItemURL(
+        this.constantService.listNames.SpendingInfo.name,
+        element.Id
+      );
+      this.commonService.setBatchObject(
+        batchURL,
+        url,
+        spObj,
+        this.constantService.Method.PATCH,
+        this.constantService.listNames.SpendingInfo.name
+      );
     }
     console.log("this.updateSpeLineItems ", this.updateSpeLineItems);
     this.submitForm(batchURL, "updateScheduledOopLineItem");
@@ -1386,7 +1369,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     const batchURL = [];
     let finalAddEArray = []
     let pendingAmount = this.scheduleInvoiceForm ? InvoiceType === 'new' ? 0 : this.scheduleInvoiceForm.getRawValue().Amount - this.scheduleInvoiceForm.getRawValue().TagAmount : 0;
-    if(pendingAmount !== 0) { 
+    if (pendingAmount !== 0) {
       for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
         const element = this.selectedAllRowsItem[j];
         finalAddEArray.push({
@@ -1451,10 +1434,10 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.constantService.listNames.PO.name
       );
     } else {
-      const TaggedAmount = InvoiceType === 'new' ?  (parseFloat(this.invoice.TaggedAmount) +
-      parseFloat(scheduleOopInvoice_form.getRawValue().Amount)) :
+      const TaggedAmount = InvoiceType === 'new' ? (parseFloat(this.invoice.TaggedAmount) +
+        parseFloat(scheduleOopInvoice_form.getRawValue().Amount)) :
         (parseFloat(this.invoice.TaggedAmount) +
-        parseFloat(scheduleOopInvoice_form.getRawValue().TagAmount));
+          parseFloat(scheduleOopInvoice_form.getRawValue().TagAmount));
       const invoiceData = {
         __metadata: { type: this.constantService.listNames.Invoices.type },
         TaggedAmount: TaggedAmount,
@@ -1481,7 +1464,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     this.commonService.setBatchObject(
       batchURL,
       url,
-      this.getPBBData(scheduleOopInvoice_form,InvoiceType),
+      this.getPBBData(scheduleOopInvoice_form, InvoiceType),
       this.constantService.Method.POST,
       this.constantService.listNames.ProjectBudgetBreakup.name
     );
@@ -1504,13 +1487,13 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     url =
       this.pfbListItem.length > 0
         ? this.spServices.getItemURL(
-            this.constantService.listNames.ProjectFinanceBreakup.name,
-            this.pfbListItem[0].Id
-          )
+          this.constantService.listNames.ProjectFinanceBreakup.name,
+          this.pfbListItem[0].Id
+        )
         : this.spServices.getReadURL(
-            this.constantService.listNames.ProjectFinanceBreakup.name,
-            null
-          );
+          this.constantService.listNames.ProjectFinanceBreakup.name,
+          null
+        );
     const Type =
       this.pfbListItem.length > 0
         ? this.constantService.Method.PATCH

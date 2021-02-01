@@ -11,46 +11,64 @@
     <div class="ui-g-3"></div>
     <div class="ui-g-3 f-right" style="display: flex;">
         <div class="box mr-20 fg">
-            <button
-            type="button"
-            class="fdBtn"
-            pButton
-            icon="fa fa-upload"
-            iconPos="left"
-            label="Upload Payment Receipt"
-            (click)="uploadReceipts()"
-        ></button>
+            <button type="button" class="fdBtn" pButton icon="fa fa-upload" iconPos="left"
+                label="Upload Payment Receipt" (click)="uploadReceipts()"></button>
         </div>
         <div class="box mr-20">
-            <button
-                type="button"
-                class="fdBtn"
-                pButton
-                label="Sent to AP"
-                (click)="sentToAP()"
-            ></button>
+            <button type="button" class="fdBtn" pButton label="Sent to AP" (click)="sentToAP()"></button>
         </div>
         <div class="box">
-            <i (click)=" fdDataShareServie.convertToExcelFile(outi)" title="Export To Excel" class="fa fa-fw fa-file-excel-o excel-icon"></i>
+            <i (click)=" fdDataShareServie.convertToExcelFile(outi)" title="Export To Excel"
+                class="fa fa-fw fa-file-excel-o excel-icon"></i>
         </div>
     </div>
 </div>
 
 <div class="financeTable">
-    <p-table #outi dataKey="Id" [columns]="outstandingInCols" [value]="outstandingInvoicesRes" [paginator]="true" [rows]="10" [(selection)]="selectedRowData" selectionMode="multiple" (onRowSelect)="onRowSelect($event)" exportFilename="Outstanding_Invoices" [(first)]="pageNumber"
-        (onPage)="paginate($event)" rowExpandMode="multiple" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)">
+    <p-table #outi dataKey="Id" [columns]="outstandingInCols" [value]="outstandingInvoicesRes" [paginator]="true"
+        [rows]="10" [(selection)]="selectedRowData" selectionMode="multiple" (onRowSelect)="onRowSelect($event)"
+        exportFilename="Outstanding_Invoices" [(first)]="pageNumber" (onPage)="paginate($event)"
+        rowExpandMode="multiple" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)"
+        [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true"
+        currentPageReportTemplate="Showing {​​​​​​​​first}​​​​​​​​ to {​​​​​​​​last}​​​​​​​​ of {​​​​​​​​totalRecords}​​​​​​​​ entries"
+        styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="outstandingTable">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th>S.No</th>
-                <th style="width: 2.25em">
+                <th class="firstColumnWidth">
                     <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                 </th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
-                    {{col.header}}
-                    <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+                    <!-- {{col.header}}
+                    <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon> -->
+                    <div *ngIf="col.field != ''" class="p-d-flex p-jc-between p-ai-center">
+                        {{col.header}}
+                        <p-sortIcon [field]="col.field"></p-sortIcon>
+                        <p-columnFilter
+                            *ngIf="col.header != ''  && col.field !='docUrlHtmlTag' && col.field!='docReviewUrlHtmlTag'"
+                            [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false"
+                            [showOperator]="false" [showAddButton]="false">
+                            <ng-template pTemplate="header">
+                                <div class="p-px-3 p-pt-3 p-pb-0">
+                                    <span class="p-text-bold"> {{col.header}} Picker</span>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All"
+                                    (onChange)="filter($event.value)" optionLabel="label">
+                                    <ng-template let-option pTemplate="item">
+                                        <div class="p-multiselect-representative-option">
+                                            <span class="p-ml-1">{{option.label}}</span>
+                                        </div>
+                                    </ng-template>
+                                </p-multiSelect>
+                            </ng-template>
+                        </p-columnFilter>
+                    </div>
                 </th>
+                <th class="lastColumnWidth"></th>
             </tr>
-
+            <!-- 
             <tr>
                 <th></th>
                 <th></th>
@@ -90,9 +108,8 @@
 
                     </ng-container>
                 </th>
-            </tr>
+            </tr> -->
         </ng-template>
-
         <ng-template pTemplate="body" let-rowData let-expanded="expanded" let-columns="columns" let-rowIndex="rowIndex">
             <tr>
                 <td>
@@ -105,7 +122,8 @@
                     <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
                 </td>
                 <td *ngFor="let col of columns;index as i" class="ui-resizable-column" [hidden]="!col.visibility">
-                    <ng-container *ngIf="col.field != 'DisplayInvoiceWithAuxiliary' &&  col.field != '' && col.field != 'InvoiceDate'">
+                    <ng-container
+                        *ngIf="col.field != 'DisplayInvoiceWithAuxiliary' &&  col.field != '' && col.field != 'InvoiceDate'">
                         {{rowData[col.field]}}
                     </ng-container>
                     <ng-container *ngIf="col.field === 'InvoiceDate'">
@@ -117,13 +135,22 @@
                         <p *ngIf="!rowData['FileURL']">{{rowData[col.field]}}</p>
                     </ng-container>
 
-                    <ng-container *ngIf="col.field == ''">
+                    <!-- <ng-container *ngIf="col.field == ''">
                         <div>
                             <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu">
                             </p-menu>
-                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
+                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                                (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
                         </div>
-                    </ng-container>
+                    </ng-container> -->
+                </td>
+                <td>
+                    <div>
+                        <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu">
+                        </p-menu>
+                        <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                            (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
+                    </div>
                 </td>
             </tr>
         </ng-template>
@@ -137,43 +164,46 @@
             </tr>
             <tr *ngIf="!invoice.loaderenable">
                 <td [attr.colspan]="13" style="padding: 0px;">
-                    <p-table #invoicesTable [columns]="invoiceCols" class="invoicesTable" [style]="{'font-size':'13px'}" [value]="invoice.invoiceDetails">
+                    <p-table #invoicesTable [columns]="invoiceCols" class="invoicesTable" [style]="{'font-size':'13px'}"
+                        [value]="invoice.invoiceDetails">
                         <ng-template pTemplate="header" let-columns>
 
-                            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
-                                {{col.header}}
-                                <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
-                            </th>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                    {{col.header}}
+                    <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+                </th>
 
-                        </ng-template>
+        </ng-template>
 
-                        <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex" let-columns="columns">
-                            <tr class="milestoneTable" *ngIf="!invoice.loaderenable">
-                                <td *ngFor="let col of columns;index as i">
-                                    <ng-container>
-                                        {{rowData[col.field]}}
-                                    </ng-container>
+        <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex" let-columns="columns">
+            <tr class="milestoneTable" *ngIf="!invoice.loaderenable">
+                <td *ngFor="let col of columns;index as i">
+                    <ng-container>
+                        {{rowData[col.field]}}
+                    </ng-container>
 
-                                </td>
-                                <td>
-                                    <div>
-                                        <p-menu #popupMenu [popup]="true" [model]="items" [style]="{'text-align': 'left'}" styleClass="borderMenu"></p-menu>
-                                        <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="openPopup(rowData, popupMenu,proforma);popupMenu.show($event);"></i>
-                                    </div>
-                                </td>
-                            </tr>
-                        </ng-template>
-                        <ng-template pTemplate="emptymessage" let-columns>
-                            <tr>
-                                <td [attr.colspan]="columns.length">
-                                    No records found
-                                </td>
-                            </tr>
-                        </ng-template>
-                    </p-table>
+                </td>
+                <td>
+                    <div>
+                        <p-menu #popupMenu [popup]="true" [model]="items" [style]="{'text-align': 'left'}"
+                            styleClass="borderMenu"></p-menu>
+                        <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                            (click)="openPopup(rowData, popupMenu,proforma);popupMenu.show($event);"></i>
+                    </div>
                 </td>
             </tr>
         </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+                <td [attr.colspan]="columns.length">
+                    No records found
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+    </td>
+    </tr>
+    </ng-template>
     </p-table>
 </div>
 <!-- Table End  -->
@@ -195,38 +225,48 @@
 
 
 <!-- Payment Resolved -->
-<p-dialog header="Payment Resolved" [(visible)]="paymentResovedModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '30%', 'top':'0px'}" [maximizable]="false" (onHide)="cancelFormSub('paymentResoved')">
+<p-dialog header="Payment Resolved" [(visible)]="paymentResovedModal" [modal]="true" [draggable]="false"
+    [responsive]="true" [style]="{'width': '30%', 'top':'0px'}" [maximizable]="false"
+    (onHide)="cancelFormSub('paymentResoved')">
     <form id="myform" [formGroup]="paymentResoved_form">
         <div class="ui-g">
             <div class="ui-g-6">
                 Uplaod File
             </div>
             <div class="ui-g-6">
-                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFilePaymentChange($event,'PaymentReciepts')" #paymentResolvedFile formControlName="file" />
+                <input type="file" name="myfile" class="form-control" id="myfile"
+                    (change)="onFilePaymentChange($event,'PaymentReciepts')" #paymentResolvedFile
+                    formControlName="file" />
                 <div *ngIf="formSubmit.isSubmit && isValidPaymentResovedForm.file.errors">
-                    <div *ngIf="isValidPaymentResovedForm.file.errors.required" style="color:red;">Please Select file & try again.
+                    <div *ngIf="isValidPaymentResovedForm.file.errors.required" style="color:red;">Please Select file &
+                        try again.
                     </div>
                 </div>
             </div>
         </div>
     </form>
     <p-footer>
-        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked" (click)="onSubmit('paymentResoved')"></button>
+        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('paymentResoved')"></button>
         <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('paymentResoved')"></button>
     </p-footer>
 </p-dialog>
 
 <!-- Dispute invoice -->
-<p-dialog header="Dispute Invoice" [(visible)]="disputeInvoiceModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '30%', 'top':'0px'}" [maximizable]="false" (onHide)="cancelFormSub('disputeInvoice')">
+<p-dialog header="Dispute Invoice" [(visible)]="disputeInvoiceModal" [modal]="true" [draggable]="false"
+    [responsive]="true" [style]="{'width': '30%', 'top':'0px'}" [maximizable]="false"
+    (onHide)="cancelFormSub('disputeInvoice')">
     <form id="myform" [formGroup]="disputeInvoice_form">
         <div class="ui-g">
             <div class="ui-g-6">
                 Reason
             </div>
             <div class="ui-g-6">
-                <p-dropdown resetFilterOnHide="true" [options]="reasons" placeholder="Select One" optionLabel="label" [showClear]="true" formControlName="DisputeReason"></p-dropdown>
+                <p-dropdown resetFilterOnHide="true" [options]="reasons" placeholder="Select One" optionLabel="label"
+                    [showClear]="true" formControlName="DisputeReason"></p-dropdown>
                 <div *ngIf="formSubmit.isSubmit && isValidDisputeInvoiceForm.DisputeReason.errors">
-                    <div *ngIf="isValidDisputeInvoiceForm.DisputeReason.errors.required" style="color:red;">Please Select Reason.
+                    <div *ngIf="isValidDisputeInvoiceForm.DisputeReason.errors.required" style="color:red;">Please
+                        Select Reason.
                     </div>
                 </div>
             </div>
@@ -234,46 +274,55 @@
                 Comments
             </div>
             <div class="ui-g-6">
-                <textarea [rows]="4" [cols]="30" pInputTextarea autoResize="autoResize" formControlName="DisputeComments"></textarea>
+                <textarea [rows]="4" [cols]="30" pInputTextarea autoResize="autoResize"
+                    formControlName="DisputeComments"></textarea>
                 <div *ngIf="formSubmit.isSubmit && isValidDisputeInvoiceForm.DisputeComments.errors">
-                    <div *ngIf="isValidDisputeInvoiceForm.DisputeComments.errors.required" style="color:red;">Please provide Comment.
+                    <div *ngIf="isValidDisputeInvoiceForm.DisputeComments.errors.required" style="color:red;">Please
+                        provide Comment.
                     </div>
                 </div>
             </div>
         </div>
     </form>
     <p-footer>
-        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked" (click)="onSubmit('disputeInvoice')"></button>
+        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('disputeInvoice')"></button>
         <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('disputeInvoice')"></button>
     </p-footer>
 
 </p-dialog>
 
 <!-- Replace Invoice -->
-<p-dialog header="Replace Invoice" [(visible)]="replaceInvoiceModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '30%', 'top':'0px'}" [maximizable]="false" (onHide)="cancelFormSub('replaceInvoice')">
+<p-dialog header="Replace Invoice" [(visible)]="replaceInvoiceModal" [modal]="true" [draggable]="false"
+    [responsive]="true" [style]="{'width': '30%', 'top':'0px'}" [maximizable]="false"
+    (onHide)="cancelFormSub('replaceInvoice')">
     <form id="myform" [formGroup]="replaceInvoice_form">
         <div class="ui-g">
             <div class="ui-g-6">
                 Uplaod File
             </div>
             <div class="ui-g-6">
-                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)" #replaceInvoiceFile formControlName="file" />
+                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)"
+                    #replaceInvoiceFile formControlName="file" />
                 <div *ngIf="formSubmit.isSubmit && isValidReplaceInvoiceForm.file.errors">
-                    <div *ngIf="isValidReplaceInvoiceForm.file.errors.required" style="color:red;">Please Select file & try again.
+                    <div *ngIf="isValidReplaceInvoiceForm.file.errors.required" style="color:red;">Please Select file &
+                        try again.
                     </div>
                 </div>
             </div>
         </div>
     </form>
     <p-footer>
-        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked" (click)="onSubmit('replaceInvoice')"></button>
+        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('replaceInvoice')"></button>
         <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('replaceInvoice')"></button>
     </p-footer>
 
 </p-dialog>
 
 <!-- Generate Invoice -->
-<p-dialog header="Confirm Send to AP" [(visible)]="sentToAPModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '40%'}" [maximizable]="false" (onHide)="cancelFormSub('sentToAPModal')" [responsive]="true">
+<p-dialog header="Confirm Send to AP" [(visible)]="sentToAPModal" [modal]="true" [draggable]="false" [responsive]="true"
+    [style]="{'width': '40%'}" [maximizable]="false" (onHide)="cancelFormSub('sentToAPModal')" [responsive]="true">
     <form>
         <div class="ui-g">
             <div class="ui-g-12">
@@ -282,7 +331,8 @@
         </div>
     </form>
     <p-footer>
-        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked" (click)="onSubmit('sentToAP')"></button>
+        <button pButton type="button" class="fdBtn" label="Save" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('sentToAP')"></button>
         <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('sentToAP')"></button>
     </p-footer>
 
@@ -290,7 +340,9 @@
 <!-- Generate Invoice End-->
 
 <!-- Mark as Credit or Debit Note Modal -->
-<p-dialog header="Mark as Credit or Debit Note" [(visible)]="creditOrDebitModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '40%', 'top':'0px'}" [maximizable]="false" (onHide)="cancelFormSub('creditDebit')">
+<p-dialog header="Mark as Credit or Debit Note" [(visible)]="creditOrDebitModal" [modal]="true" [draggable]="false"
+    [responsive]="true" [style]="{'width': '40%', 'top':'0px'}" [maximizable]="false"
+    (onHide)="cancelFormSub('creditDebit')">
 
     <form id="myform" [formGroup]="creditOrDebitNote_form">
         <div class="ui-g">
@@ -298,25 +350,30 @@
             <div class="ui-g-6">
                 <input id="disabled-input" type="text" pInputText formControlName="Number" />
                 <div *ngIf="formSubmit.isSubmit && isValidCreditDebitNoteForm.Number.errors">
-                    <div *ngIf="isValidCreditDebitNoteForm.Number.errors.required" style="color:red;">Please provide Number.
+                    <div *ngIf="isValidCreditDebitNoteForm.Number.errors.required" style="color:red;">Please provide
+                        Number.
                     </div>
                 </div>
             </div>
 
             <div class="ui-g-6">Uplaod File</div>
             <div class="ui-g-6">
-                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)" #fileInput formControlName="file" />
+                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)"
+                    #fileInput formControlName="file" />
                 <div *ngIf="formSubmit.isSubmit && isValidCreditDebitNoteForm.file.errors">
-                    <div *ngIf="isValidCreditDebitNoteForm.file.errors.required" style="color:red;">Please Select file & try again.
+                    <div *ngIf="isValidCreditDebitNoteForm.file.errors.required" style="color:red;">Please Select file &
+                        try again.
                     </div>
                 </div>
             </div>
 
             <div class="ui-g-6">Amount</div>
             <div class="ui-g-6">
-                <input id="disabled-input" type="text" appNumberOnly pInputText formControlName="Amount" maxlength="15" />
+                <input id="disabled-input" type="text" appNumberOnly pInputText formControlName="Amount"
+                    maxlength="15" />
                 <div *ngIf="formSubmit.isSubmit && isValidCreditDebitNoteForm.Amount.errors">
-                    <div *ngIf="isValidCreditDebitNoteForm.Amount.errors.required" style="color:red;">Please provide Amount.
+                    <div *ngIf="isValidCreditDebitNoteForm.Amount.errors.required" style="color:red;">Please provide
+                        Amount.
                     </div>
                 </div>
             </div>
@@ -324,10 +381,12 @@
             <div class="ui-g-6">Type</div>
             <div class="ui-g-6">
                 <div class="ui-g-6">
-                    <p-dropdown resetFilterOnHide="true" [options]="CreditOrDebitNoteType" placeholder="Select One" optionLabel="label" [showClear]="true" (onChange)="onCorDChange($event)" formControlName="Type">
+                    <p-dropdown resetFilterOnHide="true" [options]="CreditOrDebitNoteType" placeholder="Select One"
+                        optionLabel="label" [showClear]="true" (onChange)="onCorDChange($event)" formControlName="Type">
                     </p-dropdown>
                     <div *ngIf="formSubmit.isSubmit && isValidCreditDebitNoteForm.Type.errors">
-                        <div *ngIf="isValidCreditDebitNoteForm.Type.errors.required" style="color:red;">Please Provide Type.
+                        <div *ngIf="isValidCreditDebitNoteForm.Type.errors.required" style="color:red;">Please Provide
+                            Type.
                         </div>
                     </div>
                 </div>
@@ -335,9 +394,11 @@
 
             <div class="ui-g-6">Comments</div>
             <div class="ui-g-6">
-                <textarea [rows]="4" [cols]="30" pInputTextarea autoResize="autoResize" formControlName="Comments"></textarea>
+                <textarea [rows]="4" [cols]="30" pInputTextarea autoResize="autoResize"
+                    formControlName="Comments"></textarea>
                 <div *ngIf="formSubmit.isSubmit && isValidCreditDebitNoteForm.Comments.errors">
-                    <div *ngIf="isValidCreditDebitNoteForm.Comments.errors.required" style="color:red;">Please provide Comments.
+                    <div *ngIf="isValidCreditDebitNoteForm.Comments.errors.required" style="color:red;">Please provide
+                        Comments.
                     </div>
                 </div>
             </div>
@@ -346,7 +407,8 @@
     </form>
 
     <p-footer>
-        <button pButton type="button" class="fdBtn" label="Confirm" [disabled]="submitBtn.isClicked" (click)="onSubmit('creditDebit')"></button>
+        <button pButton type="button" class="fdBtn" label="Confirm" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('creditDebit')"></button>
         <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('creditDebit')"></button>
     </p-footer>
 </p-dialog>
@@ -355,15 +417,18 @@
 <!-- *****************************************************************************************
                                         AuxInvoiceName Popup
   ****************************************************************************************** -->
-<p-dialog *ngIf="selectedRowItem" [header]="selectedRowItem.InvoiceNumber" [closable]="false" [modal]="true" [style]="{width: '450px', minWidth: '300px'}" [(visible)]="editAuxiliary">
+<p-dialog *ngIf="selectedRowItem" [header]="selectedRowItem.InvoiceNumber" [closable]="false" [modal]="true"
+    [style]="{width: '450px', minWidth: '300px'}" [(visible)]="editAuxiliary">
     <div class="p-col" style="padding: 30px 0px 20px 15px;">
         <span class="ui-float-label" *ngIf="editAuxiliary">
-        <input id="float-input" type="text" size="30" pInputText [(ngModel)]="SelectedAuxInvoiceName"> 
-        <label for="float-input">Auxiliary Name</label>
-    </span>
+            <input id="float-input" type="text" size="30" pInputText [(ngModel)]="SelectedAuxInvoiceName">
+            <label for="float-input">Auxiliary Name</label>
+        </span>
     </div>
     <p-footer>
-        <button type="button" pButton icon="pi pi-check" style="background-color: #af0b14;border-color:#af0b14;cursor:pointer;" (click)="onSubmit('AuxiliaryUpdate');" label="Save"></button>
+        <button type="button" pButton icon="pi pi-check"
+            style="background-color: #af0b14;border-color:#af0b14;cursor:pointer;"
+            (click)="onSubmit('AuxiliaryUpdate');" label="Save"></button>
         <button type="button" pButton icon="pi pi-times" (click)="editAuxiliary=false" label="Cancel"></button>
     </p-footer>
 </p-dialog>
