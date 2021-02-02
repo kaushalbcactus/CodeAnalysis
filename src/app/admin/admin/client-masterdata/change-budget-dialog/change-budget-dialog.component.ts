@@ -108,19 +108,19 @@ export class ChangeBudgetDialogComponent implements OnInit {
     }
     if (this.selectedValue.length) {
       if (this.changeBudgetForm.valid) {
-        this.constantsService.loader.isPSInnerLoaderHidden = false;
+        this.constantsService.loader.isWaitDisable = true;
         switch (this.selectedValue) {
           case this.adminConstants.ACTION.ADD:
             await this.addBudget();
-            this.constantsService.loader.isPSInnerLoaderHidden = true;
+            this.constantsService.loader.isWaitDisable = false;
             break;
           case this.adminConstants.ACTION.REDUCE:
             await this.reduceBudget();
-            this.constantsService.loader.isPSInnerLoaderHidden = true;
+            this.constantsService.loader.isWaitDisable = false;
             break;
           case this.adminConstants.ACTION.RESTRUCTURE:
             await this.restructureBudget();
-            this.constantsService.loader.isPSInnerLoaderHidden = true;
+            this.constantsService.loader.isWaitDisable = false;
             break;
         }
 

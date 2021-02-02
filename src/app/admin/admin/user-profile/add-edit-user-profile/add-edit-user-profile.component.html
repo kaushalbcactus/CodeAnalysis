@@ -1,28 +1,31 @@
-<div fxLayout="column" style="padding: 12vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+<div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="modalloaderenable">
     <div id="modalInnerLoader"></div>
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
 
-<div class='UserButton' fxLayout="row" fxLayoutAlign="end center" [hidden]="modalloaderenable">
+<div class="pdialogButton p-col-12 p-grid p-jc-end" *ngIf="!modalloaderenable">
 
-    <button type="button" pButton icon="pi pi-save" id="saveUser" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SaveUserDetails(addUser)" label="Save"></button>
-
-    <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
+    <button type="button" pButton icon="pi pi-save" id="saveUser" (click)="SaveUserDetails(addUser);" label="Save" class="p-mx-1 p-button-raised p-button-danger"></button>
+    <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="p-button-raised p-button-danger"></button>
 
 </div>
 
-<div fxLayout="row" *ngIf="!modalloaderenable" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px" style="width: 98%;">
 
-    <form [formGroup]='addUser' class="p-col">
 
-        <div class="p-grid">
+<div *ngIf="!modalloaderenable" #scrollDown>
+
+    <form [formGroup]='addUser' class="p-col  formfont">
+
+
+
+        <div class="p-grid p-mt-2">
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>User Name</div>
                 <div class="p-col-8">
-                    <p-autoComplete formControlName="username" [suggestions]="users" (completeMethod)="filterSPUserSingle($event)" field="DisplayText" [size]="30" placeholder="User Name" [minLength]="3">
-                        <ng-template let-spuser pTemplate="item" styleClass="wid100">
-                            <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                    <p-autoComplete class="p-fluid cls_username" formControlName="username" [suggestions]="users" (completeMethod)="filterSPUserSingle($event)" field="DisplayText" [size]="30" placeholder="User Name" [minLength]="3">
+                        <ng-template let-spuser pTemplate="item">
+                            <div class="ui-helper-clearfix">
                                 <div class="user-name">
                                     {{spuser.DisplayText}}
                                 </div>
@@ -37,9 +40,9 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Manager</div>
                 <div class="p-col-8">
-                    <p-autoComplete formControlName="manager" [suggestions]="users" (completeMethod)="filterSPUserSingle($event)" field="DisplayText" [size]="30" placeholder="Manager" [minLength]="3" (onSelect)="onManagerChange()">
-                        <ng-template let-spuser pTemplate="item" styleClass="wid100">
-                            <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                    <p-autoComplete class="p-fluid" formControlName="manager" [suggestions]="users" (completeMethod)="filterSPUserSingle($event)" field="DisplayText" [size]="30" placeholder="Manager" [minLength]="3" (onSelect)="onManagerChange()">
+                        <ng-template let-spuser pTemplate="item">
+                            <div class="ui-helper-clearfix">
                                 <div class="user-name">
                                     {{spuser.DisplayText}}
                                 </div>
@@ -94,7 +97,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>InCapacity</div>
                 <div class="p-col-8">
-                    <p-dropdown placeholder="Select InCapacity" [options]="adminDropDown.inCapacityArray" formControlName="inCapacity" [style]="{'width':'240px'}">
+                    <p-dropdown placeholder="Select InCapacity" [options]="adminDropDown.inCapacityArray" formControlName="inCapacity" class="p-fluid cls_InCapacity">
                     </p-dropdown>
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.inCapacity.errors">
                         <div *ngIf="addUser.controls.inCapacity.errors.required">InCapacity is required</div>
@@ -109,14 +112,14 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Practice Area</div>
                 <div class="p-col-8">
-                    <p-multiSelect filterPlaceHolder="Select Practice Area" [options]="adminDropDown.practiceAreaArray" [maxSelectedLabels]="1" formControlName="practiceArea" (keydown.enter)="$event.preventDefault()" [ngClass]="{'form-submitted': upObject.isFormSubmit}"
-                        (onChange)="onPracticeAreaChange()" filter="true" resetFilterOnHide="true" [style]="{'width':'17em'}">
+                    <p-multiSelect class="p-fluid cls_practiceArea" filterPlaceHolder="Select Practice Area" [options]="adminDropDown.practiceAreaArray" [maxSelectedLabels]="1" formControlName="practiceArea" (keydown.enter)="$event.preventDefault()" [ngClass]="{'form-submitted': upObject.isFormSubmit}"
+                        (onChange)="onPracticeAreaChange()" filter="true" resetFilterOnHide="true">
                     </p-multiSelect>
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.practiceArea.errors">
                         <div *ngIf="addUser.controls.practiceArea.errors.required">Practice Area is required</div>
                     </div>
                     <div style="padding: 5px 0px 0px 0px;" *ngIf="date.isPracticeEffectiveDateActive">
-                        <p-calendar styleClass="pCalendarBtn" formControlName="practiceAreaEffectiveDate" placeholder="Practice Area Date" showIcon="true" [readonlyInput]="true" [minDate]="minPastMonth" dateFormat="M dd, yy" [inputStyle]="{'width':'210px'}">
+                        <p-calendar styleClass="pCalendarBtn" formControlName="practiceAreaEffectiveDate" placeholder="Practice Area Date" showIcon="true" [readonlyInput]="true" [minDate]="minPastMonth" dateFormat="M dd, yy">
                         </p-calendar>
                         <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.practiceAreaEffectiveDate.errors">
                             <div *ngIf="addUser.controls.practiceAreaEffectiveDate.errors.required">Practice Area Effective Date is required
@@ -128,7 +131,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Skill Level</div>
                 <div class="p-col-8">
-                    <p-dropdown placeholder="Select Skill Level" [options]="adminDropDown.skillLevelArray" formControlName="skillLevel" resetFilterOnHide="true" (onChange)="onSkillLevelChange()" filter="true" [style]="{'width':'240px'}">
+                    <p-dropdown placeholder="Select Skill Level" [options]="adminDropDown.skillLevelArray" formControlName="skillLevel" resetFilterOnHide="true" (onChange)="onSkillLevelChange()" filter="true" class="p-fluid cls_SkillLevel">
                     </p-dropdown>
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.skillLevel.errors">
                         <div *ngIf="addUser.controls.skillLevel.errors.required">Skill Level is required</div>
@@ -146,7 +149,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Time Zone</div>
                 <div class="p-col-8">
-                    <p-dropdown placeholder="Select Time Zone" [options]="adminDropDown.timeZoneArray" formControlName="timeZone" (onChange)="onTimezoneChange()" filter="true" resetFilterOnHide="true" [style]="{'width':'240px'}">
+                    <p-dropdown placeholder="Select Time Zone" [options]="adminDropDown.timeZoneArray" formControlName="timeZone" (onChange)="onTimezoneChange()" filter="true" resetFilterOnHide="true" class="p-fluid cls_TimeZone">
                     </p-dropdown>
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.timeZone.errors">
                         <div *ngIf="addUser.controls.timeZone.errors.required">Time Zone is required</div>
@@ -168,7 +171,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Bucket</div>
                 <div class="p-col-8">
-                    <p-dropdown placeholder="Select Bucket" [options]="adminDropDown.bucketArray" formControlName="bucket" filter="true" resetFilterOnHide="true" (onChange)="onBucketChange()" [style]="{'width':'240px'}">
+                    <p-dropdown placeholder="Select Bucket" [options]="adminDropDown.bucketArray" formControlName="bucket" filter="true" resetFilterOnHide="true" (onChange)="onBucketChange()" class="p-fluid cls_Bucket">
                     </p-dropdown>
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.bucket.errors">
                         <div *ngIf="addUser.controls.bucket.errors.required">Bucket is required</div>
@@ -188,7 +191,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Primary Skill</div>
                 <div class="p-col-8">
-                    <p-dropdown placeholder="Select Primary Skill" [options]="adminDropDown.primarySkillArray" formControlName="primarySkill" (onChange)="onPrimarySkillChange()" filter="true" resetFilterOnHide="true" [style]="{'width':'240px'}">
+                    <p-dropdown placeholder="Select Primary Skill" [options]="adminDropDown.primarySkillArray" formControlName="primarySkill" (onChange)="onPrimarySkillChange()" filter="true" resetFilterOnHide="true" class="p-fluid cls_PrimarySkill">
                     </p-dropdown>
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.primarySkill.errors">
                         <div *ngIf="addUser.controls.primarySkill.errors.required"> Primary Skill is required</div>
@@ -206,7 +209,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Max. Hours</div>
                 <div class="p-col-8">
-                    <input type="number" formControlName="maxHrs" step="0.5" value="0" placeholder="MaxHrs" style="width: 240px;" onchange="validity.valid||(value='1');" (change)="onMaxHrsChange()" pInputText appNumberOnly>
+                    <input type="number" formControlName="maxHrs" step="0.5" value="0" placeholder="MaxHrs" class="p-col-12 cls_maxHours" onchange="validity.valid||(value='1');" (change)="onMaxHrsChange()" pInputText appNumberOnly>
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.maxHrs.errors">
                         <div *ngIf="addUser.controls.maxHrs.errors.required">MaxHrs is required</div>
                     </div>
@@ -236,7 +239,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Role</div>
                 <div class="p-col-8">
-                    <p-dropdown placeholder="Select Role" [options]="adminDropDown.roleArray" formControlName="role" filter="true" resetFilterOnHide="true" [style]="{'width':'240px'}"></p-dropdown>
+                    <p-dropdown placeholder="Select Role" [options]="adminDropDown.roleArray" formControlName="role" filter="true" resetFilterOnHide="true" class="p-fluid cls_Role"></p-dropdown>
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.role.errors">
                         <div *ngIf="addUser.controls.role.errors.required">Role is required</div>
                     </div>
@@ -246,7 +249,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4" *ngIf="showeditUser"><span class="compulsory">*</span> IsActive</div>
                 <div class="p-col-8" *ngIf="showeditUser">
-                    <p-dropdown placeholder="Select IsActive" [options]="adminDropDown.isActiveArray" (onChange)="onIsActiveChange()" formControlName="isActive" [style]="{'width':'240px'}">
+                    <p-dropdown placeholder="Select IsActive" [options]="adminDropDown.isActiveArray" (onChange)="onIsActiveChange()" formControlName="isActive" class="p-fluid cls_IsActive">
                     </p-dropdown>
                 </div>
             </div>
@@ -254,7 +257,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Pooled</div>
                 <div class="p-col-8">
-                    <p-dropdown placeholder="Select Pooled" [options]="adminDropDown.pooledArray" formControlName="pooled" [style]="{'width':'240px'}">
+                    <p-dropdown placeholder="Select Pooled" [options]="adminDropDown.pooledArray" formControlName="pooled" class="p-fluid cls Pooled">
                     </p-dropdown>
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.pooled.errors">
                         <div *ngIf="addUser.controls.pooled.errors.required">Pooled is required</div>
@@ -263,34 +266,47 @@
             </div>
         </div>
         <div class="p-grid">
-            <div class="p-grid p-col">
+            <div class="p-grid p-col-4 p-pr-0">
                 <div class="p-col-4">&nbsp;Ready To</div>
-                <div class="p-col-8" style="padding: 0.5em 0.5em 0.5em 0.2em;">
+                <div class="p-col-8 p-pr-0" style="padding:0px 11px">
                     <textarea [rows]="2" [cols]="30" formControlName="readyTo" pInputTextarea></textarea>
                 </div>
             </div>
-            <div class="p-grid p-col-8 p-align-center" style="padding: 0.5em 0.5em 0.5em 0em;">
-                <div class="p-col-2" style="padding: 0.5em 0.5em 0.5em 0em;">Work week</div>
-                <div class="p-col-10 checkboxpadding">
+            <div class="p-col-8 p-grid p-mx-2 p-align-center">
+                <div class="p-col-2">Work week</div>
+                <div class="p-col-10 p-pl-4 p-grid p-ai-center checkboxpadding">
 
-                    <p-checkbox name="workWeek" label="Sun" class="checkboxpadding" formControlName="workSunday" binary="true">
-                    </p-checkbox>
+                    <div class="p-mr-2">
+                        <p-checkbox name="workWeek" formControlName="workSunday" binary="true" inputId="Sun"></p-checkbox>
+                        <label class="p-ml-2 p-mb-0" for="Sun">Sun</label>
+                    </div>
 
-                    <p-checkbox name="workWeek" label="Mon" class="checkboxpadding" formControlName="workMonday" binary="true"></p-checkbox>
+                    <div class="p-mr-2">
+                        <p-checkbox name="workWeek" formControlName="workMonday" binary="true" inputId="Mon"></p-checkbox>
+                        <label class="p-ml-2 p-mb-0" for="Mon">Mon</label>
+                    </div>
+                    <div class="p-mr-2">
+                        <p-checkbox name="workWeek" formControlName="workTuesday" binary="true" inputId="Tue"></p-checkbox>
+                        <label class="p-ml-2 p-mb-0" for="Tue">Tue</label>
+                    </div>
+                    <div class="p-mr-2">
+                        <p-checkbox name="workWeek" formControlName="workWednessday" binary="true" inputId="Tue"></p-checkbox>
+                        <label class="p-ml-2 p-mb-0" for="Wed">Wed</label>
+                    </div>
 
-                    <p-checkbox name="workWeek" label="Tue" class="checkboxpadding" formControlName="workTuesday" binary="true">
-                    </p-checkbox>
+                    <div class="p-mr-2">
+                        <p-checkbox name="workWeek" formControlName="workThursday" binary="true" inputId="Tue"></p-checkbox>
+                        <label class="p-ml-2 p-mb-0" for="Thu">Thu</label>
+                    </div>
 
-                    <p-checkbox name="workWeek" label="Wed" class="checkboxpadding" formControlName="workWednessday" binary="true">
-                    </p-checkbox>
-
-                    <p-checkbox name="workWeek" label="Thu" class="checkboxpadding" formControlName="workThursday" binary="true">
-                    </p-checkbox>
-
-                    <p-checkbox name="workWeek" label="Fri" class="checkboxpadding" formControlName="workFriday" binary="true"></p-checkbox>
-
-                    <p-checkbox name="workWeek" label="Sat" class="checkboxpadding" formControlName="workSaturday" binary="true">
-                    </p-checkbox>
+                    <div class="p-mr-2">
+                        <p-checkbox name="workWeek" formControlName="workFriday" binary="true" inputId="Tue"></p-checkbox>
+                        <label class="p-ml-2 p-mb-0" for="Fri">Fri</label>
+                    </div>
+                    <div class="p-mr-2">
+                        <p-checkbox name="workWeek" formControlName="workSaturday" binary="true" inputId="Tue"></p-checkbox>
+                        <label class="p-ml-2 p-mb-0" for="Sat">Sat</label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -298,7 +314,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Task</div>
                 <div class="p-col-8">
-                    <p-multiSelect [options]="adminDropDown.taskArray"  defaultLabel="Select Task"   [maxSelectedLabels]="1"  formControlName="task" (keydown.enter)="$event.preventDefault()" filter="true"  resetFilterOnHide="true" [style]="{'width':'240px'}"></p-multiSelect>
+                    <p-multiSelect [options]="adminDropDown.taskArray"  defaultLabel="Select Task"   [maxSelectedLabels]="1"  formControlName="task" (keydown.enter)="$event.preventDefault()" filter="true"  resetFilterOnHide="true" class="p-fluid cls_Task"></p-multiSelect>
                         <div class="error"  *ngIf="upObject.isFormSubmit && addUser.controls.task.errors">
                             <div *ngIf="addUser.controls.task.errors.required">Task is required</div>
             </div>
@@ -308,14 +324,14 @@
     <div class="p-col-4">Deliverable</div>
     <div class="p-col-8">
         <p-multiSelect [options]="adminDropDown.deliverableArray" [maxSelectedLabels]="1" defaultLabel="Select Deliverable" formControlName="deliverable" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (onPanelHide)="onDeliverableChange()"
-            [style]="{'width':'240px'}"></p-multiSelect>
+            class="p-fluid cls_Deliverable"></p-multiSelect>
     </div>
 </div>
 <div class="p-grid p-col">
     <div class="p-col-4"> Deliverable Exclusion</div>
     <div class="p-col-8">
         <p-multiSelect [options]="adminDropDown.deliverableExclusionArray" [maxSelectedLabels]="1" defaultLabel="Select Deliverable Exclusion" formControlName="deliverableExclusion" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"
-            [style]="{'width':'240px'}"></p-multiSelect>
+            class="p-fluid cls_DeliverableExc"></p-multiSelect>
     </div>
 </div>
 </div>
@@ -324,21 +340,21 @@
     <div class="p-grid p-col">
         <div class="p-col-4">TA</div>
         <div class="p-col-8">
-            <p-multiSelect [options]="adminDropDown.taArray" defaultLabel="Select TA" formControlName="ta" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" [maxSelectedLabels]="1" (onPanelHide)="onTAChange()" [style]="{'width':'240px'}">
+            <p-multiSelect [options]="adminDropDown.taArray" defaultLabel="Select TA" formControlName="ta" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" [maxSelectedLabels]="1" (onPanelHide)="onTAChange()" class="p-fluid cls_TA">
             </p-multiSelect>
         </div>
     </div>
     <div class="p-grid p-col">
         <div class="p-col-4"> TA Exclusion</div>
         <div class="p-col-8">
-            <p-multiSelect [options]="adminDropDown.taExclusionArray" defaultLabel="Select TA Exclusion" formControlName="taExclusion" (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" [style]="{'width':'240px'}">
+            <p-multiSelect [options]="adminDropDown.taExclusionArray" defaultLabel="Select TA Exclusion" formControlName="taExclusion" (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" class="p-fluid cls_TAExc">
             </p-multiSelect>
         </div>
     </div>
     <div class="p-grid p-col">
         <div class="p-col-4"><span class="compulsory">*</span> TAVisibility</div>
         <div class="p-col-8">
-            <p-dropdown placeholder="Select TA Visibility" [options]="adminDropDown.taVisibilityArray" formControlName="taVisibility" [style]="{'width':'240px'}">
+            <p-dropdown placeholder="Select TA Visibility" [options]="adminDropDown.taVisibilityArray" formControlName="taVisibility" class="p-fluid cls_TAVisibility">
             </p-dropdown>
             <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.taVisibility.errors">
                 <div *ngIf="addUser.controls.taVisibility.errors.required">TAVisibility is required</div>
@@ -347,32 +363,12 @@
     </div>
 </div>
 
-<!-- <div class="p-grid" *ngIf="showeditUser">
-
-            <div class="p-grid p-col">
-                <div class="p-col-4"><span class="compulsory">*</span> Date of exit</div>
-                <div class="p-col-8">
-                    <p-calendar styleClass="pCalendarBtn" formControlName="dateofexit" placeholder="Date of Exit"
-                        showIcon="true" [minDate]="addUser.value.dateofjoin" [readonlyInput]="true"
-                        [inputStyle]="{'width':'210px'}" dateFormat="M dd, yy">
-                    </p-calendar>
-                    <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.dateofexit.errors">
-                        <div *ngIf="addUser.controls.dateofexit.errors.required">Date of Exit is required</div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-grid p-col">
-
-            </div>
-        </div> -->
-
-
 <div class="p-grid">
 
     <div class="p-grid p-col">
         <div class="p-col-4"><span class="compulsory">*</span>IsFTE</div>
         <div class="p-col-8">
-            <p-dropdown [options]="adminDropDown.isFTEArray" (onChange)="onFTEChange()" formControlName="isFTE" [style]="{'width':'240px'}">
+            <p-dropdown [options]="adminDropDown.isFTEArray" (onChange)="onFTEChange()" formControlName="isFTE" class="p-fluid cls_IsFTE">
             </p-dropdown>
 
         </div>
@@ -381,9 +377,9 @@
         <div class="p-col-4">Account</div>
         <div class="p-col-8">
             <p-multiSelect *ngIf="!date.isFTEEffectiveDateActive" [options]="adminDropDown.accountArray" [maxSelectedLabels]="1" defaultLabel="Select Account" formControlName="account" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"
-                [style]="{'width':'240px'}">
+                class="p-fluid cls_Account">
             </p-multiSelect>
-            <p-dropdown *ngIf="date.isFTEEffectiveDateActive" placeholder="Select Account" [options]="adminDropDown.accountArray" formControlName="account" [style]="{'width':'240px'}">
+            <p-dropdown *ngIf="date.isFTEEffectiveDateActive" placeholder="Select Account" [options]="adminDropDown.accountArray" formControlName="account" class="p-fluid cls_AccountArray">
             </p-dropdown>
             <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.account.errors">
                 <div *ngIf="addUser.controls.account.errors.required">Account is required</div>
@@ -394,7 +390,7 @@
     <div class="p-grid p-col">
         <div class="p-col-4"><span class="compulsory">*</span> CAVisibility</div>
         <div class="p-col-8">
-            <p-dropdown placeholder="Select CA Visibility" [options]="adminDropDown.caVisibilityArray" formControlName="caVisibility" [style]="{'width':'240px'}">
+            <p-dropdown placeholder="Select CA Visibility" [options]="adminDropDown.caVisibilityArray" formControlName="caVisibility" class="p-fluid cls_CAVisibility">
             </p-dropdown>
             <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.caVisibility.errors">
                 <div *ngIf="addUser.controls.caVisibility.errors.required">CA Visibility is required</div>
@@ -442,7 +438,7 @@
     <div class="p-grid p-col">
         <div class="p-col-4"><span class="compulsory">*</span>Placeholder User</div>
         <div class="p-col-8">
-            <p-dropdown [options]="adminDropDown.placeholderUserArray" formControlName="placeholderUser" [style]="{'width':'240px'}">
+            <p-dropdown [options]="adminDropDown.placeholderUserArray" formControlName="placeholderUser" class="p-fluid cls_PlaceholderUser">
             </p-dropdown>
         </div>
     </div>

@@ -49,6 +49,7 @@ import { PreStackcommonService } from "src/app/shared/pre-stack-allocation/servi
 import { IConflictResource } from "src/app/shared/conflict-allocations/interface/conflict-allocation";
 import { GanttService } from "src/app/shared/gantt-chart/service/gantt.service";
 import { IUserCapacity } from "src/app/shared/usercapacity/interface/usercapacity";
+import { WriterReviewTransitionComponent } from '../writer-review-transition/writer-review-transition.component';
 
 @Component({
   selector: "app-timeline",
@@ -263,6 +264,8 @@ export class TimelineComponent
   minTime: any;
   maxTime: any;
   leaveAlertMsgs: any[] = [];
+  transitionMil = [];
+  transitionCancel: boolean = false;
   constructor(
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -5557,6 +5560,7 @@ export class TimelineComponent
         milestoneTask.IsCentrallyAllocated === "Yes"
           ? this.constants.CONTENT_TYPE.SLOT
           : this.constants.CONTENT_TYPE.TASK,
+      Reason: milestoneTask.Reason
     };
   }
 
@@ -6511,6 +6515,13 @@ export class TimelineComponent
       }
       previousNode = milestone.data;
     }
+
+    let validTransition = await this.isWriterReviewTransition(this.transitionMil,milestonesData);
+    if (!validTransition.valid) {
+      this.transitionMil = validTransition.data ? validTransition.data : [];
+      return false;
+    }
+
     return true;
   }
 
@@ -6692,6 +6703,105 @@ export class TimelineComponent
     }
     return true;
   }
+
+  async isWriterReviewTransition(mil,milestoneData) {
+    let writeTransition = false;
+    let reviewTransition = false;
+    let milestones: any = [];
+    let allMilestones = milestoneData.filter(m=>m.data.type == 'milestone').map(e=> e.data.title);
+    let allResources = this.sharedObject.oTaskAllocation.oResources;
+    let addedMilestone = milestoneData.filter(m => m.data.type == 'milestone' && m.data.edited); 
+
+      if(addedMilestone.length) {
+        if(!mil.length) {
+          addedMilestone.forEach((ele)=>{
+            let alltasks = this.taskAllocateCommonService.getTasksFromMilestones(ele, false, milestoneData, false)
+            if(alltasks.filter(t => (t.itemType == 'Write' || t.itemType == 'Review-Write') && t.edited).length) {
+              milestones.push({milestone:ele.data.title, milestoneArray:ele});
+            }
+          })
+        } else {
+          if(!this.transitionCancel) {
+            mil.shift();
+          }
+          milestones = mil;
+        }
+  
+        let transitionMilestone =  milestones.length ? milestones[0] : {};
+  
+        let prevMilestone = allMilestones.length && transitionMilestone ? milestoneData.find(m => m.data.title == allMilestones[allMilestones.indexOf(transitionMilestone.milestone) -1]) : {};
+        let prevMilestoneTasks = prevMilestone ? this.taskAllocateCommonService.getTasksFromMilestones(prevMilestone, false, milestoneData, false) : [];
+        let prevWriteTasks = prevMilestoneTasks.length ? prevMilestoneTasks.filter(t=> t.itemType == 'Write') : [];
+        let prevReviewTasks = prevMilestoneTasks.length ? prevMilestoneTasks.filter(t=> t.itemType == 'Review-Write') : [];
+        let writers = Array.from(new Set(prevWriteTasks.map(e=> e.AssignedTo).map(t => t.ID)))
+        .map(id => {
+          return prevWriteTasks.map(e=> e.AssignedTo).find(t => t.ID === id)
+        });
+        let reviewers = Array.from(new Set(prevReviewTasks.map(e=> e.AssignedTo).map(t => t.ID)))
+        .map(id => {
+          return prevReviewTasks.map(e=> e.AssignedTo).find(t => t.ID === id)
+        });
+
+
+        let addedMilestoneTasks = Object.keys(transitionMilestone).length ? this.taskAllocateCommonService.getTasksFromMilestones(transitionMilestone.milestoneArray, false, milestoneData, false) : [];
+      
+        let newAddedWriteTasks = addedMilestoneTasks.length ? addedMilestoneTasks.filter(t=> t.itemType == 'Write') : [];   
+        let newAddedReviewTasks = addedMilestoneTasks.length ? addedMilestoneTasks.filter(t=> t.itemType == 'Review-Write') : []
+
+        if(prevWriteTasks.length && newAddedWriteTasks.length) {
+          newAddedWriteTasks.forEach((a,index)=>{
+            writeTransition = (!writers.some(e=> e.ID == a.AssignedTo.ID) && allResources.some(r=> r.UserNamePG.ID == a.AssignedTo.ID) && (a.Reason=="" || a.Reason==undefined));
+            if(!writeTransition && index > -1) {
+              newAddedWriteTasks.splice(index, 1);
+            }
+          })
+        }
+
+        if(prevReviewTasks.length && newAddedReviewTasks.length) {
+          newAddedReviewTasks.forEach((a,index)=>{
+            reviewTransition = (!reviewers.some(e=> e.ID == a.AssignedTo.ID) && allResources.some(r=> r.UserNamePG.ID == a.AssignedTo.ID) && (a.Reason=="" || a.Reason==undefined));
+            if(!reviewTransition && index > -1) {
+              newAddedReviewTasks.splice(index, 1);
+            }
+          })
+        }
+      
+        if(writeTransition || reviewTransition) {
+          const ref = this.dialogService.open(WriterReviewTransitionComponent, {
+          data: {
+            milestoneData,
+            newAddedWriteTasks,
+            newAddedReviewTasks,
+            writeTransition,
+            reviewTransition,
+            transitionMilestone
+          },
+            width: "85vw",
+            header:
+              "Writer and Review Transition",
+            contentStyle: { "max-height": "90vh", "overflow-y": "auto" },
+            closable: false
+          });
+          ref.onClose.subscribe(async (updatedMilestones: any) => {
+            if(updatedMilestones) {
+              this.transitionCancel = false;
+              this.milestoneData = updatedMilestones.milestoneData;
+              if(milestones.length == 1) { 
+                milestones = [];
+                this.transitionCancel = false;
+                this.transitionMil = [];
+                this.disableSave = true;
+                await this.generateSaveTasks();
+              }
+            } else {
+              this.transitionCancel = true;
+            }
+          }); 
+        }
+      }
+      return (writeTransition || reviewTransition) ? { data: milestones, valid:false} : {valid:true};
+  }
+
 
   validateAllocationString(checkTasks) {
     //////// check if multiple days task have allocationperday string
@@ -7345,6 +7455,7 @@ export class TimelineComponent
       ganttOverlay: "",
       ganttMenu: "",
       ExpectedBudgetHrs: "",
+      Reason:''
     };
 
     return taskObj;
@@ -7433,6 +7544,7 @@ export class TimelineComponent
       ganttOverlay: "",
       ganttMenu: "",
       ExpectedBudgetHrs: "",
+      Reason:''
     };
 
     return taskObj;

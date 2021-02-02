@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { AdminConstantService } from '../services/admin-constant.service';
-import { ConstantsService } from 'src/app/Services/constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 
 @Injectable({
@@ -14,12 +13,10 @@ export class AdminAuthService {
     private globalObject: GlobalService,
     private spOperationsServices: SPOperationService,
     private adminConstantService: AdminConstantService,
-    private constantsService: ConstantsService,
     public commonService: CommonService
   ) { }
 
   async getUserRole() {
-    this.constantsService.loader.isPSInnerLoaderHidden = false;
     this.commonService.SetNewrelic('admin', 'admin-auth', 'getUserRole', "GET");
     this.globalObject.userInfo = await this.spOperationsServices.getUserInfo(this.globalObject.currentUser.userId);
     console.log('this.globalObject.userInfo ', this.globalObject.userInfo);
@@ -127,8 +124,6 @@ export class AdminAuthService {
         console.log('this.adminConstantService.EntitleMentMenu.List ', this.adminConstantService.EntitleMentMenu.List);
 
       }
-
-      // this.constantsService.loader.isPSInnerLoaderHidden = true;
       return true;
     } else {
       return false;

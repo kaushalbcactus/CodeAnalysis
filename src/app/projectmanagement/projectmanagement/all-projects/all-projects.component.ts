@@ -3428,6 +3428,8 @@ export class AllProjectsComponent implements OnInit {
     this.projectViewDataArray.push(this.pmObject.addProject);
     this.enableCountFields =
       this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() ===
+      "medcom" ||
+      this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() ===
         "medcomm" ||
       this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() ===
         "medinfo"

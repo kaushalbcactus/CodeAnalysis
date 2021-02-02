@@ -33,20 +33,10 @@
 
 
 <div class="add-sow-section">
-    <p-dialog [(visible)]="pmObject.isAddSOWVisible" [modal]="true" [closable]=false (onHide)="resetAddSOW();" [style]="{width: '70vw'}">
+    <p-dialog [(visible)]="pmObject.isAddSOWVisible" [modal]="true" [closable]=false (onHide)="resetAddSOW();" [style]="{width: '90vw'}">
         <p-header>
             {{sowHeader}}
         </p-header>
-
-        <!--**************************************************************************************************
-                                               loader 
-        ************************************************************************************************** -->
-        <!-- 
-        <div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="modalloaderenable">
-            <div id="modalInnerLoader"></div>
-            <div id="modalInnerLoaderText">Loading...</div>
-        </div> -->
-
 
         <!--**************************************************************************************************
                                       popup   data view 
@@ -111,23 +101,35 @@
                         </div>
                     </div>
 
-
                     <div class="p-col p-grid p-p-1">
                         <div class="p-col p-grid p-p-0">
-                            <label for="ClientPOC" class="p-col-12 p-m-0 p-md-2 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Client POC</label>
-                            <div class="p-col-12 p-md-10">
-                                <div class="p-col-6 p-pl-0" style="float: left;">
-                                    <p-dropdown [options]="sowDropDown.POC" formControlName="poc" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true" class="p-fluid">
+                            <label for="ClientPOC" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>Client POC</label>
+                            <div class="p-col-12 p-md-8">
+                                <div class="p-col p-grid">
+                                    <p-dropdown class="p-col p-grid p-mr-1" [options]="sowDropDown.POC" formControlName="poc" placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true" [style]="{'width':'100%'}">
                                     </p-dropdown>
-                                    <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['poc'].valid">
+                                    <p-multiSelect [options]="sowDropDown.POCOptional" formControlName="pocOptional" [filter]="true" defaultLabel="Please Select" resetFilterOnHide="true" class="p-col p-grid" [style]="{'width':'100%'}"></p-multiSelect>
+                                    <div class="p-col-12 error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['poc'].valid">
                                         POC is required</div>
                                 </div>
-                                <div class="p-col-6 p-pr-0" style="float: left;">
-                                    <p-multiSelect [options]="sowDropDown.POCOptional" formControlName="pocOptional" [filter]="true" defaultLabel="Please Select" resetFilterOnHide="true" class="p-fluid"></p-multiSelect>
+                            </div>
+                        </div>
+                        <div class="p-col p-grid p-p-0">
+                            <label for="SOWDocument" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"><span class="compulsory">*</span>SOW Document</label>
+                            <div class="p-col-12 p-md-8">
+
+                                <div class="file-upload p-col-12 p-px-0 p-pb-0" #fileuploderView>
+                                    <div class="file-select">
+                                        <div class="file-select-button" id="fileName">Choose File</div>
+                                        <div class="file-select-name" id="noFile">No file chosen...</div>
+                                        <input type="file" formControlName="sowDocuments" name="chooseFile" class="form-control" id="chooseFile" (change)="onFileChange($event)">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+
 
                     <div class="p-col p-grid p-p-1">
                         <div class="p-col p-grid p-p-0">
