@@ -258,17 +258,18 @@ export class OopComponent implements OnInit, OnDestroy {
 
   createANBCols() {
     this.oopBasedCols = [
-      { field: "ProjectCode", header: "Project Code", visibility: true },
+      { field: "ProjectCode", header: "Project Code", visibility: true, Type: 'string', dbName: 'ProjectCode', options: [] },
       { field: "ProjectTitle", header: "Project Title", visibility: false },
-      { field: "ShortTitle", header: "Short Title", visibility: true },
-      { field: "SOWValue", header: "SOW Code/ Name", visibility: true },
+      { field: "ShortTitle", header: "Short Title", visibility: true, Type: 'string', dbName: 'ShortTitle', options: [] },
+      { field: "SOWValue", header: "SOW Code/ Name", visibility: true, Type: 'string', dbName: 'SOWValue', options: [] },
       {
         field: "ProjectMileStone",
         header: "Project Milestone",
         visibility: true,
+        Type: 'string', dbName: 'ProjectMileStone', options: []
       },
-      { field: "POValues", header: "PO Number/ Name", visibility: true },
-      { field: "ClientName", header: "Client", visibility: true },
+      { field: "POValues", header: "PO Number/ Name", visibility: true, Type: 'string', dbName: 'POValues', options: [] },
+      { field: "ClientName", header: "Client", visibility: true, Type: 'string', dbName: 'ClientName', options: [] },
       {
         field: "ScheduledDateFormat",
         header: "Scheduled Date",
@@ -279,10 +280,11 @@ export class OopComponent implements OnInit, OnDestroy {
         header: "Scheduled Date",
         visibility: true,
         exportable: false,
+        Type: 'datetime', dbName: 'ScheduledDate', options: []
       },
-      { field: "Amount", header: "Amount", visibility: true },
-      { field: "Currency", header: "Currency", visibility: true },
-      { field: "POCName", header: "POC Name", visibility: true },
+      { field: "Amount", header: "Amount", visibility: true, Type: 'number', dbName: 'Amount', options: [] },
+      { field: "Currency", header: "Currency", visibility: true, Type: 'string', dbName: 'Currency', options: [] },
+      { field: "POCName", header: "POC Name", visibility: true, Type: 'string', dbName: 'POCName', options: [] },
 
       { field: "SOWName", header: "SOW Name", visibility: false },
       { field: "SOWCode", header: "SOW Code", visibility: false },
@@ -300,8 +302,7 @@ export class OopComponent implements OnInit, OnDestroy {
       { field: "ModifiedBy", header: "Modified By", visibility: false },
       { field: "PracticeArea", header: "Practice Area", visibility: false },
       { field: "CS", header: "CS", visibility: false },
-
-      { field: "", header: "", visibility: true },
+      
     ];
   }
 
@@ -362,6 +363,7 @@ export class OopComponent implements OnInit, OnDestroy {
   }
   async formatData(data: any[]) {
     this.oopBasedRes = [];
+    let oopProjects = [];
     this.selectedAllRowsItem = [];
     for (const element of data) {
       const sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(
@@ -386,7 +388,7 @@ export class OopComponent implements OnInit, OnDestroy {
       const POValues = ponn;
 
       const piInfo = await this.getMilestones(element);
-      this.oopBasedRes.push({
+      oopProjects.push({
         Id: element.ID,
         ProjectCode: element.Title,
         ProjectTitle: piInfo.Title ? piInfo.Title : "",
@@ -426,8 +428,9 @@ export class OopComponent implements OnInit, OnDestroy {
         ModifiedBy: element.Editor ? element.Editor.Title : "",
       });
     }
-    this.oopBasedRes = [...this.oopBasedRes];
-    this.createColFieldValues(this.oopBasedRes);
+    this.oopBasedRes = [...oopProjects];
+    this.oopBasedCols = this.commonService.MainfilterForTable(this.oopBasedCols, this.oopBasedRes);
+    // this.createColFieldValues(this.oopBasedRes);
     this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
   }
 
@@ -480,123 +483,123 @@ export class OopComponent implements OnInit, OnDestroy {
     return found ? found.ClientLegalEntity : "";
   }
 
-  createColFieldValues(resArray) {
-    this.oopColArray.ProjectCode = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = { label: a.ProjectCode, value: a.ProjectCode };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.oopColArray.ShortTitle = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = { label: a.ShortTitle, value: a.ShortTitle };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.oopColArray.SOWValue = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = { label: a.SOWValue, value: a.SOWValue };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.oopColArray.ProjectMileStone = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = { label: a.ProjectMileStone, value: a.ProjectMileStone };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.oopColArray.POValues = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = { label: a.POValues, value: a.POValues };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.oopColArray.ClientName = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = { label: a.ClientName, value: a.ClientName };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.oopColArray.Currency = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = { label: a.Currency, value: a.Currency };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.oopColArray.POC = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = { label: a.POCName, value: a.POCName };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    const scheduledDate = this.commonService.sortDateArray(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = {
-              label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"),
-              value: a.ScheduledDate,
-            };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.oopColArray.ScheduledDate = scheduledDate
-      .map((a) => {
-        const b = {
-          label: this.datePipe.transform(a, "MMM dd, yyyy"),
-          value: new Date(this.datePipe.transform(a, "MMM dd, yyyy")),
-        };
-        return b;
-      })
-      .filter((ele) => ele.label);
-    const amount = this.uniqueArrayObj(
-      resArray
-        .map((a) => {
-          const b = { label: a.Amount, value: a.Amount };
-          return b;
-        })
-        .filter((ele) => ele.label)
-    );
-    this.oopColArray.Amount = this.fdDataShareServie.customSort(
-      amount,
-      1,
-      "label"
-    );
-  }
+  // createColFieldValues(resArray) {
+  //   this.oopColArray.ProjectCode = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = { label: a.ProjectCode, value: a.ProjectCode };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.oopColArray.ShortTitle = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = { label: a.ShortTitle, value: a.ShortTitle };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.oopColArray.SOWValue = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = { label: a.SOWValue, value: a.SOWValue };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.oopColArray.ProjectMileStone = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = { label: a.ProjectMileStone, value: a.ProjectMileStone };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.oopColArray.POValues = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = { label: a.POValues, value: a.POValues };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.oopColArray.ClientName = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = { label: a.ClientName, value: a.ClientName };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.oopColArray.Currency = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = { label: a.Currency, value: a.Currency };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.oopColArray.POC = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = { label: a.POCName, value: a.POCName };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   const scheduledDate = this.commonService.sortDateArray(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = {
+  //             label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"),
+  //             value: a.ScheduledDate,
+  //           };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.oopColArray.ScheduledDate = scheduledDate
+  //     .map((a) => {
+  //       const b = {
+  //         label: this.datePipe.transform(a, "MMM dd, yyyy"),
+  //         value: new Date(this.datePipe.transform(a, "MMM dd, yyyy")),
+  //       };
+  //       return b;
+  //     })
+  //     .filter((ele) => ele.label);
+  //   const amount = this.uniqueArrayObj(
+  //     resArray
+  //       .map((a) => {
+  //         const b = { label: a.Amount, value: a.Amount };
+  //         return b;
+  //       })
+  //       .filter((ele) => ele.label)
+  //   );
+  //   this.oopColArray.Amount = this.fdDataShareServie.customSort(
+  //     amount,
+  //     1,
+  //     "label"
+  //   );
+  // }
 
   uniqueArrayObj(array: any) {
     let sts: any = "";
@@ -1032,52 +1035,52 @@ export class OopComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  @HostListener("document:click", ["$event"])
-  clickout(event) {
-    if (event.target.className === "pi pi-ellipsis-v") {
-      if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        if (
-          this.tempClick !== event.target.parentElement.children[0].children[0]
-        ) {
-          this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = "";
-        } else {
-          this.tempClick = undefined;
-        }
-      } else {
-        this.tempClick = event.target.parentElement.children[0].children[0];
-        this.tempClick.style.display = "";
-      }
-    } else {
-      if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        this.tempClick = undefined;
-      }
-    }
-  }
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
+  // @HostListener("document:click", ["$event"])
+  // clickout(event) {
+  //   if (event.target.className === "pi pi-ellipsis-v") {
+  //     if (this.tempClick) {
+  //       this.tempClick.style.display = "none";
+  //       if (
+  //         this.tempClick !== event.target.parentElement.children[0].children[0]
+  //       ) {
+  //         this.tempClick = event.target.parentElement.children[0].children[0];
+  //         this.tempClick.style.display = "";
+  //       } else {
+  //         this.tempClick = undefined;
+  //       }
+  //     } else {
+  //       this.tempClick = event.target.parentElement.children[0].children[0];
+  //       this.tempClick.style.display = "";
+  //     }
+  //   } else {
+  //     if (this.tempClick) {
+  //       this.tempClick.style.display = "none";
+  //       this.tempClick = undefined;
+  //     }
+  //   }
+  // }
+  // optionFilter(event: any) {
+  //   if (event.target.value) {
+  //     this.isOptionFilter = false;
+  //   }
+  // }
 
-  ngAfterViewChecked() {
-    if (this.oopBasedRes.length && this.isOptionFilter) {
-      const obj = {
-        tableData: this.oopTable,
-        colFields: this.oopColArray,
-      };
-      if (obj.tableData.filteredValue) {
-        this.commonService.updateOptionValues(obj);
-      } else if (
-        obj.tableData.filteredValue === null ||
-        obj.tableData.filteredValue === undefined
-      ) {
-        this.createColFieldValues(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-    }
-    this.cdr.detectChanges();
-  }
+  // ngAfterViewChecked() {
+  //   if (this.oopBasedRes.length && this.isOptionFilter) {
+  //     const obj = {
+  //       tableData: this.oopTable,
+  //       colFields: this.oopColArray,
+  //     };
+  //     if (obj.tableData.filteredValue) {
+  //       this.commonService.updateOptionValues(obj);
+  //     } else if (
+  //       obj.tableData.filteredValue === null ||
+  //       obj.tableData.filteredValue === undefined
+  //     ) {
+  //       this.createColFieldValues(obj.tableData.value);
+  //       this.isOptionFilter = false;
+  //     }
+  //   }
+  //   this.cdr.detectChanges();
+  // }
 }

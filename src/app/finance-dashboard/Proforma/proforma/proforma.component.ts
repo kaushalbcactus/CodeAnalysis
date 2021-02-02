@@ -323,8 +323,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
   createProformaCols() {
     this.proformaCols = [
-      { field: "ProformaNumber", header: "Proforma Number", visibility: true },
-      { field: "PONumber", header: "PO Number", visibility: true },
+      { field: "ProformaNumber", header: "Proforma Number", visibility: true, Type: 'string', dbName: 'ProformaNumber', options: [] },
+      { field: "PONumber", header: "PO Number", visibility: true, Type: 'string', dbName: 'PONumber', options: [] },
       {
         field: "ProformaDateFormat",
         header: "Proforma Date",
@@ -335,12 +335,14 @@ export class ProformaComponent implements OnInit, OnDestroy {
         header: "Proforma Date",
         visibility: true,
         exportable: false,
+        Type: 'datetime', dbName: 'ProformaDate', options: []
+        
       },
-      { field: "ProformaType", header: "Proforma Type", visibility: true },
-      { field: "Amount", header: "Amount", visibility: true },
-      { field: "Currency", header: "Currency", visibility: true },
-      { field: "POC", header: "POC", visibility: true },
-      { field: "Status", header: "Status", visibility: true },
+      { field: "ProformaType", header: "Proforma Type", visibility: true, Type: 'string', dbName: 'ProformaType', options: [] },
+      { field: "Amount", header: "Amount", visibility: true, Type: 'number', dbName: 'Amount', options: [] },
+      { field: "Currency", header: "Currency", visibility: true, Type: 'string', dbName: 'Currency', options: [] },
+      { field: "POC", header: "POC", visibility: true, Type: 'string', dbName: 'POC', options: [] },
+      { field: "Status", header: "Status", visibility: true, Type: 'string', dbName: 'Status', options: [] },
 
       { field: "AddressType", header: "AddressType", visibility: false },
       { field: "POName", header: "PO Name", visibility: false },
@@ -369,7 +371,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
       { field: "State", header: "State", visibility: false },
       { field: "Modified", header: "Modified", visibility: false },
       { field: "ModifiedBy", header: "Modified By", visibility: false },
-      { field: "", header: "", visibility: true },
     ];
 
     this.invoiceCols = [
@@ -457,8 +458,9 @@ export class ProformaComponent implements OnInit, OnDestroy {
       });
     }
     this.proformaRes = [...this.proformaRes];
+    this.proformaCols = this.commonService.MainfilterForTable(this.proformaCols, this.proformaRes);
     this.isPSInnerLoaderHidden = true;
-    this.createColFieldValues(this.proformaRes);
+    // this.createColFieldValues(this.proformaRes);
   }
 
   // Project PO
@@ -491,103 +493,103 @@ export class ProformaComponent implements OnInit, OnDestroy {
     Status: [],
   };
 
-  createColFieldValues(resArray) {
-    this.proformaColArray.ProformaNumber = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.ProformaNumber, value: a.ProformaNumber };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.proformaColArray.PONumber = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.PONumber, value: a.PONumber };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    const proformaDate = this.commonService.sortDateArray(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = {
-              label: this.datePipe.transform(a.ProformaDate, "MMM dd, yyyy"),
-              value: a.ProformaDate,
-            };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.proformaColArray.ProformaDate = proformaDate
-      .map((a) => {
-        let b = {
-          label: this.datePipe.transform(a, "MMM dd, yyyy"),
-          value: new Date(this.datePipe.transform(a, "MMM dd, yyyy")),
-        };
-        return b;
-      })
-      .filter((ele) => ele.label);
-    this.proformaColArray.ProformaType = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.ProformaType, value: a.ProformaType };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.proformaColArray.Status = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.Status, value: a.Status };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    const amount = this.uniqueArrayObj(
-      resArray
-        .map((a) => {
-          let b = { label: a.Amount, value: a.Amount };
-          return b;
-        })
-        .filter((ele) => ele.label)
-    );
-    this.proformaColArray.Amount = this.fdDataShareServie.customSort(
-      amount,
-      1,
-      "label"
-    );
-    this.proformaColArray.Currency = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.Currency, value: a.Currency };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.proformaColArray.POC = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            let b = { label: a.POC, value: a.POC };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-  }
+  // createColFieldValues(resArray) {
+  //   this.proformaColArray.ProformaNumber = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           let b = { label: a.ProformaNumber, value: a.ProformaNumber };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.proformaColArray.PONumber = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           let b = { label: a.PONumber, value: a.PONumber };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   const proformaDate = this.commonService.sortDateArray(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           let b = {
+  //             label: this.datePipe.transform(a.ProformaDate, "MMM dd, yyyy"),
+  //             value: a.ProformaDate,
+  //           };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.proformaColArray.ProformaDate = proformaDate
+  //     .map((a) => {
+  //       let b = {
+  //         label: this.datePipe.transform(a, "MMM dd, yyyy"),
+  //         value: new Date(this.datePipe.transform(a, "MMM dd, yyyy")),
+  //       };
+  //       return b;
+  //     })
+  //     .filter((ele) => ele.label);
+  //   this.proformaColArray.ProformaType = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           let b = { label: a.ProformaType, value: a.ProformaType };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.proformaColArray.Status = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           let b = { label: a.Status, value: a.Status };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   const amount = this.uniqueArrayObj(
+  //     resArray
+  //       .map((a) => {
+  //         let b = { label: a.Amount, value: a.Amount };
+  //         return b;
+  //       })
+  //       .filter((ele) => ele.label)
+  //   );
+  //   this.proformaColArray.Amount = this.fdDataShareServie.customSort(
+  //     amount,
+  //     1,
+  //     "label"
+  //   );
+  //   this.proformaColArray.Currency = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           let b = { label: a.Currency, value: a.Currency };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.proformaColArray.POC = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           let b = { label: a.POC, value: a.POC };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  // }
 
   uniqueArrayObj(array: any) {
     let sts: any = "";
@@ -1579,13 +1581,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
     this.proformaModal = true;
   }
 
-  // updatePrformaNumFromPT(cle, ptVal: any) {
-  //     // console.log(cle);
-  //     // let pt = this.createProforma_form.value.ProformaType.value;
-  //     this.generateProformaNumber(cle);
-  //     // let isOOP = this.createProforma_form.value.ProformaType ? true : false;
-  // }
-
   pocChange(val) {
     // console.log(val)
   }
@@ -1888,104 +1883,104 @@ export class ProformaComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  @HostListener("document:click", ["$event"])
-  clickout(event) {
-    if (event.target.className === "pi pi-ellipsis-v") {
-      if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        if (
-          this.tempClick !== event.target.parentElement.children[0].children[0]
-        ) {
-          this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = "";
-        } else {
-          this.tempClick = undefined;
-        }
-      } else {
-        this.tempClick = event.target.parentElement.children[0].children[0];
-        this.tempClick.style.display = "";
-      }
-    } else {
-      if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        this.tempClick = undefined;
-      }
-    }
-  }
+  // @HostListener("document:click", ["$event"])
+  // clickout(event) {
+  //   if (event.target.className === "pi pi-ellipsis-v") {
+  //     if (this.tempClick) {
+  //       this.tempClick.style.display = "none";
+  //       if (
+  //         this.tempClick !== event.target.parentElement.children[0].children[0]
+  //       ) {
+  //         this.tempClick = event.target.parentElement.children[0].children[0];
+  //         this.tempClick.style.display = "";
+  //       } else {
+  //         this.tempClick = undefined;
+  //       }
+  //     } else {
+  //       this.tempClick = event.target.parentElement.children[0].children[0];
+  //       this.tempClick.style.display = "";
+  //     }
+  //   } else {
+  //     if (this.tempClick) {
+  //       this.tempClick.style.display = "none";
+  //       this.tempClick = undefined;
+  //     }
+  //   }
+  // }
 
-  isOptionFilter: boolean;
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
+  // isOptionFilter: boolean;
+  // optionFilter(event: any) {
+  //   if (event.target.value) {
+  //     this.isOptionFilter = false;
+  //   }
+  // }
 
-  ngAfterViewChecked() {
-    if (this.proformaRes.length && this.isOptionFilter) {
-      let obj = {
-        tableData: this.proformaTable,
-        colFields: this.proformaColArray,
-      };
-      // console.log('obj.tableData.filteredValue ', obj.tableData.filteredValue);
-      if (obj.tableData.filteredValue) {
-        this.commonService.updateOptionValues(obj);
-      } else if (
-        obj.tableData.filteredValue === null ||
-        obj.tableData.filteredValue === undefined
-      ) {
-        this.createColFieldValues(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-      this.cdr.detectChanges();
-    }
-  }
+  // ngAfterViewChecked() {
+  //   if (this.proformaRes.length && this.isOptionFilter) {
+  //     let obj = {
+  //       tableData: this.proformaTable,
+  //       colFields: this.proformaColArray,
+  //     };
+  //     // console.log('obj.tableData.filteredValue ', obj.tableData.filteredValue);
+  //     if (obj.tableData.filteredValue) {
+  //       this.commonService.updateOptionValues(obj);
+  //     } else if (
+  //       obj.tableData.filteredValue === null ||
+  //       obj.tableData.filteredValue === undefined
+  //     ) {
+  //       this.createColFieldValues(obj.tableData.value);
+  //       this.isOptionFilter = false;
+  //     }
+  //     this.cdr.detectChanges();
+  //   }
+  // }
 
-  isEmpty(obj, firstColFilter) {
-    for (var prop in obj) {
-      if (obj.hasOwnProperty(prop) && firstColFilter[prop]) {
-        // console.log(this.proformaColArray[prop]);
-      } else {
-        this.firstFilterCol(this.proformaTable.filteredValue, prop);
-      }
-    }
-  }
+  // isEmpty(obj, firstColFilter) {
+  //   for (var prop in obj) {
+  //     if (obj.hasOwnProperty(prop) && firstColFilter[prop]) {
+  //       // console.log(this.proformaColArray[prop]);
+  //     } else {
+  //       this.firstFilterCol(this.proformaTable.filteredValue, prop);
+  //     }
+  //   }
+  // }
 
-  firstFilterCol(array, colName) {
-    this.proformaColArray[colName] = [];
-    let totalArr = array.map((item) => item[colName]);
-    if (colName.toLowerCase().includes("date")) {
-      totalArr = this.commonService.sortDateArray(
-        this.uniqueArrayObj(
-          totalArr
-            .map((a) => {
-              let b = {
-                label: this.datePipe.transform(a, "MMM dd, yyyy"),
-                value: a,
-              };
-              return b;
-            })
-            .filter((ele) => ele.label)
-        )
-      );
-    }
+  // firstFilterCol(array, colName) {
+  //   this.proformaColArray[colName] = [];
+  //   let totalArr = array.map((item) => item[colName]);
+  //   if (colName.toLowerCase().includes("date")) {
+  //     totalArr = this.commonService.sortDateArray(
+  //       this.uniqueArrayObj(
+  //         totalArr
+  //           .map((a) => {
+  //             let b = {
+  //               label: this.datePipe.transform(a, "MMM dd, yyyy"),
+  //               value: a,
+  //             };
+  //             return b;
+  //           })
+  //           .filter((ele) => ele.label)
+  //       )
+  //     );
+  //   }
 
-    // const uniqueTotalArr = totalArr.filter((item, index) => totalArr.indexOf(item) === index);
-    const uniqueTotalArr = Array.from(new Set(totalArr));
-    let tempArr = [];
-    for (let i = 0; i < uniqueTotalArr.length; i++) {
-      const element = uniqueTotalArr[i];
-      if (colName.toLowerCase().includes("date")) {
-        tempArr.push({
-          label: this.datePipe.transform(element instanceof Date ? element : new Date(element.toString()),"MMM dd, yyyy", "MMM dd, yyyy"),
-          value: new Date(this.datePipe.transform(element instanceof Date ? element : new Date(element.toString()),"MMM dd, yyyy", "MMM dd, yyyy")),
-        });
-      } else {
-        tempArr.push({ label: element, value: element });
-      }
-    }
-    // console.log(tempArr);
-    this.proformaColArray[colName] = [...tempArr];
-  }
+  //   // const uniqueTotalArr = totalArr.filter((item, index) => totalArr.indexOf(item) === index);
+  //   const uniqueTotalArr = Array.from(new Set(totalArr));
+  //   let tempArr = [];
+  //   for (let i = 0; i < uniqueTotalArr.length; i++) {
+  //     const element = uniqueTotalArr[i];
+  //     if (colName.toLowerCase().includes("date")) {
+  //       tempArr.push({
+  //         label: this.datePipe.transform(element instanceof Date ? element : new Date(element.toString()),"MMM dd, yyyy", "MMM dd, yyyy"),
+  //         value: new Date(this.datePipe.transform(element instanceof Date ? element : new Date(element.toString()),"MMM dd, yyyy", "MMM dd, yyyy")),
+  //       });
+  //     } else {
+  //       tempArr.push({ label: element, value: element });
+  //     }
+  //   }
+  //   // console.log(tempArr);
+  //   this.proformaColArray[colName] = [...tempArr];
+  // }
 
   ngOnDestroy() {
     // this.subscriptionPE.unsubscribe();

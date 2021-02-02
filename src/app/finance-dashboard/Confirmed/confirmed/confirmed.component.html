@@ -23,24 +23,16 @@
 </div>
 <div class="p-col-6 f-right">
   <div style="display: -webkit-inline-box;">
-    <div class="box" style="margin-right: 20px;">
+    <div class="box">
       <button
         type="button"
         class="fdBtn"
         pButton
-        icon="fa fa-plus-circle"
+        icon="pi pi-plus-circle"
         iconPos="left"
         label="Add to Proforma"
         (click)="addProforma()"
       ></button>
-    </div>
-    <div class="box">
-      <i
-        style="font-size: 1.8em; cursor: pointer;"
-        (click)="fdDataShareServie.convertToExcelFile(cnf)"
-        title="Export To Excel"
-        class="fa fa-fw fa-file-excel-o"
-      ></i>
     </div>
   </div>
 </div>
@@ -76,7 +68,7 @@
   
 </div>
 
-<div class="financeTable">
+<div class="financeTable" hideshowMenu>
   <p-table
     #cnf
     [columns]="confirmCols"
@@ -87,11 +79,12 @@
     [(selection)]="selectedAllRowData"
     selectionMode=""
     exportFilename="Confirmed_InvoiceLineItems"
+    styleClass="p-datatable-cactus p-datatable-gridlines"
   >
     <ng-template pTemplate="header" let-columns>
       <tr>
-        <th>S.No</th>
-        <th style="width: 2.25em;">
+        <th class="firstColumnWidth">S.No</th>
+        <th class="firstColumnWidth">
           <p-tableHeaderCheckbox
             (click)="handleData($event)"
           ></p-tableHeaderCheckbox>
@@ -101,11 +94,39 @@
           [pSortableColumn]="col.field"
           [hidden]="!col.visibility"
         >
-          {{ col.header }}
-          <p-sortIcon *ngIf="col.header != ''" [field]="col.field"></p-sortIcon>
+          <!-- {{ col.header }}
+          <p-sortIcon *ngIf="col.header != ''" [field]="col.field"></p-sortIcon> -->
+            <div *ngIf="col.field != ''" class="p-d-flex p-jc-between p-ai-center">
+              {{col.header}}
+              <p-sortIcon [field]="col.field"></p-sortIcon>
+              <p-columnFilter
+                  *ngIf="col.header != ''"
+                  [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false"
+                  [showOperator]="false" [showAddButton]="false">
+                  <ng-template pTemplate="header">
+                      <div class="p-px-3 p-pt-3 p-pb-0">
+                          <span class="p-text-bold"> {{col.header}} Picker</span>
+                      </div>
+                  </ng-template>
+                  <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                      <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All"
+                          (onChange)="filter($event.value)" optionLabel="label">
+                          <ng-template let-option pTemplate="item">
+                              <div class="p-multiselect-representative-option">
+                                  <span class="p-ml-1">{{option.label}}</span>
+                              </div>
+                          </ng-template>
+                      </p-multiSelect>
+                  </ng-template>
+              </p-columnFilter>
+            </div>
+        </th>
+        <th class="lastColumnWidth">
+          <i (click)="fdDataShareServie.convertToExcelFile(cnf)" title="Export To Excel"
+                    class="pi pi-file-excel tableExportIcon"></i>
         </th>
       </tr>
-      <tr>
+      <!-- <tr>
         <th></th>
         <th></th>
         <th
@@ -286,7 +307,7 @@
             </p-multiSelect>
           </ng-container>
         </th>
-      </tr>
+      </tr> -->
     </ng-template>
     <ng-template
       pTemplate="body"
@@ -312,7 +333,7 @@
           <ng-container *ngIf="col.field == 'ScheduledDate'">
             {{ rowData[col.field] | date: "MMM dd, yyyy" }}
           </ng-container>
-          <ng-container *ngIf="col.field == ''">
+          <!-- <ng-container *ngIf="col.field == ''">
             <div>
               <p-menu
                 #popupMenu
@@ -327,8 +348,22 @@
                 (click)="openPopup(rowData, popupMenu); popupMenu.show($event)"
               ></i>
             </div>
-          </ng-container>
+          </ng-container> -->
         </td>
+        <td class="lastColumnWidth">
+            <div>
+              <p-menu
+                    #popupMenu
+                    [popup]="true"
+                    [model]="items"
+                    styleClass="borderMenu"
+                  >
+                  </p-menu>
+              <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+              (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
+            </div>
+        </td>
+        
       </tr>
     </ng-template>
   </p-table>

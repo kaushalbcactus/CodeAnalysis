@@ -8,15 +8,14 @@
     <div class="p-col-12 p-md-12 p-lg-12 f-right">
         <div style="display: -webkit-inline-box;">
             <div class="box mr-20">
-                <button type="button" class="fdBtn" pButton icon="fa fa-plus-circle" iconPos="left" label="Create Proforma" (click)="showProformaDialog()"></button>
+                <button type="button" class="fdBtn" pButton icon="pi pi-plus-circle" iconPos="left" label="Create Proforma" (click)="showProformaDialog()"></button>
             </div>
-            <div class="box mr-20 fg">
+            <div class="box fg">
                     <button type="button" class="fdBtn" pButton label="Sent to Client" (click)="sentToClient()"></button>
                 </div>
-            <div class="box">
-                <!-- <button type="button" pButton label="Export" (click)="fdDataShareServie.convertToExcelFile(pfc)"></button> -->
+            <!-- <div class="box">
                 <i style="font-size: 1.8em;cursor: pointer;" (click)="fdDataShareServie.convertToExcelFile(pfc)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
-            </div>
+            </div> -->
         </div>
     </div>
     <div style="clear: both;"></div>
@@ -24,23 +23,54 @@
 
 <!-- <button (click)="checkSelectedRowData()">Check Data</button> -->
 <div class="financeTable">
-    <p-table #pfc [columns]="proformaCols" dataKey="Id" [value]="proformaRes" [paginator]="true" [rows]="10" [(selection)]="selectedRowData" selectionMode="multiple" exportFilename="Proformas" [(first)]="pageNumber" (onPage)="paginate($event)" rowExpandMode="multiple"
-        [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)">
+    <p-table #pfc [columns]="proformaCols" dataKey="Id" [value]="proformaRes" 
+    [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [paginator]="true" [rows]="10" styleClass="p-datatable-cactus p-datatable-gridlines"
+    [(selection)]="selectedRowData" selectionMode="multiple" exportFilename="Proformas" 
+    rowExpandMode="multiple" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)">
 
         <ng-template pTemplate="header" let-columns>
 
             <tr>
-                <th>S.No</th>
-                <th style="width: 2.25em">
+                <th class="firstColumnWidth">S.No</th>
+                <th class="firstColumnWidth">
                     <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                 </th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
-                    {{col.header}}
-                    <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+                    <!-- {{col.header}}
+                    <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon> -->
+                    <div *ngIf="col.field != ''" class="p-d-flex p-jc-between p-ai-center">
+                        {{col.header}}
+                        <p-sortIcon [field]="col.field"></p-sortIcon>
+                        <p-columnFilter
+                            *ngIf="col.header != ''"
+                            [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false"
+                            [showOperator]="false" [showAddButton]="false">
+                            <ng-template pTemplate="header">
+                                <div class="p-px-3 p-pt-3 p-pb-0">
+                                    <span class="p-text-bold"> {{col.header}} Picker</span>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All"
+                                    (onChange)="filter($event.value)" optionLabel="label">
+                                    <ng-template let-option pTemplate="item">
+                                        <div class="p-multiselect-representative-option">
+                                            <span class="p-ml-1">{{option.label}}</span>
+                                        </div>
+                                    </ng-template>
+                                </p-multiSelect>
+                            </ng-template>
+                        </p-columnFilter>
+                      </div>
                 </th>
+                <th class="lastColumnWidth">
+                    <i (click)="fdDataShareServie.convertToExcelFile(pfc)" title="Export To Excel"
+                              class="pi pi-file-excel tableExportIcon"></i>
+                  </th>
             </tr>
 
-            <tr>
+            <!-- <tr>
                 <th></th>
                 <th></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
@@ -72,18 +102,17 @@
                         </p-multiSelect>
                     </ng-container>
                 </th>
-            </tr>
+            </tr> -->
         </ng-template>
 
         <ng-template pTemplate="body" let-rowData let-expanded="expanded" let-columns="columns" let-rowIndex="rowIndex">
             <tr>
-                <td>
-                    {{rowIndex+1}}
-                    <a href="#" [pRowToggler]="rowData" style="vertical-align: middle;">
+                <td class="firstColumnWidth">
+                    <a class="error" href="#" [pRowToggler]="rowData" style="vertical-align: middle;">
                         <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
                     </a>
                 </td>
-                <td>
+                <td class="firstColumnWidth">
                     <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
                 </td>
                 <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility">
@@ -94,16 +123,29 @@
                         {{rowData[col.field] | date:'MMM dd, yyyy' }}
                     </ng-container>
                     <ng-container *ngIf="col.field == 'ProformaNumber'">
-                        <a *ngIf="rowData['FileURL']" [href]="rowData['FileURL']" target="_blank">
+                        <a class="error" *ngIf="rowData['FileURL']" [href]="rowData['FileURL']" target="_blank">
                             {{rowData[col.field]}}</a>
                         <p *ngIf="!rowData['FileURL'] ">{{rowData[col.field]}}</p>
                     </ng-container>
-                    <ng-container *ngIf="col.field == ''">
+                    <!-- <ng-container *ngIf="col.field == ''">
                         <div>
                             <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu"></p-menu>
                             <i class="pi pi-ellipsis-v menu" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
                         </div>
-                    </ng-container>
+                    </ng-container> -->
+                </td>
+                <td class="lastColumnWidth">
+                    <div>
+                      <p-menu
+                            #popupMenu
+                            [popup]="true"
+                            [model]="items"
+                            styleClass="borderMenu"
+                          >
+                          </p-menu>
+                      <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                      (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
+                    </div>
                 </td>
             </tr>
         </ng-template>

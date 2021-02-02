@@ -144,15 +144,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     pendingExpenses: any = [];
 
-    // getCreatedModifiedByFromRC(id) {
-    //     let found = this.rcData.find((x) => {
-    //         if (x.UserName.ID == id) {
-    //             return x;
-    //         }
-    //     })
-    //     return found ? found : ''
-    // }
-
     pendinExpenseColArray = {
         ProjectCode: [],
         ClientLegalEntity: [],
@@ -208,6 +199,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     async ngOnInit() {
         // let snapData = this.route.snapshot.data['fdData'];
         this.fdConstantsService.fdComponent.hideDatesSection = true;
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
 
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
         if (groups.indexOf('ExpenseApprovers') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('Invoice_Team') > -1) {
@@ -216,7 +208,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             this.showApproveReject = false;
         }
 
-        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         // Form Fields initialisation
         this.approveExpenseFormField();
         this.canRejExpenseFormField();
@@ -251,7 +242,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     }
     async projectInfo() {
-        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         // Check PI list
         await this.fdDataShareServie.checkProjectsAvailable();
         this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe(async (res) => {
@@ -497,24 +487,24 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         return found ? found.Title : '';
     }
 
-    createColFieldValues(resArray) {
+    // createColFieldValues(resArray) {
 
-        this.pendinExpenseColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.VendorName, value: a.VendorName }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.RequestType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.RequestType, value: a.RequestType }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.Category = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
-        const ClientAmount = this.uniqueArrayObj(resArray.map(a => { const b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
-        this.pendinExpenseColArray.ClientAmount = this.fdDataShareServie.customSort(ClientAmount, 1, 'label');
-        this.pendinExpenseColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
-        const Created = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { const b = { label: this.datePipe.transform(a.CreatedDate, 'MMM dd, yyyy'), value: a.CreatedDate }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.CreatedDate = Created.map(a => { const b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-        this.pendinExpenseColArray.CreatedBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.ModifiedBy = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }).filter(ele => ele.label));
-        this.pendinExpenseColArray.ModifiedDate = this.uniqueArrayObj(resArray.map(a => { const b = { label: this.datePipe.transform(a.Modified, 'MMM dd, yyyy'), value: a.Modified }; return b; }).filter(ele => ele.label));
-    }
+    //     this.pendinExpenseColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+    //     this.pendinExpenseColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.VendorName, value: a.VendorName }; return b; }).filter(ele => ele.label)));
+    //     this.pendinExpenseColArray.RequestType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.RequestType, value: a.RequestType }; return b; }).filter(ele => ele.label)));
+    //     this.pendinExpenseColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
+    //     this.pendinExpenseColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label)));
+    //     this.pendinExpenseColArray.Category = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
+    //     this.pendinExpenseColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
+    //     const ClientAmount = this.uniqueArrayObj(resArray.map(a => { const b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
+    //     this.pendinExpenseColArray.ClientAmount = this.fdDataShareServie.customSort(ClientAmount, 1, 'label');
+    //     this.pendinExpenseColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
+    //     const Created = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { const b = { label: this.datePipe.transform(a.CreatedDate, 'MMM dd, yyyy'), value: a.CreatedDate }; return b; }).filter(ele => ele.label)));
+    //     this.pendinExpenseColArray.CreatedDate = Created.map(a => { const b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
+    //     this.pendinExpenseColArray.CreatedBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }).filter(ele => ele.label)));
+    //     this.pendinExpenseColArray.ModifiedBy = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }).filter(ele => ele.label));
+    //     this.pendinExpenseColArray.ModifiedDate = this.uniqueArrayObj(resArray.map(a => { const b = { label: this.datePipe.transform(a.Modified, 'MMM dd, yyyy'), value: a.Modified }; return b; }).filter(ele => ele.label));
+    // }
 
     uniqueArrayObj(array: any) {
         let sts: any = '';

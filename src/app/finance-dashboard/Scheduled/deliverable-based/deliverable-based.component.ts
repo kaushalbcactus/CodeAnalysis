@@ -122,7 +122,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     // Resource Categorization
     rcData: any = [];
 
-
     deliverableBasedColArray = {
         ProjectCode: [],
         ShortTitle: [],
@@ -138,9 +137,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     // CLick on Table Check box to Select All Row Item
     selectedAllRowsItem: any = [];
-
-
-
     items: any[];
     deliverableDialog: any = {
         title: '',
@@ -151,7 +147,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     selectedRowItem: any;
 
     listOfPOCNames: SelectItem[];
-
 
     // Send Mail
     // Mail Content
@@ -257,18 +252,18 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     createDBICols() {
         this.deliverableBasedCols = [
-            { field: 'ProjectCode', header: 'Project Code', visibility: true },
+            { field: 'ProjectCode', header: 'Project Code', visibility: true, Type: 'string', dbName: 'ProjectCode', options: []  },
             { field: 'ProjectTitle', header: 'Project Title', visibility: false },
-            { field: 'ShortTitle', header: 'Short Title', visibility: true },
-            { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
-            { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
-            { field: 'POValues', header: 'PO Number/ Name', visibility: true },
-            { field: 'ClientName', header: 'Client', visibility: true },
+            { field: 'ShortTitle', header: 'Short Title', visibility: true, Type: 'string', dbName: 'ShortTitle', options: []  },
+            { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true, Type: 'string', dbName: 'SOWValue', options: []  },
+            { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true, Type: 'string', dbName: 'ProjectMileStone', options: []  },
+            { field: 'POValues', header: 'PO Number/ Name', visibility: true, Type: 'string', dbName: 'POValues', options: []  },
+            { field: 'ClientName', header: 'Client', visibility: true, Type: 'string', dbName: 'ClientName', options: []  },
             { field: 'ScheduledDateFormat', header: 'Scheduled Date', visibility: false },
-            { field: 'ScheduledDate', header: 'Scheduled Date', visibility: true, exportable: false },
-            { field: 'Amount', header: 'Amount', visibility: true },
-            { field: 'Currency', header: 'Currency', visibility: true },
-            { field: 'POCName', header: 'POC Name', visibility: true },
+            { field: 'ScheduledDate', header: 'Scheduled Date', visibility: true, exportable: false, Type: 'datetime', dbName: 'ScheduledDate', options: []  },
+            { field: 'Amount', header: 'Amount', visibility: true, Type: 'number', dbName: 'Amount', options: []  },
+            { field: 'Currency', header: 'Currency', visibility: true, Type: 'string', dbName: 'Currency', options: []  },
+            { field: 'POCName', header: 'POC Name', visibility: true, Type: 'string', dbName: 'POCName', options: []  },
             { field: 'SOWName', header: 'SOW Name', visibility: false },
             { field: 'SOWCode', header: 'SOW Code', visibility: false },
             { field: 'POName', header: 'PO Name', visibility: false },
@@ -283,7 +278,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             { field: 'ModifiedBy', header: 'Modified By', visibility: false },
             { field: 'PracticeArea', header: 'Practice Area', visibility: false },
             { field: 'CS', header: 'CS', visibility: false },
-            { field: '', header: '', visibility: true }
         ];
     }
 
@@ -381,8 +375,9 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             });
         }
         this.deliverableBasedRes = [...this.deliverableBasedRes];
+        this.deliverableBasedCols = this.commonService.MainfilterForTable(this.deliverableBasedCols, this.deliverableBasedRes);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-        this.createColFieldValues(this.deliverableBasedRes);
+        // this.createColFieldValues(this.deliverableBasedRes);
     }
 
     // Project PO
@@ -433,31 +428,31 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         return found ? found : '';
     }
 
-    createColFieldValues(resArray) {
-        this.deliverableBasedColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.SOWValue = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.ClientName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ClientName, value: a.ClientName }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
+    // createColFieldValues(resArray) {
+    //     this.deliverableBasedColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+    //     this.deliverableBasedColArray.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
+    //     this.deliverableBasedColArray.SOWValue = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
+    //     this.deliverableBasedColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
+    //     this.deliverableBasedColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
+    //     this.deliverableBasedColArray.ClientName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ClientName, value: a.ClientName }; return b; }).filter(ele => ele.label)));
+    //     this.deliverableBasedColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+    //     this.deliverableBasedColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
 
-        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { const b = { label: this.datePipe.transform(a.ScheduledDate, 'MMM dd, yyyy'), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.ScheduledDate = scheduledDate.map(a => { const b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-        const amount = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
-        this.deliverableBasedColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label');
-    }
+    //     const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { const b = { label: this.datePipe.transform(a.ScheduledDate, 'MMM dd, yyyy'), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
+    //     this.deliverableBasedColArray.ScheduledDate = scheduledDate.map(a => { const b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
+    //     const amount = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
+    //     this.deliverableBasedColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label');
+    // }
 
-    uniqueArrayObj(array: any) {
-        let sts: any = '';
-        return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-            return {
-                label: label1,
-                value: array.find(s => s.label === label1).value
-            };
-        });
-    }
+    // uniqueArrayObj(array: any) {
+    //     let sts: any = '';
+    //     return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
+    //         return {
+    //             label: label1,
+    //             value: array.find(s => s.label === label1).value
+    //         };
+    //     });
+    // }
 
     onRowSelect(event) {
         console.log(this.selectedAllRowsItem);
@@ -727,50 +722,50 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         this.subscription.unsubscribe();
     }
 
-    @HostListener('document:click', ['$event'])
-    clickout(event) {
-        if (event.target.className === 'pi pi-ellipsis-v') {
-            if (this.tempClick) {
-                this.tempClick.style.display = 'none';
-                if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
-                    this.tempClick = event.target.parentElement.children[0].children[0];
-                    this.tempClick.style.display = '';
-                } else {
-                    this.tempClick = undefined;
-                }
-            } else {
-                this.tempClick = event.target.parentElement.children[0].children[0];
-                this.tempClick.style.display = '';
-            }
+    // @HostListener('document:click', ['$event'])
+    // clickout(event) {
+    //     if (event.target.className === 'pi pi-ellipsis-v') {
+    //         if (this.tempClick) {
+    //             this.tempClick.style.display = 'none';
+    //             if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
+    //                 this.tempClick = event.target.parentElement.children[0].children[0];
+    //                 this.tempClick.style.display = '';
+    //             } else {
+    //                 this.tempClick = undefined;
+    //             }
+    //         } else {
+    //             this.tempClick = event.target.parentElement.children[0].children[0];
+    //             this.tempClick.style.display = '';
+    //         }
 
-        } else {
-            if (this.tempClick) {
-                this.tempClick.style.display = 'none';
-                this.tempClick = undefined;
-            }
-        }
-    }
+    //     } else {
+    //         if (this.tempClick) {
+    //             this.tempClick.style.display = 'none';
+    //             this.tempClick = undefined;
+    //         }
+    //     }
+    // }
 
-    optionFilter(event: any) {
-        if (event.target.value) {
-            this.isOptionFilter = false;
-        }
-    }
+    // optionFilter(event: any) {
+    //     if (event.target.value) {
+    //         this.isOptionFilter = false;
+    //     }
+    // }
 
-    ngAfterViewChecked() {
-        if (this.deliverableBasedRes.length && this.isOptionFilter) {
-            const obj = {
-                tableData: this.deliverableTable,
-                colFields: this.deliverableBasedColArray
-            };
-            if (obj.tableData.filteredValue) {
-                this.commonService.updateOptionValues(obj);
-            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-                this.createColFieldValues(obj.tableData.value);
-                this.isOptionFilter = false;
-            }
-        }
-        this.cdr.detectChanges();
-    }
+    // ngAfterViewChecked() {
+    //     if (this.deliverableBasedRes.length && this.isOptionFilter) {
+    //         const obj = {
+    //             tableData: this.deliverableTable,
+    //             colFields: this.deliverableBasedColArray
+    //         };
+    //         if (obj.tableData.filteredValue) {
+    //             this.commonService.updateOptionValues(obj);
+    //         } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+    //             this.createColFieldValues(obj.tableData.value);
+    //             this.isOptionFilter = false;
+    //         }
+    //     }
+    //     this.cdr.detectChanges();
+    // }
 
 }
