@@ -188,33 +188,33 @@ export class ResourcesComponent implements OnInit {
   // hide dropdown option  on production
   // *************************************************************************************************************************************
 
-  @HostListener('document:click', ['$event'])
-  clickout(event) {
-    if (event.target.className === 'ui-button-icon-left ui-clickable pi pi-caret-down') {
-      if (this.tempClick) {
-        this.tempClick.style.display = 'none';
-        if (this.tempClick !== event.target.parentElement.nextElementSibling) {
-          this.tempClick = event.target.parentElement.nextElementSibling;
-          this.tempClick.style.display = '';
-        } else {
-          this.tempClick = undefined;
-        }
-      } else {
-        // this.tempClick = event.target.parentElement.nextElementSibling;
-        // this.tempClick.style.display = '';
-      }
+  // @HostListener('document:click', ['$event'])
+  // clickout(event) {
+  //   if (event.target.className === 'ui-button-icon-left ui-clickable pi pi-caret-down') {
+  //     if (this.tempClick) {
+  //       this.tempClick.style.display = 'none';
+  //       if (this.tempClick !== event.target.parentElement.nextElementSibling) {
+  //         this.tempClick = event.target.parentElement.nextElementSibling;
+  //         this.tempClick.style.display = '';
+  //       } else {
+  //         this.tempClick = undefined;
+  //       }
+  //     } else {
+  //       // this.tempClick = event.target.parentElement.nextElementSibling;
+  //       // this.tempClick.style.display = '';
+  //     }
 
-    } else if (event.target.className === 'user-name') {
-      if (event.target.offsetParent) {
-        event.target.offsetParent.style.display = 'none';
-      }
-    } else {
-      if (this.tempClick) {
-        this.tempClick.style.display = 'none';
-        this.tempClick = undefined;
-      }
-    }
-  }
+  //   } else if (event.target.className === 'user-name') {
+  //     if (event.target.offsetParent) {
+  //       event.target.offsetParent.style.display = 'none';
+  //     }
+  //   } else {
+  //     if (this.tempClick) {
+  //       this.tempClick.style.display = 'none';
+  //       this.tempClick = undefined;
+  //     }
+  //   }
+  // }
 
 }
 

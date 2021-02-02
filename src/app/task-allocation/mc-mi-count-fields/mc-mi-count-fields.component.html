@@ -1,30 +1,38 @@
-<div fxLayout="column" style="padding: 2vw;width: 100%;" fxLayoutAlign="center center" *ngIf="loaderEnable">
-    <div id="modalInnerLoader"></div>
-    <div id="modalInnerLoaderText">Loading...</div>
+<div class="p-d-flex p-flex-column" style="padding: 10vw;width: 100%;" *ngIf="loaderEnable">
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
 </div>
 
-<div *ngIf="!loaderEnable" class="ui-grid-row mt-20">
-    <form [formGroup]="countFieldsForm">
-        <div class="error" style="padding: 10px 0px 10px 0px;" *ngIf="CountError"> {{errorType}} count should not be negative.</div>
-        <div class="ui-grid-col-1">Reference Count</div>
-        <div class="ui-grid-col-2">
-            <input formControlName="ReferenceCount" type="number" placeholder="Reference Count" pInputText>
-        </div>
-        <div class="ui-grid-col-1">Slide Count</div>
-        <div class="ui-grid-col-2">
-            <input formControlName="SlideCount" type="number" placeholder="Slide Count" pInputText>
-        </div>
-        <div class="ui-grid-col-1">Page Count</div>
-        <div class="ui-grid-col-2">
-            <input formControlName="PageCount" type="number" placeholder="Page Count" pInputText>
-        </div>
-        <div class="ui-grid-col-1" style="width:12%">Annotation/Binder</div>
-        <div class="ui-grid-col-1" style="width: 7%;">
-            <p-checkbox formControlName="AnnotationBinder" binary="true" label="Yes" inputId="y"></p-checkbox>
-        </div>
 
-        <button *ngIf="projectDetails.status !== 'Closed' && projectDetails.status !== 'Cancelled' && projectDetails.status !== 'Pending Closure'" mat-raised-button type="button"  (click)="saveCounts()">
-            <mat-icon>save</mat-icon> Save
-        </button>
-    </form>
-</div>
+<div class="p-col p-text-center error" *ngIf="CountError"> {{errorType}} count should not be negative.</div>
+
+<form [formGroup]="countFieldsForm" class="p-col p-grid p-mt-2" *ngIf="!loaderEnable">
+    <div class="p-col p-grid p-ai-center">
+        <div class="p-mr-2">Reference Count</div>
+        <div>
+            <input class="p-col-12" formControlName="ReferenceCount" type="number" placeholder="Reference Count" pInputText>
+        </div>
+    </div>
+    <div class="p-col p-grid p-ai-center">
+        <div class="p-mr-2">Slide Count</div>
+        <div>
+            <input class="p-col-12" formControlName="SlideCount" type="number" placeholder="Slide Count" pInputText>
+        </div>
+    </div>
+    <div class="p-col p-grid p-ai-center">
+        <div class="p-mr-2">Page Count</div>
+        <div>
+            <input class="p-col-12" formControlName="PageCount" type="number" placeholder="Page Count" pInputText>
+        </div>
+    </div>
+    <div class="p-col p-grid p-ai-center">
+        <div class="p-mr-4">Annotation/Binder</div>
+        <div>
+            <p-checkbox name="Annotation" formControlName="AnnotationBinder" binary="true" inputId="Yes"></p-checkbox>
+            <label class="p-ml-2 p-mb-0" for="Yes">Yes</label>
+        </div>
+    </div>
+    <div class="p-col p-grid p-jc-around" *ngIf="projectDetails.status !== 'Closed' && projectDetails.status !== 'Cancelled' && projectDetails.status !== 'Pending Closure'">
+        <button pButton pRipple type="button" icon="pi pi-save" label="Save" class="p-button-outlined p-button-danger p-my-2" (click)="saveCounts()"></button>
+    </div>
+</form>

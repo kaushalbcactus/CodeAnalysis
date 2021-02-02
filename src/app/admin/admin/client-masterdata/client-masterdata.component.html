@@ -10,7 +10,7 @@
 
 <div class="adminTable" *ngIf="!loaderenable">
     <p-table #cmd [columns]="clientMasterDataColumns" [value]="clientMasterDataRows" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" styleClass="p-datatable-cactus p-datatable-gridlines"
-        stateStorage="local" stateKey="clientMasterDataTable" exportFilename="Client Master Data" [paginator]="true" [rows]="10" class="clientMasterDataTable">
+        stateStorage="local" stateKey="clientMasterDataTable" exportFilename="Client Master Data" [paginator]="true" [rows]="10" class="clientMasterDataTable" hideshowMenu>
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th class="firstColumnWidth">Sr.No.</th>
@@ -97,7 +97,7 @@
     </p-header>
     <div class="adminTable p-mt-2">
         <p-table #sd [columns]="subDivisionDetailsColumns" [value]="subDivisionDetailsRows" exportFilename="Sub Division Details" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            styleClass="p-datatable-cactus p-datatable-gridlines">
+            styleClass="p-datatable-cactus p-datatable-gridlines" hideshowMenu>
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="firstColumnWidth">Sr.No.</th>
@@ -178,7 +178,7 @@
     </p-header>
     <div class="adminTable">
         <p-table #poc [columns]="POCColumns" [value]="POCRows" exportFilename="Point of Contact" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="POCTableSession">
+            styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="POCTableSession" hideshowMenu>
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="firstColumnWidth">Sr.No.</th>
@@ -315,7 +315,7 @@
     <div class="adminTable" [hidden]="modalloaderenable">
         <div *ngIf="showTable">
             <p-table #poTable [columns]="POColumns" [value]="PORows" exportFilename="Purchase Order" class="minFirstLastCol5Per" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-                styleClass="p-datatable-cactus p-datatable-gridlines">
+                styleClass="p-datatable-cactus p-datatable-gridlines" hideshowMenu>
                 <ng-template pTemplate="header" let-columns>
                     <tr>
                         <th class="firstColumnWidth">Sr.No.</th>

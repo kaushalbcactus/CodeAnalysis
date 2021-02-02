@@ -30,7 +30,7 @@
 <div class="adminTable" *ngIf="!loaderenable">
     <!-- <div> -->
     <p-table #up [columns]="userProfileColumns" [value]="userProfileData" exportFilename="User Profile" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-        styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="UserProfileTable">
+        styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="UserProfileTable" hideshowMenu>
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th class="firstColumnWidth">Sr.No.</th>
