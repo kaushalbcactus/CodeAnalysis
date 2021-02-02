@@ -16,7 +16,7 @@ import { DialogService } from 'primeng/dynamicdialog';
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.css'],
-  encapsulation: ViewEncapsulation.None
+
 })
 
 /**
@@ -55,30 +55,18 @@ export class UserProfileComponent implements OnInit {
 
   // This declaration is used to check which effective date is need to be shown when one
   // of the field is changed.
-  userProfileColArray = {
-    User: [],
-    LastUpdated: [],
-    LastModifiedBy: [],
-    PrimarySkill: [],
-    Bucket: [],
-    PracticeArea: [],
-    InCapacity: [],
-    DateOfJoining: [],
-    GoLiveDate: [],
-  };
-  auditHistoryArray = {
-    User: [],
-    ActionBy: [],
-    ActionDate: [],
-    Details: []
-  };
+  
+  // auditHistoryArray = {
+  //   User: [],
+  //   ActionBy: [],
+  //   ActionDate: [],
+  //   Details: []
+  // };
   minEffectiveDate = new Date();
 
   filteredCountriesMultiple: any[];
-  showTable = true;
-
-  isOptionFilter: boolean;
   @ViewChild('up', { static: false }) userProfileTable: Table;
+  loaderenable: boolean = true;;
   /**
    * Construct a method to create an instance of required component.
    *
@@ -129,21 +117,17 @@ export class UserProfileComponent implements OnInit {
    *
    */
   async ngOnInit() {
-    this.showTable = true;
-    this.constants.loader.isPSInnerLoaderHidden = true;
-
-
     this.userProfileColumns = [
-      { field: 'User', header: 'User', visibility: true },
-      { field: 'PrimarySkill', header: 'Primary Skill', visibility: true },
-      { field: 'Bucket', header: 'Bucket', visibility: true },
-      { field: 'PracticeArea', header: 'Practice Area', visibility: true },
-      { field: 'InCapacity', header: 'In Capacity', visibility: true },
-      { field: 'DateOfJoining', header: 'Date Of Joining', visibility: true },
-      { field: 'GoLiveDate', header: 'Go Live Date', visibility: true },
-      { field: 'LastUpdated', header: 'Last Updated', visibility: false, exportable: false },
-      { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false },
-      { field: 'LastModifiedBy', header: 'Last Updated By', visibility: false },
+      { field: 'User', header: 'User', visibility: true, Type:'string', dbName:'User',options:[] },
+      { field: 'PrimarySkill', header: 'Primary Skill', visibility: true, Type:'string', dbName:'PrimarySkill',options:[] },
+      { field: 'Bucket', header: 'Bucket', visibility: true,Type:'string', dbName:'Bucket',options:[]  },
+      { field: 'PracticeArea', header: 'Practice Area', visibility: true,Type:'string', dbName:'PracticeArea',options:[]  },
+      { field: 'InCapacity', header: 'In Capacity', visibility: true,Type:'string', dbName:'InCapacity',options:[]  },
+      { field: 'DateOfJoining', header: 'Date Of Joining', visibility: true,Type:'date', dbName:'DateOfJoining',options:[]  },
+      { field: 'GoLiveDate', header: 'Go Live Date', visibility: true,Type:'date', dbName:'GoLiveDate',options:[]  },
+      { field: 'LastUpdated', header: 'Last Updated', visibility: false, exportable: false,Type:'', dbName:'LastUpdated',options:[]  },
+      { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false,Type:'', dbName:'',options:[]  },
+      { field: 'LastModifiedBy', header: 'Last Updated By', visibility: false,Type:'', dbName:'',options:[]  },
     ];
     this.auditHistoryColumns = [
       { field: 'User', header: 'User' },
@@ -171,7 +155,7 @@ export class UserProfileComponent implements OnInit {
       }
     ];
     await this.loadUserTable();
-    this.colFilters1(this.auditHistoryRows);
+    // this.colFilters1(this.auditHistoryRows);
   }
 
 
@@ -184,8 +168,8 @@ export class UserProfileComponent implements OnInit {
    * `userProfileData` array to display the result into Ng Prime table.
    */
   async loadUserTable() {
-    this.showTable = false;
-    this.adminObject.isMainLoaderHidden = false;
+    
+    this.loaderenable = true;
     this.selectedOption = this.adminConstants.LOGICAL_FIELD.ACTIVE;
     this.showUserInput = false;
     let resCatFilter: any = {};
@@ -212,7 +196,6 @@ export class UserProfileComponent implements OnInit {
     this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetResourceCategorization');
     const sResult = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, resCatFilter);
     const tempResult = [];
-    this.showTable = true;
     if (sResult && sResult.length > 0) {
       // this.setValueInGlobalObject(sResult[0], false);
       for (const item of sResult) {
@@ -322,9 +305,11 @@ export class UserProfileComponent implements OnInit {
       // this.addUser.get('isActive').enable();
     }
     this.userProfileData = tempResult;
-    this.adminObject.isMainLoaderHidden = true;
-    this.colFilters(this.userProfileData);
+    this.loaderenable= false;
+    this.userProfileColumns = this.common.MainfilterForTable(this.userProfileColumns,this.userProfileData);
+   
   }
+
 
 
   updateOptionValues(obj) {
@@ -338,16 +323,12 @@ export class UserProfileComponent implements OnInit {
   }
 
   onChangeSelect() {
-    // this.updateOptionValues(this.userProfileTable);
-    // console.log('this.userProfileTable ', this.userProfileTable);
-    this.colFilters([]);
     if (this.selectedOption === this.adminConstants.LOGICAL_FIELD.INACTIVE) {
-      this.showTable = false;
       this.showUserInput = true;
       const emptyProjects = [];
       this.userProfileData = [...emptyProjects];
       this.providedUser = '';
-      this.colFilters([]);
+      // this.colFilters([]);
     } else {
       this.showUserInput = false;
       this.loadUserTable();
@@ -369,7 +350,7 @@ export class UserProfileComponent implements OnInit {
     const sResult = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, resCatFilter);
     const tempResult = [];
     if (sResult && sResult.length) {
-      this.showTable = true;
+      // this.showTable = true;
       for (const item of sResult) {
         const userObj = Object.assign({}, this.adminObject.addUser);
         userObj.UserNameEmail = item.UserNamePG.EMail;
@@ -475,7 +456,7 @@ export class UserProfileComponent implements OnInit {
       }
     }
     this.userProfileData = tempResult;
-    this.colFilters(this.userProfileData);
+    this.userProfileColumns = this.common.MainfilterForTable(this.userProfileColumns,this.userProfileData);
   }
 
 
@@ -489,82 +470,26 @@ export class UserProfileComponent implements OnInit {
    *
    * @param colData The colData parameters contains table array which is required to prefill the multiselect dropdown with unique values.
    */
-  colFilters(colData) {
-    this.userProfileColArray.User = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = { label: a.User, value: a.User }; return b;
-    })));
+  
+  // colFilters1(colData) {
+  //   this.auditHistoryArray.User = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+  //     const b = { label: a.User, value: a.User }; return b;
+  //   }));
+  //   this.auditHistoryArray.ActionBy = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+  //     const b = { label: a.ActionBy, value: a.ActionBy }; return b;
+  //   }));
+  //   this.auditHistoryArray.ActionDate = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+  //     const b = {
+  //       label: this.datePipe.transform(a.ActionDate, 'MMM dd, yyyy'),
+  //       value: this.datePipe.transform(a.ActionDate, 'MMM dd, yyyy')
+  //     };
+  //     return b;
+  //   }));
+  //   this.auditHistoryArray.Details = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+  //     const b = { label: a.Details, value: a.Details }; return b;
+  //   }));
 
-    this.userProfileColArray.PrimarySkill = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = { label: a.PrimarySkill, value: a.PrimarySkill }; return b;
-    })));
-
-    this.userProfileColArray.Bucket = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = { label: a.Bucket, value: a.Bucket }; return b;
-    })));
-
-    this.userProfileColArray.PracticeArea = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = { label: a.PracticeArea, value: a.PracticeArea }; return b;
-    })));
-
-
-    this.userProfileColArray.InCapacity = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = { label: a.InCapacity, value: a.InCapacity }; return b;
-    }).filter(ele => ele)));
-
-    this.userProfileColArray.DateOfJoining = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: this.datePipe.transform(a.DateOfJoining, 'MMM dd, yyyy'),
-        value: a.DateOfJoining
-      };
-      return b;
-    })));
-
-    this.userProfileColArray.GoLiveDate = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: this.datePipe.transform(a.GoLiveDate, 'MMM dd, yyyy'),
-        value: a.GoLiveDate
-      };
-      return b;
-    })));
-
-    const lastUpdatedArray = this.common.sortDateArray(this.adminCommonService.uniqueArrayObj(
-      colData.map(a => {
-        const b = {
-          label: this.datePipe.transform(a.LastUpdated, 'MMM dd, yyyy'),
-          value: a.LastUpdated
-        };
-        return b;
-      })));
-    this.userProfileColArray.LastUpdated = lastUpdatedArray.map(a => {
-      const b = {
-        label: this.datePipe.transform(a, 'MMM dd, yyyy'),
-        value: new Date(new Date(a).toDateString())
-      };
-      return b;
-    });
-    this.userProfileColArray.LastModifiedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = { label: a.LastModifiedBy, value: a.LastModifiedBy }; return b;
-    })));
-  }
-  colFilters1(colData) {
-    this.auditHistoryArray.User = this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = { label: a.User, value: a.User }; return b;
-    }));
-    this.auditHistoryArray.ActionBy = this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = { label: a.ActionBy, value: a.ActionBy }; return b;
-    }));
-    this.auditHistoryArray.ActionDate = this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: this.datePipe.transform(a.ActionDate, 'MMM dd, yyyy'),
-        value: this.datePipe.transform(a.ActionDate, 'MMM dd, yyyy')
-      };
-      return b;
-    }));
-    this.auditHistoryArray.Details = this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = { label: a.Details, value: a.Details }; return b;
-    }));
-
-  }
+  // }
 
   // Reset when p-dialog close reset form value
   cancelFormSub() {
@@ -743,7 +668,7 @@ export class UserProfileComponent implements OnInit {
       userObj.ManagerEmail = item.Manager.EMail;
       userObj.ManagerId = item.Manager.ID;
       userObj.Bucket = item.Bucket;
-      userObj.PracticeArea = item.Practice_x0020_Area ? item.Practice_x0020_Area.replace(/;#/g, ',') : '';
+      userObj.PracticeArea = item.Practice_x0020_Area ? item.Practice_x0020_Area.replace(/;#/g, ', ') : '';
       userObj.TimeZone = item.TimeZone;
       userObj.DateOfJoining = this.datePipe.transform(item.DateOfJoining, 'MMM dd, yyyy');
       userObj.GoLiveDate = this.datePipe.transform(item.GoLiveDate, 'MMM dd, yyyy');
@@ -857,7 +782,7 @@ export class UserProfileComponent implements OnInit {
 
     this.userProfileData = [... this.userProfileData];
     this.adminObject.isMainLoaderHidden = false;
-    this.colFilters(this.userProfileData);
+    this.userProfileColumns = this.common.MainfilterForTable(this.userProfileColumns,this.userProfileData);
   }
   /**
    * Construct a method to execute a batch request for adding the user to Group`SyncUserToUserInformationList`
@@ -1143,27 +1068,6 @@ export class UserProfileComponent implements OnInit {
     this.userProfileTable.exportCSV();
   }
 
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
-
-  ngAfterViewChecked() {
-    if (this.userProfileData.length && this.isOptionFilter) {
-      const obj = {
-        tableData: this.userProfileTable,
-        colFields: this.userProfileColArray
-      };
-      if (obj.tableData.filteredValue) {
-        this.common.updateOptionValues(obj);
-      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-        this.colFilters(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-      this.cdr.detectChanges();
-    }
-  }
 
 
   addEditUserProfile(title, UserObject) {
