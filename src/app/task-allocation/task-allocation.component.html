@@ -57,5 +57,15 @@
                 <app-timeline (reloadResources)="reloadResourceArray($event)" style="width:100%;"></app-timeline>
             </ng-template>
         </p-accordionTab>
+        <p-accordionTab *ngIf="countFields">
+            <ng-template pTemplate="header">
+                <div class="p-col p-grid p-pt-1 p-pb-0 p-px-2">
+                    <div class="p-col p-p-0 p-text-center  headerview"> <i class="pi pi-chart-line  p-mx-3"></i>Variables</div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <app-mc-mi-count-fields fxLayout="column" style="width:100%;"></app-mc-mi-count-fields>
+            </ng-template>
+        </p-accordionTab>
     </p-accordion>
 </div>
