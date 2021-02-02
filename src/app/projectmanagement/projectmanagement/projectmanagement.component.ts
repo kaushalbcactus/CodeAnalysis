@@ -19,6 +19,7 @@ import { BehaviorSubject } from 'rxjs';
   encapsulation: ViewEncapsulation.None
 })
 export class ProjectmanagementComponent implements OnInit, OnDestroy {
+  @ViewChild("fileuploderView", { static: false }) fileuploderView: ElementRef;
   @ViewChild('myInput', { static: true })
   // myInputVariable: ElementRef;
   isUserAllowed = true;
@@ -544,6 +545,12 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.selectedFile = null;
     if (event.target.files && event.target.files.length > 0) {
       this.selectedFile = event.target.files[0];
+      this.fileuploderView.nativeElement.getElementsByClassName('file-select-name')[0].innerText = this.selectedFile.name;
+      this.fileuploderView.nativeElement.classList.add('active');
+    }
+    else{
+      this.fileuploderView.nativeElement.classList.remove('active');
+      this.fileuploderView.nativeElement.getElementsByClassName('file-select-name')[0].innerText = 'No file chosen...';
     }
   }
  
