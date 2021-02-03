@@ -5,7 +5,7 @@
 </div>
 
 <!-- Export -->
-<div class="ui-g">
+<!-- <div class="ui-g">
     <div class="ui-g-3"></div>
     <div class="ui-g-3"></div>
     <div class="ui-g-3"></div>
@@ -14,25 +14,56 @@
             <i style="font-size: 1.8em;cursor: pointer;" (click)=" fdDataShareServie.convertToExcelFile(hb)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- Table Start -->
 <div class="financeTable">
     <!-- <p-table #hb [columns]="hourlyBasedCols" [value]="hourlyBasedRes" [paginator]="true" [rows]="10" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" [(selection)]="selectedAllRowsItem" exportFilename="Hourly_Based_Projects"> -->
-    <p-table #hb [columns]="hourlyBasedCols" [value]="hourlyBasedRes" [paginator]="true" [rows]="10" [(selection)]="selectedAllRowsItem" exportFilename="Hourly_Based_Projects">
+    <p-table #hb [columns]="hourlyBasedCols" [value]="hourlyBasedRes" 
+    [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [paginator]="true" [rows]="10" styleClass="p-datatable-cactus p-datatable-gridlines"
+    [(selection)]="selectedAllRowsItem" exportFilename="Hourly_Based_Projects">
         <ng-template pTemplate="header" let-columns>
             <tr>
-                <th>S.No</th>
-                <th style="width: 2.25em">
+                <th class="firstColumnWidth">S.No</th>
+                <th class="firstColumnWidth">
                     <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                 </th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
-                    {{col.header}}
-                    <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+                    <!-- {{col.header}}
+                    <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon> -->
+                    <div *ngIf="col.field != ''" class="p-d-flex p-jc-between p-ai-center">
+                        {{col.header}}
+                        <p-sortIcon [field]="col.field"></p-sortIcon>
+                        <p-columnFilter
+                            *ngIf="col.header != ''"
+                            [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false"
+                            [showOperator]="false" [showAddButton]="false">
+                            <ng-template pTemplate="header">
+                                <div class="p-px-3 p-pt-3 p-pb-0">
+                                    <span class="p-text-bold"> {{col.header}} Picker</span>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All"
+                                    (onChange)="filter($event.value)" optionLabel="label">
+                                    <ng-template let-option pTemplate="item">
+                                        <div class="p-multiselect-representative-option">
+                                            <span class="p-ml-1">{{option.label}}</span>
+                                        </div>
+                                    </ng-template>
+                                </p-multiSelect>
+                            </ng-template>
+                        </p-columnFilter>
+                      </div>
 
                 </th>
+                <th class="lastColumnWidth">
+                    <i (click)="fdDataShareServie.convertToExcelFile(hb)" title="Export To Excel"
+                              class="pi pi-file-excel tableExportIcon"></i>
+                </th>
             </tr>
-            <tr>
+            <!-- <tr>
                 <th></th>
                 <th></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
@@ -76,24 +107,37 @@
 
                     </ng-container>
                 </th>
-            </tr>
+            </tr> -->
         </ng-template>
         <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
             <tr>
-                <td>
+                <td class="firstColumnWidth">
                     {{rowIndex+1}}
                 </td>
-                <td>
+                <td class="firstColumnWidth">
                     <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
                 </td>
                 <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility">
                     {{rowData[col.field]}}
-                    <ng-container *ngIf="col.field == ''">
+                    <!-- <ng-container *ngIf="col.field == ''">
                         <div>
                             <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu"></p-menu>
                             <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
                         </div>
-                    </ng-container>
+                    </ng-container> -->
+                </td>
+                <td class="lastColumnWidth">
+                    <div>
+                      <p-menu
+                            #popupMenu
+                            [popup]="true"
+                            [model]="items"
+                            styleClass="borderMenu"
+                          >
+                          </p-menu>
+                      <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                      (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
+                    </div>
                 </td>
             </tr>
         </ng-template>

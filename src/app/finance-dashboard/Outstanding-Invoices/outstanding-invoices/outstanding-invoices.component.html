@@ -187,6 +187,7 @@
                     {{col.header}}
                     <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
                 </th>
+                <th class="lastColumnWidth"></th>
 
         </ng-template>
 
@@ -198,7 +199,7 @@
                     </ng-container>
 
                 </td>
-                <td>
+                <td class="lastColumnWidth">
                     <div>
                         <p-menu #popupMenu [popup]="true" [model]="items" [style]="{'text-align': 'left'}"
                             styleClass="borderMenu"></p-menu>

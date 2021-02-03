@@ -60,8 +60,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
     }
 
-
-
     get isValidAddToProformaForm() {
         return this.addToProforma_form.controls;
     }
@@ -313,15 +311,14 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
     createANBCols() {
         this.confirmCols = [
-            { field: 'ProjectCode', header: 'Project Code', visibility: true },
-            { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
-            { field: 'ScheduledDate', header: 'Scheduled Date', visibility: true, exportable: false },
+            { field: 'ProjectCode', header: 'Project Code', visibility: true, Type: 'string', dbName: 'ProjectCode', options: [] },
+            { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true, Type: 'string', dbName: 'SOWValue', options: [] },
+            { field: 'ScheduledDate', header: 'Scheduled Date', visibility: true, exportable: false, Type: 'datetime', dbName: 'ScheduledDate', options: [] },
             { field: 'ScheduledDateFormat', header: 'Scheduled Date', visibility: false },
-            { field: 'ScheduleType', header: 'Schedule Type', visibility: true },
-            { field: 'Amount', header: 'Amount', visibility: true },
-            { field: 'Currency', header: 'Currency', visibility: true },
-            { field: 'POCName', header: 'POC Name', visibility: true },
-
+            { field: 'ScheduleType', header: 'Schedule Type', visibility: true, Type: 'string', dbName: 'ScheduleType', options: [] },
+            { field: 'Amount', header: 'Amount', visibility: true, Type: 'number', dbName: 'Amount', options: [] },
+            { field: 'Currency', header: 'Currency', visibility: true, Type: 'string', dbName: 'Currency', options: [] },
+            { field: 'POCName', header: 'POC Name', visibility: true, Type: 'string', dbName: 'POCName', options: [] },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: false },
             { field: 'SOWName', header: 'SOW Name', visibility: false },
             { field: 'PONumber', header: 'PO Number', visibility: false },
@@ -338,10 +335,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             { field: 'ModifiedBy', header: 'Modified By', visibility: false },
             { field: 'PracticeArea', header: 'Practice Area', visibility: false },
             { field: 'CS', header: 'CS', visibility: false },
-
-            { field: '', header: '', visibility: true }
-
-
         ];
     }
 
@@ -504,7 +497,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 ModifiedBy: element.Editor ? element.Editor.Title : ''
             });
         }
-        this.createColFieldValues(this.confirmedRes);
+       // this.createColFieldValues(this.confirmedRes);
+       this.confirmCols = this.commonService.MainfilterForTable(this.confirmCols, this.confirmedRes);
     }
 
     getProject(pc: any) {
@@ -572,23 +566,23 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         return found ? found : '';
     }
 
-    createColFieldValues(resArray) {
-        this.confirmedInColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.confirmedInColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
-        this.confirmedInColArray.ProjectMileStone = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label));
-        this.confirmedInColArray.POName = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.POName, value: a.POName }; return b; }).filter(ele => ele.label));
-        this.confirmedInColArray.ClientLegalEntity = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label));
-        this.confirmedInColArray.PONumber = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label));
+    // createColFieldValues(resArray) {
+    //     this.confirmedInColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+    //     this.confirmedInColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
+    //     this.confirmedInColArray.ProjectMileStone = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label));
+    //     this.confirmedInColArray.POName = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.POName, value: a.POName }; return b; }).filter(ele => ele.label));
+    //     this.confirmedInColArray.ClientLegalEntity = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label));
+    //     this.confirmedInColArray.PONumber = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label));
 
-        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { const b = { label: this.datePipe.transform(a.ScheduledDate, 'MMM dd, yyyy'), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
-        this.confirmedInColArray.ScheduledDate = scheduledDate.map(a => { const b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
+    //     const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { const b = { label: this.datePipe.transform(a.ScheduledDate, 'MMM dd, yyyy'), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
+    //     this.confirmedInColArray.ScheduledDate = scheduledDate.map(a => { const b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
 
-        this.confirmedInColArray.ScheduleType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ScheduleType, value: a.ScheduleType }; return b; }).filter(ele => ele.label)));
-        const amount = this.uniqueArrayObj(resArray.map(a => { const b = { label: parseFloat(a.Amount), value: a.Amount }; return b; }).filter(ele => ele.label));
-        this.confirmedInColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label');
-        this.confirmedInColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-        this.confirmedInColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
-    }
+    //     this.confirmedInColArray.ScheduleType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ScheduleType, value: a.ScheduleType }; return b; }).filter(ele => ele.label)));
+    //     const amount = this.uniqueArrayObj(resArray.map(a => { const b = { label: parseFloat(a.Amount), value: a.Amount }; return b; }).filter(ele => ele.label));
+    //     this.confirmedInColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label');
+    //     this.confirmedInColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+    //     this.confirmedInColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
+    // }
 
     uniqueArrayObj(array: any) {
         let sts: any = '';
@@ -1030,8 +1024,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     reFetchData() {
-
-
         setTimeout(async () => {
             // Refetch PO/CLE Data
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
@@ -1082,50 +1074,51 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.subscription.unsubscribe();
     }
 
-    @HostListener('document:click', ['$event'])
-    clickout(event) {
-        if (event.target.className === 'pi pi-ellipsis-v') {
-            if (this.tempClick) {
-                this.tempClick.style.display = 'none';
-                if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
-                    this.tempClick = event.target.parentElement.children[0].children[0];
-                    this.tempClick.style.display = '';
-                } else {
-                    this.tempClick = undefined;
-                }
-            } else {
-                this.tempClick = event.target.parentElement.children[0].children[0];
-                this.tempClick.style.display = '';
-            }
+    // @HostListener('document:click', ['$event'])
+    // clickout(event) {
+    //     if (event.target.className === 'pi pi-ellipsis-v') {
+    //         if (this.tempClick) {
+    //             this.tempClick.style.display = 'none';
+    //             if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
+    //                 this.tempClick = event.target.parentElement.children[0].children[0];
+    //                 this.tempClick.style.display = '';
+    //             } else {
+    //                 this.tempClick = undefined;
+    //             }
+    //         } else {
+    //             this.tempClick = event.target.parentElement.children[0].children[0];
+    //             this.tempClick.style.display = '';
+    //         }
 
-        } else {
-            if (this.tempClick) {
-                this.tempClick.style.display = 'none';
-                this.tempClick = undefined;
-            }
-        }
-    }
+    //     } else {
+    //         if (this.tempClick) {
+    //             this.tempClick.style.display = 'none';
+    //             this.tempClick = undefined;
+    //         }
+    //     }
+    // }
 
-    optionFilter(event: any) {
-        if (event.target.value) {
-            this.isOptionFilter = false;
-        }
-    }
+    // optionFilter(event: any) {
+    //     if (event.target.value) {
+    //         this.isOptionFilter = false;
+    //     }
+    // }
 
-    ngAfterViewChecked() {
-        if (this.confirmedRes.length && this.isOptionFilter) {
-            const obj = {
-                tableData: this.confirmTable,
-                colFields: this.confirmedInColArray
-            };
-            if (obj.tableData.filteredValue) {
-                this.commonService.updateOptionValues(obj);
-                this.cdr.detectChanges();
-            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-                this.createColFieldValues(obj.tableData.value);
-                this.isOptionFilter = false;
-            }
-        }
-        this.cdr.detectChanges();
-    }
+    // ngAfterViewChecked() {
+    //     if (this.confirmedRes.length && this.isOptionFilter) {
+    //         const obj = {
+    //             tableData: this.confirmTable,
+    //             colFields: this.confirmedInColArray
+    //         };
+    //         if (obj.tableData.filteredValue) {
+    //             this.commonService.updateOptionValues(obj);
+    //             this.cdr.detectChanges();
+    //         } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+    //             //this.createColFieldValues(obj.tableData.value);
+    //             this.confirmCols = this.commonService.MainfilterForTable(this.confirmCols, this.confirmedRes);
+    //             this.isOptionFilter = false;
+    //         }
+    //     }
+    //     this.cdr.detectChanges();
+    // }
 }

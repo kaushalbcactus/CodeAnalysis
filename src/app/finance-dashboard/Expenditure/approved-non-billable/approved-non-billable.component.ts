@@ -157,7 +157,8 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
 
     async ngOnInit() {
         this.fdConstantsService.fdComponent.hideDatesSection = false;
-
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+        
         this.currentUserInfoData = await this.fdDataShareServie.getCurrentUserInfo();
         this.groupInfo = await this.fdDataShareServie.getGroupInfo();
         this.groupITInfo = await this.fdDataShareServie.getITInfo();
@@ -179,7 +180,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         this.resourceCInfo();
     }
     async projectInfo() {
-        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+        
         await this.fdDataShareServie.checkProjectsAvailable();
         this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
             if (res) {

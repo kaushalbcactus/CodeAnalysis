@@ -3,13 +3,13 @@
     <div id="scInnerLoaderText">Loading...</div>
 </div>
 
-<div class="p-col-12 p-md-12 p-lg-12 f-right">
+<div *ngIf="constantService.userPermission.isFDUserAdmin"  class="p-col-12 p-md-12 p-lg-12 f-right">
     <div style="display: -webkit-inline-box;">
-        <div *ngIf="constantService.userPermission.isFDUserAdmin" class="box" style="margin-right: 20px">
+        <div class="box" style="margin-right: 20px">
             <button type="button" class="fdBtn" pButton label="Approve Expense"
                 (click)="approveExpense('approve')"></button>
         </div>
-        <div *ngIf="constantService.userPermission.isFDUserAdmin" class="box">
+        <div class="box">
             <button type="button" class="fdBtn" pButton label="Reject Expense"
                 (click)="approveExpense('reject')"></button>
         </div>
@@ -17,7 +17,7 @@
 </div>
 <div style="clear: both;"></div>
 
-<div class="financeTable">
+<div class="financeTable" hideshowMenu>
     <p-table #pendingExpense [columns]="pendingExpeseCols" [value]="pendingExpenses" 
         [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
         [paginator]="true" [rows]="10"
@@ -39,7 +39,7 @@
                         {{col.header}}
                         <p-sortIcon [field]="col.field"></p-sortIcon>
                         <p-columnFilter
-                            *ngIf="col.header != ''  && col.field !='docUrlHtmlTag' && col.field!='docReviewUrlHtmlTag'"
+                            *ngIf="col.header != ''"
                             [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false"
                             [showOperator]="false" [showAddButton]="false">
                             <ng-template pTemplate="header">

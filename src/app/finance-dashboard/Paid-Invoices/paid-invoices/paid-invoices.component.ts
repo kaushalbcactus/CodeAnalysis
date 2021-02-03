@@ -331,15 +331,15 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
     createOutstandingInvoiceCols() {
         this.outstandingInCols = [
             // { field: 'InvoiceStatus', header: 'Invoice Status', visibility: true },
-            { field: 'DisplayInvoiceWithAuxiliary', header: 'Invoice Number', visibility: true },
-            { field: 'POValues', header: 'PO Name/ Number', visibility: true },
-            { field: 'ClientLegalEntity', header: 'Client', visibility: true },
-            { field: 'InvoiceDate', header: 'Invoice Date', visibility: true, exportable: false },
+            { field: 'DisplayInvoiceWithAuxiliary', header: 'Invoice Number', visibility: true, Type: 'string', dbName: 'DisplayInvoiceWithAuxiliary', options: [] },
+            { field: 'POValues', header: 'PO Name/ Number', visibility: true, Type: 'string', dbName: 'POValues', options: [] },
+            { field: 'ClientLegalEntity', header: 'Client', visibility: true, Type: 'string', dbName: 'ClientLegalEntity', options: [] },
+            { field: 'InvoiceDate', header: 'Invoice Date', visibility: true, exportable: false, Type: 'datetime', dbName: 'InvoiceDate', options: [] },
             { field: 'InvoiceDateFormat', header: 'Invoice Date', visibility: false },
-            { field: 'Amount', header: 'Amount', visibility: true },
-            { field: 'Currency', header: 'Currency', visibility: true },
-            { field: 'POC', header: 'POC', visibility: true },
-            { field: 'ModifiedBy', header: 'Modified By', visibility: true },
+            { field: 'Amount', header: 'Amount', visibility: true, Type: 'number', dbName: 'Amount', options: [] },
+            { field: 'Currency', header: 'Currency', visibility: true, Type: 'string', dbName: 'Currency', options: [] },
+            { field: 'POC', header: 'POC', visibility: true, Type: 'string', dbName: 'POC', options: [] },
+            { field: 'ModifiedBy', header: 'Modified By', visibility: true, Type: 'string', dbName: 'ModifiedBy', options: [] },
             { field: 'PONNumber', header: 'PO Number', visibility: false },
             { field: 'PaymentURL', header: 'Payment URL', visibility: false },
             { field: 'MainPOC', header: 'Main POC', visibility: false },
@@ -354,7 +354,6 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             { field: 'IsTaggedFully', header: 'Is Tagged Fully', visibility: false },
             { field: 'Modified', header: 'Modified', visibility: false },
             { field: 'Created', header: 'Created', visibility: false },
-            { field: '', header: '', visibility: true },
         ];
 
         this.invoiceCols = [
@@ -467,7 +466,8 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         this.paidInvoicesRes = [...this.paidInvoicesRes];
         this.isPSInnerLoaderHidden = true;
         console.log('this.paidInvoicesRes ', this.paidInvoicesRes);
-        this.createColFieldValues(this.paidInvoicesRes);
+        // this.createColFieldValues(this.paidInvoicesRes);
+        this.outstandingInCols = this.commonService.MainfilterForTable(this.outstandingInCols, this.paidInvoicesRes);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -511,21 +511,21 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         ModifiedBy: []
     }
 
-    createColFieldValues(resArray) {
-        // this.outInvoiceColArray.InvoiceStatus = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }).filter(ele => ele.label));
-        this.outInvoiceColArray.DisplayInvoiceWithAuxiliary = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DisplayInvoiceWithAuxiliary, value: a.DisplayInvoiceWithAuxiliary }; return b; }).filter(ele => ele.label)));
-        // this.outInvoiceColArray.PONumber this.commonService.sortData(= this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
-        const invoiceDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.InvoiceDate, "MMM dd, yyyy"), value: a.InvoiceDate }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.ModifiedBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.InvoiceDate = invoiceDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-        const amount = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
-        this.outInvoiceColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label');
-        this.outInvoiceColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
-        console.log('this.outInvoiceColArray ', this.outInvoiceColArray);
-    }
+    // createColFieldValues(resArray) {
+    //     // this.outInvoiceColArray.InvoiceStatus = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }).filter(ele => ele.label));
+    //     this.outInvoiceColArray.DisplayInvoiceWithAuxiliary = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DisplayInvoiceWithAuxiliary, value: a.DisplayInvoiceWithAuxiliary }; return b; }).filter(ele => ele.label)));
+    //     // this.outInvoiceColArray.PONumber this.commonService.sortData(= this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
+    //     this.outInvoiceColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
+    //     this.outInvoiceColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
+    //     const invoiceDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.InvoiceDate, "MMM dd, yyyy"), value: a.InvoiceDate }; return b; }).filter(ele => ele.label)));
+    //     this.outInvoiceColArray.ModifiedBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }).filter(ele => ele.label)));
+    //     this.outInvoiceColArray.InvoiceDate = invoiceDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
+    //     const amount = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
+    //     this.outInvoiceColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label');
+    //     this.outInvoiceColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+    //     this.outInvoiceColArray.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
+    //     console.log('this.outInvoiceColArray ', this.outInvoiceColArray);
+    // }
 
     uniqueArrayObj(array: any) {
         let sts: any = '';
@@ -1025,52 +1025,52 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         this.subscription.unsubscribe();
     }
 
-    @HostListener('document:click', ['$event'])
-    clickout(event) {
-        if (event.target.className === "pi pi-ellipsis-v") {
-            if (this.tempClick) {
-                this.tempClick.style.display = "none";
-                if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
-                    this.tempClick = event.target.parentElement.children[0].children[0];
-                    this.tempClick.style.display = "";
-                } else {
-                    this.tempClick = undefined;
-                }
-            } else {
-                this.tempClick = event.target.parentElement.children[0].children[0];
-                this.tempClick.style.display = "";
-            }
+    // @HostListener('document:click', ['$event'])
+    // clickout(event) {
+    //     if (event.target.className === "pi pi-ellipsis-v") {
+    //         if (this.tempClick) {
+    //             this.tempClick.style.display = "none";
+    //             if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
+    //                 this.tempClick = event.target.parentElement.children[0].children[0];
+    //                 this.tempClick.style.display = "";
+    //             } else {
+    //                 this.tempClick = undefined;
+    //             }
+    //         } else {
+    //             this.tempClick = event.target.parentElement.children[0].children[0];
+    //             this.tempClick.style.display = "";
+    //         }
 
-        } else {
-            if (this.tempClick) {
-                this.tempClick.style.display = "none";
-                this.tempClick = undefined;
-            }
-        }
-    }
+    //     } else {
+    //         if (this.tempClick) {
+    //             this.tempClick.style.display = "none";
+    //             this.tempClick = undefined;
+    //         }
+    //     }
+    // }
 
-    isOptionFilter: boolean;
-    optionFilter(event: any) {
-        if (event.target.value) {
-            this.isOptionFilter = false;
-        }
-    }
+    // isOptionFilter: boolean;
+    // optionFilter(event: any) {
+    //     if (event.target.value) {
+    //         this.isOptionFilter = false;
+    //     }
+    // }
 
-    ngAfterViewChecked() {
-        if (this.paidInvoicesRes.length && this.isOptionFilter) {
-            let obj = {
-                tableData: this.paidInvTable,
-                colFields: this.outInvoiceColArray
-            }
-            if (obj.tableData.filteredValue) {
-                this.commonService.updateOptionValues(obj);
-            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-                this.createColFieldValues(obj.tableData.value);
-                this.isOptionFilter = false;
-            }
-        }
-        this.cdr.detectChanges();
-    }
+    // ngAfterViewChecked() {
+    //     if (this.paidInvoicesRes.length && this.isOptionFilter) {
+    //         let obj = {
+    //             tableData: this.paidInvTable,
+    //             colFields: this.outInvoiceColArray
+    //         }
+    //         if (obj.tableData.filteredValue) {
+    //             this.commonService.updateOptionValues(obj);
+    //         } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+    //             this.createColFieldValues(obj.tableData.value);
+    //             this.isOptionFilter = false;
+    //         }
+    //     }
+    //     this.cdr.detectChanges();
+    // }
 
 
 

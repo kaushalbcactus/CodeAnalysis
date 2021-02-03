@@ -274,23 +274,25 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
   createHBCCols() {
     this.hourlyBasedCols = [
-      { field: "ProjectCode", header: "Project Code", visibility: true },
+      { field: "ProjectCode", header: "Project Code", visibility: true, Type: 'string', dbName: 'ProjectCode', options: [] },
       { field: "ProjectTitle", header: "Project Title", visibility: false },
-      { field: "ShortTitle", header: "Short Title", visibility: true },
-      { field: "SOWValue", header: "SOW Code/ Name", visibility: true },
+      { field: "ShortTitle", header: "Short Title", visibility: true, Type: 'string', dbName: 'ShortTitle', options: [] },
+      { field: "SOWValue", header: "SOW Code/ Name", visibility: true, Type: 'string', dbName: 'SOWValue', options: [] },
       {
         field: "ProjectMileStone",
         header: "Project Milestone",
         visibility: true,
+        Type: 'string', dbName: 'ProjectMileStone', options: []
       },
-      { field: "ClientLegalEntity", header: "Client", visibility: true },
-      { field: "PONumber", header: "PO Number", visibility: true },
-      { field: "POName", header: "PO Name", visibility: true },
-      { field: "POCName", header: "POC Name", visibility: true },
-      { field: "Currency", header: "Currency", visibility: true },
-      { field: "Rate", header: "Rate", visibility: true },
-      { field: "HoursSpent", header: "Hrs", visibility: true },
-      { field: "TotalInvoice", header: "Total Invoice", visibility: true },
+      { field: "ClientLegalEntity", header: "Client", visibility: true, Type: 'string', dbName: 'ClientLegalEntity', options: [] },
+      { field: "PONumber", header: "PO Number", visibility: false, Type: 'string', dbName: 'PONumber', options: [] },
+      { field: "POName", header: "PO Name", visibility: false, Type: 'string', dbName: 'POName', options: [] },
+      { field: "PONameNumber", header: "Number Name", visibility: true, Type: 'string', dbName: 'PONameNumber', options: [] },
+      { field: "POCName", header: "POC Name", visibility: true, Type: 'string', dbName: 'POCName', options: [] },
+      { field: "Currency", header: "Currency", visibility: true, Type: 'string', dbName: 'Currency', options: [] },
+      { field: "Rate", header: "Rate", visibility: true, Type: 'number', dbName: 'Rate', options: [] },
+      { field: "HoursSpent", header: "Hrs", visibility: true, Type: 'number', dbName: 'HoursSpent', options: [] },
+      { field: "TotalInvoice", header: "Total Invoice", visibility: true, Type: 'number', dbName: 'TotalInvoice', options: [] },
 
       {
         field: "ProposedEndDate",
@@ -301,7 +303,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
       { field: "SOWName", header: "SOW Name", visibility: false },
       { field: "SOWCode", header: "SOW Code", visibility: false },
       { field: "Invoiced", header: "Invoiced", visibility: false },
-      { field: "", header: "", visibility: true },
+      // { field: "", header: "", visibility: true },
     ];
   }
 
@@ -345,8 +347,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     );
     const res = await this.spServices.executeBatch(batchUrl);
     const arrResults = res.length ? res.map((a) => a.retItems) : [];
-    this.formatData(arrResults);
-    this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+    await this.formatData(arrResults);
+    
   }
 
   async getPFDetails(projectCode) {
@@ -363,7 +365,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     const res = await this.spServices.executeBatch(batchUrl);
     const arrResults = res.length ? res.map((a) => a.retItems) : [];
     this.pfDetails = arrResults[0][0];
-    this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+    // this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
   }
 
   async getInvoiceData(projectCode) {
@@ -379,11 +381,12 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     batchUrl.push(invObj);
     const res = await this.spServices.executeBatch(batchUrl);
     this.invDetails = res;
-    this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+    // this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
   }
 
   async formatData(data: any[]) {
     this.hourlyBasedRes = [];
+    let hourlyProj = []
     console.log("Project Finance Data ", data);
     for (let p = 0; p < this.projectCodes.length; p++) {
       for (let pf = 0; pf < data.length; pf++) {
@@ -404,7 +407,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             data[pf][0].Budget * data[pf][0].HoursSpent
           ).toFixed(2);
           const rate: any = parseFloat(data[pf][0].Budget).toFixed(2);
-          this.hourlyBasedRes.push({
+          hourlyProj.push({
             Id: this.projectCodes[p].ID,
             ProjectCode: this.projectCodes[p].ProjectCode,
             ProjectTitle: piInfo.Title ? piInfo.Title : "",
@@ -421,8 +424,9 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             POCName: poc ? poc.FName + " " + poc.LName : "",
             POC: poc,
             PO: poDetail,
-            POName: poDetail.Name,
+            POName: poDetail.NameST,
             PONumber: poDetail.Number,
+            PONameNumber: poDetail.NameST ? poDetail.Number + ' - ' + poDetail.NameST : poDetail.Number,
             PFID: data[pf][0].ID,
             Currency: data[pf][0].Currency,
             Rate: parseFloat(data[pf][0].Budget).toFixed(2),
@@ -452,10 +456,11 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         }
       }
     }
-    this.hourlyBasedRes = [...this.hourlyBasedRes];
+    this.hourlyBasedRes = [...hourlyProj];
+    this.hourlyBasedCols = this.commonService.MainfilterForTable(this.hourlyBasedCols, this.hourlyBasedRes);
     this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     // console.log('hourlyBasedRes data ', this.hourlyBasedRes);
-    this.createColFieldValues(this.hourlyBasedRes);
+    //this.createColFieldValues(this.hourlyBasedRes);
   }
 
   updateTotal(rate, hrs) {
@@ -531,141 +536,141 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     return found ? found : "";
   }
 
-  createColFieldValues(resArray) {
-    this.hourlyBasedColArray.ProjectCode = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = { label: a.ProjectCode, value: a.ProjectCode };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.hourlyBasedColArray.ShortTitle = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = { label: a.ShortTitle, value: a.ShortTitle };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.hourlyBasedColArray.SOWValue = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = { label: a.SOWValue, value: a.SOWValue };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.hourlyBasedColArray.ProjectMileStone = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = { label: a.ProjectMileStone, value: a.ProjectMileStone };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.hourlyBasedColArray.ClientLegalEntity = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = {
-              label: a.ClientLegalEntity,
-              value: a.ClientLegalEntity,
-            };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.hourlyBasedColArray.PONumber = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = { label: a.PONumber, value: a.PONumber };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.hourlyBasedColArray.POName = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = { label: a.POName, value: a.POName };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.hourlyBasedColArray.Currency = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = { label: a.Currency, value: a.Currency };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
-    this.hourlyBasedColArray.POCName = this.commonService.sortData(
-      this.uniqueArrayObj(
-        resArray
-          .map((a) => {
-            const b = { label: a.POCName, value: a.POCName };
-            return b;
-          })
-          .filter((ele) => ele.label)
-      )
-    );
+  // createColFieldValues(resArray) {
+  //   this.hourlyBasedColArray.ProjectCode = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = { label: a.ProjectCode, value: a.ProjectCode };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.hourlyBasedColArray.ShortTitle = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = { label: a.ShortTitle, value: a.ShortTitle };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.hourlyBasedColArray.SOWValue = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = { label: a.SOWValue, value: a.SOWValue };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.hourlyBasedColArray.ProjectMileStone = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = { label: a.ProjectMileStone, value: a.ProjectMileStone };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.hourlyBasedColArray.ClientLegalEntity = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = {
+  //             label: a.ClientLegalEntity,
+  //             value: a.ClientLegalEntity,
+  //           };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.hourlyBasedColArray.PONumber = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = { label: a.PONumber, value: a.PONumber };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.hourlyBasedColArray.POName = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = { label: a.POName, value: a.POName };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.hourlyBasedColArray.Currency = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = { label: a.Currency, value: a.Currency };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
+  //   this.hourlyBasedColArray.POCName = this.commonService.sortData(
+  //     this.uniqueArrayObj(
+  //       resArray
+  //         .map((a) => {
+  //           const b = { label: a.POCName, value: a.POCName };
+  //           return b;
+  //         })
+  //         .filter((ele) => ele.label)
+  //     )
+  //   );
 
-    const rate = this.uniqueArrayObj(
-      resArray
-        .map((a) => {
-          const b = { label: parseFloat(a.Rate), value: a.Rate };
-          return b;
-        })
-        .filter((ele) => ele.label)
-    );
-    this.hourlyBasedColArray.Rate = this.fdDataShareServie.customSort(
-      rate,
-      1,
-      "label"
-    );
-    const hoursSpent = this.uniqueArrayObj(
-      resArray
-        .map((a) => {
-          const b = { label: a.HoursSpent, value: a.HoursSpent };
-          return b;
-        })
-        .filter((ele) => ele.label)
-    );
-    this.hourlyBasedColArray.HoursSpent = this.fdDataShareServie.customSort(
-      hoursSpent,
-      1,
-      "label"
-    );
-    const totalInvoice = this.uniqueArrayObj(
-      resArray
-        .map((a) => {
-          const b = { label: a.TotalInvoice, value: a.TotalInvoice };
-          return b;
-        })
-        .filter((ele) => ele.label)
-    );
-    this.hourlyBasedColArray.TotalInvoice = this.fdDataShareServie.customSort(
-      totalInvoice,
-      1,
-      "label"
-    );
-  }
+  //   const rate = this.uniqueArrayObj(
+  //     resArray
+  //       .map((a) => {
+  //         const b = { label: parseFloat(a.Rate), value: a.Rate };
+  //         return b;
+  //       })
+  //       .filter((ele) => ele.label)
+  //   );
+  //   this.hourlyBasedColArray.Rate = this.fdDataShareServie.customSort(
+  //     rate,
+  //     1,
+  //     "label"
+  //   );
+  //   const hoursSpent = this.uniqueArrayObj(
+  //     resArray
+  //       .map((a) => {
+  //         const b = { label: a.HoursSpent, value: a.HoursSpent };
+  //         return b;
+  //       })
+  //       .filter((ele) => ele.label)
+  //   );
+  //   this.hourlyBasedColArray.HoursSpent = this.fdDataShareServie.customSort(
+  //     hoursSpent,
+  //     1,
+  //     "label"
+  //   );
+  //   const totalInvoice = this.uniqueArrayObj(
+  //     resArray
+  //       .map((a) => {
+  //         const b = { label: a.TotalInvoice, value: a.TotalInvoice };
+  //         return b;
+  //       })
+  //       .filter((ele) => ele.label)
+  //   );
+  //   this.hourlyBasedColArray.TotalInvoice = this.fdDataShareServie.customSort(
+  //     totalInvoice,
+  //     1,
+  //     "label"
+  //   );
+  // }
 
   uniqueArrayObj(array: any) {
     let sts: any = "";
@@ -704,8 +709,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
   async openMenuContent(event, data) {
     this.selectedRowItem = data;
-    this.getPFDetails(data.ProjectCode);
-    this.getInvoiceData(data.projectCode);
+    await this.getPFDetails(data.ProjectCode);
+    await this.getInvoiceData(data.projectCode);
     console.log(event);
     this.hourlyDialog.title = event.item.label;
     if (this.hourlyDialog.title.toLowerCase() === "confirm project") {
@@ -1628,52 +1633,52 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  @HostListener("document:click", ["$event"])
-  clickout(event) {
-    if (event.target.className === "pi pi-ellipsis-v") {
-      if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        if (
-          this.tempClick !== event.target.parentElement.children[0].children[0]
-        ) {
-          this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = "";
-        } else {
-          this.tempClick = undefined;
-        }
-      } else {
-        this.tempClick = event.target.parentElement.children[0].children[0];
-        this.tempClick.style.display = "";
-      }
-    } else {
-      if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        this.tempClick = undefined;
-      }
-    }
-  }
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
+  // @HostListener("document:click", ["$event"])
+  // clickout(event) {
+  //   if (event.target.className === "pi pi-ellipsis-v") {
+  //     if (this.tempClick) {
+  //       this.tempClick.style.display = "none";
+  //       if (
+  //         this.tempClick !== event.target.parentElement.children[0].children[0]
+  //       ) {
+  //         this.tempClick = event.target.parentElement.children[0].children[0];
+  //         this.tempClick.style.display = "";
+  //       } else {
+  //         this.tempClick = undefined;
+  //       }
+  //     } else {
+  //       this.tempClick = event.target.parentElement.children[0].children[0];
+  //       this.tempClick.style.display = "";
+  //     }
+  //   } else {
+  //     if (this.tempClick) {
+  //       this.tempClick.style.display = "none";
+  //       this.tempClick = undefined;
+  //     }
+  //   }
+  // }
+  // optionFilter(event: any) {
+  //   if (event.target.value) {
+  //     this.isOptionFilter = false;
+  //   }
+  // }
 
-  ngAfterViewChecked() {
-    if (this.hourlyBasedRes.length && this.isOptionFilter) {
-      const obj = {
-        tableData: this.hourlyTable,
-        colFields: this.hourlyBasedColArray,
-      };
-      if (obj.tableData.filteredValue) {
-        this.commonService.updateOptionValues(obj);
-      } else if (
-        obj.tableData.filteredValue === null ||
-        obj.tableData.filteredValue === undefined
-      ) {
-        this.createColFieldValues(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-    }
-    this.cdr.detectChanges();
-  }
+  // ngAfterViewChecked() {
+  //   if (this.hourlyBasedRes.length && this.isOptionFilter) {
+  //     const obj = {
+  //       tableData: this.hourlyTable,
+  //       colFields: this.hourlyBasedColArray,
+  //     };
+  //     if (obj.tableData.filteredValue) {
+  //       this.commonService.updateOptionValues(obj);
+  //     } else if (
+  //       obj.tableData.filteredValue === null ||
+  //       obj.tableData.filteredValue === undefined
+  //     ) {
+  //       this.createColFieldValues(obj.tableData.value);
+  //       this.isOptionFilter = false;
+  //     }
+  //   }
+  //   this.cdr.detectChanges();
+  // }
 }
