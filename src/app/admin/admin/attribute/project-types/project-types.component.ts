@@ -28,21 +28,12 @@ export class ProjectTypesComponent implements OnInit {
   projectTypeColumns = [];
   projectTypeRows = [];
   currProjectTypeObj: any;
-  projectTypeColArray = {
-    ProjectType: [],
-    LastUpdated: [],
-    LastModifiededBy: []
-  };
-  auditHistoryArray = {
-    Action: [],
-    ActionBy: [],
-    Date: [],
-  };
   items = [
     { label: 'Delete', command: (e) => this.delete() }
   ];
   isOptionFilter: boolean;
   @ViewChild('pt', { static: false }) ptTable: Table;
+  loaderenable: boolean= true;
 
 
   /**
@@ -94,10 +85,10 @@ export class ProjectTypesComponent implements OnInit {
   async ngOnInit() {
     this.projectTypeColumns = [
       // { field: 'Sr', header: 'Sr.No.' },
-      { field: 'ProjectType', header: 'Project Type', visibility: true },
-      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
-      { field: 'LastModifiededBy', header: 'Last Updated By', visibility: true },
-      { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false }
+      { field: 'ProjectType', header: 'Project Type', visibility: true, Type:'string', dbName:'ProjectType',options:[] },
+      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false , Type:'date', dbName:'LastUpdated',options:[]  },
+      { field: 'LastModifiededBy', header: 'Last Updated By', visibility: true , Type:'string', dbName:'LastModifiededBy',options:[]  },
+      { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false , Type:'', dbName:'',options:[]  }
     ];
     this.loadProjectTypeTable();
   }
@@ -111,7 +102,6 @@ export class ProjectTypesComponent implements OnInit {
    *
    */
   async loadProjectTypeTable() {
-    this.adminObject.isMainLoaderHidden = false;
     const tempArray = [];
     const getProjectTypeInfo = Object.assign({}, this.adminConstants.QUERY.GET_PROJECT_TYPE_BY_ACTIVE);
     getProjectTypeInfo.filter = getProjectTypeInfo.filter.replace(/{{isActive}}/gi,
@@ -129,41 +119,9 @@ export class ProjectTypesComponent implements OnInit {
         tempArray.push(obj);
       });
       this.projectTypeRows = tempArray;
-      this.colFilters(this.projectTypeRows);
+      this.projectTypeColumns= this.common.MainfilterForTable(this.projectTypeColumns, this.projectTypeRows);
     }
-    this.adminObject.isMainLoaderHidden = true;
-  }
-  /**
-   * Construct a method to map the array values into particular column dropdown.
-   *
-   * @description
-   *
-   * This method will extract the column object value from an array and stores into the column dropdown array and display
-   * the values into the ProjectType,LastUpdated and LastUpdatedBy column dropdown.
-   *
-   * @param colData Pass colData as a parameter which contains an array of column object.
-   *
-   */
-  colFilters(colData) {
-    this.projectTypeColArray.ProjectType = this.common.sortData(this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.ProjectType, value: a.ProjectType }; return b; })));
-    const lastUpdatedArray = this.common.sortDateArray(this.adminCommonService.uniqueArrayObj(
-      colData.map(a => {
-        const b = {
-          label: this.datepipe.transform(a.LastUpdated, 'MMM dd, yyyy'),
-          value: a.LastUpdated
-        };
-        return b;
-      })));
-    this.projectTypeColArray.LastUpdated = lastUpdatedArray.map(a => {
-      const b = {
-        label: this.datepipe.transform(a, 'MMM dd, yyyy'),
-        value: new Date(new Date(a).toDateString())
-      };
-      return b;
-    });
-    this.projectTypeColArray.LastModifiededBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.LastModifiededBy, value: a.LastModifiededBy }; return b; })));
+   this.loaderenable=false;
   }
   /**
    * Construct a method to add the new Project Type into `ProjectType` list.
@@ -194,7 +152,7 @@ export class ProjectTypesComponent implements OnInit {
       this.common.showToastrMessage(this.constants.MessageType.error,'This Project Type is already exist. Please enter another Project Type.',false);
       return false;
     }
-    this.adminObject.isMainLoaderHidden = false;
+   this.constants.loader.isWaitDisable=false;
     const data = {
       Title: this.projectType
     };
@@ -205,7 +163,9 @@ export class ProjectTypesComponent implements OnInit {
     this.common.showToastrMessage(this.constants.MessageType.success, 'The Project Type ' + this.projectType + ' has added successfully.',true);
     this.projectType = '';
     await this.loadProjectTypeTable();
-    this.adminObject.isMainLoaderHidden = true;
+    setTimeout(()=>{
+      this.constants.loader.isWaitDisable= true;
+    }, 500);
   }
   /**
    * Construct a method to remove the item from table.
@@ -238,12 +198,15 @@ export class ProjectTypesComponent implements OnInit {
    * @param type pass the list type.
    */
   async confirmUpdate(data, updateData, listName, type) {
-    this.adminObject.isMainLoaderHidden = false;
+    this.constants.loader.isWaitDisable=false;
     this.common.SetNewrelic('admin', 'admin-attribute-projectTypes', 'updateProjectType');
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
     this.common.showToastrMessage(this.constants.MessageType.success,'The ProjectType ' + data.ProjectType + ' has deleted successfully.',true);
     this.loadProjectTypeTable();
-    this.adminObject.isMainLoaderHidden = true;
+    setTimeout(()=>{
+      this.constants.loader.isWaitDisable= true;
+    }, 500);
+    
   }
   /**
    * Construct a method to store current selected row data into variable `currProjectTypeObj`.
@@ -261,29 +224,6 @@ export class ProjectTypesComponent implements OnInit {
 
   downloadExcel(pt) {
     pt.exportCSV();
-  }
-
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
-
-
-  ngAfterViewChecked() {
-    if (this.projectTypeRows.length && this.isOptionFilter) {
-      const obj = {
-        tableData: this.ptTable,
-        colFields: this.projectTypeColArray
-      };
-      if (obj.tableData.filteredValue) {
-        this.common.updateOptionValues(obj);
-      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-        this.colFilters(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-      this.cdr.detectChanges();
-    }
   }
 }
 

@@ -1,54 +1,49 @@
-<div class="mt-20">
-    <div class="p-grid addNew">
-        <div class="p-col-2">
-            <span class="ui-float-label">
-                <input id="float-input" type="text" [(ngModel)]="projectType" pInputText />
-                <label for="float-input">Project Type</label>
-            </span>
-        </div>
+<div class="p-d-flex p-flex-column" style="padding: 10vw;width: 100%;" *ngIf="loaderenable">
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div>
 
-        <div class="p-col-2">
-            <button pButton class="adminBtn" label="Add" type="button" (click)="addProjectType()"></button>
-        </div>
-    </div>
-</div>
-<div>
-    <a (click)="downloadExcel(pt)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
-            aria-hidden="true"></i>
-    </a>
-</div>
-<div class="clearBoth"></div>
-<div class="adminTable">
-    <p-table #pt [columns]="projectTypeColumns" [value]="projectTypeRows" exportFilename="Project Type"
-        [paginator]="true" [rows]="10" class="minFirstLastCol5Per">
+
+<div class="adminTable p-mt-1" *ngIf="!loaderenable">
+    <p-table #pt [columns]="projectTypeColumns" [value]="projectTypeRows" exportFilename="Project Type" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="projectTypeTable" hideshowMenu>
+        <ng-template pTemplate="caption">
+            <div class="table-header p-grid p-px-2 p-m-0 p-jc-between p-ai-center">
+                <div>
+                    <input class="cls_addProjectText p-mr-2" style="min-height: 36px;" pInputText type="text" [(ngModel)]="projectType" placeholder="Project Type" />
+
+                    <button pButton pRipple type="button" icon="pi pi-plus" label="Add" class="p-button-outlined p-button-danger cls_addProjectType" (click)="addProjectType()"></button>
+                </div>
+                <i (click)="downloadExcel(pt)" style="font-size: 2.5em;" class="pi pi-file-excel error" aria-hidden="true"></i>
+
+            </div>
+        </ng-template>
         <ng-template pTemplate="header" let-columns>
             <tr>
-                <th>Sr.No.</th>
+                <th class="firstColumnWidth">Sr.No.</th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
-                    {{col.header}}
-                    <p-sortIcon [hidden]="!col.visibility" [field]="col.field" ariaLabel="Activate to sort"
-                        ariaLabelDesc="Activate to sort in descending order"
-                        ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    <div class="p-d-flex p-jc-between p-ai-center">
+                        {{col.header}}
+                        <p-sortIcon [field]="col.field"></p-sortIcon>
+                        <p-columnFilter *ngIf="col.header != ''" [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                            <ng-template pTemplate="header">
+                                <div class="p-px-3 p-pt-3 p-pb-0">
+                                    <span class="p-text-bold"> {{col.header}} Picker</span>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                                    <ng-template let-option pTemplate="item">
+                                        <div class="p-multiselect-representative-option">
+                                            <span class="p-ml-1">{{option.label}}</span>
+                                        </div>
+                                    </ng-template>
+                                </p-multiSelect>
+                            </ng-template>
+                        </p-columnFilter>
+                    </div>
                 </th>
-                <th></th>
-            </tr>
-            <tr>
-                <th></th>
-                <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
-                    <p-multiSelect *ngSwitchCase="'ProjectType'" [style]="{'width':'100%'}"
-                        [options]="projectTypeColArray.ProjectType" defaultLabel="Project Type"
-                        (onChange)="pt.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" resetFilterOnHide="true"  (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
-                        [options]="projectTypeColArray.LastUpdated" defaultLabel="LastUpdated"
-                        (onChange)="pt.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" resetFilterOnHide="true"  (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'LastModifiededBy'" [style]="{'width':'100%'}"
-                        [options]="projectTypeColArray.LastModifiededBy" defaultLabel="LastUpdatedBy"
-                        (onChange)="pt.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" resetFilterOnHide="true"  (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                </th>
-                <th></th>
+                <th class="lastColumnWidth"></th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
@@ -57,18 +52,17 @@
                 <td>{{rowData.ProjectType}}</td>
                 <td>{{rowData.LastUpdated | date:'MMM dd, yyyy'}}</td>
                 <td>{{rowData.LastModifiededBy}}</td>
-                <td>
+                <td class="lastColumnWidth">
                     <div>
                         <p-menu #menu [popup]="true" [model]="items" styleClass="borderMenu"></p-menu>
-                        <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-                            (click)="storeRowData(rowData); menu.toggle($event);"></i>
+                        <i class="pi pi-ellipsis-v" (click)="storeRowData(rowData); menu.toggle($event);"></i>
                     </div>
                 </td>
             </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage" let-columns>
             <tr>
-                <td [attr.colspan]="!projectTypeRows.length">
+                <td [attr.colspan]="columns.length + 1">
                     No Data found
                 </td>
             </tr>

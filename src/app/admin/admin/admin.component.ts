@@ -23,6 +23,8 @@ export class AdminComponent implements OnInit {
     private router: Router
   ) {}
   ngOnInit() {
+
+    localStorage.clear();
     setTimeout(() => {
       this.globalService.currentTitle = "Admin";
     }, 100);
