@@ -692,7 +692,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
           if (data.InvoiceHtml) {
             this.items.push({
-              label: "Edit Line item",
+              label: "Edit Invoice",
               command: (e) => this.openMenuContent(e, data),
             });
           }
@@ -711,7 +711,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
           );
           if (data.InvoiceHtml) {
             this.items.push({
-              label: "Edit Line item",
+              label: "Edit Invoice",
               command: (e) => this.openMenuContent(e, data),
             });
           }
@@ -808,7 +808,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
       } else if (event.item.label === "Details") {
         this.rightSideBar = !this.rightSideBar;
         return;
-      } else if (this.confirmDialog.title === "Edit Line item") {
+      } else if (this.confirmDialog.title === "Edit Invoice") {
         const invObj = JSON.parse(data.InvoiceHtml);
         if (invObj.hasOwnProperty("saveObj")) {
           this.fdConstantsService.fdComponent.selectedEditObject.Code =

@@ -8,7 +8,7 @@
 
 <div fxLayout="row" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
 
-    <form [formGroup]='ScheduleInvoiceForm' class="p-col">
+    <form style="font-size: 13px; padding-top: 10px;" [formGroup]='ScheduleInvoiceForm' class="p-col">
         <!-- first Row html  -->
 
         <div class="p-grid">
@@ -22,8 +22,10 @@
                 <div class="p-col-4"><span class="compulsory">*</span>Po Number</div>
                 <div class="p-col-8">
 
-                    <p-dropdown resetFilterOnHide="true" class="cls_addTsPoSelect" [options]="poNames" filter="true" formControlName="PONumber" [style]="{'width':'100%'}" placeholder="Select PO Number" optionLabel="Number" (onChange)="poChange($event)">
-                        <ng-template let-item pTemplate="selectedItem">
+                    <p-dropdown resetFilterOnHide="true" class="cls_addTsPoSelect" [options]="poNames" 
+                    filter="true" formControlName="PONumber" [style]="{'width':'100%'}" 
+                    placeholder="Select PO Number" optionLabel="poNameNumber" (onChange)="poChange($event)">
+                        <!-- <ng-template let-item pTemplate="selectedItem">
                             <span style="vertical-align:middle">{{item.label}}
                             {{item.value.Name ? ' -- '+ item.value.Name:'' }}
                         </span>
@@ -34,7 +36,7 @@
                                     {{item.label}} {{item.value.Name ? ' -- '+ item.value.Name:'' }}
                                 </div>
                             </div>
-                        </ng-template>
+                        </ng-template> -->
                     </p-dropdown>
                     <div class="error" *ngIf="isScheduleInvoiceFormSubmit && ScheduleInvoiceForm.controls.PONumber.errors">
                         <div *ngIf="ScheduleInvoiceForm.controls.PONumber.errors.required">

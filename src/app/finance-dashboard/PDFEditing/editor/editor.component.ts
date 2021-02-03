@@ -447,7 +447,7 @@ export class EditorComponent implements OnInit {
             address4: `<p>[[Address4]]</p>`,
             clientcontact2: `<p>[[ClientContact2]]</p>`,
             purchaseOrder: `<strong>Purchase Order number : </strong>[[PurchaseOrderNumber]]`,
-            invoiceDetail: `<thead>
+            invoiceDetail: `<table border="0" cellspacing="0" cellpadding="0"> <thead>
             <tr>
                 <th>
                     Date
@@ -481,7 +481,7 @@ export class EditorComponent implements OnInit {
                     [[CurrencySymbol]] [[Total]]
                 </td>
             </tr>
-        </tbody>`,
+        </tbody> </table>`,
             paymentInstructions: `<ul>
         <li>Please make your payment within 60 days of receiving this proforma. For any questions
             regarding your
@@ -851,7 +851,7 @@ export class EditorComponent implements OnInit {
             contactDetails: `<p><strong>Company : </strong>[[Company]]</p>
         <p><strong>Client Contact : </strong>[[ClientContact1]]</p>`,
             purchaseOrder: `<strong> Purchase Order number : </strong> [[PurchaseOrderNumber]] `,
-            invoiceDetail: `<thead>
+            invoiceDetail: `<table id="invoiceDetails" cellspacing="0" cellpadding="0" <thead>
             <tr>
                 <th>
                     Date
@@ -896,7 +896,7 @@ export class EditorComponent implements OnInit {
                 <p style="text-align: center;font-weight: bold; font-size: 16px;">[[CurrencySymbol]] [[Total]]</p>
             </td>
         </tr>
-        </tbody>`,
+        </tbody></table>`,
             paymentInstructions: `<label>
         振込先銀行：三菱UFJ銀行 品川駅前支店(店番588) 普通預金 2406331<br/>
         口座名義：カクタスコミュニケーションズカブシキガイシャ
@@ -1935,7 +1935,7 @@ export class EditorComponent implements OnInit {
                 </td>
                 <td></td>
             </tr>`,
-            invoiceDetail: `<thead>
+            invoiceDetail: `<table id="invoiceDetails" cellspacing="0" cellpadding="0" <thead>
         <tr style="text-align: center; font-size: 16px; font-weight: bold;">
             <th>
                 Date
@@ -1986,7 +1986,7 @@ export class EditorComponent implements OnInit {
                 [[CurrencySymbol]] [[Total]]
             </td>
         </tr>
-    </tbody>`,
+    </tbody></table>`,
             paymentInstructions: `<ul>
         <li>Please make your payment within 60 days of receiving this proforma. For any questions regarding your account<br />
         contact <a href="#">payments@cactusglobal.com</a></li>

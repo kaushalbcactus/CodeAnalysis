@@ -30,7 +30,7 @@
 
 ::ng-deep .UserButton {
     position: fixed !important;
-    width: 85% !important;
+    width: 100% !important;
     margin: -50px !important;
 }
 

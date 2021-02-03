@@ -7,7 +7,7 @@
 <div [ngClass]="config.data === undefined ? 'currentTaskButton p-col p-grid p-jc-end' : 'pdialogButton p-col-12 p-grid p-jc-end'" *ngIf="!modalloaderenable">
     <button type="button " pButton [icon]="buttonloader ? 'pi  pi-spin pi-spinner' : 'pi pi-save' " id="saveTime " class="p-mx-1 p-button-raised p-button-danger " (click)="saveTimeSpent() " [disabled]="data.Status==='Not Confirmed' || buttonloader
     " label="Save Time "></button>
-    <button type="button " *ngIf="config.data !==u ndefined " pButton icon="pi pi-times " (click)="cancelTimeSpent(); " label="Cancel " class="p-button-raised p-button-danger "></button>
+    <button type="button" *ngIf="config.data !== undefined" pButton icon="pi pi-times " (click)="cancelTimeSpent(); " label="Cancel " class="p-button-raised p-button-danger "></button>
 </div>
 <div class="p-col" *ngIf="!modalloaderenable ">
 

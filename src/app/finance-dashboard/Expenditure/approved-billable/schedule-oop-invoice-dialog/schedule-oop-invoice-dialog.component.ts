@@ -217,6 +217,7 @@ export class ScheduleOopInvoiceDialogComponent implements OnInit {
     this.purchaseOrdersList.map((x) => {
       if (x.ClientLegalEntity === cli.ClientLegalEntity) {
         if (this.matchCurrency(x)) {
+          x.poNameNumber = x.NameST ? x.Number + ' - ' + x.NameST : x.Number;
           this.poNames.push(x);
         }
       }

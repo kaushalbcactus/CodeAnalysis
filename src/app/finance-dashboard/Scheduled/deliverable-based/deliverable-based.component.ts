@@ -509,7 +509,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 this.commonService.showToastrMessage(this.constantService.MessageType.info, 'PO not available for the selected line item.', false);
             } else if (!(new Date(retPO.POExpiryDate) >= todaysDateTimeZero)) {
 
-                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'PO expired on' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), false);
+                this.commonService.showToastrMessage(this.constantService.MessageType.info, 'PO expired on ' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), false);
             }
         }
         this.items.push({ label: 'Edit Line item', command: (e) => this.openMenuContent(e, data) });

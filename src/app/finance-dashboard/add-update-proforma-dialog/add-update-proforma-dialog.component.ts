@@ -66,7 +66,7 @@ export class AddUpdateProformaDialogComponent implements OnInit {
     this.ProformaForm.get('Amount').valueChanges.subscribe(amount => {
       if (this.selectedPOItem && amount) {
         if(this.ProformaForm.controls.ProformaType.value) {
-          let availableBudget = this.ProformaForm.controls.ProformaType.value.value == 'oop' ? (this.selectedPOItem.value.AmountOOP ? this.selectedPOItem.value.AmountOOP : 0) - (this.selectedPOItem.value.InvoicedOOP ? this.selectedPOItem.value.InvoicedOOP : 0) - (this.selectedPOItem.value.ScheduledOOP ? this.selectedPOItem.value.ScheduledOOP : 0) : (this.selectedPOItem.value.AmountRevenue ? this.selectedPOItem.value.AmountRevenue : 0) - (this.selectedPOItem.value.InvoicedRevenue ? this.selectedPOItem.value.InvoicedRevenue : 0) - (this.selectedPOItem.value.ScheduledRevenue ? this.selectedPOItem.value.ScheduledRevenue : 0);
+          let availableBudget = this.ProformaForm.controls.ProformaType.value == 'oop' ? (this.selectedPOItem.value.AmountOOP ? this.selectedPOItem.value.AmountOOP : 0) - (this.selectedPOItem.value.InvoicedOOP ? this.selectedPOItem.value.InvoicedOOP : 0) - (this.selectedPOItem.value.ScheduledOOP ? this.selectedPOItem.value.ScheduledOOP : 0) : (this.selectedPOItem.value.AmountRevenue ? this.selectedPOItem.value.AmountRevenue : 0) - (this.selectedPOItem.value.InvoicedRevenue ? this.selectedPOItem.value.InvoicedRevenue : 0) - (this.selectedPOItem.value.ScheduledRevenue ? this.selectedPOItem.value.ScheduledRevenue : 0);
           this.ProformaForm.get('Amount').setValidators([Validators.required, Validators.max(availableBudget)]);
           
         }
@@ -98,7 +98,7 @@ export class AddUpdateProformaDialogComponent implements OnInit {
     this.selectedPurchaseNumber = this.config.data.selectedPurchaseNumber;
     delete this.selectedPurchaseNumber.__metadata;
     this.minProformaDate = new Date(Math.max.apply(null, this.config.data.selectedAllRowData.map(e => e.ScheduledDate)));
-    this.showHideState({ value: this.config.data.selectedAllRowData[0].Template })
+    this.showHideState(this.config.data.selectedAllRowData[0].Template);
     const prfType = this.config.data.selectedAllRowData[0].ScheduleType;
     this.generateProformaNumber(this.config.data.selectedCLEData, prfType);
     this.getPOCNamesForEditInv(this.config.data.selectedCLEData);
@@ -109,10 +109,12 @@ export class AddUpdateProformaDialogComponent implements OnInit {
       POName: this.selectedPurchaseNumber,
       Currency: this.selectedPurchaseNumber.Currency,
       Amount: this.config.data.selectedTotalAmt,
-      ProformaType: this.proformaTypes.find(c => c.value === this.config.data.selectedAllRowData[0].ScheduleType) ? this.proformaTypes.find(c => c.value === this.config.data.selectedAllRowData[0].ScheduleType) : '',
+      ProformaType: this.config.data.selectedAllRowData[0].ScheduleType, 
+      //this.proformaTypes.find(c => c.value === this.config.data.selectedAllRowData[0].ScheduleType) ? this.proformaTypes.find(c => c.value === this.config.data.selectedAllRowData[0].ScheduleType) : '',
       ProformaTitle: this.config.data.selectedAllRowData.length > 1 ? '' : this.config.data.selectedAllRowData[0].ProjectTitle,
       ProformaDate: new Date(),
-      Template: { label: this.config.data.selectedAllRowData[0].Template, value: this.config.data.selectedAllRowData[0].Template },
+      Template: this.config.data.selectedAllRowData[0].Template 
+      //{ label: this.config.data.selectedAllRowData[0].Template, value: this.config.data.selectedAllRowData[0].Template },
     });
     this.modalloaderenable = false;
   }
@@ -162,7 +164,7 @@ export class AddUpdateProformaDialogComponent implements OnInit {
   }
   showHideState(val: any) {
     // console.log('val ', val);
-    this.isTemplate4US = val.value == "US" ? true : false;
+    this.isTemplate4US = val == "US" ? true : false;
     this.ProformaForm.get('State').setValidators([Validators.required]);
     if (!this.isTemplate4US) {
       this.ProformaForm.get('State').clearValidators();
@@ -190,7 +192,7 @@ export class AddUpdateProformaDialogComponent implements OnInit {
       isOOP = prfData.toLowerCase() === 'oop' ? true : false;
     }
     else if (this.ProformaForm.value.ProformaType) {
-      isOOP = this.ProformaForm.value.ProformaType.value.toLowerCase() === 'oop' ? true : false;
+      isOOP = this.ProformaForm.value.ProformaType.toLowerCase() === 'oop' ? true : false;
     } 
     if (cle) {
       cleAcronym = cle.Acronym ? cle.Acronym : '';
@@ -209,7 +211,7 @@ export class AddUpdateProformaDialogComponent implements OnInit {
 
     if (this.selectedPOItem) {
       if(this.ProformaForm.controls.ProformaType.value) {
-        let availableBudget = this.ProformaForm.controls.ProformaType.value.value == 'oop' ? (this.selectedPOItem.value.AmountOOP ? this.selectedPOItem.value.AmountOOP : 0) - (this.selectedPOItem.value.InvoicedOOP ? this.selectedPOItem.value.InvoicedOOP : 0) - (this.selectedPOItem.value.ScheduledOOP ? this.selectedPOItem.value.ScheduledOOP : 0) : (this.selectedPOItem.value.AmountRevenue ? this.selectedPOItem.value.AmountRevenue : 0) - (this.selectedPOItem.value.InvoicedRevenue ? this.selectedPOItem.value.InvoicedRevenue : 0) - (this.selectedPOItem.value.ScheduledRevenue ? this.selectedPOItem.value.ScheduledRevenue : 0);
+        let availableBudget = this.ProformaForm.controls.ProformaType.value == 'oop' ? (this.selectedPOItem.value.AmountOOP ? this.selectedPOItem.value.AmountOOP : 0) - (this.selectedPOItem.value.InvoicedOOP ? this.selectedPOItem.value.InvoicedOOP : 0) - (this.selectedPOItem.value.ScheduledOOP ? this.selectedPOItem.value.ScheduledOOP : 0) : (this.selectedPOItem.value.AmountRevenue ? this.selectedPOItem.value.AmountRevenue : 0) - (this.selectedPOItem.value.InvoicedRevenue ? this.selectedPOItem.value.InvoicedRevenue : 0) - (this.selectedPOItem.value.ScheduledRevenue ? this.selectedPOItem.value.ScheduledRevenue : 0);
         this.ProformaForm.get('Amount').setValidators([Validators.required, Validators.max(availableBudget)]);
         this.ProformaForm.get('Amount').updateValueAndValidity();
       }

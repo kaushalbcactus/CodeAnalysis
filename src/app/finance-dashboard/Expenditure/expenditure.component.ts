@@ -161,7 +161,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
   cmLevelIdList: any = [];
 
   resCatEmails: any = [];
-
+  
   async ngOnInit() {
     this.fdConstantsService.internalRouter = this.fdConstantsService.fdComponent.tabs.expenditureMenu.find(
       (c) => this.router.url.includes(c.routerLink)
@@ -718,7 +718,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
       this.submitBtn.isClicked = true;
       this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
       this.createFreelancer_form.get('BilledTo').setValue(this.createFreelancer_form.value.BilledTo.Title);
-      this.createFreelancer_form.get('RecordType').setValue(this.createFreelancer_form.value.RecordType.value);
+      this.createFreelancer_form.get('RecordType').setValue(this.createFreelancer_form.value.RecordType);
       this.createFreelancer_form.value['__metadata'] = { type: this.constantService.listNames.VendorFreelancer.type };
       const endpoint = this.fdConstantsService.fdComponent.addUpdateFreelancer.create;
       const formValue: any = this.createFreelancer_form.value;
@@ -767,7 +767,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         this.finalAddEArray.push({
           Title: element.ProjectCode.ProjectCode ? element.ProjectCode.ProjectCode : element.projectItem.Title,
           Number: this.addExpenditure_form.value.InvoiceNo,
-          SpendType: this.addExpenditure_form.value.SpendType.value,
+          SpendType: this.addExpenditure_form.value.SpendType,
           // PaymentMode: this.addExpenditure_form.value.PaymentMode.value,
           Currency: this.addExpenditure_form.value.Currency,
           Amount: element.AmountPerProject,

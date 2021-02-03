@@ -13,11 +13,12 @@
         </div>
     </div>
 </div> -->
-<div class="financeTable">
+<div class="financeTable" hideshowMenu>
     <p-table #db [columns]="deliverableBasedCols" [value]="deliverableBasedRes" 
     [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
     [paginator]="true" [rows]="10" styleClass="p-datatable-cactus p-datatable-gridlines"
-    (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" 
+    (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode=""
+    stateStorage="local" stateKey="scheduledLineItemTable"
     [(selection)]="selectedAllRowsItem" exportFilename="Deliverable_Based_InvoiceLineItems">
         <ng-template pTemplate="header" let-columns>
             <tr>

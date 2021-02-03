@@ -12,11 +12,12 @@
     <p-calendar [style]="{width:'300px'}" [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true" dateFormat="M dd, yy" 
     placeholder="Select Start & End Date" showButtonBar="true" (onClose)="SelectedDateRange()" [minDate]="min2Years" (onClearClick)="setDefault()"></p-calendar>
 </div>
-<div class="financeTable">
+<div class="financeTable" hideshowMenu>
     <p-table #pi dataKey="Id" [columns]="outstandingInCols" [value]="paidInvoicesRes" 
     [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
     [paginator]="true" [rows]="10" styleClass="p-datatable-cactus p-datatable-gridlines"
     [(selection)]="selectedRowData" selectionMode="" (onRowSelect)="onRowSelect($event)" exportFilename="Paid_Invoices" 
+    stateStorage="local" stateKey="paidInvoicesTable"
     (click)="onTableClick()" rowExpandMode="multiple" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)">
         <ng-template pTemplate="header" let-columns>
             <tr>
@@ -218,7 +219,7 @@
     <form id="myform" [formGroup]="paymentResoved_form">
         <div class="ui-g">
             <div class="ui-g-6">
-                Uplaod File
+                Upload File
             </div>
             <div class="ui-g-6">
                 <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)" #fileInput formControlName="file" />
@@ -298,7 +299,7 @@
 </p-dialog>
 
 <!-- Mark as Credit or Debit Note Modal -->
-<p-dialog header="Mark as Credit or Debit Note" [(visible)]="creditOrDebitModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '40%', 'top':'0px'}" [maximizable]="false" [baseZIndex]="10000" (onHide)="cancelFormSub('creditDebit')">
+<!-- <p-dialog header="Mark as Credit or Debit Note" [(visible)]="creditOrDebitModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '40%', 'top':'0px'}" [maximizable]="false" [baseZIndex]="10000" (onHide)="cancelFormSub('creditDebit')">
 
     <form id="myform" [formGroup]="creditOrDebitNote_form">
         <div class="ui-g">
@@ -311,7 +312,7 @@
                 </div>
             </div>
 
-            <div class="ui-g-6">Uplaod File</div>
+            <div class="ui-g-6">Upload File</div>
             <div class="ui-g-6">
                 <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)" #fileInput formControlName="file" />
                 <div *ngIf="formSubmit.isSubmit && isValidCreditDebitNoteForm.file.errors">
@@ -354,5 +355,5 @@
         <button pButton type="button" class="fdBtn" label="Confirm" [disabled]="submitBtn.isClicked" (click)="onSubmit('creditDebit')"></button>
         <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('creditDebit')"></button>
     </p-footer>
-</p-dialog>
+</p-dialog> -->
 <app-timeline-history #timelineRef></app-timeline-history>
