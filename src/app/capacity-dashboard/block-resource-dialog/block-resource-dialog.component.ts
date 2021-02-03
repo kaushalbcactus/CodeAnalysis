@@ -106,7 +106,7 @@ export class BlockResourceDialogComponent implements OnInit {
       this.isViewAllocationBtn();
       if (this.task.budgetHours > 0 && this.task.Resource) {
         await this.prestackService.calcPrestackAllocation(
-          [this.BlockResourceForm.value.Resource.value],
+          [this.BlockResourceForm.value.Resource],
           this.task
         );
       }
@@ -203,7 +203,7 @@ export class BlockResourceDialogComponent implements OnInit {
       pUserEndTimePart: EndDate ? this.common.getTimePart(EndDate) : "",
       status: "Active",
       allocationPerDay: blockResource.allocationPerDay,
-      Resource: blockResource.Resource ? blockResource.Resource.value : "",
+      Resource: blockResource.Resource ? blockResource.Resource : "",
     };
   }
 
@@ -224,7 +224,8 @@ export class BlockResourceDialogComponent implements OnInit {
           true,
           true
         );
-        this.task.Resource = this.BlockResourceForm.value.Resource.value;
+        debugger;
+        this.task.Resource = this.BlockResourceForm.value.Resource;
         this.ref.close(this.task);
       }
     } else {
@@ -239,7 +240,7 @@ export class BlockResourceDialogComponent implements OnInit {
       header =
         header +
         " - " +
-        this.BlockResourceForm.value.Resource.value.UserNamePG.Title;
+        this.BlockResourceForm.value.Resource.UserNamePG.Title;
       const ref = this.dialogService.open(PreStackAllocationComponent, {
         data: {
           ID: milestoneTask.id,
@@ -249,7 +250,7 @@ export class BlockResourceDialogComponent implements OnInit {
           startTime: milestoneTask.pUserStartTimePart,
           endTime: milestoneTask.pUserEndTimePart,
           budgetHrs: milestoneTask.budgetHours.toString(),
-          resource: [this.BlockResourceForm.value.Resource.value],
+          resource: [this.BlockResourceForm.value.Resource],
           status: milestoneTask.status,
           strAllocation: milestoneTask.allocationPerDay,
           strTimeSpent: "",

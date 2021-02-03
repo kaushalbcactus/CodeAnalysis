@@ -13,7 +13,7 @@ import { Table } from 'primeng/table';
   selector: 'app-bucket-masterdata',
   templateUrl: './bucket-masterdata.component.html',
   styleUrls: ['./bucket-masterdata.component.css'],
-  encapsulation: ViewEncapsulation.None
+ 
 })
 /**
  * A class that uses ngPrime to display the data in table.
@@ -25,12 +25,7 @@ import { Table } from 'primeng/table';
  *
  */
 export class BucketMasterdataComponent implements OnInit {
-  bucketDataColArray = {
-    Bucket: [],
-    Client: [],
-    LastUpdated: [],
-    LastModifiedBy: []
-  };
+  
   auditHistoryArray = {
     Action: [],
     SubAction: [],
@@ -55,6 +50,7 @@ export class BucketMasterdataComponent implements OnInit {
 
   isOptionFilter: boolean;
   @ViewChild('bmd', { static: false }) bmTable: Table;
+  loaderenable: boolean;
   /**
    * Construct a method to create an instance of required component.
    *
@@ -107,11 +103,11 @@ export class BucketMasterdataComponent implements OnInit {
   ngOnInit() {
     this.clientList = [];
     this.bucketDataColumns = [
-      { field: 'Bucket', header: 'Bucket', visibility: true },
-      { field: 'Client', header: 'Client', visibility: true },
-      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
-      { field: 'LastModifiedBy', header: 'Last Updated By', visibility: true },
-      { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false },
+      { field: 'Bucket', header: 'Bucket', visibility: true, Type:'string',dbName:'Bucket', options:[] },
+      { field: 'PatClients', header: 'Client', visibility: true , Type:'string',dbName:'PatClients', options:[]},
+      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false, Type:'date',dbName:'LastUpdated', options:[] },
+      { field: 'LastModifiedBy', header: 'Last Updated By', visibility: true, Type:'string',dbName:'LastModifiedBy', options:[] },
+      { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false, Type:'',dbName:'', options:[] },
     ];
     this.loadBucketTable();
   }
@@ -125,7 +121,7 @@ export class BucketMasterdataComponent implements OnInit {
    *
    */
   async loadBucketTable() {
-    this.adminObject.isMainLoaderHidden = false;
+   this.loaderenable= true;
     const tempArray = [];
     const results = await this.getInitData();
     if (results && results.length) {
@@ -133,7 +129,7 @@ export class BucketMasterdataComponent implements OnInit {
       if (results[1].retItems.hasError) {
 
         this.common.showToastrMessage(this.constants.MessageType.error,results[1].retItems.message.value,false);
-        this.adminObject.isMainLoaderHidden = true;
+        this.loaderenable= false;
         return false;
       }
       this.clientArray = results[1].retItems;
@@ -156,9 +152,9 @@ export class BucketMasterdataComponent implements OnInit {
         tempArray.push(obj);
       });
       this.bucketDataRows = tempArray;
-      this.colFilters(this.bucketDataRows);
+      this.bucketDataColumns = this.common.MainfilterForTable(this.bucketDataColumns,this.bucketDataRows);
     }
-    this.adminObject.isMainLoaderHidden = true;
+    this.loaderenable= false;
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
@@ -216,7 +212,7 @@ export class BucketMasterdataComponent implements OnInit {
   async displayClient(clientArray) {
     this.viewClientArray = [];
     const tempArray = [];
-    this.adminObject.isMainLoaderHidden = false;
+    this.loaderenable= true;
     let res = await this.getCleBMList(clientArray[0].Bucket);
     this.effectiveDateArray = res;
     const arr = this.effectiveDateArray[0].retItems;
@@ -242,7 +238,7 @@ export class BucketMasterdataComponent implements OnInit {
     }
     this.viewClientArray = clientArray;
     this.viewClient = true;
-    this.adminObject.isMainLoaderHidden = true;
+    this.loaderenable= false;
   }
 
   async getCleBMList(item) {
@@ -266,46 +262,7 @@ export class BucketMasterdataComponent implements OnInit {
     console.log(getCLEResults);
     return getCLEResults;
   }
-  /**
-   * Construct a method to map the array values into particular column dropdown.
-   *
-   * @description
-   *
-   * This method will extract the column object value from an array and stores into the column dropdown array and display
-   * the values into the Bucket,Client,LastUpdated and LastUpdatedBy column dropdown.
-   *
-   * @param colData Pass colData as a parameter which contains an array of column object.
-   *
-   */
-  colFilters(colData) {
-    this.bucketDataColArray.Bucket = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: a.Bucket, value: a.Bucket
-      };
-      return b;
-    })));
-    this.bucketDataColArray.Client = this.common.sortData(this.adminCommonService.uniqueArrayObj(this.clientList.map(a => {
-      const b = { label: a.Title, value: a.Title };
-      return b;
-    })));
-    const lastUpdatedArray = this.common.sortDateArray(this.adminCommonService.uniqueArrayObj(
-      colData.map(a => {
-        const b = {
-          label: this.datepipe.transform(a.LastUpdated, 'MMM dd, yyyy'),
-          value: a.LastUpdated
-        };
-        return b;
-      })));
-    this.bucketDataColArray.LastUpdated = lastUpdatedArray.map(a => {
-      const b = {
-        label: this.datepipe.transform(a, 'MMM dd, yyyy'),
-        value: new Date(new Date(a).toDateString())
-      };
-      return b;
-    });
-    this.bucketDataColArray.LastModifiedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.LastModifiedBy, value: a.LastModifiedBy }; return b; })));
-  }
+  
   /**
    * Construct a method to append the menu in bucket table.
    *
@@ -333,7 +290,7 @@ export class BucketMasterdataComponent implements OnInit {
    * @param data Pass data as parameter which contains table row value.
    */
   editClientData(data) {
-    this.adminObject.isMainLoaderHidden = false;
+   this.constants.loader.isWaitDisable=false;
     this.min30Days = new Date(new Date().setDate(new Date().getDate() - 30));
     this.selectedClient = [];
     this.selectedRowItems = [];
@@ -349,7 +306,7 @@ export class BucketMasterdataComponent implements OnInit {
     });
     this.selectedClient = this.selectedRowItems;
     this.editClient = true;
-    this.adminObject.isMainLoaderHidden = true;
+    this.constants.loader.isWaitDisable=true;
   }
   /**
    * Construct a method to add the new bucket into `Focus Group` list.
@@ -380,7 +337,7 @@ export class BucketMasterdataComponent implements OnInit {
       this.common.showToastrMessage(this.constants.MessageType.error,'This bucket is already exist. Please enter another bucket name.',false);
       return false;
     }
-    this.adminObject.isMainLoaderHidden = false;
+    this.constants.loader.isWaitDisable=false;
     const data = {
       Title: this.bucketData,
       IsActiveCH: this.adminConstants.LOGICAL_FIELD.YES
@@ -393,7 +350,7 @@ export class BucketMasterdataComponent implements OnInit {
     this.common.showToastrMessage(this.constants.MessageType.success,'The bucket ' + this.bucketData + ' has added successfully.',true)
     this.bucketData = '';
     await this.loadBucketTable();
-    this.adminObject.isMainLoaderHidden = true;
+    this.constants.loader.isWaitDisable=true;
   }
   /**
    * Construct a method to remove the item from table.
@@ -425,13 +382,13 @@ export class BucketMasterdataComponent implements OnInit {
    * @param type pass the list type.
    */
   async confirmUpdate(data, updateData, listName, type) {
-    this.adminObject.isMainLoaderHidden = false;
+   this.loaderenable=true
     this.common.SetNewrelic('admin', 'admin-attribute-bucketMasterData', 'updateFocusGroup');
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
 
     this.common.showToastrMessage(this.constants.MessageType.success,'The bucket ' + data.Bucket + ' has deleted successfully.',true);
     this.loadBucketTable();
-    this.adminObject.isMainLoaderHidden = true;
+    this.loaderenable=false;
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to update the records in `ClientLegalEntity` list.
@@ -461,7 +418,7 @@ export class BucketMasterdataComponent implements OnInit {
       type: '',
       listName: ''
     };
-    this.adminObject.isMainLoaderHidden = false;
+    this.loaderenable=true;
     this.selectedClient.forEach(element => {
       if (!element.isCheckboxDisabled) {
         const updatedData = {
@@ -485,7 +442,7 @@ export class BucketMasterdataComponent implements OnInit {
 
       this.common.showToastrMessage(this.constants.MessageType.success,'The selected clients are updated successfully.',true)
       this.loadBucketTable();
-      this.adminObject.isMainLoaderHidden = true;
+     this.loaderenable=false;
     }
   }
   /**
@@ -599,27 +556,6 @@ export class BucketMasterdataComponent implements OnInit {
     bmd.exportCSV();
   }
 
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
-
-
-  ngAfterViewChecked() {
-    if (this.bucketDataRows.length && this.isOptionFilter) {
-      const obj = {
-        tableData: this.bmTable,
-        colFields: this.bucketDataColArray
-      };
-      if (obj.tableData.filteredValue) {
-        this.common.updateOptionValues(obj);
-      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-        this.colFilters(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-      this.cdr.detectChanges();
-    }
-  }
+  
 
 }

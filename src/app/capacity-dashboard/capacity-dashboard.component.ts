@@ -442,13 +442,14 @@ export class CapacityDashboardComponent implements OnInit {
     const ref = this.dialogService.open(BlockResourceDialogComponent, {
       header: "Block Resources",
       width: "60vw",
+      style:{'top':'-15%'},
       data: {
         type: "new",
         Resources: selectedUsersList,
         selectedMinDate: this.searchCapacityForm.value.rangeDates[0],
         selectedMaxDate: this.searchCapacityForm.value.rangeDates[1],
       },
-      contentStyle: { "max-height": "80vh", "overflow-y": "auto" },
+      contentStyle: {"max-height": "80vh", "overflow-y": "auto" },
       closable: false,
     });
     ref.onClose.subscribe(async (blockResource: any) => {
@@ -596,6 +597,7 @@ export class CapacityDashboardComponent implements OnInit {
     const ref = this.dialogService.open(BlockResourceDialogComponent, {
       header: "Edit Block Resources",
       width: "60vw",
+      style:{'top':'-15%'},
       data: {
         Resources: this.AlldbResources.filter((c) =>
           this.searchCapacityForm.value.resources.includes(c)
@@ -603,7 +605,7 @@ export class CapacityDashboardComponent implements OnInit {
         type: "EditBlocking",
         data,
       },
-      contentStyle: { "max-height": "80vh", "overflow-y": "auto" },
+      contentStyle: {   "max-height": "80vh", "overflow-y": "auto" },
       closable: false,
     });
     ref.onClose.subscribe(async (blockResource: any) => {

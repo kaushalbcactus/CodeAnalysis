@@ -14,33 +14,33 @@
 
 <div class="p-grid" *ngIf="!modalloaderenable">
 
-    <form [formGroup]='BlockResourceForm' class="p-col">
+    <form [formGroup]='BlockResourceForm' class="p-col" style="font-size: 13px;">
 
         <div class="editInvoiceHeight p-grid p-mt-2">
 
-            <div class="p-col-12 p-md-12 p-lg-12 p-grid">
+            <div class="p-col-12 p-md-12 p-lg-12 p-grid p-py-0">
                 <div class="p-col-6 p-md-4 p-lg-3 blockResItem">Resources</div>
                 <div class="p-col-6 p-md-8 p-lg-9 blockResItem">
                     <p-dropdown resetFilterOnHide="true" [disabled]="readonly" class="cls_blockResResources p-fluid" [options]="Resources" [showClear]="true" formControlName="Resource" placeholder="Select Resource" [filter]="true" optionLabel="label"></p-dropdown>
 
                     <!-- optionLabel="label" (onChange)=setBudgetHoursValidation()></p-dropdown> -->
                     <div *ngIf="isBlockResourceFormSubmit && BlockResourceForm.controls.Resource.errors">
-                        <div *ngIf="BlockResourceForm.controls.Resource.errors.required" style="color:red;">
+                        <div *ngIf="BlockResourceForm.controls.Resource.errors.required" class="error">
                             Please provide Resource.</div>
                     </div>
                 </div>
             </div>
-            <div class="p-col-12 p-md-12 p-lg-12 p-grid">
+            <div class="p-col-12 p-md-12 p-lg-12 p-grid p-py-0">
                 <div class="p-col-6 p-md-4 p-lg-3 blockResItem">Title</div>
                 <div class="p-col-6 p-md-8 p-lg-9 blockResItem">
                     <input type="text" pInputText class="p-col-12 cls_blockResTitle" formControlName="Title" />
                     <div *ngIf="isBlockResourceFormSubmit && BlockResourceForm.controls.Title.errors">
-                        <div *ngIf="BlockResourceForm.controls.Title.errors.required" style="color:red;">Please provide Title.</div>
+                        <div *ngIf="BlockResourceForm.controls.Title.errors.required" class="error">Please provide Title.</div>
                     </div>
                 </div>
             </div>
 
-            <div class="p-col-12 p-md-12 p-lg-12 p-grid">
+            <div class="p-col-12 p-md-12 p-lg-12 p-grid p-py-0">
                 <div class="p-col-6 p-md-4 p-lg-3 blockResItem">Start Date</div>
                 <div class="p-col-6 p-md-8 p-lg-9 blockResItem">
 
@@ -48,12 +48,12 @@
                         appendTo="body" [monthNavigator]="true" [yearNavigator]="true" formControlName="StartDate" (onClose)="SetDateValidation('startDate')"></p-calendar>
 
                     <div *ngIf="isBlockResourceFormSubmit && BlockResourceForm.controls.StartDate.errors">
-                        <div *ngIf="BlockResourceForm.controls.StartDate.errors.required" style="color:red;">Please provide Start Date.</div>
+                        <div *ngIf="BlockResourceForm.controls.StartDate.errors.required" class="error">Please provide Start Date.</div>
                     </div>
                 </div>
             </div>
 
-            <div class="p-col-12 p-md-12 p-lg-12 p-grid">
+            <div class="p-col-12 p-md-12 p-lg-12 p-grid p-py-0">
                 <div class="p-col-6 p-md-4 p-lg-3 blockResItem">End Date</div>
                 <div class="p-col-6 p-md-8 p-lg-9 blockResItem">
 
@@ -61,31 +61,26 @@
                         appendTo="body" [monthNavigator]="true" [yearNavigator]="true" formControlName="EndDate" (onClose)="SetDateValidation('endDate')"></p-calendar>
 
                     <div *ngIf="isBlockResourceFormSubmit && BlockResourceForm.controls.EndDate.errors">
-                        <div *ngIf="BlockResourceForm.controls.EndDate.errors.required" style="color:red;">Please provide End Date.</div>
+                        <div class="error" *ngIf="BlockResourceForm.controls.EndDate.errors.required">Please provide End Date.</div>
                     </div>
                 </div>
             </div>
 
-            <div class="p-col-12 p-md-12 p-lg-12 p-grid">
+            <div class="p-col-12 p-md-12 p-lg-12 p-grid p-py-0">
                 <div class="p-col-6 p-md-4 p-lg-3 blockResItem">Expected Time</div>
-                <div class="p-col-6 p-md-8 p-lg-9 blockResItem">
+                <div class="p-col-12 p-md-8 p-lg-9 blockResItem p-grid p-m-0">
 
-                    <input type="number" onchange="validity.valid||(value='0');" step="0.25" pInputText class="cls_blockResExpectedTime" formControlName="ExpectedTime" [style.width]="isViewAllocation ? '87%' : '100%'" max={{maxExpectedHrs}} value="0" />
-
+                    <input type="number" onchange="validity.valid||(value='0');" step="0.25" pInputText formControlName="ExpectedTime" max={{maxExpectedHrs}} value="0" [ngClass]="isViewAllocation ? 'p-col-8 p-mb-1 cls_blockResExpectedTime' : 'p-col p-mb-1 cls_blockResExpectedTime'"
+                    />
                     <ng-container *ngIf="isViewAllocation">
-                        <button pButton type="button" (click)="viewAllocation('')" class="viewAllocation ui-button-danger" icon='pi pi-sliders-h'></button>
-                        <i title="Click to see allocation split" style="font-size: 22px;
-                            margin-left: 2px;
-                            vertical-align: text-bottom;" class="fa fa-info-circle overlayIconGantt" aria-hidden="true" (click)="showOverlayPanel($event, dailyAllocateOP)"></i>
-                        <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
+                        <button pButton pRipple (click)="viewAllocation('')" class="viewAllocation ui-button-danger" type="button" icon='pi pi-sliders-h' class="p-button-outlined p-button-danger p-mx-1"></button>
+                        <button pButton pRipple (click)="showOverlayPanel($event, dailyAllocateOP)" title="Click to see allocation split" class="viewAllocation ui-button-danger" type="button" icon='pi pi-info-circle' class="p-button-outlined p-button-danger">      
+                        </button>
                     </ng-container>
-                    <div *ngIf="isBlockResourceFormSubmit && BlockResourceForm.controls.ExpectedTime.errors">
-                        <div *ngIf="BlockResourceForm.controls.ExpectedTime.errors.required" style="color:red;">Please provide Expected Time.</div>
-                        <div *ngIf="BlockResourceForm.controls.ExpectedTime.errors.gtZeroNumber" style="color:red;">
-                            Expected Time cannot be less than equal to zero</div>
+                    <div class="p-mt-4">
+                        <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
                     </div>
                 </div>
-
             </div>
         </div>
     </form>

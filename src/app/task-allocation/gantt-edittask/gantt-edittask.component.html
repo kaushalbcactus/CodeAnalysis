@@ -57,7 +57,9 @@
                     <button pButton pRipple type="button" (click)="viewAllocation('')" icon='pi pi-sliders-h' *ngIf="task.showAllocationSplit" class="p-button-outlined p-button-danger p-mx-1 viewAllocation"></button>
                     <button pButton pRipple type="button" title="Click to see allocation split" icon='pi pi-info-circle' (click)="this.showOverlayPanel($event, dailyAllocateOP)" *ngIf="task.showAllocationSplit" class="p-button-outlined p-button-danger overlayIconGantt"></button>
                 </ng-container>
-                <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
+                <div class="p-pt-4">
+                    <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
+                </div>
             </div>
         </div>
         <div class="p-col p-grid">
