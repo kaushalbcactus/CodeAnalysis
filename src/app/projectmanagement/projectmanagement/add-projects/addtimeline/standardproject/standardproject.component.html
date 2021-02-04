@@ -134,7 +134,7 @@
                                 </p-calendar>
 
                                 <input class="p-col-12 p-p-1 p-mt-1 timepickercss timePicker" readonly [ngxTimepicker]="picker" [(ngModel)]="rowData.StartTimePart" [disabled]="rowData.isStartDateDisabled">
-                                <ngx-material-timepicker [preventOverlayClick]="true" [ngxMaterialTimepickerTheme]="darkTheme" (closed)="onStartDatePartChanged(rowData)" #picker [minutesGap]="15"></ngx-material-timepicker>
+                                <ngx-material-timepicker [preventOverlayClick]="true" class="timepickerPosition" [theme]="darkTheme" (closed)="onStartDatePartChanged(rowData)" #picker [minutesGap]="15"></ngx-material-timepicker>
                             </td>
                             <td *ngIf="!rowData.showTime">
                                 <p-calendar class="pcalendarClass"   [(ngModel)]="rowData.StartDate"   [disabledDays]="[0,6]" [readonlyInput]="true"   [showTime]="false"   hourFormat="12"   dateFormat="dd M, yy"   appendTo="body"     [required]="true"   [stepMinute]="15"     [showOnFocus]="false"
@@ -146,7 +146,7 @@
                                     [showIcon]="true" [monthNavigator]="true"   [yearNavigator]="true"   yearRange="{{yearRange}}" [disabled]="rowData.isEndDateDisabled" [minDate]="rowData.minEndDateValue" (onClose)="onEndDatePartChanged(rowData)">
                                 </p-calendar>
                                 <input readonly [ngxTimepicker]="picker" [(ngModel)]="rowData.EndTimePart" [disabled]="rowData.isEndDateDisabled" class="p-col-12 p-p-1 p-mt-1 timepickercss timePicker">
-                                <ngx-material-timepicker [preventOverlayClick]="true" (closed)="onEndDatePartChanged(rowData)" #picker [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15"></ngx-material-timepicker>
+                                <ngx-material-timepicker [preventOverlayClick]="true" (closed)="onEndDatePartChanged(rowData)" #picker class="timepickerPosition" [theme]="darkTheme" [minutesGap]="15"></ngx-material-timepicker>
 
                             </td>
                             <td *ngIf="!rowData.showTime">
