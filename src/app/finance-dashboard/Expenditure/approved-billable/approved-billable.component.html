@@ -24,14 +24,14 @@
 
 
 
-<div class="financeTable" [hidden]="isLoaderenable && approvedBillableRes.length === 0">
+<div class="financeTable" hideshowMenu [hidden]="isLoaderenable && approvedBillableRes.length === 0">
     <p-table #ab [columns]="approvedBillableCols" [value]="approvedBillableRes" 
         [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" 
         [paginator]="true" [rows]="10"
         [(selection)]="selectedAllRowsItem" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
         selectionMode="" exportFilename="Approved_Billable_Expenses" class="cls_abmaintable"
-        styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="financeTable">
+        styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="approvedBillableTable">
         <ng-template pTemplate="header" let-columns let-rowData="rowData">
             <tr>
                 <th class="firstColumnWidth">S.No</th>

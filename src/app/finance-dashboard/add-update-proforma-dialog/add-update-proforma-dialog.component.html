@@ -80,12 +80,9 @@
             <div class="p-col-12 p-md-12 p-lg-6 p-grid">
                 <div class="p-col-6 p-md-4 p-lg-4 proformaitem">POC Name</div>
                 <div class="p-col-6 p-md-8 p-lg-8 proformaitem">
-                    <p-dropdown resetFilterOnHide="true" [style]="{'width':'100%'}" class=" cls_addproformapoc" [options]="listOfPOCNames" formControlName="POCName" placeholder="Select POC Name" [filter]="true" optionLabel="FullNameCC" [style]="{width: '215px'}">
-                        <ng-template let-item pTemplate="item">
-                            <div class="ui-helper-clearfix" style="position: relative;height: 35px;">
-                                <div style="font-size:14px;float:left;margin-top:4px">{{item.label}}</div>
-                            </div>
-                        </ng-template>
+                    <p-dropdown resetFilterOnHide="true" [style]="{'width':'100%'}" 
+                    class=" cls_addproformapoc" [options]="listOfPOCNames" formControlName="POCName" 
+                    placeholder="Select POC Name" [filter]="true" optionLabel="FullNameCC" [style]="{width: '215px'}">
                     </p-dropdown>
                     <div *ngIf="isProformaFormSubmit && ProformaForm.controls.POCName.errors">
                         <div *ngIf="ProformaForm.controls.POCName.errors.required" style="color:red;">Please provide POC Name.</div>

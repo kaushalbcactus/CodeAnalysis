@@ -15,7 +15,9 @@
             </table>
 
             <p class="invButton" style="float: right">
-                <button pButton class="editBtn fdBtn" type="button" (click)="editable('contact_details')" label="edit"></button>
+                <!-- <button pButton class="editBtn fdBtn" type="button" (click)="editable('contact_details')" label="edit"></button> -->
+                <i title="Edit" class="pi pi-pencil tableExportIcon" (click)="editable('contact_details');"></i>
+
             </p>
 
             <div class="contact_details-table">
@@ -56,8 +58,10 @@
             <div class="invoice-table proformaDetail">
 
                 <div id="invoiceDetail" style="margin-bottom: 20px;">
-                    <table id="invoiceDetails" cellspacing="0" cellpadding="0" [innerHTML]='USTemplateCopy.invoiceDetail'>
-                    </table>
+                    <div id="invoiceDetails" [innerHTML]='USTemplateCopy.invoiceDetail'>
+                    </div>
+                    <!-- <table id="invoiceDetails" cellspacing="0" cellpadding="0" [innerHTML]='USTemplateCopy.invoiceDetail'>
+                    </table> -->
                     <p *ngIf="showAppendix" style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
                 </div>
             </div>
@@ -73,8 +77,9 @@
             </tbody>
 
             <p class="invButton" style="float: right">
-                <button pButton type="button" class="editBtn fdBtn" (click)="editable('paymentInstructions')" label="edit">
-                </button>
+                <!-- <button pButton type="button" class="editBtn fdBtn" (click)="editable('paymentInstructions')" label="edit">
+                </button> -->
+                <i title="Edit" class="pi pi-pencil tableExportIcon" (click)="editable('paymentInstructions');"></i>
             </p>
 
             <tbody>
@@ -102,7 +107,8 @@
 
             <div class="invoice-table">
                 <p class="invButton" style="float: right">
-                    <button pButton type="button" class="editBtn fdBtn" (click)="editable('appendix')" label="edit"></button>
+                    <!-- <button pButton type="button" class="editBtn fdBtn" (click)="editable('appendix')" label="edit"></button> -->
+                    <i title="Edit" class="pi pi-pencil tableExportIcon" (click)="editable('appendix');"></i>
                 </p>
                 <div>
                     <div id="appendix" [innerHTML]="USTemplateCopy.appendix">
@@ -116,7 +122,9 @@
     </footer>
 
     <p-footer>
-        <p-button type="button" (click)="confirm()" label="Confirm"></p-button>
+        <!-- <p-button type="button" (click)="confirm()" label="Confirm"></p-button> -->
+        <button class="p-mx-1 p-button-raised p-button-danger" type="button" pButton icon="pi pi-save" [ngStyle]="{'cursor':'pointer' }" (click)="confirm()" label="Save"></button>
+       
     </p-footer>
 
 </p-dialog>
@@ -138,7 +146,8 @@
             </table>
 
             <p class="invButton" style="float: right">
-                <button pButton type="button" class="editBtn fdBtn" (click)="editable('contact_details')" label="edit"></button>
+                <!-- <button pButton type="button" class="editBtn fdBtn" (click)="editable('contact_details')" label="edit"></button> -->
+                <i title="Edit" class="pi pi-pencil tableExportIcon" (click)="editable('contact_details');"></i>
             </p>
 
             <div class="contact_details_japan">
@@ -178,8 +187,10 @@
 
             <div class="invoice-table proformaDetail">
                 <div id="invoiceDetail" style="margin-bottom: 10px;">
-                    <table cellspacing="0" cellpadding="0" id="invoiceDetails" [innerHTML]='JapanTemplateCopy.invoiceDetail'>
-                    </table>
+                    <div id="invoiceDetails" [innerHTML]='JapanTemplateCopy.invoiceDetail'>
+                    </div>
+                    <!-- <table cellspacing="0" cellpadding="0" id="invoiceDetails" [innerHTML]='JapanTemplateCopy.invoiceDetail'>
+                    </table> -->
                     <p *ngIf="showAppendix" style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
                 </div>
             </div>
@@ -195,8 +206,9 @@
             </tbody>
 
             <p class="invButton" style="float: right">
-                <button pButton type="button" class="editBtn fdBtn" (click)="editable('paymentInstructions2')" label="edit">
-                </button>
+                <!-- <button pButton type="button" class="editBtn fdBtn" (click)="editable('paymentInstructions2')" label="edit">
+                </button> -->
+                <i title="Edit" class="pi pi-pencil tableExportIcon" (click)="editable('paymentInstructions2');"></i>
             </p>
 
             <tbody class="paymentDetails">
@@ -257,7 +269,8 @@
 
             <div class="invoice-table">
                 <p class="invButton" style="float: right">
-                    <button pButton type="button" class="editBtn fdBtn" (click)="editable('appendix')" label="edit"></button>
+                    <!-- <button pButton type="button" class="editBtn fdBtn" (click)="editable('appendix')" label="edit"></button> -->
+                    <i title="Edit" class="pi pi-pencil tableExportIcon" (click)="editable('appendix');"></i>
                 </p>
                 <div>
                     <div id="appendix" [innerHTML]="JapanTemplateCopy.appendix">
@@ -270,7 +283,9 @@
     </footer>
 
     <p-footer>
-        <p-button type="button" (click)="confirm()" label="Confirm"></p-button>
+        <!-- <p-button type="button" (click)="confirm()" label="Confirm"></p-button> -->
+        <button class="p-mx-1 p-button-raised p-button-danger" type="button" pButton icon="pi pi-save" [ngStyle]="{'cursor':'pointer' }" (click)="confirm()" label="Save"></button>
+       
     </p-footer>
 
 </p-dialog>
@@ -292,7 +307,8 @@
             </table>
 
             <p class="invButton" style="float: right">
-                <button pButton type="button" class="editBtn fdBtn" (click)="editable('contact_details')" label="edit"></button>
+                <!-- <button pButton type="button" class="editBtn fdBtn" (click)="editable('contact_details')" label="edit"></button> -->
+                <i title="Edit" class="pi pi-pencil tableExportIcon" (click)="editable('contact_details');"></i>
             </p>
 
             <div class="contact_details-table">
@@ -336,8 +352,10 @@
 
             <div class="invoice-table proformaDetail">
                 <div id="invoiceDetail" style="margin-bottom: 20px;">
-                    <table cellspacing="0" cellpadding="0" id="invoiceDetails" [innerHTML]='IndiaTemplateCopy.invoiceDetail'>
-                    </table>
+                    <div id="invoiceDetails" [innerHTML]='IndiaTemplateCopy.invoiceDetail'>
+                    </div>
+                    <!-- <table cellspacing="0" cellpadding="0" id="invoiceDetails" [innerHTML]='IndiaTemplateCopy.invoiceDetail'>
+                    </table> -->
                     <p *ngIf="showAppendix" style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
                 </div>
             </div>
@@ -353,8 +371,9 @@
             </tbody>
 
             <p class="invButton" style="float: right">
-                <button pButton type="button" class="editBtn fdBtn" (click)="editable('paymentInstructions')" label="edit">
-                </button>
+                <!-- <button pButton type="button" class="editBtn fdBtn" (click)="editable('paymentInstructions')" label="edit">
+                </button> -->
+                <i title="Edit" class="pi pi-pencil tableExportIcon" (click)="editable('paymentInstructions');"></i>
             </p>
 
             <tbody>
@@ -383,7 +402,8 @@
 
             <div class="invoice-table appendix">
                 <p class="invButton" style="float: right">
-                    <button pButton type="button" class="editBtn fdBtn" (click)="editable('appendix')" label="edit"></button>
+                    <!-- <button pButton type="button" class="editBtn fdBtn" (click)="editable('appendix')" label="edit"></button> -->
+                    <i title="Edit" class="pi pi-pencil tableExportIcon" (click)="editable('appendix');"></i>
                 </p>
                 <div>
                     <div id="appendix" [innerHTML]="IndiaTemplateCopy.appendix">
@@ -397,7 +417,9 @@
     </footer>
 
     <p-footer>
-        <p-button type="button" (click)="confirm()" label="Confirm"></p-button>
+        <!-- <p-button type="button" (click)="confirm()" label="Confirm"></p-button> -->
+        <button class="p-mx-1 p-button-raised p-button-danger" type="button" pButton icon="pi pi-save" [ngStyle]="{'cursor':'pointer' }" (click)="confirm()" label="Save"></button>
+       
     </p-footer>
 
 </p-dialog>

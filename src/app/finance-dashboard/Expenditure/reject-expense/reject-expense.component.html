@@ -3,7 +3,7 @@
     <div id="scInnerLoaderText">Loading...</div>
 </div>
 
-<div class="financeTable">
+<div class="financeTable" hideshowMenu>
     <p-table #rc [columns]="rejectCancelExpenseCols" [value]="rejectExpenses" 
         [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
         [paginator]="true" [rows]="10" exportFilename="Cancelled_Reject_Expenses" [rowsPerPageOptions]="[10,25,50]"

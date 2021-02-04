@@ -4,7 +4,7 @@
 </div>
 
 
-<div class="cdTable">
+<div class="cdTable" hideshowMenu>
     <p-table #cd id="cdTable" [columns]="CDColumns" [value]="CDRows" exportFilename="Client Dissatisfaction" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [style]="{'font-size':'13px'}"
         styleClass="p-datatable-cactus p-datatable-gridlines" [hidden]="hideTable">
         <ng-template pTemplate="header" let-columns>

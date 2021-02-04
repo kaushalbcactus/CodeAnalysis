@@ -18,7 +18,7 @@
 
 <!-- Request Expense -->
 <p-dialog header="Add Expenditure" [(visible)]="showHideREModal" [modal]="true" [contentStyle]="{'max-height':'450px'}" [responsive]="true" [style]="{'width': '55%'}" (onHide)="cancelFormSub('addExpenditure')">
-    <form id="myform" [formGroup]="addExpenditure_form" #target>
+    <form id="myform" style="font-size: 13px; padding-top: 15px;"  [formGroup]="addExpenditure_form" #target>
         <div class="p-grid">
             <div class="p-col-4">
                 <div class="box">
@@ -27,8 +27,8 @@
             </div>
             <div class="p-col-8">
                 <div class="box">
-                    <p-radioButton name="groupPM" value="Credit Card" label="Credit Card" inputId="pm1" (onClick)="selectedRequest()" formControlName="PaymentRequest"></p-radioButton>&nbsp;
-                    <p-radioButton name="groupPM" value="Invoice Payment" label="Invoice Payment" inputId="pmD2" (onClick)="selectedRequest()" formControlName="PaymentRequest">
+                    <p-radioButton name="PaymentRequest" value="Credit Card" label="Credit Card" inputId="pm1" (onClick)="selectedRequest()" formControlName="PaymentRequest"></p-radioButton>&nbsp;
+                    <p-radioButton name="PaymentRequest" value="Invoice Payment" label="Invoice Payment" inputId="pmD2" (onClick)="selectedRequest()" formControlName="PaymentRequest">
                     </p-radioButton>&nbsp;
                     <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.PaymentRequest.errors">
                         <div *ngIf="isValidExpenditureForm.PaymentRequest.errors.required" style="color:red;">
@@ -46,10 +46,10 @@
             </div>
             <div class="p-col-8">
                 <div class="box">
-                    <p-radioButton name="groupB" value="Billable" label="Yes" inputId="b1" (onClick)="selectedBillable()" formControlName="Billable">
+                    <p-radioButton name="Billable" value="Billable" label="Yes" inputId="b1" (onClick)="selectedBillable()" formControlName="Billable">
                     </p-radioButton>&nbsp;
-                    <p-radioButton name="groupB" value="Non Billable" label="No" inputId="b2" (onClick)="selectedBillable()" formControlName="Billable">
-                    </p-radioButton>
+                    <p-radioButton name="Billable" value="Non Billable" label="No" inputId="b2" (onClick)="selectedBillable()" formControlName="Billable">
+                    </p-radioButton>&nbsp;
                     <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.Billable.errors">
                         <div *ngIf="isValidExpenditureForm.Billable.errors.required" style="color:red;">Billable is required.
                         </div>
@@ -76,7 +76,7 @@
                 </div>
             </div>
             <div class="p-col-4">
-                <i class="pi pi-plus-circle" style="font-size: 3em;color:#c53e3e;margin-top: -7px;" (click)="openFreelancerModal()"></i>
+                <i class="pi pi-plus-circle" style="font-size: 2em;color:#c53e3e" (click)="openFreelancerModal()"></i>
             </div>
         </div>
         <div class="p-grid">
@@ -105,9 +105,6 @@
                 <div class="box">
                     <p-dropdown resetFilterOnHide="true" [options]="currencyList" placeholder="Select Currency" [showClear]="false" resetFilterOnHide="false" filter="true" autoDisplayFirst="false" name="currency" placeholder="Select a Currency" [style]="{'width':'100%'}"
                         formControlName="Currency">
-                        <ng-template let-item pTemplate="item">
-                            <span>{{item.value}}</span>
-                        </ng-template>
                     </p-dropdown>
 
                     <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.Currency.errors">
@@ -184,7 +181,6 @@
             </div>
         </div>
 
-
         <div class="p-grid">
             <div class="p-col-4">
                 <div class="box">Approval Email File</div>
@@ -200,20 +196,23 @@
             </div>
         </div>
     </form>
-    <div class="ui-g">
-        <div class="ui-g-4"></div>
-        <div class="ui-g-8">
+    <div class="p-grid">
+        <div class="p-col-4"></div>
+        <div class="p-col-8">
             <table style="width: 100%;">
                 <tr>
                     <th width="35%" style="border: none">Project / Client </th>
                     <th style="border: none">Amount</th>
                     <th style="border: none">
-                        <i class="pi pi-plus-circle" style="font-size: 3em;color:#c53e3e;" (click)="addProjectAmtItem()"></i>
+                        <i class="pi pi-plus-circle" style="font-size: 2em;color:#c53e3e;" (click)="addProjectAmtItem()"></i>
                     </th>
                 </tr>
                 <tr *ngFor="let p of totalLineItems; let i = index">
                     <td>
-                        <p-dropdown resetFilterOnHide="true" [options]="piCleData" [group]="true" virtualScroll="true" itemSize="31" filter="true" placeholder="Select a Project Code / Client" [style]="{'width':'100%'}" [(ngModel)]="p.ProjectCode" (onChange)="selectedProjectCode($event.value, i)">
+                        <p-dropdown resetFilterOnHide="true" [options]="piCleData" [group]="true" 
+                        virtualScroll="true" itemSize="15" filter="true" 
+                        placeholder="Select a Project Code / Client" [style]="{'width':'100%'}" 
+                        [(ngModel)]="p.ProjectCode" (onChange)="selectedProjectCode($event.value, i)">
                             <ng-template let-group pTemplate="group">
                                 <span style="margin-left:.25em">{{group.label}}</span>
                             </ng-template>
@@ -235,32 +234,25 @@
         <!-- <div class="ui-g-4">Col3</div> -->
     </div>
 
-    <div class="p-grid">
-
-    </div>
-
-
     <p-footer>
-        <button pButton type="button" class="fdBtn" label="Add Expense" [disabled]="submitBtn.isClicked" (click)="onSubmit('addExpenditure')"></button>
-        <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('addExpenditure')"></button>
+        <button class="p-mx-1 p-button-raised p-button-danger" type="button" pButton icon="pi pi-save" id="cls_AddExpense" [disabled]="submitBtn.isClicked" [ngStyle]="{'cursor':'pointer' }" (click)="onSubmit('addExpenditure')" label="Add Expense"></button>
+        <button type="button" pButton icon="pi pi-times" (click)="cancelFormSub('addExpenditure')" label="Cancel" class="p-button-raised p-button-danger"></button>
+    
+        <!-- <button pButton type="button" class="fdBtn" label="Add Expense" [disabled]="submitBtn.isClicked" (click)="onSubmit('addExpenditure')"></button>
+        <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('addExpenditure')"></button> -->
     </p-footer>
 </p-dialog>
 
 <!-- Create Freelancer / Vendor Modal -->
-<p-dialog header="Create Freelancer / Vendor" [(visible)]="freeLancerModal" [modal]="true" [contentStyle]="{'max-height':'450px', 'overflow':'visible'}" [style]="{'width': '85%'}" [responsive]="true" [closable]="false">
-
-
+<p-dialog header="Create Freelancer / Vendor" [(visible)]="freeLancerModal" [modal]="true" [contentStyle]="{'max-height':'450px', 'overflow':'visible'}" [style]="{'width': '100%'}" [responsive]="true" [closable]="false">
     <div class='UserButton' fxLayout="row" fxLayoutAlign="end center">
-
         <button type="button" class="fdBtn" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="onSubmit('createFreelancer')" label="Create"></button>
-
         <button type="button" class="fdBtn" pButton icon="pi pi-times" id="cancelClient" (click)="cancelFormSub('createFreelancer')" label="Cancel"></button>
-
     </div>
 
     <div fxLayout="row" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
 
-        <form [formGroup]="createFreelancer_form" class="p-col">
+        <form style="font-size: 13px;" [formGroup]="createFreelancer_form" class="p-col">
 
             <div class="p-grid">
                 <div class="p-grid p-col">
@@ -368,9 +360,9 @@
                 <div class="p-grid p-col">
                     <div class="p-col-4">White Label Agreement needed</div>
                     <div class="p-col-8">
-                        <p-radioButton name="groupB" value="Yes" label="Yes" inputId="b1" formControlName="WLA">
+                        <p-radioButton name="WLA" value="Yes" label="Yes" inputId="b1" formControlName="WLA">
                         </p-radioButton>&nbsp;
-                        <p-radioButton name="groupB" value="No" label="No" inputId="b2" formControlName="WLA">
+                        <p-radioButton name="WLA" value="No" label="No" inputId="b2" formControlName="WLA">
                         </p-radioButton>
                         <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.WLA.errors">
                             <div *ngIf="isValidCreateFreelancerForm.WLA.errors.required" style="color:red;">WLA is required.
@@ -381,9 +373,9 @@
                 <div class="p-grid p-col">
                     <div class="p-col-4">NDA</div>
                     <div class="p-col-8">
-                        <p-radioButton name="nda" value="Yes" label="Yes" inputId="b1" formControlName="NDA">
+                        <p-radioButton name="NDA" value="Yes" label="Yes" inputId="b1" formControlName="NDA">
                         </p-radioButton>&nbsp;
-                        <p-radioButton name="nda" value="No" label="No" inputId="b2" formControlName="NDA">
+                        <p-radioButton name="NDA" value="No" label="No" inputId="b2" formControlName="NDA">
                         </p-radioButton>
                         <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.NDA.errors">
                             <div *ngIf="isValidCreateFreelancerForm.NDA.errors.required" style="color:red;">NDA is required.

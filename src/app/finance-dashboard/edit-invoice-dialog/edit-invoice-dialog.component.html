@@ -6,7 +6,7 @@
 
 </div>
 
-<div fxLayout="row" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
+<div style="font-size: 13px; padding-top: 10px;" fxLayout="row" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
 
     <form [formGroup]='EditInvoiceForm' class="p-col">
 
@@ -43,11 +43,6 @@
                 <div class="p-col-6 p-md-8 p-lg-8 editInvoiceitem" *ngIf="InvoiceType !== 'hourly'">
 
                     <p-dropdown [readonly]="InvoiceType === 'hourly' ? true : false" resetFilterOnHide="true" [options]="listOfPOCNames" formControlName="POCName" placeholder="Select POC Name" [filter]="true" optionLabel="FullNameCC" [style]="{'width':'100%'}" appendTo="body">
-                        <ng-template let-item pTemplate="item">
-                            <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
-                                <div style="font-size:14px;float:left;margin-top:4px">{{item.label }}</div>
-                            </div>
-                        </ng-template>
                     </p-dropdown>
                     <div class="error" *ngIf="isEditInvoiceFormSubmit && EditInvoiceForm.controls.POCName.errors">
                         <div *ngIf="EditInvoiceForm.controls.POCName.errors.required">

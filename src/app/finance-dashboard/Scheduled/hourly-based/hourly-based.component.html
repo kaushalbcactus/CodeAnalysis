@@ -17,11 +17,12 @@
 </div> -->
 
 <!-- Table Start -->
-<div class="financeTable">
+<div class="financeTable" hideshowMenu>
     <!-- <p-table #hb [columns]="hourlyBasedCols" [value]="hourlyBasedRes" [paginator]="true" [rows]="10" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" [(selection)]="selectedAllRowsItem" exportFilename="Hourly_Based_Projects"> -->
     <p-table #hb [columns]="hourlyBasedCols" [value]="hourlyBasedRes" 
     [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
     [paginator]="true" [rows]="10" styleClass="p-datatable-cactus p-datatable-gridlines"
+    stateStorage="local" stateKey="hourlyTable"
     [(selection)]="selectedAllRowsItem" exportFilename="Hourly_Based_Projects">
         <ng-template pTemplate="header" let-columns>
             <tr>

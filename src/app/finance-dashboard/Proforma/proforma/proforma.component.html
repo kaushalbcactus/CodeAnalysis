@@ -22,11 +22,12 @@
 </div>
 
 <!-- <button (click)="checkSelectedRowData()">Check Data</button> -->
-<div class="financeTable">
+<div class="financeTable" hideshowMenu>
     <p-table #pfc [columns]="proformaCols" dataKey="Id" [value]="proformaRes" 
     [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
     [paginator]="true" [rows]="10" styleClass="p-datatable-cactus p-datatable-gridlines"
-    [(selection)]="selectedRowData" selectionMode="multiple" exportFilename="Proformas" 
+    [(selection)]="selectedRowData" selectionMode="multiple" exportFilename="Proformas"
+    stateStorage="local" stateKey="proformaTable"
     rowExpandMode="multiple" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)">
 
         <ng-template pTemplate="header" let-columns>
@@ -219,12 +220,12 @@
 
 <!-- Replace Proforma -->
 <p-dialog header="Replace Proforma" [(visible)]="replaceProformaModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '30%'}" [maximizable]="false" (onHide)="cancelFormSub('replaceProforma')">
-    <form id="myform" [formGroup]="replaceProforma_form">
-        <div class="ui-g">
-            <div class="ui-g-6">
-                Uplaod File
+    <form style="font-size: 13px; margin-top: 10px"  id="myform" [formGroup]="replaceProforma_form">
+        <div class="p-grid">
+            <div class="p-col-3">
+                Upload File
             </div>
-            <div class="ui-g-6">
+            <div class="p-col-9">
                 <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event,'')" #fileInput formControlName="file" />
                 <div *ngIf="formSubmit.isSubmit && isValidReplaceProformaForm.file.errors">
                     <div *ngIf="isValidReplaceProformaForm.file.errors.required" style="color:red;">Please Select file & try again.
@@ -243,12 +244,12 @@
 
 <!-- Generate Invoice -->
 <p-dialog header="Generate Invoice" [(visible)]="generateInvoiceModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '40%'}" [maximizable]="false" (onHide)="cancelFormSub('generateInvoice')" [responsive]="true" [contentStyle]="{'overflow' : 'visible'}">
-    <form id="myform" [formGroup]="generateInvoice_form">
-        <div class="ui-g">
-            <div class="ui-g-6">
+    <form style="font-size: 13px; margin-top: 10px"  id="myform" [formGroup]="generateInvoice_form">
+        <div class="p-grid">
+            <div class="p-col-6">
                 Invoice Date
             </div>
-            <div class="ui-g-6">
+            <div class="p-col-6">
                 <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy" yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" formControlName="InvoiceDate">
                 </p-calendar>
                 <div *ngIf="formSubmit.isSubmit && isValidGenerateInvoiceForm.InvoiceDate.errors">
@@ -267,18 +268,14 @@
 
 <!-- Change POC -->
 <p-dialog header="Change POC" [(visible)]="editPOCModal" [modal]="true" [draggable]="false" [responsive]="true" [style]="{'width': '40%'}" [maximizable]="false" (onHide)="cancelFormSub('editPOC')" [responsive]="true" [contentStyle]="{'overflow' : 'visible'}">
-    <form [formGroup]="editPOC_form">
-        <div class="ui-g">
-            <div class="ui-g-4">
+    <form style="font-size: 13px; margin-top: 10px" [formGroup]="editPOC_form">
+        <div class="p-grid">
+            <div class="p-col-4">
                 POC Name
             </div>
-            <div class="ui-g-6">
-                <p-dropdown resetFilterOnHide="true" [options]="listOfPOCNames" formControlName="POCName" placeholder="Select POC Name" [filter]="true" optionLabel="FullNameCC" [style]="{'width':'100%'}" appendTo="body">
-                    <ng-template let-item pTemplate="item">
-                        <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
-                            <div style="font-size:14px;float:left;margin-top:4px">{{item.label }}</div>
-                        </div>
-                    </ng-template>
+            <div class="p-col-6">
+                <p-dropdown resetFilterOnHide="true" [options]="listOfPOCNames" formControlName="POCName" 
+                placeholder="Select POC Name" [filter]="true" optionLabel="FullNameCC" [style]="{'width':'100%'}" appendTo="body">
                 </p-dropdown>
                 <div class="error" *ngIf="formSubmit.isSubmit && editPOC_form.controls.POCName.errors">
                     <div *ngIf="editPOC_form.controls.POCName.errors.required">

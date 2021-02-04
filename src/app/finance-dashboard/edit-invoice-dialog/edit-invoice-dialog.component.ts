@@ -90,10 +90,11 @@ export class EditInvoiceDialogComponent implements OnInit {
         ScheduledType: this.InvoiceType,
         Amount: this.selectedRowItem.Amount,
         ScheduledDate: formattedDate,
-        AddressType: {
-          label: this.selectedRowItem.AddressType,
-          value: this.selectedRowItem.AddressType,
-        },
+        AddressType: this.selectedRowItem.AddressType 
+        // {
+        //   label: this.selectedRowItem.AddressType,
+        //   value: this.selectedRowItem.AddressType,
+        // },
       });
       const last3Days = this.common.getLastWorkingDay(3, new Date());
       this.minScheduleDate = last3Days;

@@ -723,7 +723,7 @@ export class OopComponent implements OnInit, OnDestroy {
       } else if (!(new Date(retPO.POExpiryDate) >= todaysDateTimeZero)) {
         this.commonService.showToastrMessage(
           this.constantService.MessageType.info,
-          "PO expired on" +
+          "PO expired on " +
             this.datePipe.transform(retPO.POExpiryDate, "MMM dd, yyyy"),
           false
         );
