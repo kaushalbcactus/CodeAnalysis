@@ -1071,29 +1071,29 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         this.subscription.unsubscribe();
     }
 
-    @HostListener('document:click', ['$event'])
-    clickout(event) {
-        if (event.target.className === 'pi pi-ellipsis-v') {
-            if (this.tempClick) {
-                this.tempClick.style.display = 'none';
-                if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
-                    this.tempClick = event.target.parentElement.children[0].children[0];
-                    this.tempClick.style.display = '';
-                } else {
-                    this.tempClick = undefined;
-                }
-            } else {
-                this.tempClick = event.target.parentElement.children[0].children[0];
-                this.tempClick.style.display = '';
-            }
+    // @HostListener('document:click', ['$event'])
+    // clickout(event) {
+    //     if (event.target.className === 'pi pi-ellipsis-v') {
+    //         if (this.tempClick) {
+    //             this.tempClick.style.display = 'none';
+    //             if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
+    //                 this.tempClick = event.target.parentElement.children[0].children[0];
+    //                 this.tempClick.style.display = '';
+    //             } else {
+    //                 this.tempClick = undefined;
+    //             }
+    //         } else {
+    //             this.tempClick = event.target.parentElement.children[0].children[0];
+    //             this.tempClick.style.display = '';
+    //         }
 
-        } else {
-            if (this.tempClick) {
-                this.tempClick.style.display = 'none';
-                this.tempClick = undefined;
-            }
-        }
-    }
+    //     } else {
+    //         if (this.tempClick) {
+    //             this.tempClick.style.display = 'none';
+    //             this.tempClick = undefined;
+    //         }
+    //     }
+    // }
     // optionFilter(event: any) {
     //     if (event.target.value) {
     //         this.isOptionFilter = false;

@@ -15,7 +15,7 @@
             style="float: right;padding: 5px 20px;" target="_blank">Published paper report</a>
     </div>
 </div>
-<div class="pubsuppotTable">
+<div class="pubsuppotTable" hideshowMenu>
     <p-table [value]="pubSupportProjectInfoData" dataKey="Id" [columns]="pubsupportCols" expandableRows="true" #dt
         [expandedRowKeys]="expandedRows" rowExpandMode="single" (onRowExpand)="onRowExpand($event)" [paginator]="true"
         [rows]="10" expandedIcon="fas fa-angle-down" collapsedIcon="fas fa-angle-right"
