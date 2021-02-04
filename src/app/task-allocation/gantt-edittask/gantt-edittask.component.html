@@ -17,7 +17,7 @@
                     <span class="p-col-12 p-p-0 p-input-icon-right">
                         <i class="pi pi-clock error"  style="padding: 0px 4px;"></i>
                         <input class="p-col-12" placeholder="Select Start Time" pInputText [ngxTimepicker]="startDateTimepicker" formControlName="startDateTimePart" readonly>
-                        <ngx-material-timepicker [preventOverlayClick]="true" #startDateTimepicker [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
+                        <ngx-material-timepicker [preventOverlayClick]="true" #startDateTimepicker class="timepickerPosition" [theme]="darkTheme" [minutesGap]="15">
                         </ngx-material-timepicker>
                     </span>
                 </div>
@@ -34,7 +34,7 @@
                     <span class="p-col-12 p-p-0 p-input-icon-right">
                         <i class="pi pi-clock error"  style="padding: 0px 4px;"></i>
                         <input class="p-col-12"  placeholder="Select End Time" pInputText [ngxTimepicker]="endDateTimepicker" formControlName="endDateTimePart" readonly>
-                        <ngx-material-timepicker [preventOverlayClick]="true" #endDateTimepicker [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
+                        <ngx-material-timepicker [preventOverlayClick]="true" #endDateTimepicker class="timepickerPosition" [theme]="darkTheme" [minutesGap]="15">
                         </ngx-material-timepicker>
                     </span>
                 </div>

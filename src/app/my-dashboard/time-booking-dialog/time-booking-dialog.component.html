@@ -75,7 +75,7 @@
 
                         <input *ngIf="rowData.type ==='task' && dayhours.editable" style="text-align: center;width: 80%;border: none;color:#C53E3E;" aria-label="24hr format" [min]="dayhours.minHrs" [(ngModel)]="dayhours.MileHrs" [ngxTimepicker]="mon" [format]="24" readonly>
 
-                        <ngx-material-timepicker #mon [minutesGap]="15" (closed)="SetTime(dayhours.MileHrs,dayhours,rowData)" [enableKeyboardInput]="true" [ngxMaterialTimepickerTheme]="darkTheme">
+                        <ngx-material-timepicker #mon [minutesGap]="15" (closed)="SetTime(dayhours.MileHrs,dayhours,rowData)" [enableKeyboardInput]="true" class="timepickerPosition" [theme]="darkTheme">
                         </ngx-material-timepicker>
 
                         <span *ngIf="rowData.type ==='Adhoc' ||(rowData.type ==='task' && !dayhours.editable)">{{dayhours.MileHrs}}</span>

@@ -759,3 +759,9 @@ a:hover {
     border-color: #c53e3e !important;
     color: #ffffff !important;
 }
+
+.timepicker-backdrop-overlay,
+.timepicker-overlay {
+    z-index: 4900 !important;
+    /* position: absolute !important; */
+}

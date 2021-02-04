@@ -151,7 +151,7 @@
                             <input style="color: #333333; background: #ffffff;  padding: 0.429em;margin: 0px 8px 0px 10px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultStartTime" [(ngModel)]="task.StartTime" [format]="12"
                                 readonly>
 
-                            <ngx-material-timepicker #defaultStartTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(task.StartTime, 'startTime')" [ngxMaterialTimepickerTheme]="darkTheme">
+                            <ngx-material-timepicker #defaultStartTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(task.StartTime, 'startTime')" class="timepickerPosition" [theme]="darkTheme">
                             </ngx-material-timepicker>
                             </span>
 
@@ -167,7 +167,7 @@
 </p-calendar>
 <input style="color: #333333; background: #ffffff;  padding: 0.429em;margin: 0px 8px 0px 10px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultEndTime" [(ngModel)]="task.DueTime" [format]="12"
 readonly>
-<ngx-material-timepicker #defaultEndTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(task.DueTime, 'dueTime')" [ngxMaterialTimepickerTheme]="darkTheme">
+<ngx-material-timepicker #defaultEndTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(task.DueTime, 'dueTime')" class="timepickerPosition" [theme]="darkTheme">
 </ngx-material-timepicker>
 </span>
 

@@ -117,7 +117,7 @@
                                     [(ngModel)]="rowData.pUserStartTimePart" class="timePicker p-col-12 p-mt-2">
                                 <ngx-material-timepicker [preventOverlayClick]="true"
                                     (closed)="DateChangePart(rowData,'start')" #picker
-                                    [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
+                                    class="timepickerPosition" [theme]="darkTheme" [minutesGap]="15">
                                 </ngx-material-timepicker>
                                 </span>
 
@@ -148,7 +148,7 @@
                                
                                 <ngx-material-timepicker [preventOverlayClick]="true"
                                     (closed)="DateChangePart(rowData,'end')" #picker
-                                    [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
+                                    class="timepickerPosition" [theme]="darkTheme" [minutesGap]="15">
                                 </ngx-material-timepicker>
                                 </span>
 
@@ -282,7 +282,7 @@
     </div>
 
     <input [hidden]='true' readonly [ngxTimepicker]="ganttPicker" [(ngModel)]="taskTime" [min]="minTime" [max]="maxTime" class="timePicker">
-    <ngx-material-timepicker [preventOverlayClick]="true" (closed)="timeChange()" #ganttPicker (timeSet)="setTime($event)" [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
+    <ngx-material-timepicker [preventOverlayClick]="true" (closed)="timeChange()" #ganttPicker (timeSet)="setTime($event)" class="timepickerPosition" [theme]="darkTheme" [minutesGap]="15">
     </ngx-material-timepicker>
 </div>
 
