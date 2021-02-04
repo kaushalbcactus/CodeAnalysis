@@ -2301,13 +2301,15 @@ export class TimelineComponent
     setTimeout(async () => {
       const rowNode: TreeNode = this.getNode(task);
       if (task.edited || task.editMode) {
+        this.constants.loader.isWaitDisable = true;
         this.commonService.showToastrMessage(
           this.constants.MessageType.warn,
           "There are some unsaved changes, Please save them.",
           false
         );
-        // return false;
+       
       } else {
+        this.constants.loader.isWaitDisable = true;
         const conflictDetails: IConflictResource[] = await this.conflictAllocation.bindConflictDetails(
           rowNode,
           this.milestoneData,
@@ -2326,7 +2328,7 @@ export class TimelineComponent
           await this.setAsNextMilestoneCall(task, message);
         }
       }
-      this.constants.loader.isWaitDisable = true;
+
       this.confirmMilestoneLoader = false;
     }, 100);
   }
