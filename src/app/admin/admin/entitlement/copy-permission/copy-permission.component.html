@@ -1,107 +1,104 @@
-<div>
-  <div class="userRole">
-    <div class="ui-g">
-      <div class="ui-g-1">
-        <span>User:</span>
-      </div>
-      <div class="ui-g-3">
-        <p-multiSelect styleClass="" [options]="sourceUsersArray" defaultLabel="Select User" [(ngModel)]="sourceUsers"
-          (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"
-          (onPanelHide)="onSourceUsersChange()">
-        </p-multiSelect>
-      </div>
-      <div class="ui-g-2">
-        <span>Copy/Add Permission</span>
-      </div>
-      <div class="ui-g-3">
-        <p-dropdown  [options]="destinationUsersArray" [(ngModel)]="destinationUser" filter="true"
-          resetFilterOnHide="true" placeholder='Select User' (onChange)="onDestinationUserChange()">
-        </p-dropdown>
-      </div>
-      <div class="ui-g-3">
-        <p-splitButton label="Add Permission" icon="pi pi-plus-circle" (onClick)="addPermission()" [model]="buttons">
-        </p-splitButton>
-      </div>
+<div class="p-col p-mt-2 p-grid">
+    <div class="p-d-flex p-flex-column" style="padding: 10vw;width: 100%;" *ngIf="loaderenable">
+        <div id="scInnerLoader"></div>
+        <div id="scInnerLoaderText">Loading...</div>
     </div>
-  </div>
-</div>
-<div class="ui-g mt-20">
-  <div class="ui-g-4" *ngIf="viewArray.sourceGroupsArray.length">
-    <p-table #sourceTable [value]="viewArray.sourceGroupsArray" [scrollable]="true" scrollHeight="400px">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Source Groups</th>
-        </tr>
-      </ng-template>
-      <!-- <ng-template pTemplate="caption">
-          <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-          <input type="text" pInputText size="50" placeholder="Source Group" (input)="sourceTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
-      </ng-template> -->
-      <ng-template pTemplate="body" style="overflow: auto" let-rowData let-rowIndex="rowIndex">
-        <p-card>
-          <tr>
-            <td>{{ rowIndex+1 }}.</td>
-            <td class="brandColor">
-              {{rowData}}
-            </td>
-          </tr>
-        </p-card>
-      </ng-template>
-    </p-table>
-  </div>
-  <div class="ui-g-4 brandColor" *ngIf="!viewArray.sourceGroupsArray.length">
-    No Permission in source groups
-  </div>
-  <div class="ui-g-4" *ngIf="viewArray.destinationGroupsArray.length">
-    <p-table #destinationTable [value]="viewArray.destinationGroupsArray" [scrollable]="true" scrollHeight="400px">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Destination Groups</th>
-        </tr>
-      </ng-template>
-      <!-- <ng-template pTemplate="caption">
-          <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-          <input type="text" pInputText size="50" placeholder="Source Group" (input)="destinationTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
-      </ng-template> -->
-      <ng-template pTemplate="body" style="overflow: auto" let-rowData let-rowIndex="rowIndex">
-        <p-card>
-          <tr>
-            <td>{{ rowIndex+1 }}.</td>
-            <td class="brandColor">
-              {{rowData}}
-            </td>
-          </tr>
-        </p-card>
-      </ng-template>
-    </p-table>
-  </div>
-  <div class="ui-g-4 brandColor" *ngIf="!viewArray.destinationGroupsArray.length">
-    No Permission in destination groups
-  </div>
-  <div class="ui-g-4" *ngIf="viewArray.finalResultArray.length">
-    <p-table #resultTable [value]="viewArray.finalResultArray" [scrollable]="true" scrollHeight="400px">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Results Groups</th>
-        </tr>
-      </ng-template>
-      <!-- <ng-template pTemplate="caption">
-          <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-          <input type="text" pInputText size="50" placeholder="Source Group" (input)="resultTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
-      </ng-template> -->
-      <ng-template pTemplate="body" style="overflow: auto" let-rowData let-rowIndex="rowIndex">
-        <p-card>
-          <tr>
-            <td>{{ rowIndex+1 }}.</td>
-            <td class="brandColor">
-              {{rowData}}
-            </td>
-          </tr>
-        </p-card>
-      </ng-template>
-    </p-table>
-  </div>
-  <div class="ui-g-4 brandColor" *ngIf="!viewArray.finalResultArray.length">
-    No Results
-  </div>
+
+
+    <div class="p-col-12 p-shadow-10" *ngIf="!loaderenable">
+
+
+        <div class="p-col p-grid p-ai-center">
+            <div class="p-col-4 p-grid p-ai-center">
+                <h5 class="error">Users : </h5>
+                <p-multiSelect class="p-col p-fluid cls_sourceUser" [options]="sourceUsersArray" defaultLabel="Select User" [(ngModel)]="sourceUsers" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (onPanelHide)="onSourceUsersChange()">
+                </p-multiSelect>
+            </div>
+            <div class="p-col-5 p-grid p-ai-center">
+                <h5 class="error">Copy/Add Permission : </h5>
+                <p-dropdown class="p-col p-fluid cls_destinationUser" [options]="destinationUsersArray" [(ngModel)]="destinationUser" filter="true" resetFilterOnHide="true" placeholder='Select User' (onChange)="onDestinationUserChange()" [showClear]="true">
+                </p-dropdown>
+            </div>
+            <div class="p-col p-grid p-jc-center">
+                <p-splitButton label="Add Permission" icon="pi pi-plus-circle" (onClick)="addPermission()" [model]="buttons" class="cls_savePermission" styleClass="p-col p-p-1 p-grid p-button-danger">
+                </p-splitButton>
+            </div>
+        </div>
+        <div class="p-col p-grid" *ngIf="showTables">
+            <div class="p-col-4 p-grid">
+                <p-table #sourceTable [value]="viewArray.sourceGroupsArray" [paginator]="viewArray.sourceGroupsArray && viewArray.sourceGroupsArray.length > 0 ? true : false" [rows]="25" [rowsPerPageOptions]="[25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+                    styleClass="p-datatable-cactus p-datatable-gridlines">
+                    <ng-template pTemplate="header">
+                        <tr>
+
+                            <th>Source Groups</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+                        <tr>
+
+                            <td class="error">
+                                {{ rowIndex+1 }}. {{rowData}}
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage" let-rowData>
+                        <tr>
+                            <td>
+                                No Permission in source groups
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <div class="p-col-5 p-grid">
+                <p-table #destinationTable [value]="viewArray.destinationGroupsArray" [paginator]="viewArray.destinationGroupsArray && viewArray.destinationGroupsArray.length > 0 ? true : false" [rows]="25" [rowsPerPageOptions]="[25,50]" [showCurrentPageReport]="true"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" styleClass="p-datatable-cactus p-datatable-gridlines">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Destination Groups</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+                        <tr>
+                            <td class="error">
+                                {{ rowIndex+1 }}. {{rowData}}
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage" let-rowData>
+                        <tr>
+                            <td>
+                                No Permission in destination groups
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <div class="p-col p-grid">
+                <p-table #resultTable [value]="viewArray.finalResultArray" [paginator]="viewArray.finalResultArray && viewArray.finalResultArray.length > 0 ? true : false" [rows]="25" [rowsPerPageOptions]="[25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+                    styleClass="p-datatable-cactus p-datatable-gridlines">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Results Groups</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+                        <tr>
+                            <td class="error">
+                                {{ rowIndex+1 }}. {{rowData}}
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage" let-rowData>
+                        <tr>
+                            <td>
+                                No Results
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </div>
 </div>

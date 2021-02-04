@@ -1,17 +1,17 @@
-import { Component, OnInit, ApplicationRef, NgZone } from '@angular/core';
-import { DatePipe, PlatformLocation } from '@angular/common';
-import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { ConstantsService } from 'src/app/Services/constants.service';
-import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
-import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
-import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
-import { Router } from '@angular/router';
-import { CommonService } from 'src/app/Services/common.service';
+import { Component, OnInit, ApplicationRef, NgZone } from "@angular/core";
+import { DatePipe, PlatformLocation } from "@angular/common";
+import { SPOperationService } from "src/app/Services/spoperation.service";
+import { ConstantsService } from "src/app/Services/constants.service";
+import { AdminConstantService } from "src/app/admin/services/admin-constant.service";
+import { AdminObjectService } from "src/app/admin/services/admin-object.service";
+import { AdminCommonService } from "src/app/admin/services/admin-common.service";
+import { Router } from "@angular/router";
+import { CommonService } from "src/app/Services/common.service";
 
 @Component({
-  selector: 'app-user-role-mapping',
-  templateUrl: './user-role-mapping.component.html',
-  styleUrls: ['./user-role-mapping.component.css']
+  selector: "app-user-role-mapping",
+  templateUrl: "./user-role-mapping.component.html",
+  styleUrls: ["./user-role-mapping.component.css"],
 })
 /**
  * A class that uses ngPrime to display the data in table.
@@ -26,6 +26,7 @@ export class UserRoleMappingComponent implements OnInit {
   users = [];
   groups = [];
   selectedUser: any;
+  showGroup: boolean = false;
   selectedRoles: string[] = [];
   userExistGroupArray: string[] = [];
   userRoleColArray = {
@@ -33,9 +34,10 @@ export class UserRoleMappingComponent implements OnInit {
     Role: [],
     Action: [],
     By: [],
-    Date: []
+    Date: [],
   };
   userInfo;
+  loaderenable: boolean = true;
   /**
    * Construct a method to create an instance of required component.
    *
@@ -59,7 +61,7 @@ export class UserRoleMappingComponent implements OnInit {
     private adminCommonService: AdminCommonService,
     private platformLocation: PlatformLocation,
     private router: Router,
-    private common : CommonService,
+    private common: CommonService,
     private applicationRef: ApplicationRef,
     private zone: NgZone
   ) {
@@ -81,15 +83,20 @@ export class UserRoleMappingComponent implements OnInit {
    *
    */
   async ngOnInit() {
-    this.loadUsersAndGroups();
+    this.loaderenable = true;
+    await this.loadUsersAndGroups();
+    this.loaderenable = false;
     if (this.adminConstants.toastMsg.SPMAD) {
       this.showToastMsg();
     }
   }
 
   showToastMsg() {
-
-    this.common.showToastrMessage(this.constants.MessageType.warn,'You don\'\t have permission,please contact SP Team.',true);
+    this.common.showToastrMessage(
+      this.constants.MessageType.warn,
+      "You don'\t have permission,please contact SP Team.",
+      true
+    );
   }
   /**
    * Construct a request for calling the batches request and load the dropdown and groups values.
@@ -99,7 +106,6 @@ export class UserRoleMappingComponent implements OnInit {
    * pushing the data to a particular dropdown array and group array.
    */
   async loadUsersAndGroups() {
-    this.adminObject.isMainLoaderHidden = false;
     const results = await this.getInitData();
     this.adminConstants.toastMsg.SPMAD = false;
     if (results && results.length) {
@@ -109,14 +115,25 @@ export class UserRoleMappingComponent implements OnInit {
       // load Users dropdown.
       const userResults = results[0].retItems;
       if (userResults && userResults.length) {
-        userResults.forEach(element => {
-          this.users.push({ label: element.UserNamePG.Title, value: element.UserNamePG });
+        userResults.forEach((element) => {
+          this.users.push({
+            label: element.UserNamePG.Title,
+            value: element.UserNamePG,
+          });
         });
       }
       // load groups
-      results[1].retItems.forEach(element => {
-        if (element.Description && element.Description.indexOf(this.adminConstants.GROUP_CONSTANT_TEXT.SP_TEAM) > -1) {
-          element.Description = element.Description.replace(this.adminConstants.GROUP_CONSTANT_TEXT.SP_TEAM, '');
+      results[1].retItems.forEach((element) => {
+        if (
+          element.Description &&
+          element.Description.indexOf(
+            this.adminConstants.GROUP_CONSTANT_TEXT.SP_TEAM
+          ) > -1
+        ) {
+          element.Description = element.Description.replace(
+            this.adminConstants.GROUP_CONSTANT_TEXT.SP_TEAM,
+            ""
+          );
           this.groups.push(element);
         }
       });
@@ -124,7 +141,6 @@ export class UserRoleMappingComponent implements OnInit {
       this.adminObject.resourceCatArray = userResults;
       this.adminObject.groupArray = this.groups;
     }
-    this.adminObject.isMainLoaderHidden = true;
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
@@ -141,29 +157,40 @@ export class UserRoleMappingComponent implements OnInit {
     const batchURL = [];
     const options = {
       data: null,
-      url: '',
-      type: '',
-      listName: ''
+      url: "",
+      type: "",
+      listName: "",
     };
 
     // Get all user from ResourceCategorization list ##1
     const userGet = Object.assign({}, options);
-    const userFilter = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION_ORDER_BY_USERNAME);
-    userFilter.filter = userFilter.filter.replace(/{{isActive}}/gi,
-      this.adminConstants.LOGICAL_FIELD.YES);
-    userGet.url = this.spServices.getReadURL(this.constants.listNames.ResourceCategorization.name,
-      userFilter);
-    userGet.type = 'GET';
+    const userFilter = Object.assign(
+      {},
+      this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION_ORDER_BY_USERNAME
+    );
+    userFilter.filter = userFilter.filter.replace(
+      /{{isActive}}/gi,
+      this.adminConstants.LOGICAL_FIELD.YES
+    );
+    userGet.url = this.spServices.getReadURL(
+      this.constants.listNames.ResourceCategorization.name,
+      userFilter
+    );
+    userGet.type = "GET";
     userGet.listName = this.constants.listNames.ResourceCategorization.name;
     batchURL.push(userGet);
 
     // Get all Groups from sites list ##2
     const groupGet = Object.assign({}, options);
     groupGet.url = this.spServices.getAllGroupUrl();
-    groupGet.type = 'GET';
-    groupGet.listName = 'Groups';
+    groupGet.type = "GET";
+    groupGet.listName = "Groups";
     batchURL.push(groupGet);
-    this.common.SetNewrelic('admin', 'admin-entitlement-UserRole', 'GetResourceCategorization');
+    this.common.SetNewrelic(
+      "admin",
+      "admin-entitlement-UserRole",
+      "GetResourceCategorization"
+    );
     const result = await this.spServices.executeBatch(batchURL);
     console.log(result);
     return result;
@@ -178,10 +205,13 @@ export class UserRoleMappingComponent implements OnInit {
    */
   async onUserChange() {
     this.common.clearToastrMessage();
-    this.adminObject.isMainLoaderHidden = false;
-    const currentUserId = this.selectedUser.value.ID;
-    await this.highlightGroups(currentUserId);
-    this.adminObject.isMainLoaderHidden = true;
+    this.constants.loader.isWaitDisable = false;
+    if (this.selectedUser) {
+      const currentUserId = this.selectedUser.ID;
+      await this.highlightGroups(currentUserId);
+    }
+    this.showGroup = this.selectedUser ? true : false;
+    this.constants.loader.isWaitDisable = true;
   }
   /**
    * construct a method to pre-select the checkbox based on userId.
@@ -195,17 +225,31 @@ export class UserRoleMappingComponent implements OnInit {
    *
    */
   async highlightGroups(userId) {
-    this.common.SetNewrelic('admin', 'entitlement-user-role-mapping', 'getUserInfo');
+    this.common.SetNewrelic(
+      "admin",
+      "entitlement-user-role-mapping",
+      "getUserInfo"
+    );
     this.userInfo = await this.spServices.getUserInfo(userId);
     this.userExistGroupArray = [];
-    if (this.userInfo && this.userInfo.hasOwnProperty('Groups')) {
-      if (this.userInfo.Groups && this.userInfo.Groups.results && this.userInfo.Groups.results.length) {
-        this.userExistGroupArray = this.userInfo.Groups.results.map(x => x.Title);
+    if (this.userInfo && this.userInfo.hasOwnProperty("Groups")) {
+      if (
+        this.userInfo.Groups &&
+        this.userInfo.Groups.results &&
+        this.userInfo.Groups.results.length
+      ) {
+        this.userExistGroupArray = this.userInfo.Groups.results.map(
+          (x) => x.Title
+        );
       } else {
-        this.common.showToastrMessage(this.constants.MessageType.error,'User does not exist in any groups.',false);
+        this.common.showToastrMessage(
+          this.constants.MessageType.error,
+          "User does not exist in any groups.",
+          false
+        );
       }
     }
-    return this.selectedRoles = this.userExistGroupArray;
+    return (this.selectedRoles = this.userExistGroupArray);
   }
   /**
    * Construct a method to map the array values into particular column dropdown.
@@ -219,38 +263,51 @@ export class UserRoleMappingComponent implements OnInit {
    *
    */
   colFilters(colData) {
-    this.userRoleColArray.User = this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: a.User, value: a.User
-      };
-      return b;
-    }));
-    this.userRoleColArray.Role = this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: a.RoleCH, value: a.RoleCH
-      };
-      return b;
-    }));
-    this.userRoleColArray.Action = this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: a.Action, value: a.Action
-      };
-      return b;
-    }));
-    this.userRoleColArray.By = this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: a.By, value: a.By
-      };
-      return b;
-    }));
-    this.userRoleColArray.Date = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => {
+    this.userRoleColArray.User = this.adminCommonService.uniqueArrayObj(
+      colData.map((a) => {
         const b = {
-          label: this.datepipe.transform(a.Date, 'MMM dd, yyyy'),
-          value: a.Date
+          label: a.User,
+          value: a.User,
         };
         return b;
-      }));
+      })
+    );
+    this.userRoleColArray.Role = this.adminCommonService.uniqueArrayObj(
+      colData.map((a) => {
+        const b = {
+          label: a.RoleCH,
+          value: a.RoleCH,
+        };
+        return b;
+      })
+    );
+    this.userRoleColArray.Action = this.adminCommonService.uniqueArrayObj(
+      colData.map((a) => {
+        const b = {
+          label: a.Action,
+          value: a.Action,
+        };
+        return b;
+      })
+    );
+    this.userRoleColArray.By = this.adminCommonService.uniqueArrayObj(
+      colData.map((a) => {
+        const b = {
+          label: a.By,
+          value: a.By,
+        };
+        return b;
+      })
+    );
+    this.userRoleColArray.Date = this.adminCommonService.uniqueArrayObj(
+      colData.map((a) => {
+        const b = {
+          label: this.datepipe.transform(a.Date, "MMM dd, yyyy"),
+          value: a.Date,
+        };
+        return b;
+      })
+    );
   }
   /**
    * construct a method to add/remove the user from the selected/unselected group.
@@ -262,57 +319,73 @@ export class UserRoleMappingComponent implements OnInit {
    */
   async save() {
     if (!this.selectedUser) {
-      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select user.',true);
+      this.common.showToastrMessage(
+        this.constants.MessageType.warn,
+        "Please select user.",
+        true
+      );
       return false;
     }
-    const removeGroups = this.userExistGroupArray.filter(x => !this.selectedRoles.includes(x));
+    const removeGroups = this.userExistGroupArray.filter(
+      (x) => !this.selectedRoles.includes(x)
+    );
     const groups = this.selectedRoles;
     if (!groups.length && !removeGroups.length) {
-      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select any one group.',true);
+      this.common.showToastrMessage(
+        this.constants.MessageType.warn,
+        "Please select any one group.",
+        true
+      );
       return false;
     }
-    this.adminObject.isMainLoaderHidden = false;
+    this.constants.loader.isWaitDisable = false;
     const batchURL = [];
     const options = {
       data: null,
-      url: '',
-      type: '',
-      listName: ''
+      url: "",
+      type: "",
+      listName: "",
     };
-    groups.forEach(element => {
+    groups.forEach((element) => {
       const userData = {
-        __metadata: { type: 'SP.User' },
-        LoginName: this.userInfo.LoginName
+        __metadata: { type: "SP.User" },
+        LoginName: this.userInfo.LoginName,
       };
       const userCreate = Object.assign({}, options);
       userCreate.url = this.spServices.getGroupUrl(element, null);
       userCreate.data = userData;
-      userCreate.type = 'POST';
+      userCreate.type = "POST";
       userCreate.listName = element;
       batchURL.push(userCreate);
     });
-    removeGroups.forEach(element => {
+    removeGroups.forEach((element) => {
       const userData = {
-        loginName: this.userInfo.LoginName
+        loginName: this.userInfo.LoginName,
       };
       const userRemove = Object.assign({}, options);
       userRemove.url = this.spServices.removeUserFromGroupByLoginName(element);
       userRemove.data = userData;
-      userRemove.type = 'POST';
+      userRemove.type = "POST";
       userRemove.listName = element;
       batchURL.push(userRemove);
     });
     if (batchURL.length) {
-      this.common.SetNewrelic('admin', 'admin-entitlement-UserRole', 'GetUsersByName');
+      this.common.SetNewrelic(
+        "admin",
+        "admin-entitlement-UserRole",
+        "GetUsersByName"
+      );
       const sResult = await this.spServices.executeBatch(batchURL);
       if (sResult && sResult.length) {
-        this.adminObject.isMainLoaderHidden = true;
-        this.common.showToastrMessage(this.constants.MessageType.success,'User - ' + this.userInfo.Title + ' has been updated successfully',true);
+        this.constants.loader.isWaitDisable = true;
+        this.common.showToastrMessage(
+          this.constants.MessageType.success,
+          "User - " + this.userInfo.Title + " has been updated successfully",
+          true
+        );
       }
     }
-    this.adminObject.isMainLoaderHidden = true;
+    this.constants.loader.isWaitDisable = true;
     this.highlightGroups(this.userInfo.Id);
   }
 }
-
-

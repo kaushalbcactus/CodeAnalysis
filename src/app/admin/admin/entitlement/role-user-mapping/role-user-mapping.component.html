@@ -1,33 +1,31 @@
-<div>
-    <div class="userRole">
-        <div class="ui-g">
-            <div class="ui-g-2">
-                <span class="mr-10">Groups:</span>
-            </div>
-            <div class="ui-g-4">
-                <p-dropdown [options]="groupsArray" filter="true" resetFilterOnHide="true" placeholder='Select Role'
-                    [(ngModel)]="selectedGroup" (onChange)="onGroupsChange()">
-                </p-dropdown>
-            </div>
-            <div class="ui-g-1">
-                <button pButton class="adminBtn" label="Remove" type="button" (click)="save()"></button>
-            </div>
-        </div>
+<div class="p-col p-mt-2 p-grid">
+    <div class="p-d-flex p-flex-column" style="padding: 10vw;width: 100%;" *ngIf="loaderenable">
+        <div id="scInnerLoader"></div>
+        <div id="scInnerLoaderText">Loading...</div>
     </div>
-    <div class="userRole">
-        <div class="ui-g">
-            <div class="ui-g-2">
-                <span>Users:</span>
+
+
+    <div class="p-col-12 p-shadow-10" *ngIf="!loaderenable">
+
+
+        <div class="p-col p-grid p-ai-center">
+            <h5 class="p-col-1 error">Groups : </h5>
+            <p-dropdown class="p-col-3 p-mr-2 p-fluid" [options]="groupsArray" filter="true" optionLabel="label" resetFilterOnHide="true" placeholder='Select Role' [(ngModel)]="selectedGroup" (onChange)="onGroupsChange()" [showClear]="true">
+            </p-dropdown>
+
+            <button pButton pRipple type="button" icon="pi pi-save" label="Save" class="p-py-1 p-button-outlined p-button-danger cls_saveUsers" (click)="save()"></button>
+        </div>
+        <div class="p-col p-grid" *ngIf="showUsers">
+            <h5 class="p-col-1 error">Users : </h5>
+
+            <div class="p-col p-grid">
+
+                <div class="p-p-3 p-shadow-3 p-m-2" *ngFor="let user of usersArray; index as i">
+                    <p-checkbox name="{{user.Title}}" value="{{user.LoginName}}" label="{{user.Title}}" [(ngModel)]="selectedUsers" inputId="r1"> </p-checkbox>
+
+                </div>
             </div>
         </div>
-        <div class=" ui-g">
-            <div class="ui-g-3" *ngFor="let user of usersArray">
-                <p-card>
-                    <p-checkbox name="{{user.Title}}" value="{{user.LoginName}}" label="{{user.Title}}"
-                        [(ngModel)]="selectedUsers" inputId="r1">
-                    </p-checkbox>
-                </p-card>
-            </div>
-        </div>
+
     </div>
 </div>

@@ -726,7 +726,6 @@ export class ClientMasterdataComponent implements OnInit {
           true
         );
         const pocindex = this.POCRows.findIndex((x) => x.ID === data.ID);
-        debugger;
         this.POCRows.splice(pocindex, 1);
         this.POCColumns = this.common.MainfilterForTable(
           this.POCColumns,

@@ -1,6 +1,5 @@
 import { Component, OnInit, ApplicationRef, NgZone, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, PlatformLocation } from '@angular/common';
-import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -40,7 +39,6 @@ export class ProjectTypesComponent implements OnInit {
    * Construct a method to create an instance of required component.
    *
    * @param datepipe This is instance referance of `DatePipe` component.
-   * @param adminCommonService This is instance referance of `AdminCommonService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
    * @param spServices This is instance referance of `SPOperationService` component.
    * @param constants This is instance referance of `ConstantsService` component.
@@ -53,7 +51,6 @@ export class ProjectTypesComponent implements OnInit {
    */
   constructor(
     private datepipe: DatePipe,
-    private adminCommonService: AdminCommonService,
     private adminObject: AdminObjectService,
     private spServices: SPOperationService,
     private constants: ConstantsService,
@@ -90,7 +87,8 @@ export class ProjectTypesComponent implements OnInit {
       { field: 'LastModifiededBy', header: 'Last Updated By', visibility: true , Type:'string', dbName:'LastModifiededBy',options:[]  },
       { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false , Type:'', dbName:'',options:[]  }
     ];
-    this.loadProjectTypeTable();
+    await this.loadProjectTypeTable();
+    this.loaderenable=false;
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
@@ -103,6 +101,7 @@ export class ProjectTypesComponent implements OnInit {
    */
   async loadProjectTypeTable() {
     const tempArray = [];
+    this.projectTypeRows=[];
     const getProjectTypeInfo = Object.assign({}, this.adminConstants.QUERY.GET_PROJECT_TYPE_BY_ACTIVE);
     getProjectTypeInfo.filter = getProjectTypeInfo.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES);
@@ -119,9 +118,8 @@ export class ProjectTypesComponent implements OnInit {
         tempArray.push(obj);
       });
       this.projectTypeRows = tempArray;
-      this.projectTypeColumns= this.common.MainfilterForTable(this.projectTypeColumns, this.projectTypeRows);
     }
-   this.loaderenable=false;
+    this.projectTypeColumns= this.common.MainfilterForTable(this.projectTypeColumns, this.projectTypeRows);
   }
   /**
    * Construct a method to add the new Project Type into `ProjectType` list.

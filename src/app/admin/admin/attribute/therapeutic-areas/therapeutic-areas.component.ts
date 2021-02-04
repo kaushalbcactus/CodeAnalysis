@@ -1,6 +1,5 @@
 import { Component, OnInit, ApplicationRef, NgZone, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, PlatformLocation } from '@angular/common';
-import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -30,28 +29,17 @@ export class TherapeuticAreasComponent implements OnInit {
   therapeuticAreaRows = [];
   auditHistoryColumns = [];
   auditHistoryRows = [];
-  therapeuticAreaColArray = {
-    TherapeuticArea: [],
-    LastUpdated: [],
-    LastModifiedBy: []
-  };
-  auditHistoryArray = {
-    Action: [],
-    SubAction: [],
-    ActionBy: [],
-    Date: [],
-  };
   items = [
     { label: 'Delete', command: (e) => this.delete() }
   ];
   isOptionFilter: boolean;
   @ViewChild('ta', { static: false }) taTable: Table;
+  loaderenable: boolean = true;
 
   /**
    * Construct a method to create an instance of required component.
    *
    * @param datepipe This is instance referance of `DatePipe` component.
-   * @param adminCommonService This is instance referance of `AdminCommonService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
    * @param spServices This is instance referance of `SPOperationService` component.
    * @param constants This is instance referance of `ConstantsService` component.
@@ -64,7 +52,6 @@ export class TherapeuticAreasComponent implements OnInit {
    */
   constructor(
     private datepipe: DatePipe,
-    private adminCommonService: AdminCommonService,
     private adminObject: AdminObjectService,
     private spServices: SPOperationService,
     private constants: ConstantsService,
@@ -93,14 +80,16 @@ export class TherapeuticAreasComponent implements OnInit {
    * This is the entry point in this class which jobs is to initialize and load the required data.
    *
    */
-  ngOnInit() {
+  async ngOnInit() {
+    this.loaderenable=true;
     this.therapeuticAreaColumns = [
-      { field: 'TherapeuticArea', header: 'TherapeuticArea', visibility: true },
-      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
-      { field: 'LastModifiedBy', header: 'Last Updated By', visibility: true },
-      { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false }
+      { field: 'TherapeuticArea', header: 'TherapeuticArea', visibility: true, Type:'string',dbName:'TherapeuticArea',options:[] },
+      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false, Type:'date',dbName:'LastUpdated',options:[] },
+      { field: 'LastModifiedBy', header: 'Last Updated By', visibility: true , Type:'string',dbName:'LastModifiedBy',options:[]},
+      { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false, Type:'',dbName:'',options:[] }
     ];
-    this.loadTATable();
+    await this.loadTATable();
+    this.loaderenable=false;
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
@@ -112,8 +101,8 @@ export class TherapeuticAreasComponent implements OnInit {
    *
    */
   async loadTATable() {
-    this.adminObject.isMainLoaderHidden = false;
     const tempArray = [];
+    this.therapeuticAreaRows=[];
     const getTAInfo = Object.assign({}, this.adminConstants.QUERY.GET_TA_BY_ACTIVE);
     getTAInfo.filter = getTAInfo.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES);
@@ -130,49 +119,8 @@ export class TherapeuticAreasComponent implements OnInit {
         tempArray.push(obj);
       });
       this.therapeuticAreaRows = tempArray;
-      this.colFilters(this.therapeuticAreaRows);
     }
-    this.adminObject.isMainLoaderHidden = true;
-  }
-  /**
-   * Construct a method to map the array values into particular column dropdown.
-   *
-   * @description
-   *
-   * This method will extract the column object value from an array and stores into the column dropdown array and display
-   * the values into the TherapeuticArea,LastUpdated and LastUpdatedBy column dropdown.
-   *
-   * @param colData Pass colData as a parameter which contains an array of column object.
-   *
-   */
-  colFilters(colData) {
-    this.therapeuticAreaColArray.TherapeuticArea = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: a.TherapeuticArea, value: a.TherapeuticArea
-      };
-      return b;
-    })));
-    const lastUpdatedArray = this.common.sortDateArray(this.adminCommonService.uniqueArrayObj(
-      colData.map(a => {
-        const b = {
-          label: this.datepipe.transform(a.LastUpdated, 'MMM dd, yyyy'),
-          value: a.LastUpdated
-        };
-        return b;
-      })));
-    this.therapeuticAreaColArray.LastUpdated = lastUpdatedArray.map(a => {
-      const b = {
-        label: this.datepipe.transform(a, 'MMM dd, yyyy'),
-        value: new Date(new Date(a).toDateString())
-      };
-      return b;
-    });
-    this.therapeuticAreaColArray.LastModifiedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: a.LastModifiedBy, value: a.LastModifiedBy
-      };
-      return b;
-    })));
+    this.therapeuticAreaColumns = this.common.MainfilterForTable(this.therapeuticAreaColumns,this.therapeuticAreaRows);
   }
   /**
    * Construct a method to add the new ta into `TA` list.
@@ -203,7 +151,7 @@ export class TherapeuticAreasComponent implements OnInit {
       this.common.showToastrMessage(this.constants.MessageType.warn,'This ta is already exist. Please enter another ta.',false);
       return false;
     }
-    this.adminObject.isMainLoaderHidden = false;
+    this.constants.loader.isWaitDisable = false;
     const data = {
       Title: this.therapeuticArea,
       IsActiveCH: this.adminConstants.LOGICAL_FIELD.YES
@@ -215,7 +163,7 @@ export class TherapeuticAreasComponent implements OnInit {
     this.common.showToastrMessage(this.constants.MessageType.success,'The Project Type ' + this.therapeuticArea + ' has added successfully.',true);
     this.therapeuticArea = '';
     await this.loadTATable();
-    this.adminObject.isMainLoaderHidden = true;
+    this.constants.loader.isWaitDisable = true;
   }
   /**
    * Construct a method to remove the item from table.
@@ -229,7 +177,6 @@ export class TherapeuticAreasComponent implements OnInit {
    */
   delete() {
     const data = this.currTAObj;
-
     this.common.confirmMessageDialog('Delete Confirmation','Do you want to delete this record?',null,['Yes','No'],false).then(async Confirmation => {
       if (Confirmation === 'Yes') {
         const updateData = {
@@ -249,13 +196,13 @@ export class TherapeuticAreasComponent implements OnInit {
    * @param type pass the list type.
    */
   async confirmUpdate(data, updateData, listName, type) {
-    this.adminObject.isMainLoaderHidden = false;
+    this.constants.loader.isWaitDisable = false;
     this.common.SetNewrelic('admin', 'admin-attribute-therapeutic', 'updateTA');
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
 
     this.common.showToastrMessage(this.constants.MessageType.success,'The ta ' + data.TherapeuticArea + ' has deleted successfully.',true);
     this.loadTATable();
-    this.adminObject.isMainLoaderHidden = true;
+    this.constants.loader.isWaitDisable = true;
   }
   /**
    * Construct a method to store current selected row data into variable `currTAObj`.
@@ -273,29 +220,6 @@ export class TherapeuticAreasComponent implements OnInit {
 
   downloadExcel(ta) {
     ta.exportCSV();
-  }
-
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
-
-
-  ngAfterViewChecked() {
-    if (this.therapeuticAreaRows.length && this.isOptionFilter) {
-      const obj = {
-        tableData: this.taTable,
-        colFields: this.therapeuticAreaColArray
-      };
-      if (obj.tableData.filteredValue) {
-        this.common.updateOptionValues(obj);
-      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-        this.colFilters(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-      this.cdr.detectChanges();
-    }
   }
 
 }

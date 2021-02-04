@@ -1,17 +1,15 @@
-import { Component, OnInit, ApplicationRef, NgZone } from '@angular/core';
-import { DatePipe, PlatformLocation } from '@angular/common';
-import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
-import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
-import { Router } from '@angular/router';
-import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
-import { CommonService } from 'src/app/Services/common.service';
-import { ConstantsService } from 'src/app/Services/constants.service';
+import { Component, OnInit, ApplicationRef, NgZone } from "@angular/core";
+import { SPOperationService } from "src/app/Services/spoperation.service";
+import { Router } from "@angular/router";
+import { AdminConstantService } from "src/app/admin/services/admin-constant.service";
+import { CommonService } from "src/app/Services/common.service";
+import { ConstantsService } from "src/app/Services/constants.service";
+import { PlatformLocation } from "@angular/common";
 
 @Component({
-  selector: 'app-role-user-mapping',
-  templateUrl: './role-user-mapping.component.html',
-  styleUrls: ['./role-user-mapping.component.css']
+  selector: "app-role-user-mapping",
+  templateUrl: "./role-user-mapping.component.html",
+  styleUrls: ["./role-user-mapping.component.css"],
 })
 /**
  * A class that uses ngPrime to display the data in table.
@@ -21,13 +19,11 @@ import { ConstantsService } from 'src/app/Services/constants.service';
  * This class is used to remove the users from group
  */
 export class RoleUserMappingComponent implements OnInit {
+  loaderenable: boolean = true;
   /**
    * Construct a method to create an instance of required component.
    *
-   * @param datepipe This is instance referance of `DatePipe` component.
    * @param spServices This is instance referance of `SPOperationService` component.
-   * @param adminObject This is instance referance of `AdminObjectService` component.
-   * @param adminCommonService This is instance referance of `AdminCommonService` component.
    * @param platformLocation This is instance referance of `PlatformLocation` component.
    * @param router This is instance referance of `Router` component.
    * @param applicationRef This is instance referance of `ApplicationRef` component.
@@ -35,17 +31,14 @@ export class RoleUserMappingComponent implements OnInit {
    * @param adminConstants This is instance referance of `AdminConstantService` component.
    */
   constructor(
-    private datepipe: DatePipe,
     private spServices: SPOperationService,
-    private adminObject: AdminObjectService,
-    private adminCommonService: AdminCommonService,
     private platformLocation: PlatformLocation,
     private router: Router,
     private applicationRef: ApplicationRef,
     private zone: NgZone,
     private common: CommonService,
     private adminConstants: AdminConstantService,
-    private constants : ConstantsService
+    private constants: ConstantsService
   ) {
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
@@ -62,12 +55,13 @@ export class RoleUserMappingComponent implements OnInit {
   usersArray = [];
   selectedGroup: any;
   selectedUsers: any;
+  showUsers: boolean = false;
   roleUserColArray = {
     User: [],
     Role: [],
     Action: [],
     By: [],
-    Date: []
+    Date: [],
   };
   /**
    * Construct a method to initialize all the data.
@@ -77,8 +71,10 @@ export class RoleUserMappingComponent implements OnInit {
    * This is the entry point in this class which jobs is to initialize and load the required data.
    *
    */
-  ngOnInit() {
-    this.loadGroups();
+  async ngOnInit() {
+    this.loaderenable = true;
+    await this.loadGroups();
+    this.loaderenable = false;
   }
   /**
    * Construct a request for calling the batches request and load the groups values.
@@ -87,22 +83,31 @@ export class RoleUserMappingComponent implements OnInit {
    * It will iterate all the batch array to cater the request in group array.
    */
   async loadGroups() {
-    this.adminObject.isMainLoaderHidden = false;
     const results = await this.getInitData();
     if (results && results.length) {
       this.groupsArray = [];
       // load Users dropdown.
       const groupResults = results[0].retItems;
       if (groupResults && groupResults.length) {
-        groupResults.forEach(element => {
-          if (element.Description && element.Description.indexOf(this.adminConstants.GROUP_CONSTANT_TEXT.SP_TEAM) > -1) {
-            element.Description = element.Description.replace(this.adminConstants.GROUP_CONSTANT_TEXT.SP_TEAM, '');
-            this.groupsArray.push({ label: element.Title, value: element.Title });
+        groupResults.forEach((element) => {
+          if (
+            element.Description &&
+            element.Description.indexOf(
+              this.adminConstants.GROUP_CONSTANT_TEXT.SP_TEAM
+            ) > -1
+          ) {
+            element.Description = element.Description.replace(
+              this.adminConstants.GROUP_CONSTANT_TEXT.SP_TEAM,
+              ""
+            );
+            this.groupsArray.push({
+              label: element.Title,
+              value: element.Title,
+            });
           }
         });
       }
     }
-    this.adminObject.isMainLoaderHidden = true;
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
@@ -118,17 +123,21 @@ export class RoleUserMappingComponent implements OnInit {
     const batchURL = [];
     const options = {
       data: null,
-      url: '',
-      type: '',
-      listName: ''
+      url: "",
+      type: "",
+      listName: "",
     };
     // Get all Groups from sites list ##1
     const groupGet = Object.assign({}, options);
     groupGet.url = this.spServices.getAllGroupUrl();
-    groupGet.type = 'GET';
-    groupGet.listName = 'Groups';
+    groupGet.type = "GET";
+    groupGet.listName = "Groups";
     batchURL.push(groupGet);
-    this.common.SetNewrelic('admin', 'admin-entitlement-RoleUserMapping', 'GetAllsitegroups');
+    this.common.SetNewrelic(
+      "admin",
+      "admin-entitlement-RoleUserMapping",
+      "GetAllsitegroups"
+    );
     const result = await this.spServices.executeBatch(batchURL);
     console.log(result);
     return result;
@@ -141,21 +150,35 @@ export class RoleUserMappingComponent implements OnInit {
    * This method will get all the users exist into the selected groups.
    */
   async onGroupsChange() {
-    this.common.clearToastrMessage()
-    this.adminObject.isMainLoaderHidden = false;
+    this.common.clearToastrMessage();
+    this.constants.loader.isWaitDisable = false;
     const groupName = this.selectedGroup;
-    this.common.SetNewrelic('admin', 'entitlement-role-user-mapping', 'readGroupUsers');
-    const usersArrayResult = await this.spServices.readGroupUsers(groupName, null);
-    if (usersArrayResult && usersArrayResult.length) {
-      console.log(usersArrayResult);
-      this.usersArray = usersArrayResult;
-      this.adminObject.isMainLoaderHidden = true;
+    this.common.SetNewrelic(
+      "admin",
+      "entitlement-role-user-mapping",
+      "readGroupUsers"
+    );
+    if (groupName) {
+      const usersArrayResult = await this.spServices.readGroupUsers(
+        groupName,
+        null
+      );
+      if (usersArrayResult && usersArrayResult.length) {
+        console.log(usersArrayResult);
+        this.usersArray = usersArrayResult;
+        this.showUsers = true;
+      } else {
+        this.common.showToastrMessage(
+          this.constants.MessageType.error,
+          "Users does not exist in this group.",
+          false
+        );
+        this.usersArray = [];
+      }
     } else {
-
-      this.common.showToastrMessage(this.constants.MessageType.error,'Users does not exist in this group.',false);
-      this.usersArray = [];
-      this.adminObject.isMainLoaderHidden = true;
+      this.showUsers = false;
     }
+    this.constants.loader.isWaitDisable = true;
   }
   /**
    * construct a method to add/remove the user from the selected/unselected group.
@@ -169,86 +192,60 @@ export class RoleUserMappingComponent implements OnInit {
     const groupName = this.selectedGroup;
     const usersArray = this.selectedUsers;
     if (!groupName) {
-      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select group.',true);
+      this.common.showToastrMessage(
+        this.constants.MessageType.warn,
+        "Please select group.",
+        true
+      );
       return false;
     }
     if (!usersArray) {
-
-      this.common.showToastrMessage(this.constants.MessageType.warn,'Please select atleast one user.',true);
+      this.common.showToastrMessage(
+        this.constants.MessageType.warn,
+        "Please select atleast one user.",
+        true
+      );
       return false;
     }
-    this.adminObject.isMainLoaderHidden = false;
+    this.constants.loader.isWaitDisable = false;
     const batchURL = [];
     const options = {
       data: null,
-      url: '',
-      type: '',
-      listName: ''
+      url: "",
+      type: "",
+      listName: "",
     };
-    usersArray.forEach(element => {
+    usersArray.forEach((element) => {
       const userData = {
-        loginName: element
+        loginName: element,
       };
       const userRemove = Object.assign({}, options);
-      userRemove.url = this.spServices.removeUserFromGroupByLoginName(groupName);
+      userRemove.url = this.spServices.removeUserFromGroupByLoginName(
+        groupName
+      );
       userRemove.data = userData;
-      userRemove.type = 'POST';
+      userRemove.type = "POST";
       userRemove.listName = element;
       batchURL.push(userRemove);
     });
     if (batchURL.length) {
-      this.common.SetNewrelic('admin', 'admin-entitlement-RoleUserMapping', 'RemoveUserByLoginName');
+      this.common.SetNewrelic(
+        "admin",
+        "admin-entitlement-RoleUserMapping",
+        "RemoveUserByLoginName"
+      );
       const sResult = await this.spServices.executeBatch(batchURL);
-      this.adminObject.isMainLoaderHidden = true;
+      this.constants.loader.isWaitDisable = true;
       setTimeout(() => {
-
-        this.common.showToastrMessage(this.constants.MessageType.success,'Selected User has been removed from \'' + groupName + '\' group  successfully.',true);
+        this.common.showToastrMessage(
+          this.constants.MessageType.success,
+          "Selected User has been removed from '" +
+            groupName +
+            "' group  successfully.",
+          true
+        );
       }, 500);
       this.onGroupsChange();
     }
   }
-  /**
-   * Construct a method to map the array values into particular column dropdown.
-   *
-   * @description
-   *
-   * This method will extract the column object value from an array and stores into the column dropdown array and display
-   * the values into the User,RoleCH,Action,By and Date column dropdown.
-   *
-   * @param colData Pass colData as a parameter which contains an array of column object.
-   *
-   */
-  colFilters(colData) {
-    this.roleUserColArray.User = this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: a.User, value: a.User
-      };
-      return b;
-    }));
-    this.roleUserColArray.Role = this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: a.RoleCH, value: a.RoleCH
-      };
-      return b;
-    }));
-    this.roleUserColArray.Action = this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = { label: a.Action, value: a.Action };
-      return b;
-    }));
-    this.roleUserColArray.By = this.adminCommonService.uniqueArrayObj(colData.map(a => {
-      const b = {
-        label: a.By, value: a.By
-      };
-      return b;
-    }));
-    this.roleUserColArray.Date = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => {
-        const b = {
-          label: this.datepipe.transform(a.Date, 'MMM dd, yyyy'),
-          value: this.datepipe.transform(a.Date)
-        };
-        return b;
-      }));
-  }
 }
-

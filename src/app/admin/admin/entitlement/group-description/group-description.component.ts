@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { CommonService } from 'src/app/Services/common.service';
@@ -20,17 +19,16 @@ export class GroupDescriptionComponent implements OnInit {
   groupsArray = [];
   selectedGroup: any;
   description: any;
+  loaderenable: boolean= true;
   /**
    * Construct a method to create an instance of required component.
    *
    * @param spServices This is instance referance of `SPOperationService` component.
    * @param constants This is instance referance of `ConstantsService` component.
    * @param adminConstants This is instance referance of `AdminConstantService` component.
-   * @param adminObject This is instance referance of `AdminObjectService` component.
    */
   constructor(
     private spServices: SPOperationService,
-    private adminObject: AdminObjectService,
     private adminConstants: AdminConstantService,
     private constants: ConstantsService,
     private common: CommonService
@@ -43,8 +41,10 @@ export class GroupDescriptionComponent implements OnInit {
    * This is the entry point in this class which jobs is to initialize and load the required data.
    *
    */
-  ngOnInit() {
-    this.loadUsersAndGroups();
+  async ngOnInit() {
+    this.loaderenable= true;
+    await this.loadUsersAndGroups();
+    this.loaderenable= false;
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
@@ -83,7 +83,7 @@ export class GroupDescriptionComponent implements OnInit {
    * pushing the data to a particular dropdown array and group array.
    */
   async loadUsersAndGroups() {
-    this.adminObject.isMainLoaderHidden = false;
+   
     const results = await this.getInitData();
     if (results && results.length) {
       this.groupsArray = [];
@@ -94,7 +94,7 @@ export class GroupDescriptionComponent implements OnInit {
         });
       }
     }
-    this.adminObject.isMainLoaderHidden = true;
+   
   }
   /**
    * Construct a method to save the group description value.
@@ -114,7 +114,7 @@ export class GroupDescriptionComponent implements OnInit {
       this.common.showToastrMessage(this.constants.MessageType.warn,'Please enter the group description.',false);
       return false;
     }
-    this.adminObject.isMainLoaderHidden = false;
+   this.constants.loader.isWaitDisable = false;
     const data = {
       __metadata: { type: 'SP.Group' },
       Description: this.adminConstants.GROUP_CONSTANT_TEXT.SP_TEAM + this.description
@@ -123,6 +123,6 @@ export class GroupDescriptionComponent implements OnInit {
     await this.spServices.updateGroupItem(this.selectedGroup, data);
 
     this.common.showToastrMessage(this.constants.MessageType.success,'Group description updated successfully.',false);
-    this.adminObject.isMainLoaderHidden = true;
+   this.constants.loader.isWaitDisable = true;
   }
 }

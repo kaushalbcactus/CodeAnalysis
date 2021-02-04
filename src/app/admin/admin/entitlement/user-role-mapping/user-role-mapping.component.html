@@ -1,33 +1,31 @@
-<div>
-    <div class="userRole">
-        <div class="ui-g">
-            <div class="ui-g-2">
-                <span>User:</span>
-            </div>
-            <div class="ui-g-4">
-                <p-dropdown [options]="users" filter="true" optionLabel="label" resetFilterOnHide="true"
-                    placeholder='Select User' [(ngModel)]="selectedUser" (onChange)="onUserChange()">
-                </p-dropdown>
-            </div>
-            <div class="ui-g-1">
-                <button pButton class="adminBtn" label="Save" type="button" (click)="save()"></button>
-            </div>
-        </div>
+<div class="p-col p-mt-2 p-grid">
+    <div class="p-d-flex p-flex-column" style="padding: 10vw;width: 100%;" *ngIf="loaderenable">
+        <div id="scInnerLoader"></div>
+        <div id="scInnerLoaderText">Loading...</div>
     </div>
-    <div class="userRole">
-        <div class="ui-g">
-            <div class="ui-g-2">
-                <span>Groups:</span>
+
+
+    <div class="p-col-12 p-shadow-10" *ngIf="!loaderenable">
+
+
+        <div class="p-col p-grid p-ai-center">
+            <h5 class="p-col-1 error">User : </h5>
+            <p-dropdown class="p-col-3 p-mr-2 p-fluid" [options]="users" filter="true" optionLabel="label" resetFilterOnHide="true" placeholder='Select User' [(ngModel)]="selectedUser" (onChange)="onUserChange()" [showClear]="true">
+            </p-dropdown>
+            <button pButton pRipple type="button" icon="pi pi-save" label="Save" class="p-py-1 p-button-outlined p-button-danger cls_saveUser" (click)="save()"></button>
+        </div>
+        <div class="p-col p-grid" *ngIf="showGroup">
+            <h5 class="p-col-1 error">Groups : </h5>
+
+            <div class="p-col p-grid">
+
+                <div class="p-p-3 p-shadow-3 p-m-2" *ngFor="let group of groups; index as i">
+                    <p-checkbox name="{{group.Title}}" value="{{group.Title}}" label="{{group.Title}}" [(ngModel)]="selectedRoles" inputId="r1" pTooltip="{{group.Description}}" tooltipPosition="top"> </p-checkbox>
+                </div>
+
+
             </div>
         </div>
-        <div class="ui-g">
-            <div class="ui-g-3" *ngFor="let group of groups">
-                <p-card>
-                    <p-checkbox name="{{group.Title}}" value="{{group.Title}}" label="{{group.Title}}"
-                        [(ngModel)]="selectedRoles" inputId="r1" pTooltip="{{group.Description}}" tooltipPosition="top">
-                    </p-checkbox>
-                </p-card>
-            </div>
-        </div>
+
     </div>
 </div>

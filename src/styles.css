@@ -749,3 +749,7 @@ form>div>div>div>label,
 .p-radiobutton-label {
     margin-bottom: inherit !important;
 }
+
+a:hover {
+    text-decoration: none !important;
+}

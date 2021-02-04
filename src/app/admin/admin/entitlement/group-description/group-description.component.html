@@ -1,16 +1,26 @@
-<div class="clearBoth">
-  <div class="p-grid mt-20">
-    <div class="p-col-2"><span class="compulsory">*</span>Groups</div>
-    <div class="p-col-3">
-      <p-dropdown placeholder="Select Group" [options]="groupsArray" [(ngModel)]="selectedGroup" filter="true" resetFilterOnHide="true">
-      </p-dropdown>
+<div class="p-col p-mt-2 p-grid">
+    <div class="p-d-flex p-flex-column" style="padding: 10vw;width: 100%;" *ngIf="loaderenable">
+        <div id="scInnerLoader"></div>
+        <div id="scInnerLoaderText">Loading...</div>
     </div>
-    <div class="p-col-2"><span class="compulsory">*</span>Description</div>
-    <div class="p-col-3">
-      <textarea [rows]="5" [cols]="30" [(ngModel)]="description" pInputTextarea></textarea>
+
+
+    <div class="p-col-12 p-shadow-10" *ngIf="!loaderenable">
+
+
+        <div class="p-col p-grid p-ai-center">
+            <div class="p-col p-grid p-ai-center">
+                <h5 class="error"><span class="compulsory">*</span>Groups : </h5>
+                <p-dropdown class="p-col p-fluid" [options]="groupsArray" filter="true" optionLabel="label" resetFilterOnHide="true" placeholder='Select Group' [(ngModel)]="selectedGroup" (onChange)="onGroupsChange()" [showClear]="true">
+                </p-dropdown>
+            </div>
+            <div class="p-col p-grid p-ai-center p-mr-2">
+                <h5 class="error p-mr-2"><span class="compulsory">*</span>Description : </h5>
+                <textarea class="p-col p-fluid" [rows]="5" [cols]="30" [(ngModel)]="description" pInputTextarea></textarea>
+            </div>
+            <button pButton pRipple type="button" icon="pi pi-save" label="Save" class="p-py-1 p-button-outlined p-button-danger cls_saveDescription" (click)="saveDescription()"></button>
+        </div>
+
+
     </div>
-    <div class="p-col-2">
-      <button pButton class="adminBtn" label="Save" type="button" (click)="saveDescription()"></button>
-    </div>
-  </div>
 </div>

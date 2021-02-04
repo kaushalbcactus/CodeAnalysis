@@ -224,7 +224,6 @@ export class BlockResourceDialogComponent implements OnInit {
           true,
           true
         );
-        debugger;
         this.task.Resource = this.BlockResourceForm.value.Resource;
         this.ref.close(this.task);
       }
