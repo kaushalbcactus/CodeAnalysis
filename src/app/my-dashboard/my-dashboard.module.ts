@@ -71,7 +71,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     CurrentCompletedTasksTableComponent,
   ],
   imports: [
-    NgxMaterialTimepickerModule,
+ 
     SharedModule,
     ViewUploadDocumentModule,
     CommonModule,
@@ -94,6 +94,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     PreStackAllocationModule,
     SqmsModule,
     JournalConferenceDetailsModule,
+    NgxMaterialTimepickerModule,
   ],
 
   providers: [

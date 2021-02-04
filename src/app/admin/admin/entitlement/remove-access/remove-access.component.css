@@ -1,19 +1,4 @@
-.setDropdownHeader{
-    background: #C53E3E;
-    color: white;
-    height: 30px;
-    padding-left: 5px;
-}
-::ng-deep .removeAccessTable .ui-table table,
-.ui-table table {
-    table-layout: auto !important;
-}
-
-::ng-deep .ui-overlaypanel .ui-overlaypanel-close {
-    background-color: #C53E3E !important;
-}
-
-::ng-deep p-selectbutton .ui-selectbutton .ui-button.ui-state-active {
-    background-color: #c53e3e !important;
-    border-color: #c53e3e !important;
+:host ::ng-deep .p-overlaypanel:before,
+:host ::ng-deep .p-overlaypanel:after {
+    display: none;
 }

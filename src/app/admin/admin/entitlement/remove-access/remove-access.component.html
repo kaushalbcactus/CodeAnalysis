@@ -1,259 +1,100 @@
-<div fxLayout="row" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
-    <form [formGroup]='removeAccess' class="p-col">
-        <div class="p-grid">
-            <div class="p-col-1">
-                <h5>Resources</h5>
-            </div>
-            <div class="p-col-2">
-                <p-dropdown [options]="dropDown.resourceNameArray" formControlName="resourceName" filter="true" resetFilterOnHide="true" placeholder='Select Resource' [style]="{'width':'100%'}" (onChange)="onAttributesChanged()">
-                </p-dropdown>
-                <div class="error" *ngIf="isRemoveAccessFormSubmit && removeAccess.controls.resourceName.errors">
-                    <div *ngIf="removeAccess.controls.resourceName.errors.required">
-                        Please select atleast one resource</div>
-                </div>
-            </div>
-            <div class="p-col-1">
-                <h5>Attributes</h5>
-            </div>
-            <div class="p-col-2">
-                <p-dropdown [options]="dropDown.attributesArray" formControlName="attributes" filter="true" resetFilterOnHide="true" placeholder='Select Attributes' [style]="{'width':'100%'}" (onChange)="onAttributesChanged()">
-                </p-dropdown>
-                <div class="error" *ngIf="isRemoveAccessFormSubmit && removeAccess.controls.attributes.errors">
-                    <div *ngIf="removeAccess.controls.attributes.errors.required">
-                        Please select attribute</div>
-                </div>
-            </div>
-            <div class="p-col-6">
-                <button type="button" pButton [disabled]="isSearchButtonDisabled" icon="pi pi-search" id="searchId" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" label="Search" class="adminBtn" (click)="searchAccess()"></button>
-                <button type="button" pButton [disabled]="isRemoveButtonDisabled" icon="pi pi-minus" id="removeAccessId" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" label="Remove Access" class="adminBtn" (click)="removeUsers()"></button>
-                <button type="button" pButton [disabled]="isRefreshButtonDisabled" icon="pi pi-refresh" id="refreshId" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" label="Refresh" class="adminBtn" (click)="refresh()"></button>
-                <p-selectButton [style]="{'margin': '0px 0px 0px 50px'}" [options]="selectionType" [(ngModel)]="selectedItemType" [ngModelOptions]="{standalone: true}" (onChange)="selectRows()"></p-selectButton>
-            </div>
-        </div>
-    </form>
+<div class="p-d-flex p-flex-column" style="padding: 10vw;width: 100%;" *ngIf="loaderenable">
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
 </div>
-<div *ngIf="isRuleTable">
+
+<form [formGroup]='removeAccess' class="p-col p-grid" *ngIf="!loaderenable">
+    <div class="p-col-4 p-grid p-ai-center">
+        <h5 class="p-mr-2 error">Resources : </h5>
+        <p-dropdown class="p-col p-fluid cls_ResourceDD" [options]="dropDown.resourceNameArray" formControlName="resourceName" filter="true" resetFilterOnHide="true" placeholder='Select Resource' (onChange)="onAttributesChanged()">
+        </p-dropdown>
+        <div class="error" *ngIf="isRemoveAccessFormSubmit && removeAccess.controls.resourceName.errors">
+            <div *ngIf="removeAccess.controls.resourceName.errors.required">
+                Please select atleast one resource</div>
+        </div>
+    </div>
+    <div class="p-col-4 p-grid p-ai-center">
+        <h5 class="p-mr-2 error">Attributes : </h5>
+        <p-dropdown class="p-col p-fluid cls_attributesDD" [options]="dropDown.attributesArray" formControlName="attributes" filter="true" resetFilterOnHide="true" placeholder='Select Attributes' (onChange)="onAttributesChanged()">
+        </p-dropdown>
+        <div class="error" *ngIf="isRemoveAccessFormSubmit && removeAccess.controls.attributes.errors">
+            <div *ngIf="removeAccess.controls.attributes.errors.required">
+                Please select attribute</div>
+        </div>
+
+    </div>
+
+    <div class="p-col p-grid p-jc-center p-ai-center">
+        <button pButton pRipple type="button" [disabled]="isSearchButtonDisabled" (click)="searchAccess()" icon="pi pi-search" title="Search" class="p-button-outlined p-button-danger p-mr-1 cls_search"></button>
+        <button pButton pRipple type="button" [disabled]="isRemoveButtonDisabled" (click)="removeUsers()" icon="pi pi-trash" title="Remove Access" class="p-button-outlined p-button-danger p-mr-1 cls_removeAccess"></button>
+        <button pButton pRipple type="button" [disabled]="isRefreshButtonDisabled" (click)="refresh()" icon="pi pi-refresh" title="Refresh" class="p-button-outlined p-button-danger cls_refresh"></button>
+
+    </div>
+    <div class="p-col p-grid p-ai-center">
+        <p-selectButton [options]="selectionType" [(ngModel)]="selectedItemType" [ngModelOptions]="{standalone: true}" (onChange)="selectRows()"></p-selectButton>
+    </div>
+</form>
+
+
+<div *ngIf="isRuleTable && !loaderenable">
     <app-show-rule [rulesColumns]="rulesCols" [ruleItems]="ruleTableArray"></app-show-rule>
 </div>
-<div *ngIf="!isRuleTable" class="removeAccessTable" [hidden]="adminObject.isMainLoaderHidden && tableDataArray.length === 0">
-    <div *ngIf="attribute === adminConstants.ATTRIBUTES.PROJECTCODE">
-        <p-table #projCode [columns]="projectCodeCols" [value]="tableDataArray" [paginator]="true" [rows]="10" [(selection)]="selectedAllRowsItem" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" class="cls_abmaintable">
-            <ng-template pTemplate="header" let-columns let-rowData="rowData">
-                <tr>
-                    <th>S.No</th>
-                    <th style="width: 2.25em">
-                    </th>
-                    <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
+<div *ngIf="!isRuleTable  && !loaderenable && displayColumnArray.length> 0" class="removeAccessTable">
+
+
+    <p-table #projCode [columns]="displayColumnArray" [value]="tableDataArray" [paginator]="true" [rows]="10" [(selection)]="selectedAllRowsItem" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" class="cls_abmaintable"
+        [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" styleClass="p-datatable-cactus p-datatable-gridlines">
+        <ng-template pTemplate="header" let-columns let-rowData="rowData">
+            <tr>
+                <th class="firstColumnWidth">S.No</th>
+                <th class="firstColumnWidth">
+                </th>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
+                    <div class="p-d-flex p-jc-between p-ai-center">
                         {{col.header}}
-                        <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
-                    </th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th></th>
-                    <th></th>
-                    <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
-                        <ng-container *ngIf="col.field">
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ProjectCode'" [options]="projectCodeColArray.ProjectCode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="projCode.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" class="cls_abNumber">
-                            </p-multiSelect>
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'BusinessVertical'" [options]="projectCodeColArray.PracticeArea" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="projCode.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" class="cls_abProjectCode">
-                            </p-multiSelect>
+                        <p-sortIcon [field]="col.field"></p-sortIcon>
+                        <p-columnFilter *ngIf="col.header != ''" [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                            <ng-template pTemplate="header">
+                                <div class="p-px-3 p-pt-3 p-pb-0">
+                                    <span class="p-text-bold"> {{col.header}} Picker</span>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                                    <ng-template let-option pTemplate="item">
+                                        <div class="p-multiselect-representative-option">
+                                            <span class="p-ml-1">{{option.label}}</span>
+                                        </div>
+                                    </ng-template>
+                                </p-multiSelect>
+                            </ng-template>
+                        </p-columnFilter>
+                    </div>
+                </th>
+                <th class="lastColumnWidth"></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+            <tr>
+                <td>{{rowIndex+1}}</td>
+                <td>
+                    <p-tableCheckbox class="cls_abcheckbox{{rowIndex+1}}" [value]="rowData"></p-tableCheckbox>
+                </td>
 
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'WBJID'" [options]="projectCodeColArray.WBJID" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="projCode.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                                (onPanelShow)="isOptionFilter=true;" class="cls_abVendorName">
-                            </p-multiSelect>
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ClientLegalEntity'" [options]="projectCodeColArray.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="projCode.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" class="cls_abExpenseType">
-                            </p-multiSelect>
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Status'" [options]="projectCodeColArray.Status" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="projCode.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                                (onPanelShow)="isOptionFilter=true;" class="cls_abClientAmount">
-                            </p-multiSelect>
-                        </ng-container>
-                    </th>
-                    <th></th>
-                </tr>
+                <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility" [ngStyle]="{'background-color':rowData.IsAdhoc ? 'rgb(255 149 149 / 62%)' : ''}">
+                    {{rowData[col.field]}}
+                </td>
+                <td class="lastColumnWidth">
+                    <div (click)="showOverlayPanel($event, rowData)" title="Click to see the rule">
+                        <i class='overlayIcon' class="pi pi-info-circle" style="cursor: pointer;" aria-hidden="true"></i>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
 
-            </ng-template>
-            <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
-                <tr>
-                    <td>{{rowIndex+1}}</td>
-                    <td>
-                        <p-tableCheckbox class="cls_abcheckbox{{rowIndex+1}}" [value]="rowData"></p-tableCheckbox>
-                    </td>
-
-                    <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility" [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
-                        {{rowData[col.field]}}
-                    </td>
-                    <td>
-                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel($event, rowData)" title="Click to see the rule">
-                            <i class='overlayIcon' class="fa fa-info-circle" aria-hidden="true"></i>
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </div>
-    <div *ngIf="attribute === adminConstants.ATTRIBUTES.SOWCODE">
-        <p-table #sowCode [columns]="sowCodeCols" [value]="tableDataArray" [paginator]="true" [rows]="10" [(selection)]="selectedAllRowsItem" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" class="cls_abmaintable">
-            <ng-template pTemplate="header" let-columns let-rowData="rowData">
-                <tr>
-                    <th>S.No</th>
-                    <th style="width: 2.25em">
-                    </th>
-                    <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
-                        {{col.header}}
-                        <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
-                    </th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th></th>
-                    <th></th>
-                    <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
-                        <ng-container *ngIf="col.field">
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Title'" [options]="sowCodeColArray.Title" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sowCode.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                                (onPanelShow)="isOptionFilter=true;" class="cls_abProjectCode">
-                            </p-multiSelect>
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'SOWCode'" [options]="sowCodeColArray.SOWCode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sowCode.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                                (onPanelShow)="isOptionFilter=true;" class="cls_abNumber">
-                            </p-multiSelect>
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'BusinessVertical'" [options]="sowCodeColArray.PracticeArea" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sowCode.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" class="cls_abExpenseType">
-                            </p-multiSelect>
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ClientLegalEntity'" [options]="sowCodeColArray.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="sowCode.filter($event.value, col.field, 'in')"
-                                (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" class="cls_abVendorName">
-                            </p-multiSelect>
-                        </ng-container>
-                    </th>
-                    <th></th>
-                </tr>
-
-            </ng-template>
-            <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
-
-                <tr>
-                    <td>{{rowIndex+1}}</td>
-                    <td>
-                        <p-tableCheckbox class="cls_abcheckbox{{rowIndex+1}}" [value]="rowData"></p-tableCheckbox>
-                    </td>
-
-                    <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility" [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
-                        {{rowData[col.field]}}
-                    </td>
-                    <td>
-                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel($event, rowData)" title="Click to see the rule">
-                            <i class='overlayIcon' class="fa fa-info-circle" aria-hidden="true"></i>
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </div>
-    <div *ngIf="attribute === adminConstants.ATTRIBUTES.CLIENTDISSATISFACTION">
-        <p-table #qcTable [columns]="qcCols" [value]="tableDataArray" [paginator]="true" [rows]="10" [(selection)]="selectedAllRowsItem" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" class="cls_abmaintable">
-            <ng-template pTemplate="header" let-columns let-rowData="rowData">
-                <tr>
-                    <th>S.No</th>
-                    <th style="width: 2.25em">
-                    </th>
-                    <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
-                        {{col.header}}
-                        <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
-                    </th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th></th>
-                    <th></th>
-                    <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
-                        <ng-container *ngIf="col.field">
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Title'" [options]="qcColArray.Title" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="qcTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                                (onPanelShow)="isOptionFilter=true;" class="cls_abProjectCode">
-                            </p-multiSelect>
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Status'" [options]="qcColArray.Status" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="qcTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                                (onPanelShow)="isOptionFilter=true;" class="cls_abNumber">
-                            </p-multiSelect>
-                        </ng-container>
-                    </th>
-                    <th></th>
-                </tr>
-
-            </ng-template>
-            <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
-
-                <tr>
-                    <td>{{rowIndex+1}}</td>
-                    <td>
-                        <p-tableCheckbox class="cls_abcheckbox{{rowIndex+1}}" [value]="rowData"></p-tableCheckbox>
-                    </td>
-
-                    <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility" [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
-                        {{rowData[col.field]}}
-                    </td>
-                    <td>
-                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel($event, rowData)" title="Click to see the rule">
-                            <i class='overlayIcon' class="fa fa-info-circle" aria-hidden="true"></i>
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </div>
-    <div *ngIf="attribute === adminConstants.ATTRIBUTES.POSITIVEFEEDBACK">
-        <p-table #pfTable [columns]="pfCols" [value]="tableDataArray" [paginator]="true" [rows]="10" [(selection)]="selectedAllRowsItem" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" class="cls_abmaintable">
-            <ng-template pTemplate="header" let-columns let-rowData="rowData">
-                <tr>
-                    <th>S.No</th>
-                    <th style="width: 2.25em">
-                    </th>
-                    <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
-                        {{col.header}}
-                        <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
-                    </th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th></th>
-                    <th></th>
-                    <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
-                        <ng-container *ngIf="col.field">
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Title'" [options]="pfColArray.Title" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                                (onPanelShow)="isOptionFilter=true;" class="cls_abProjectCode">
-                            </p-multiSelect>
-                            <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Status'" [options]="pfColArray.Status" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
-                                (onPanelShow)="isOptionFilter=true;" class="cls_abNumber">
-                            </p-multiSelect>
-                        </ng-container>
-                    </th>
-                    <th></th>
-                </tr>
-
-            </ng-template>
-            <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
-                <tr>
-                    <td>{{rowIndex+1}}</td>
-                    <td>
-                        <p-tableCheckbox class="cls_abcheckbox{{rowIndex+1}}" [value]="rowData"></p-tableCheckbox>
-                    </td>
-                    <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility" [ngStyle]="{'background-color':rowData.IsAdhoc ? '#f7e7b7' : ''}">
-                        {{rowData[col.field]}}
-                    </td>
-                    <td>
-                        <div style="float: right;cursor: pointer;" (click)="showOverlayPanel($event, rowData)" title="Click to see the rule">
-                            <i class='overlayIcon' class="fa fa-info-circle" aria-hidden="true"></i>
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </div>
-    <p-overlayPanel #ruleOP [showCloseIcon]="true">
+    <p-overlayPanel #ruleOP [showCloseIcon]="true" [style]="{width: '800px'}">
         <ng-template #showRuleDetailsview>
         </ng-template>
     </p-overlayPanel>
-</div>
-<div *ngIf="adminObject.isMainLoaderHidden && tableDataArray.length == 0 && !isRuleTable" style=" color:red;text-align: center;padding-top: 20px;">
-    No data available.
 </div>
