@@ -31,7 +31,7 @@ export class SendToClientComponent implements OnInit {
  {name: 'Overdue', key: 'Overdue', ColorIndicator : '#f08080'}];
  selectedSent_To_Client: any[] = [];
   displayedColumns: any[] = [
-    { field: 'SLA', header: 'SLA', visibility: true ,Type:'', options:[] },
+ 
     { field: 'ProjectCode', header: 'Project Code', visibility: true, Type:'string',dbName:'ProjectCode', options:[] },
     { field: 'ShortTitle', header: 'Short Title', visibility: true ,Type:'string',dbName:'ShortTitle' , options:[]},
     { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true,  Type:'string',dbName:'ClientLegalEntity' , options:[]},

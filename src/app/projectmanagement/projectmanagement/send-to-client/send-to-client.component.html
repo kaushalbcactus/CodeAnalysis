@@ -31,7 +31,8 @@
         styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="SendToClientTable" hideshowMenu>
         <ng-template pTemplate="header" let-columns>
             <tr>
-                <th [ngClass]="{'firstColumnWidth': isFirst}" *ngFor="let col of columns; first as isFirst;" [pSortableColumn]="col.field" [hidden]="!col.visibility">
+                <th class="firstColumnWidth">S.No</th>
+                <th *ngFor="let col of columns; first as isFirst;" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                     <div class="p-d-flex p-jc-between p-ai-center">
                         {{col.header}}
                         <p-sortIcon *ngIf="col.header !== '' && col.header !== 'SLA'" [field]="col.field"></p-sortIcon>
