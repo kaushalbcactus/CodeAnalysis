@@ -485,7 +485,6 @@ export class RemoveAccessComponent implements OnInit {
    * This method is called when resourceName or attribute changes.
    */
   async searchAccess() {
-    debugger;
     this.selectedItemType = this.selectionType[0].value;
     if (this.removeAccess.valid) {
       this.isRuleTable = false;
