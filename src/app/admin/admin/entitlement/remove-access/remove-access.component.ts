@@ -487,10 +487,11 @@ export class RemoveAccessComponent implements OnInit {
   async searchAccess() {
     this.selectedItemType = this.selectionType[0].value;
     if (this.removeAccess.valid) {
+      this.constants.loader.isWaitDisable = false;
       this.isRuleTable = false;
       this.ruleTableArray = [];
       this.tableDataArray = [];
-      this.constants.loader.isWaitDisable = false;
+     
       this.tableDataArray = await this.getFilterData(
         this.attribute,
         this.filterResource

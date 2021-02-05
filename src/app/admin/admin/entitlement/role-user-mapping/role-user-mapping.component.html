@@ -9,14 +9,14 @@
 
 
         <div class="p-col p-grid p-ai-center">
-            <h5 class="p-col-1 error">Groups : </h5>
+            <h5 class="p-col-1 p-m-0 error">Groups : </h5>
             <p-dropdown class="p-col-3 p-mr-2 p-fluid" [options]="groupsArray" filter="true" optionLabel="label" resetFilterOnHide="true" placeholder='Select Role' [(ngModel)]="selectedGroup" (onChange)="onGroupsChange()" [showClear]="true">
             </p-dropdown>
 
-            <button pButton pRipple type="button" icon="pi pi-save" label="Save" class="p-py-1 p-button-outlined p-button-danger cls_saveUsers" (click)="save()"></button>
+            <button pButton pRipple type="button" icon="pi pi-trash" label="Remove" class="p-py-1 p-button-outlined p-button-danger cls_saveUsers" (click)="save()"></button>
         </div>
         <div class="p-col p-grid" *ngIf="showUsers">
-            <h5 class="p-col-1 error">Users : </h5>
+            <h5 class="p-col-1 p-m-0 error">Users : </h5>
 
             <div class="p-col p-grid">
 

@@ -848,4 +848,23 @@ export class ConstantsService {
     THREE_UPPERCASE_TWO_NUMBER: /^[A-Z]{3}[0-9]{2}$/,
     ALPHA_SPECIAL_WITHSPACE: /^([a-z A-Z])+((?:[-_](?![-_]))*([a-z A-Z]))*$/
   };
+
+  public RuleTypeColors = [
+    {
+      key: "Active / Existing",
+      value: "#cdcdcd",
+    },
+    {
+      key: "Edited Active / Existing",
+      value: "#ecfbd0",
+    },
+    {
+      key: "Deleted",
+      value: "#f1caca",
+    },
+    {
+      key: "New",
+      value: "#f1e5ca",
+    },
+  ];
 }

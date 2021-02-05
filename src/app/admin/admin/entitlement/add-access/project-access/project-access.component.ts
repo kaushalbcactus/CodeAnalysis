@@ -59,6 +59,8 @@ export class ProjectAccessComponent implements OnInit {
     deliveryType:  [],
   });
 
+  public colors =  this.constant.RuleTypeColors;
+
   FilterArrayObj =[ { label: "Practice Area", value: "practiceArea" },
   { label: "Client", value: "cle" },
   { label: "Client Subdivision", value: "subDivision" },
@@ -611,7 +613,7 @@ export class ProjectAccessComponent implements OnInit {
             ? value.Access.results.map((c) => c.Title).join(", ")
             : [],
       };
-    }, 100);
+    }, 200);
   }
 
   //to edit rule user :   used dynamic dialog
@@ -628,7 +630,7 @@ export class ProjectAccessComponent implements OnInit {
       header: "Edit " + dbRule.ResourceType + " Rule",
       closable: false,
       width: "70vw",
-      contentStyle: { "min-height": "30vh", "overflow-y": "visible" },
+      contentStyle: { "min-height": "20vh", "overflow-y": "visible" },
       data: {
         rule: dbRule,
         UserAccess:
