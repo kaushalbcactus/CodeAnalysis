@@ -883,8 +883,6 @@ export class CommonService {
   MainfilterForTable(ArrayObjectsValue, resArray ){
     ArrayObjectsValue.forEach(element=>{
       if(element.Type && element.Type === 'string'){
-
-        debugger
         // if(element.dbName === 'Status'){
           element.options = this.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a[element.dbName] === "Audit In Progress"
           ? "CS Audit" : a[element.dbName] ===  "Pending Closure"

@@ -1,4 +1,4 @@
-body .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active a {
+/* body .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active a {
     background-color: #c53e3e !important;
     border: 1px solid #c53e3e !important;
 }
@@ -75,7 +75,7 @@ body .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active 
 body .ui-panel .ui-panel-content,
 body .ui-panel .ui-panel-titlebar {
     border: none !important;
-    /* background-color: #f4f4f4 !important; */
+   
 }
 
 .ui-tooltip .ui-tooltip-text {
@@ -108,4 +108,4 @@ body .ui-selectbutton .ui-button.ui-state-active,
 .projectFilters>p-button>button {
     background-color: #c53e3e !important;
     border-color: #c53e3e !important;
-}
+} */

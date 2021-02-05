@@ -1,22 +1,44 @@
-<p-accordion [activeIndex]="index" (onClose)="onTabClose($event)" (onOpen)="onTabOpen($event)">
-    <p-accordionTab header="Project" class="" [selected]="true">
-
-        <app-project-access [RuleType]="ruleType"></app-project-access>
-
-    </p-accordionTab>
-    <p-accordionTab header="SOW" class="">
-        <ng-template pTemplate="content">
-            <app-project-access [RuleType]="ruleType"></app-project-access>
-        </ng-template>
-    </p-accordionTab>
-    <p-accordionTab header="Client Dissatisfaction" class="">
-        <ng-template pTemplate="content">
-            <app-project-access [RuleType]="ruleType"></app-project-access>
-        </ng-template>
-    </p-accordionTab>
-    <p-accordionTab header="Positive Feedback" class="">
-        <ng-template pTemplate="content">
-            <app-project-access [RuleType]="ruleType"></app-project-access>
-        </ng-template>
-    </p-accordionTab>
-</p-accordion>
+<div class="p-mt-2">
+    <p-accordion class="p-mt-2" [activeIndex]="index" (onClose)="onTabClose($event)" (onOpen)="onTabOpen($event)">
+        <p-accordionTab [selected]="true">
+            <ng-template pTemplate="header">
+                <div class="p-col p-grid p-mt-0 p-p-0">
+                    <h5 class="p-col p-px-2  p-pt-1 p-m-0">Project</h5>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <app-project-access [RuleType]="ruleType"></app-project-access>
+            </ng-template>
+        </p-accordionTab>
+        <p-accordionTab>
+            <ng-template pTemplate="header">
+                <div class="p-col p-grid p-mt-0 p-p-0">
+                    <h5 class="p-col p-px-2  p-pt-1 p-m-0">SOW</h5>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <app-project-access [RuleType]="ruleType"></app-project-access>
+            </ng-template>
+        </p-accordionTab>
+        <p-accordionTab>
+            <ng-template pTemplate="header">
+                <div class="p-col p-grid p-mt-0 p-p-0">
+                    <h5 class="p-col p-px-2  p-pt-1 p-m-0">Client Dissatisfaction</h5>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <app-project-access [RuleType]="ruleType"></app-project-access>
+            </ng-template>
+        </p-accordionTab>
+        <p-accordionTab>
+            <ng-template pTemplate="header">
+                <div class="p-col p-grid p-mt-0 p-p-0">
+                    <h5 class="p-col p-px-2  p-pt-1 p-m-0">Positive Feedback</h5>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <app-project-access [RuleType]="ruleType"></app-project-access>
+            </ng-template>
+        </p-accordionTab>
+    </p-accordion>
+</div>

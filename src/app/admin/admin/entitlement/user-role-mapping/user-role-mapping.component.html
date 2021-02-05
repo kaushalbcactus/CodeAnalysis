@@ -9,13 +9,13 @@
 
 
         <div class="p-col p-grid p-ai-center">
-            <h5 class="p-col-1 error">User : </h5>
+            <h5 class="p-col-1 p-m-0 error">User : </h5>
             <p-dropdown class="p-col-3 p-mr-2 p-fluid" [options]="users" filter="true" optionLabel="label" resetFilterOnHide="true" placeholder='Select User' [(ngModel)]="selectedUser" (onChange)="onUserChange()" [showClear]="true">
             </p-dropdown>
             <button pButton pRipple type="button" icon="pi pi-save" label="Save" class="p-py-1 p-button-outlined p-button-danger cls_saveUser" (click)="save()"></button>
         </div>
         <div class="p-col p-grid" *ngIf="showGroup">
-            <h5 class="p-col-1 error">Groups : </h5>
+            <h5 class="p-col-1 p-m-0 error">Groups : </h5>
 
             <div class="p-col p-grid">
 
