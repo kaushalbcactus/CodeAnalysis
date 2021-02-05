@@ -8,6 +8,7 @@
         "buildprod": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build --configuration=prodcdnSPA",
         "builduat": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build --configuration=uatcdnSPA",
         "buildqa": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build --configuration=qacdnSPA",
+        "builddev": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build --configuration=devcdnSPA",
         "test": "ng test",
         "lint": "ng lint",
         "e2e": "ng e2e",

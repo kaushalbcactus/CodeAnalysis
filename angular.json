@@ -14,6 +14,14 @@
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
                         "outputPath": "dist/CACTUSMedcomSPA",
+                        "allowedCommonJsDependencies": [
+                            "file-saver",
+                            "rxjs/operators",
+                            "rxjs",
+                            "webcola",
+                            "dagre",
+                            "rxjs/internal/BehaviorSubject"
+                        ],
                         "index": "src/index.html",
                         "main": "src/main.ts",
                         "polyfills": "src/polyfills.ts",

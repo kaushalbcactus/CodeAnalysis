@@ -37,12 +37,12 @@ export class TimelineHistoryComponent implements OnInit {
   public lazy: boolean;
   public displayBody = false;
   public timelineHeader = [
-    { field: 'date_time', header: 'Date & Time', width: '14%' },
-    { field: 'activity_type', header: 'Activity Type', width: '14%' },
-    { field: 'activity_sub_type', header: 'Activity Sub-Type', width: '' },
-    { field: 'activity_by', header: 'Activity By', width: '' },
+    { field: 'date_time', header: 'Date & Time', width: '14%', Type:'datetime',dbName:'date_time', options:[] },
+    { field: 'activity_type', header: 'Activity Type', width: '14%', Type:'string',dbName:'activity_type', options:[] },
+    { field: 'activity_sub_type', header: 'Activity Sub-Type', width: '16%', Type:'string',dbName:'activity_sub_type', options:[] },
+    { field: 'activity_by', header: 'Activity By', width: '16%', Type:'string',dbName:'activity_by', options:[] },
     { field: 'activity_description', header: 'Activity Description', width: '20%' },
-    { field: 'file_uploaded', header: 'File Uploaded', width: '' }
+    { field: 'file_uploaded', header: 'File Uploaded', width: '16%' }
   ];
   public filter = {
     dates: [],
@@ -361,7 +361,8 @@ export class TimelineHistoryComponent implements OnInit {
     const finalData = [...this.timelineData, ...arrData];
     this.timelineData = this.customSort(finalData, -1, 'date_time');
     this.timelineDataCopy = JSON.parse(JSON.stringify(this.timelineData));
-    this.filter = this.getFilterData(this.timelineData);
+    //this.filter = this.getFilterData(this.timelineData);
+    this.timelineHeader = this.commonService.MainfilterForTable(this.timelineHeader,this.timelineData);
     this.hideLoader = true;
   }
 
@@ -419,7 +420,8 @@ export class TimelineHistoryComponent implements OnInit {
 
   async loadNextDataSet(event) {
     await this.processPendingRequests();
-    this.filter = this.getFilterData(this.timelineData);
+    //this.filter = this.getFilterData(this.timelineData);
+    this.timelineHeader = this.commonService.MainfilterForTable(this.timelineHeader, this.timelineData);
     this.sortData(event, this.timelineData);
   }
 
