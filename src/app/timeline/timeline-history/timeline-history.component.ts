@@ -79,6 +79,7 @@ export class TimelineHistoryComponent implements OnInit {
   public filterEnabled = false;
   public hideLoader = true;
   public datesValues = '';
+  public firstLoad: boolean = true;
 
   @ViewChild('timelineTable', { static: true }) timelineTable: Table;
 
@@ -153,6 +154,7 @@ export class TimelineHistoryComponent implements OnInit {
 
   // #region timeline initialization
   async showTimeline(id, moduleName, type) {
+    this.firstLoad = false;
     this.reset();
     this.initialRequestOngoing = true;
     this.hideLoader = false;
@@ -2036,29 +2038,32 @@ export class TimelineHistoryComponent implements OnInit {
 
 
   ngAfterViewChecked() {
-    let obj = {
-      tableData: this.timelineTable,
-      colFields: this.objTimelineData,
-      // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
-    }
-    if (this.isEmpty(this.timelineTable.filters)) {
-      this.lazy = false;
-      console.log('this.timelineTable ', this.timelineTable);
-      if (obj.tableData.filteredValue) {
-        // obj.tableData.filteredValue = obj.tableData.value;
-        this.commonService.updateOptionValues(obj);
-        this.cdr.detectChanges();
-      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-        // this.createColFieldValues(obj.tableData.value);
-        this.getFilterData(obj.tableData.value)
+    if(!this.firstLoad) {
+      let obj = {
+        tableData: this.timelineTable,
+        colFields: this.objTimelineData,
+        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+      }
+      if (this.isEmpty(this.timelineTable.filters)) {
+        this.lazy = false;
+        console.log('this.timelineTable ', this.timelineTable);
+        if (obj.tableData.filteredValue) {
+          // obj.tableData.filteredValue = obj.tableData.value;
+          this.commonService.updateOptionValues(obj);
+          this.cdr.detectChanges();
+        } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+          // this.createColFieldValues(obj.tableData.value);
+          this.getFilterData(obj.tableData.value)
+          this.cdr.detectChanges();
+        }
+        console.log('this.objTimelineData ', this.filter);
+      } else {
+        this.lazy = true;
+        this.getFilterData(this.timelineData);
         this.cdr.detectChanges();
       }
-      console.log('this.objTimelineData ', this.filter);
-    } else {
-      this.lazy = true;
-      this.getFilterData(this.timelineData);
-      this.cdr.detectChanges();
     }
+    
 
   }
 
