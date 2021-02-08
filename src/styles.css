@@ -753,7 +753,8 @@ form>div>div>div>label,
     background-color: beige;
 }
 
-.pdialogButton>button {
+.pdialogButton>button,
+.p-button {
     cursor: pointer !important;
 }
 
@@ -777,7 +778,8 @@ a:hover {
     /* position: absolute !important; */
 }
 
-.p-sidebar-bottom.p-sidebar-sm, .p-sidebar-top.p-sidebar-sm {
+.p-sidebar-bottom.p-sidebar-sm,
+.p-sidebar-top.p-sidebar-sm {
     height: 30rem !important;
 }
 

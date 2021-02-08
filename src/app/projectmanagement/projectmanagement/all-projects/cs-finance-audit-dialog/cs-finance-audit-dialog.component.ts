@@ -22,7 +22,8 @@ import { Table } from "primeng/table";
 })
 export class CsFinanceAuditDialogComponent implements OnInit {
   projectUpdated = false;
-  @ViewChild("csfinanceAuditTable", { static: false }) csfinanceAuditTable: Table;
+  @ViewChild("csfinanceAuditTable", { static: false })
+  csfinanceAuditTable: Table;
   projectList: any;
   checked = false;
   public allProjects = {
@@ -47,23 +48,78 @@ export class CsFinanceAuditDialogComponent implements OnInit {
   selectedProjects = [];
 
   displayedColumns: any[] = [
-    { field: "SOWCode", header: "Sow Code", visibility: true ,Type:'string',dbName:'SOWCode', options:[]  },
-    { field: "ProjectCode", header: "Project Code", visibility: true ,Type:'string',dbName:'ProjectCode', options:[]  },
-    { field: "ShortTitle", header: "Short Title", visibility: true  ,Type:'string',dbName:'ShortTitle', options:[] },
+    {
+      field: "SOWCode",
+      header: "Sow Code",
+      visibility: true,
+      Type: "string",
+      dbName: "SOWCode",
+      options: [],
+    },
+    {
+      field: "ProjectCode",
+      header: "Project Code",
+      visibility: true,
+      Type: "string",
+      dbName: "ProjectCode",
+      options: [],
+    },
+    {
+      field: "ShortTitle",
+      header: "Short Title",
+      visibility: true,
+      Type: "string",
+      dbName: "ShortTitle",
+      options: [],
+    },
     {
       field: "ClientLegalEntity",
       header: "Client Legal Entity",
-      visibility: true, Type:'string',dbName:'ClientLegalEntity', options:[] 
+      visibility: true,
+      Type: "string",
+      dbName: "ClientLegalEntity",
+      options: [],
     },
-    { field: "ProjectType", header: "Project Type", visibility: true  ,Type:'string',dbName:'ProjectType', options:[] },
+    {
+      field: "ProjectType",
+      header: "Project Type",
+      visibility: true,
+      Type: "string",
+      dbName: "ProjectType",
+      options: [],
+    },
     {
       field: "PrimaryResources",
       header: "Primary Resources",
-      visibility: true ,Type:'string',dbName:'Status', options:[] 
+      visibility: true,
+      Type: "string",
+      dbName: "Status",
+      options: [],
     },
-    { field: "POC", header: "POC", visibility: true ,Type:'string',dbName:'POC', options:[]  },
-    { field: "TA", header: "TA", visibility: true ,Type:'string',dbName:'TA', options:[]  },
-    { field: "Molecule", header: "Molecule", visibility: true  ,Type:'string',dbName:'Molecule', options:[]  },
+    {
+      field: "POC",
+      header: "POC",
+      visibility: true,
+      Type: "string",
+      dbName: "POC",
+      options: [],
+    },
+    {
+      field: "TA",
+      header: "TA",
+      visibility: true,
+      Type: "string",
+      dbName: "TA",
+      options: [],
+    },
+    {
+      field: "Molecule",
+      header: "Molecule",
+      visibility: true,
+      Type: "string",
+      dbName: "Molecule",
+      options: [],
+    },
   ];
   modalloaderenable = true;
   AuditType = "";
@@ -89,58 +145,65 @@ export class CsFinanceAuditDialogComponent implements OnInit {
     this.projectList = this.config.data.projectList;
     this.dbProjectList = this.projectList.slice(0);
     this.AuditType = this.config.data.AuditListType;
-    this.displayedColumns = await this.commonService.MainfilterForTable(this.displayedColumns,this.projectList);
+    this.displayedColumns = await this.commonService.MainfilterForTable(
+      this.displayedColumns,
+      this.projectList
+    );
     // this.createColFieldValues(this.projectList);
   }
 
   async ngAfterViewInit() {
     if (this.config.data.tableData.filters.ProjectCode[0].value) {
-     await this.PrefilterData('ProjectCode','in');
+      await this.PrefilterData("ProjectCode", "in");
     }
     if (this.config.data.tableData.filters.SOWCode[0].value) {
-     await this.PrefilterData("SOWCode",'in');
+      await this.PrefilterData("SOWCode", "in");
     }
     if (this.config.data.tableData.filters.ShortTitle[0].value) {
-      await this.PrefilterData('ShortTitle','in');
+      await this.PrefilterData("ShortTitle", "in");
     }
     if (this.config.data.tableData.filters.ClientLegalEntity[0].value) {
-      await this.PrefilterData('ClientLegalEntity','in');
+      await this.PrefilterData("ClientLegalEntity", "in");
     }
     if (this.config.data.tableData.filters.ProjectType[0].value) {
-      await this.PrefilterData('ProjectType','in');
+      await this.PrefilterData("ProjectType", "in");
     }
     if (this.config.data.tableData.filters.POC[0].value) {
-      await this.PrefilterData('POC','in');
+      await this.PrefilterData("POC", "in");
     }
     if (this.config.data.tableData.filters.PrimaryResources[0].value) {
-      await this.PrefilterData('PrimaryResources','contains');
+      await this.PrefilterData("PrimaryResources", "contains");
     }
     if (this.config.data.tableData.filters.TA[0].value) {
-      await this.PrefilterData('TA','in');
+      await this.PrefilterData("TA", "in");
     }
     if (this.config.data.tableData.filters.Molecule[0].value) {
-      await this.PrefilterData('Molecule','in');
+      await this.PrefilterData("Molecule", "in");
     }
-
-    this.modalloaderenable = false;
+    setTimeout(() => {
+      this.modalloaderenable = false;
+    }, 300);
   }
 
-  PrefilterData(Type:string, filterType){
-    const data = this.displayedColumns.find(c=>c.dbName === Type).options.map((c) => c.value).filter((c) =>
-    this.config.data.tableData.filters[Type][0].value.includes(c)
-  );
-     this.csfinanceAuditTable.filter(data, Type, filterType);
-     setTimeout(() => {
-      this.csfinanceAuditTable.filters[Type]=null;
-      this.csfinanceAuditTable.filters[Type] = [{
-        matchMode: filterType,
-        operator: "and",
-        value: data,
-     }];
-     }, 200);
-    
+  PrefilterData(Type: string, filterType) {
+    const data = this.displayedColumns
+      .find((c) => c.dbName === Type)
+      .options.map((c) => c.value)
+      .filter((c) =>
+        this.config.data.tableData.filters[Type][0].value.includes(c)
+      );
+    this.csfinanceAuditTable.filter(data, Type, filterType);
+    setTimeout(() => {
+      this.csfinanceAuditTable.filters[Type] = null;
+      this.csfinanceAuditTable.filters[Type] = [
+        {
+          matchMode: filterType,
+          operator: "and",
+          value: data,
+        },
+      ];
+    }, 200);
   }
-    
 
   // **************************************************************************************
   // To Close dialog
@@ -159,13 +222,16 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
   onRowSelect() {
     if (this.selectedProjects.length > 10) {
-      this.commonService.showToastrMessage(this.constants.MessageType.error,'Maximum 10 projects allowed for audit.',false);
+      this.commonService.showToastrMessage(
+        this.constants.MessageType.error,
+        "Maximum 10 projects allowed for audit.",
+        false
+      );
+    } else if (this.selectedProjects.length === 10) {
+      this.checked = true;
+    } else {
+      false;
     }
-    else if (this.selectedProjects.length === 10) {
-        this.checked = true;
-      } else {
-        false;
-      }
   }
 
   onRowUnselect() {
@@ -227,74 +293,178 @@ export class CsFinanceAuditDialogComponent implements OnInit {
         },
       ];
 
-    const expenseInvoiceLineItems = await this.getInvoceExpense(this.selectedProjects);
-    const InvoiceLineItems = [].concat(...expenseInvoiceLineItems.filter(c => c.listName === this.constants.listNames.InvoiceLineItems.name).map(c => c.retItems));
+      const expenseInvoiceLineItems = await this.getInvoceExpense(
+        this.selectedProjects
+      );
+      const InvoiceLineItems = [].concat(
+        ...expenseInvoiceLineItems
+          .filter(
+            (c) => c.listName === this.constants.listNames.InvoiceLineItems.name
+          )
+          .map((c) => c.retItems)
+      );
 
-    let UniqueInvalidInvoices = [];
+      let UniqueInvalidInvoices = [];
 
-    if (InvoiceLineItems) {
-      if (InvoiceLineItems.filter((c) => c.Status === "Scheduled")) {
-        UniqueInvalidInvoices = InvoiceLineItems.filter(c => c.Status == 'Scheduled').map(c => c.Title).filter((item, index) => InvoiceLineItems.filter(c => c.Status == 'Scheduled').map(c => c.Title).indexOf(item) === index);
+      if (InvoiceLineItems) {
+        if (InvoiceLineItems.filter((c) => c.Status === "Scheduled")) {
+          UniqueInvalidInvoices = InvoiceLineItems.filter(
+            (c) => c.Status == "Scheduled"
+          )
+            .map((c) => c.Title)
+            .filter(
+              (item, index) =>
+                InvoiceLineItems.filter((c) => c.Status == "Scheduled")
+                  .map((c) => c.Title)
+                  .indexOf(item) === index
+            );
+        }
       }
-    }
-    const ExpenseLineItems = [].concat(...expenseInvoiceLineItems.filter(c => c.listName === this.constants.listNames.SpendingInfo.name).map(c => c.retItems));
+      const ExpenseLineItems = [].concat(
+        ...expenseInvoiceLineItems
+          .filter(
+            (c) => c.listName === this.constants.listNames.SpendingInfo.name
+          )
+          .map((c) => c.retItems)
+      );
 
       let UniqueInvalidExpenses = [];
       if (ExpenseLineItems) {
-        const AllBillable = ExpenseLineItems.filter(c => c.CategoryST === 'Billable');
+        const AllBillable = ExpenseLineItems.filter(
+          (c) => c.CategoryST === "Billable"
+        );
         let UniqueInvalidBilledExpenses = [];
         let UniqueInvalidNonBilledExpenses = [];
         if (AllBillable) {
-          UniqueInvalidBilledExpenses = AllBillable.filter(c => c.Status.indexOf('Billed') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled') ? AllBillable.filter(c => c.Status.indexOf('Billed') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).filter((item, index) => AllBillable.filter(c => c.Status.indexOf('Billed') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).indexOf(item) === index) : [];
+          UniqueInvalidBilledExpenses = AllBillable.filter(
+            (c) =>
+              c.Status.indexOf("Billed") === -1 &&
+              c.Status !== "Rejected" &&
+              c.Status !== "Cancelled"
+          )
+            ? AllBillable.filter(
+                (c) =>
+                  c.Status.indexOf("Billed") === -1 &&
+                  c.Status !== "Rejected" &&
+                  c.Status !== "Cancelled"
+              )
+                .map((c) => c.Title)
+                .filter(
+                  (item, index) =>
+                    AllBillable.filter(
+                      (c) =>
+                        c.Status.indexOf("Billed") === -1 &&
+                        c.Status !== "Rejected" &&
+                        c.Status !== "Cancelled"
+                    )
+                      .map((c) => c.Title)
+                      .indexOf(item) === index
+                )
+            : [];
         }
-        const AllNonBillable = ExpenseLineItems.filter(c => c.CategoryST === 'Non Billable');
+        const AllNonBillable = ExpenseLineItems.filter(
+          (c) => c.CategoryST === "Non Billable"
+        );
         if (AllNonBillable) {
-          UniqueInvalidNonBilledExpenses = AllNonBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled') ? AllNonBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).filter((item, index) => AllNonBillable.filter(c => c.Status.indexOf('Approved') === -1 && c.Status !== 'Rejected' && c.Status !== 'Cancelled').map(c => c.Title).indexOf(item) === index) : [];
+          UniqueInvalidNonBilledExpenses = AllNonBillable.filter(
+            (c) =>
+              c.Status.indexOf("Approved") === -1 &&
+              c.Status !== "Rejected" &&
+              c.Status !== "Cancelled"
+          )
+            ? AllNonBillable.filter(
+                (c) =>
+                  c.Status.indexOf("Approved") === -1 &&
+                  c.Status !== "Rejected" &&
+                  c.Status !== "Cancelled"
+              )
+                .map((c) => c.Title)
+                .filter(
+                  (item, index) =>
+                    AllNonBillable.filter(
+                      (c) =>
+                        c.Status.indexOf("Approved") === -1 &&
+                        c.Status !== "Rejected" &&
+                        c.Status !== "Cancelled"
+                    )
+                      .map((c) => c.Title)
+                      .indexOf(item) === index
+                )
+            : [];
         }
 
-        UniqueInvalidExpenses = [].concat(UniqueInvalidBilledExpenses, UniqueInvalidNonBilledExpenses).filter((item, index) => [].concat(UniqueInvalidBilledExpenses, UniqueInvalidNonBilledExpenses).indexOf(item) === index);
+        UniqueInvalidExpenses = []
+          .concat(UniqueInvalidBilledExpenses, UniqueInvalidNonBilledExpenses)
+          .filter(
+            (item, index) =>
+              []
+                .concat(
+                  UniqueInvalidBilledExpenses,
+                  UniqueInvalidNonBilledExpenses
+                )
+                .indexOf(item) === index
+          );
       }
 
-      if (UniqueInvalidExpenses.length > 0 || UniqueInvalidInvoices.length > 0) {
+      if (
+        UniqueInvalidExpenses.length > 0 ||
+        UniqueInvalidInvoices.length > 0
+      ) {
         if (UniqueInvalidInvoices.length > 0) {
-          this.commonService.showToastrMessage(this.constants.MessageType.error, UniqueInvalidInvoices.join(', ') + ' line item is not Confirmed.',true);
+          this.commonService.showToastrMessage(
+            this.constants.MessageType.error,
+            UniqueInvalidInvoices.join(", ") + " line item is not Confirmed.",
+            true
+          );
         }
 
         if (UniqueInvalidExpenses.length > 0) {
-
-          this.commonService.showToastrMessage(this.constants.MessageType.error, UniqueInvalidExpenses.join(', ') + ' expense not scheduled / confirmed.',true);
+          this.commonService.showToastrMessage(
+            this.constants.MessageType.error,
+            UniqueInvalidExpenses.join(", ") +
+              " expense not scheduled / confirmed.",
+            true
+          );
         }
 
-        this.ErrorProjectCodes.push.apply(this.ErrorProjectCodes, [...new Set([].concat(UniqueInvalidInvoices, UniqueInvalidExpenses))]);
-        this.selectedProjects = this.selectedProjects.filter(c => !this.ErrorProjectCodes.includes(c.ProjectCode));
+        this.ErrorProjectCodes.push.apply(this.ErrorProjectCodes, [
+          ...new Set([].concat(UniqueInvalidInvoices, UniqueInvalidExpenses)),
+        ]);
+        this.selectedProjects = this.selectedProjects.filter(
+          (c) => !this.ErrorProjectCodes.includes(c.ProjectCode)
+        );
         this.checked = this.selectedProjects.length >= 10 ? true : false;
         this.modalloaderenable = false;
         this.buttonloader = false;
-      }
-      else {
+      } else {
         this.ErrorProjectCodes = [];
         this.modalloaderenable = false;
-          this.buttonloader = false;
-          const ref = this.dialogService.open(AuditProjectDialogComponent, {
-            header: ' Audit Projects',
-            width: '60vw',
-            data: addRollingProjectArray,
-            closable: false,
-          });
+        this.buttonloader = false;
+        const ref = this.dialogService.open(AuditProjectDialogComponent, {
+          header: " Audit Projects",
+          width: "60vw",
+          data: addRollingProjectArray,
+          closable: false,
+        });
         ref.onClose.subscribe(async (Auditproj: any) => {
           if (Auditproj) {
-
             this.modalloaderenable = true;
             const piUdpate = {
               AuditCheckList: Auditproj,
               Status: this.constants.projectStatus.PendingClosure,
               PrevStatus: this.constants.projectStatus.AuditInProgress,
-              __metadata: { type: this.constants.listNames.ProjectInformation.type }
+              __metadata: {
+                type: this.constants.listNames.ProjectInformation.type,
+              },
             };
 
             await this.UpdateProjects(piUdpate);
 
-            this.commonService.showToastrMessage(this.constants.MessageType.success,'Selected Projects Updated Successfully.',false);
+            this.commonService.showToastrMessage(
+              this.constants.MessageType.success,
+              "Selected Projects Updated Successfully.",
+              false
+            );
           }
         });
       }
@@ -515,7 +685,12 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       batchURL.push(ProjectUpdate);
 
       if (batchURL.length === 99) {
-        this.commonService.SetNewrelic('projectManagment', 'cs-finance-auditdialog', 'UpdateProjectFinanceAuditToClosed', "POST-BATCH");
+        this.commonService.SetNewrelic(
+          "projectManagment",
+          "cs-finance-auditdialog",
+          "UpdateProjectFinanceAuditToClosed",
+          "POST-BATCH"
+        );
         batchResults = await this.spServices.executeBatch(batchURL);
 
         finalArray = [...finalArray, ...batchResults];
@@ -524,7 +699,12 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       }
     });
     if (batchURL.length) {
-      this.commonService.SetNewrelic('projectManagment', 'cs-finance-auditdialog', 'UpdateProjectFinanceAuditToClosed', "POST-BATCH");
+      this.commonService.SetNewrelic(
+        "projectManagment",
+        "cs-finance-auditdialog",
+        "UpdateProjectFinanceAuditToClosed",
+        "POST-BATCH"
+      );
       batchResults = await this.spServices.executeBatch(batchURL);
       finalArray = [...finalArray, ...batchResults];
       this.projectUpdated = true;
@@ -534,7 +714,10 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       (c) => !this.selectedProjects.includes(c)
     );
 
-    this.displayedColumns = await this.commonService.MainfilterForTable(this.displayedColumns,this.projectList);
+    this.displayedColumns = await this.commonService.MainfilterForTable(
+      this.displayedColumns,
+      this.projectList
+    );
 
     if (this.csfinanceAuditTable.filteredValue) {
       this.updateTableFilterOption();
@@ -604,7 +787,12 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       batchURL.push(expanseGet);
 
       if (batchURL.length === 98) {
-        this.commonService.SetNewrelic('projectManagment', 'cs-finance-auditdialog', 'getProjectsExpenseInvoiceLineItem', "GET-BATCH");
+        this.commonService.SetNewrelic(
+          "projectManagment",
+          "cs-finance-auditdialog",
+          "getProjectsExpenseInvoiceLineItem",
+          "GET-BATCH"
+        );
         batchResults = await this.spServices.executeBatch(batchURL);
 
         finalArray = [...finalArray, ...batchResults];
@@ -613,7 +801,12 @@ export class CsFinanceAuditDialogComponent implements OnInit {
       }
     });
     if (batchURL.length) {
-      this.commonService.SetNewrelic('projectManagment', 'cs-finance-auditdialog', 'getProjectsExpenseInvoiceLineItem', "GET-BATCH");
+      this.commonService.SetNewrelic(
+        "projectManagment",
+        "cs-finance-auditdialog",
+        "getProjectsExpenseInvoiceLineItem",
+        "GET-BATCH"
+      );
       batchResults = await this.spServices.executeBatch(batchURL);
       finalArray = [...finalArray, ...batchResults];
     }
@@ -626,29 +819,32 @@ export class CsFinanceAuditDialogComponent implements OnInit {
 
   MultipleSelectRows(AuditType) {
     setTimeout(() => {
-        if (this.csfinanceAuditTable.filteredValue) {
-          if (this.csfinanceAuditTable.filteredValue.length > 10 && !this.checked) {
-            this.selectedProjects = this.csfinanceAuditTable.filteredValue.slice(
-              this.csfinanceAuditTable.first,
-              this.csfinanceAuditTable.first + 10
-            );
-            this.checked = true;
-          } else if (this.checked === true) {
-            this.selectedProjects = [];
-            this.checked = false;
-          }
-        } else {
-          if (this.projectList.length > 10 && !this.checked) {
-            this.selectedProjects = this.projectList.slice(
-              this.csfinanceAuditTable.first,
-              this.csfinanceAuditTable.first + 10
-            );
-            this.checked = true;
-          } else if (this.checked === true) {
-            this.selectedProjects = [];
-            this.checked = false;
-          }
+      if (this.csfinanceAuditTable.filteredValue) {
+        if (
+          this.csfinanceAuditTable.filteredValue.length > 10 &&
+          !this.checked
+        ) {
+          this.selectedProjects = this.csfinanceAuditTable.filteredValue.slice(
+            this.csfinanceAuditTable.first,
+            this.csfinanceAuditTable.first + 10
+          );
+          this.checked = true;
+        } else if (this.checked === true) {
+          this.selectedProjects = [];
+          this.checked = false;
         }
+      } else {
+        if (this.projectList.length > 10 && !this.checked) {
+          this.selectedProjects = this.projectList.slice(
+            this.csfinanceAuditTable.first,
+            this.csfinanceAuditTable.first + 10
+          );
+          this.checked = true;
+        } else if (this.checked === true) {
+          this.selectedProjects = [];
+          this.checked = false;
+        }
+      }
     }, 100);
   }
 
