@@ -3,21 +3,15 @@
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
-
 <div class="pdialogButton p-col-12 p-grid p-jc-end" *ngIf="!modalloaderenable">
-
     <button type="button" pButton icon="pi pi-save" id="saveUser" (click)="SaveUserDetails(addUser);" label="Save" class="p-mx-1 p-button-raised p-button-danger"></button>
     <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="p-button-raised p-button-danger"></button>
-
 </div>
-
 
 
 <div *ngIf="!modalloaderenable" #scrollDown>
 
     <form [formGroup]='addUser' class="p-col  formfont">
-
-
 
         <div class="p-grid p-mt-2">
             <div class="p-grid p-col">
@@ -112,7 +106,7 @@
             <div class="p-grid p-col">
                 <div class="p-col-4"><span class="compulsory">*</span>Practice Area</div>
                 <div class="p-col-8">
-                    <p-multiSelect class="p-fluid cls_practiceArea" filterPlaceHolder="Select Practice Area" [options]="adminDropDown.practiceAreaArray" [maxSelectedLabels]="1" formControlName="practiceArea" (keydown.enter)="$event.preventDefault()" [ngClass]="{'form-submitted': upObject.isFormSubmit}"
+                    <p-multiSelect class="p-fluid cls_practiceArea" placeholder="Select Practice Area" [options]="adminDropDown.practiceAreaArray" [maxSelectedLabels]="1" formControlName="practiceArea" (keydown.enter)="$event.preventDefault()" [ngClass]="{'form-submitted': upObject.isFormSubmit}"
                         (onChange)="onPracticeAreaChange()" filter="true" resetFilterOnHide="true">
                     </p-multiSelect>
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.practiceArea.errors">
