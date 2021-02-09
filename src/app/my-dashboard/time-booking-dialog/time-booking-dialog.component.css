@@ -1,86 +1,66 @@
-               ::ng-deep .timepicker-dial__control {
-                  color: #c53e3e !important;
-              }
-              
-               ::ng-deep .clock-face__inner {
-                  display: none !important;
-              }
-              
-               :host ::ng-deep .p-datatable-header {
-                  position: sticky !important;
-                  top: 0px !important;
-              }
-              
-               :host ::ng-deep .p-datatable .p-datatable-thead>tr>th {
-                  position: -webkit-sticky !important;
-                  position: sticky !important;
-                  top: 55px !important;
-              }
-              
-              .ArraowView,
-              .nextArraowView {
-                  cursor: not-allowed !important;
-                  opacity: .65 !important;
-              }
-              /* @media screen and (max-width: 64em) {
-                :host ::ng-deep .p-datatable .p-datatable-thead>tr>th {
-                   top: 99px;
-               }
-           } */
-              /* ::ng-deep #datatable:nth-child(4),
-          #datatable:nth-child(8) {
-              width: 2% !important;
-              border: none !important;
-          }
-          
-           ::ng-deep #datatable>tbody>th {
-              border: none !important;
-          }
-           */
-              /* .ArraowView {
-              cursor: not-allowed !important;
-              opacity: .65 !important;
-          }
-          
-          .ArraowView:hover {
-              text-decoration: none !important;
-          }
-          
-          .ArraowView:focus {
-              text-decoration: none !important;
-          }
-          
-          .ArraowView:active {
-              text-decoration: none !important;
-          }
-          
-           ::ng-deep .fa-chevron-right,
-           ::ng-deep .fa-chevron-left {
-              font-size: 2em !important;
-              color: #000000 !important;
-              background: #f4f4f4 !important;
-          }
-          
-          #tableFooter :nth-child(1),
-          #tableFooter :nth-child(2),
-          #tableFooter :nth-child(3),
-          #tableFooter :nth-child(11) {
-              border: none !important;
-              background-color: #ffffff !important;
-          }
-          
-          #tableFooter :nth-child(4),
-          #tableFooter :nth-child(5),
-          #tableFooter :nth-child(6),
-          #tableFooter :nth-child(7),
-          #tableFooter :nth-child(8),
-          #tableFooter :nth-child(9),
-          #tableFooter :nth-child(10),
-          #tableFooter :nth-child(12) {
-              text-align: center !important;
-              background: #FFE6EA !important;
-          }
-          
-          #datatable tr:nth-child(even)>td>input {
-              background: #f9f9f9 !important;
-          } */
+::ng-deep .timepicker-dial__control {
+    color: #c53e3e !important;
+}
+
+::ng-deep .clock-face__inner {
+    display: none !important;
+}
+
+:host ::ng-deep .p-datatable-header {
+    position: sticky !important;
+    top: 0px !important;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-thead>tr>th {
+    position: -webkit-sticky !important;
+    position: sticky !important;
+    top: 55px !important;
+}
+
+.ArraowView,
+.nextArraowView {
+    cursor: not-allowed !important;
+    opacity: .65 !important;
+}
+
+:host ::ng-deep .p-datatable-scrollable-header-table .p-datatable-thead>tr>th:nth-child(1),
+:host ::ng-deep .p-datatable-scrollable-header-table .p-datatable-thead>tr>th:nth-child(2),
+:host ::ng-deep .p-datatable-scrollable-header-table .p-datatable-thead>tr>th:nth-child(3),
+:host ::ng-deep .p-datatable-scrollable-header-table .p-datatable-thead>tr>th:nth-child(4),
+:host ::ng-deep .p-datatable-scrollable-header-table .p-datatable-thead>tr>th:nth-child(10),
+:host ::ng-deep .p-datatable-scrollable-body .p-datatable-tbody>tr>td:nth-child(1),
+:host ::ng-deep .p-datatable-scrollable-body .p-datatable-tbody>tr>td:nth-child(2),
+:host ::ng-deep .p-datatable-scrollable-body .p-datatable-tbody>tr>td:nth-child(3),
+:host ::ng-deep .p-datatable-scrollable-body .p-datatable-tbody>tr>td:nth-child(4),
+:host ::ng-deep .p-datatable-scrollable-body .p-datatable-tbody>tr>td:nth-child(10),
+:host ::ng-deep .p-datatable-scrollable-footer-table .p-datatable-tfoot>tr>td:nth-child(1),
+:host ::ng-deep .p-datatable-scrollable-footer-table .p-datatable-tfoot>tr>td:nth-child(2),
+:host ::ng-deep .p-datatable-scrollable-footer-table .p-datatable-tfoot>tr>td:nth-child(3),
+:host ::ng-deep .p-datatable-scrollable-footer-table .p-datatable-tfoot>tr>td:nth-child(4),
+:host ::ng-deep .p-datatable-scrollable-footer-table .p-datatable-tfoot>tr>td:nth-child(10) {
+    width: 120px !important;
+}
+
+:host ::ng-deep .p-datatable-scrollable-header-table .p-datatable-thead>tr>th:nth-child(5),
+:host ::ng-deep .p-datatable-scrollable-header-table .p-datatable-thead>tr>th:nth-child(6),
+:host ::ng-deep .p-datatable-scrollable-header-table .p-datatable-thead>tr>th:nth-child(7),
+:host ::ng-deep .p-datatable-scrollable-header-table .p-datatable-thead>tr>th:nth-child(8),
+:host ::ng-deep .p-datatable-scrollable-header-table .p-datatable-thead>tr>th:nth-child(9),
+:host ::ng-deep .p-datatable-scrollable-header-table .p-datatable-thead>tr>th:nth-child(11),
+:host ::ng-deep .p-datatable-scrollable-header-table .p-datatable-thead>tr>th:nth-child(12),
+:host ::ng-deep .p-datatable-scrollable-body .p-datatable-tbody>tr>td:nth-child(5),
+:host ::ng-deep .p-datatable-scrollable-body .p-datatable-tbody>tr>td:nth-child(6),
+:host ::ng-deep .p-datatable-scrollable-body .p-datatable-tbody>tr>td:nth-child(7),
+:host ::ng-deep .p-datatable-scrollable-body .p-datatable-tbody>tr>td:nth-child(8),
+:host ::ng-deep .p-datatable-scrollable-body .p-datatable-tbody>tr>td:nth-child(9),
+:host ::ng-deep .p-datatable-scrollable-body .p-datatable-tbody>tr>td:nth-child(11),
+:host ::ng-deep .p-datatable-scrollable-body .p-datatable-tbody>tr>td:nth-child(12),
+:host ::ng-deep .p-datatable-scrollable-footer-table .p-datatable-tfoot>tr>td:nth-child(5),
+:host ::ng-deep .p-datatable-scrollable-footer-table .p-datatable-tfoot>tr>td:nth-child(6),
+:host ::ng-deep .p-datatable-scrollable-footer-table .p-datatable-tfoot>tr>td:nth-child(7),
+:host ::ng-deep .p-datatable-scrollable-footer-table .p-datatable-tfoot>tr>td:nth-child(8),
+:host ::ng-deep .p-datatable-scrollable-footer-table .p-datatable-tfoot>tr>td:nth-child(9),
+:host ::ng-deep .p-datatable-scrollable-footer-table .p-datatable-tfoot>tr>td:nth-child(11),
+:host ::ng-deep .p-datatable-scrollable-footer-table .p-datatable-tfoot>tr>td:nth-child(12) {
+    width: 80px !important;
+}

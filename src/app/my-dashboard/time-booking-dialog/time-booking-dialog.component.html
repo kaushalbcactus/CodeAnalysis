@@ -21,25 +21,13 @@
         </span>
     </div>
     <p-table #tableId [value]="UserMilestones" [globalFilterFields]="['Entity','ProjectCode','Milestone']" id="datatable" styleClass="p-datatable-cactus p-datatable-gridlines" [scrollable]="true" scrollHeight="295px">
-
-        <ng-template pTemplate="colgroup" let-columns>
-            <colgroup>
-                <col style="width: 125px;">
-                <col style="width: 125x;">
-                <col style="width: 150px;">
-                <col [attr.colspan]=" first || last ? '2':''" *ngFor="let day of weekDays;let first = first;let last=last;" [ngStyle]="{'width': first || last ? '65px':'80px','padding':'0px'}">
-                <col style="width:80px">
-                <col style="width:60px">
-
-            </colgroup>
-        </ng-template>
         <ng-template pTemplate="header">
             <tr>
-                <th>Client</th>
-                <th>Project</th>
-                <th>Milestone/Category</th>
+                <th class="p-px-0 p-text-center">Client</th>
+                <th class="p-px-0 p-text-center">Project</th>
+                <th class="p-px-0 p-text-center">Milestone/Category</th>
 
-                <th [attr.colspan]=" first || last ? '2':''" *ngFor="let day of weekDays;let first = first;let last=last;">
+                <th class="p-px-0 p-text-center" *ngFor="let day of weekDays;let first = first;let last=last;">
 
 
                     <div class="p-grid p-ai-center p-m-auto" *ngIf="first || last;else elseBlock">
@@ -62,8 +50,8 @@
 
                 </th>
 
-                <th class="p-text-center">Actions</th>
-                <th class="p-text-center" style="background: #E5cFD2; ">Total</th>
+                <th class="p-px-0 p-text-center">Actions</th>
+                <th class="p-px-0 p-text-center" style="background: #E5cFD2; ">Total</th>
             </tr>
         </ng-template>
 
@@ -92,7 +80,7 @@
                     <span fxLayout="row wrap" *ngIf="!rowData.isEditable"> {{rowData.displayName}} </span>
                 </td>
 
-                <td [attr.colspan]=" first || last ? '2':''" class="p-text-center" *ngFor="let dayhours of rowData.TimeSpents;let first = first;let last=last; ">
+                <td class="p-text-center" *ngFor="let dayhours of rowData.TimeSpents;let first = first;let last=last; ">
 
                     <input class="p-text-center error" *ngIf="rowData.type ==='task' && dayhours.editable" style="width: 80%;border: none;" aria-label="24hr format" [min]="dayhours.minHrs" [(ngModel)]="dayhours.MileHrs" [ngxTimepicker]="mon" [format]="24" readonly>
 
@@ -131,7 +119,7 @@
         </ng-template>
         <ng-template pTemplate="emptymessage">
             <tr>
-                <td [attr.colspan]="weekDays.length + 7">
+                <td [attr.colspan]="weekDays.length + 5">
                     No Data found
                 </td>
             </tr>
