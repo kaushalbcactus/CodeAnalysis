@@ -159,7 +159,8 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 
 .p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link,
 .p-calendar-w-btn .p-datepicker-trigger.p-button span,
-.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link,
+.cls_blockTime>.p-dialog-header>.p-dialog-title {
     color: #c53e3e !important;
 }
 
@@ -728,7 +729,8 @@ i.pi.pi-ellipsis-v,
 .tableHeader,
 form>div>div>label,
 form>div>div>div>label,
-.formfont {
+.formfont,
+.cls_adhocTaskTable {
     font-size: 13px !important;
 }
 
@@ -785,4 +787,9 @@ a:hover {
 
 .p-column-filter-buttonbar .p-button-outlined {
     color: white !important;
+}
+
+.p-calendar-w-btn .p-datepicker-trigger.p-button,
+.p-button.p-button-icon-only {
+    height: 35px !important;
 }

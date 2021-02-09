@@ -119,7 +119,8 @@ export class MyDashboardComponent implements OnInit {
       header: 'Time Booking',
       width: '100vw',
       height: '100vh',
-      contentStyle: { height: '90vh', overflow: 'auto' },
+      style : {'max-height':'98%', 'padding': '0px'},
+      contentStyle: {'max-height':'98%', height: '90vh', overflow: 'auto' },
       closable: false,
     });
     ref.onClose.subscribe(async (TimeBookingobjCount: any) => {

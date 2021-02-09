@@ -1,22 +1,31 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ComponentRef, ElementRef, ViewEncapsulation } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { ConstantsService } from 'src/app/Services/constants.service';
-import { GlobalService } from 'src/app/Services/global.service';
-import { Router, RouterStateSnapshot, ActivatedRoute } from '@angular/router';
-import { MyDashboardConstantsService } from '../../services/my-dashboard-constants.service';
-import { DatePipe } from '@angular/common';
-import { CommonService } from 'src/app/Services/common.service';
-import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
-import { Dropdown } from 'primeng/dropdown';
+import {
+  Component,
+  OnInit,
+  Input,
+  EventEmitter,
+  Output,
+  ViewChild,
+  ComponentRef,
+  ElementRef,
+  ViewEncapsulation,
+} from "@angular/core";
+import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { SPOperationService } from "src/app/Services/spoperation.service";
+import { ConstantsService } from "src/app/Services/constants.service";
+import { GlobalService } from "src/app/Services/global.service";
+import { Router, RouterStateSnapshot, ActivatedRoute } from "@angular/router";
+import { MyDashboardConstantsService } from "../../services/my-dashboard-constants.service";
+import { DatePipe } from "@angular/common";
+import { CommonService } from "src/app/Services/common.service";
+import { NgxMaterialTimepickerTheme } from "ngx-material-timepicker";
+import { Dropdown } from "primeng/dropdown";
 
 @Component({
-  selector: 'app-create-task',
-  templateUrl: './create-task.component.html',
-  styleUrls: ['./create-task.component.css']
+  selector: "app-create-task",
+  templateUrl: "./create-task.component.html",
+  styleUrls: ["./create-task.component.css"],
 })
 export class CreateTaskComponent implements OnInit {
-
   @Input() formType: string;
   @Input() currentUserInfo: any;
   @Input() events: any;
@@ -34,25 +43,26 @@ export class CreateTaskComponent implements OnInit {
   taskArrayList: any[];
 
   submitBtn: any = {
-    isClicked: false
+    isClicked: false,
   };
 
   formSubmit: any = {
-    isSubmit: false
+    isSubmit: false,
   };
 
   public queryConfig = {
     data: null,
-    url: '',
-    type: '',
-    listName: ''
+    url: "",
+    type: "",
+    listName: "",
   };
 
   fteProjectArrayList: any = [];
   maxDate: Date;
   minDateValue: Date;
 
-  yearsRange = new Date().getFullYear() - 1 + ':' + (new Date().getFullYear() + 10);
+  yearsRange =
+    new Date().getFullYear() - 1 + ":" + (new Date().getFullYear() + 10);
   defaultStartTime: any;
 
   subMilestonesArrayFormat: any = [];
@@ -61,17 +71,17 @@ export class CreateTaskComponent implements OnInit {
 
   darkTheme: NgxMaterialTimepickerTheme = {
     container: {
-      bodyBackgroundColor: '#424242',
-      buttonColor: '#fff'
+      bodyBackgroundColor: "#424242",
+      buttonColor: "#fff",
     },
     dial: {
-      dialBackgroundColor: '#555',
+      dialBackgroundColor: "#555",
     },
     clockFace: {
-      clockFaceBackgroundColor: '#555',
-      clockHandColor: '#C53E3E ',
-      clockFaceTimeInactiveColor: '#fff'
-    }
+      clockFaceBackgroundColor: "#555",
+      clockHandColor: "#C53E3E ",
+      clockFaceTimeInactiveColor: "#fff",
+    },
   };
 
   constructor(
@@ -82,41 +92,53 @@ export class CreateTaskComponent implements OnInit {
     private myDashboardConstantsService: MyDashboardConstantsService,
     private router: Router,
     private datePipe: DatePipe,
-    private commonService: CommonService,
-  ) {
-  }
+    private commonService: CommonService
+  ) {}
 
-  MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  MONTH_NAMES = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   async ngOnInit() {
-    if (this.formType === 'createTask') {
+    if (this.formType === "createTask") {
       this.createTaskFormField();
       await this.getFTEProjects();
       this.createTaskModal = true;
     }
     this.selectedRowItem = this.events;
 
-    this.defaultStartTime = '07:00 AM';
+    this.defaultStartTime = "07:00 AM";
     this.minDateValue = this.commonService.getLastWorkingDay(3, new Date());
   }
 
   createTaskFormField() {
     this.create_task_form = this.fb.group({
-      ProjectCode: ['', Validators.required],
-      Milestones: ['', Validators.required],
-      SubMilestones: ['', [Validators.required, Validators.maxLength(30)]],
+      ProjectCode: ["", Validators.required],
+      Milestones: ["", Validators.required],
+      SubMilestones: ["", [Validators.required, Validators.maxLength(30)]],
       StartDate: [new Date(), Validators.required],
-      StartTime: ['09:00 AM', Validators.required],
+      StartTime: ["09:00 AM", Validators.required],
       EndDate: [new Date(), Validators.required],
-      EndTime: ['07:00 PM', Validators.required],
-      Comments: [''],
+      EndTime: ["07:00 PM", Validators.required],
+      Comments: [""],
     });
   }
 
   cancelFormSub(formtype: string) {
     this.formSubmit.isSubmit = false;
     this.submitBtn.isClicked = false;
-    if (formtype === 'createTask') {
+    if (formtype === "createTask") {
       this.createTaskModal = false;
     }
   }
@@ -130,56 +152,79 @@ export class CreateTaskComponent implements OnInit {
     this.milestonesList = [];
     const batchUrl = [];
     const pInfoObj = Object.assign({}, this.queryConfig);
-    const pinfoQuery = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.FTEProjectInformations);
-    pinfoQuery.filter = pinfoQuery.filter.replace('{{userId}}', this.currentUserInfo.Id.toString());
-    pInfoObj.url = this.spOperationsService.getReadURL(this.constantsService.listNames.ProjectInformation.name, pinfoQuery
+    const pinfoQuery = Object.assign(
+      {},
+      this.myDashboardConstantsService.mydashboardComponent
+        .FTEProjectInformations
+    );
+    pinfoQuery.filter = pinfoQuery.filter.replace(
+      "{{userId}}",
+      this.currentUserInfo.Id.toString()
+    );
+    pInfoObj.url = this.spOperationsService.getReadURL(
+      this.constantsService.listNames.ProjectInformation.name,
+      pinfoQuery
     );
     pInfoObj.listName = this.constantsService.listNames.ProjectInformation.name;
-    pInfoObj.type = 'GET';
+    pInfoObj.type = "GET";
     batchUrl.push(pInfoObj);
-    this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'getFTEProjects', 'GET');
+    this.commonService.SetNewrelic(
+      "MyDashboard",
+      "fteCreateTask",
+      "getFTEProjects",
+      "GET"
+    );
     const res = await this.spOperationsService.executeBatch(batchUrl);
     this.fteProjectArrayList = res.length ? res[0].retItems : [];
 
     this.fteProjectsList = this.fteProjectArrayList;
     if (this.fteProjectArrayList.length === 1) {
       this.setMilestones(this.fteProjectArrayList[0]);
-      this.fteProjectArrayList[0]['FormatedMilestones'] = this.milestonesList;
+      this.fteProjectArrayList[0]["FormatedMilestones"] = this.milestonesList;
       this.create_task_form.patchValue({
-        ProjectCode: this.fteProjectsList[0]
+        ProjectCode: this.fteProjectsList[0],
       });
-      await this.getSubmilestones(this.create_task_form.value.ProjectCode.ProjectCode, this.create_task_form.value.Milestones);
+      await this.getSubmilestones(
+        this.create_task_form.value.ProjectCode.ProjectCode,
+        this.create_task_form.value.Milestones
+      );
     } else {
       this.milestonesList = [];
     }
   }
   onChangeDD(value: any, ddType: string) {
     if (value) {
-      if (ddType === 'ProjectCode') {
-        console.log('Value ', value);
+      if (ddType === "ProjectCode") {
+        console.log("Value ", value);
         this.milestonesList = [];
         this.create_task_form.patchValue({
-          SubMilestones: ''
+          SubMilestones: "",
         });
         if (this.fteProjectsList.length >= 2) {
           this.setMilestones(value);
-          this.getSubmilestones(this.create_task_form.value.ProjectCode.ProjectCode, this.create_task_form.value.Milestones);
+          this.getSubmilestones(
+            this.create_task_form.value.ProjectCode.ProjectCode,
+            this.create_task_form.value.Milestones
+          );
         }
-      } else if (ddType === 'Milestone') {
-        this.getSubmilestones(this.create_task_form.value.ProjectCode.ProjectCode, this.create_task_form.value.Milestones);
+      } else if (ddType === "Milestone") {
+        this.getSubmilestones(
+          this.create_task_form.value.ProjectCode.ProjectCode,
+          this.create_task_form.value.Milestones
+        );
         this.updateSDate();
-      } else if (ddType === 'SubMilestone') {
+      } else if (ddType === "SubMilestone") {
         this.createSubMilestone = false;
-        this.enteredSubMile = '';
+        this.enteredSubMile = "";
       }
     }
   }
 
   clearFilter(dropdown: Dropdown) {
     // if (dropdown.clearClick) {
-      this.create_task_form.value.SubMilestones = '';
-      dropdown.resetFilter();
-      dropdown.focus();
+    this.create_task_form.value.SubMilestones = "";
+    dropdown.resetFilter();
+    dropdown.focus();
     // }
   }
 
@@ -189,21 +234,29 @@ export class CreateTaskComponent implements OnInit {
   }
 
   setMilestones(items: any) {
-    const formatedMilestones = items.Milestones ? items.Milestones.split(';#') : [];
+    const formatedMilestones = items.Milestones
+      ? items.Milestones.split(";#")
+      : [];
     if (items.Milestone) {
       const milestone = items.Milestone;
       const milestoneInd = formatedMilestones.indexOf(milestone);
       const array = [];
       if (milestoneInd) {
-        array.push({ label: formatedMilestones[milestoneInd - 1], value: formatedMilestones[milestoneInd - 1] });
-        array.push({ label: formatedMilestones[milestoneInd], value: formatedMilestones[milestoneInd] });
+        array.push({
+          label: formatedMilestones[milestoneInd - 1],
+          value: formatedMilestones[milestoneInd - 1],
+        });
+        array.push({
+          label: formatedMilestones[milestoneInd],
+          value: formatedMilestones[milestoneInd],
+        });
       } else {
         const element = formatedMilestones[milestoneInd];
         array.push({ label: element, value: element });
       }
       this.milestonesList = array;
       this.create_task_form.patchValue({
-        Milestones: this.milestonesList[milestoneInd ? 1 : 0]
+        Milestones: this.milestonesList[milestoneInd ? 1 : 0],
       });
       this.updateSDate();
     }
@@ -211,63 +264,114 @@ export class CreateTaskComponent implements OnInit {
   }
 
   updateSDate() {
-    const mindex = this.MONTH_NAMES.indexOf(this.create_task_form.value.Milestones);
+    const mindex = this.MONTH_NAMES.indexOf(
+      this.create_task_form.value.Milestones
+    );
     const cmIndex = new Date().getMonth();
     const year = new Date().getFullYear();
     const month = this.create_task_form.value.Milestones;
     if (mindex <= cmIndex) {
-      const date = (this.MONTH_NAMES.indexOf(month) + 1) + '-' + new Date().getDate() + '-' + year;
-      this.minDateValue = this.commonService.getLastWorkingDay(3, new Date(date));
+      const date =
+        this.MONTH_NAMES.indexOf(month) +
+        1 +
+        "-" +
+        new Date().getDate() +
+        "-" +
+        year;
+      this.minDateValue = this.commonService.getLastWorkingDay(
+        3,
+        new Date(date)
+      );
     } else {
-      const date = (this.MONTH_NAMES.indexOf(month) + 1) + '-' + new Date().getDate() + '-' + (year - 1);
-      this.minDateValue = this.commonService.getLastWorkingDay(3, new Date(date));
+      const date =
+        this.MONTH_NAMES.indexOf(month) +
+        1 +
+        "-" +
+        new Date().getDate() +
+        "-" +
+        (year - 1);
+      this.minDateValue = this.commonService.getLastWorkingDay(
+        3,
+        new Date(date)
+      );
     }
   }
 
   async getSubmilestones(projectCode, milestone) {
     const batchUrl = [];
     const dataObj = Object.assign({}, this.queryConfig);
-    const schedulesQuery = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.FTESchedulesSubMilestones);
-    schedulesQuery.filter = schedulesQuery.filter.replace('{{ProjectCode}}', projectCode).replace('{{Milestone}}', milestone);
-    dataObj.url = this.spOperationsService.getReadURL(this.constantsService.listNames.Schedules.name, schedulesQuery);
+    const schedulesQuery = Object.assign(
+      {},
+      this.myDashboardConstantsService.mydashboardComponent
+        .FTESchedulesSubMilestones
+    );
+    schedulesQuery.filter = schedulesQuery.filter
+      .replace("{{ProjectCode}}", projectCode)
+      .replace("{{Milestone}}", milestone);
+    dataObj.url = this.spOperationsService.getReadURL(
+      this.constantsService.listNames.Schedules.name,
+      schedulesQuery
+    );
     dataObj.listName = this.constantsService.listNames.Schedules.name;
-    dataObj.type = 'GET';
+    dataObj.type = "GET";
     batchUrl.push(dataObj);
 
     // Task list
     const taskObj = Object.assign({}, this.queryConfig);
-    const taskQuery = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.FTESchedulesTask);
-    taskQuery.filter = taskQuery.filter.replace('{{ProjectCode}}', projectCode).replace('{{Milestone}}', milestone);
-    taskObj.url = this.spOperationsService.getReadURL(this.constantsService.listNames.Schedules.name, taskQuery);
+    const taskQuery = Object.assign(
+      {},
+      this.myDashboardConstantsService.mydashboardComponent.FTESchedulesTask
+    );
+    taskQuery.filter = taskQuery.filter
+      .replace("{{ProjectCode}}", projectCode)
+      .replace("{{Milestone}}", milestone);
+    taskObj.url = this.spOperationsService.getReadURL(
+      this.constantsService.listNames.Schedules.name,
+      taskQuery
+    );
     taskObj.listName = this.constantsService.listNames.Schedules.name;
-    taskObj.type = 'GET';
+    taskObj.type = "GET";
     batchUrl.push(taskObj);
-    this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'getSubmilestones', 'GET-BATCH');
+    this.commonService.SetNewrelic(
+      "MyDashboard",
+      "fteCreateTask",
+      "getSubmilestones",
+      "GET-BATCH"
+    );
     const res = await this.spOperationsService.executeBatch(batchUrl);
     this.subMilestonesArrayList = res.length ? res[0].retItems : [];
     this.taskArrayList = res.length ? res[1].retItems : [];
-    console.log('this.taskArrayList ', this.taskArrayList);
+    console.log("this.taskArrayList ", this.taskArrayList);
     if (this.subMilestonesArrayList.length) {
       this.setSubmilestones(this.subMilestonesArrayList[0]);
     }
-    console.log('this.subMilestonesArrayList ', this.subMilestonesArrayList);
+    console.log("this.subMilestonesArrayList ", this.subMilestonesArrayList);
   }
 
   setSubmilestones(items) {
     this.subMilestonesArrayFormat = [];
-    this.subMilestonesArrayFormat = items.SubMilestones ? items.SubMilestones.split(';#') : [];
-    this.subMilestonesArrayFormat = this.subMilestonesArrayFormat.filter(value => Object.keys(value).length !== 0);
+    this.subMilestonesArrayFormat = items.SubMilestones
+      ? items.SubMilestones.split(";#")
+      : [];
+    this.subMilestonesArrayFormat = this.subMilestonesArrayFormat.filter(
+      (value) => Object.keys(value).length !== 0
+    );
     const array = [];
-    this.subMilestonesArrayFormat.forEach(element => {
-      element ? array.push({ label: element.split(':')[0], value: element }) : '';
+    this.subMilestonesArrayFormat.forEach((element) => {
+      element
+        ? array.push({ label: element.split(":")[0], value: element })
+        : "";
     });
     this.subMilestonesList = array;
   }
 
   onCloseStartDate() {
-    if (this.create_task_form.value.StartDate > this.create_task_form.value.EndDate) {
+    if (
+      this.create_task_form.value.StartDate >
+      this.create_task_form.value.EndDate
+    ) {
       this.create_task_form.patchValue({
-        EndDate: this.create_task_form.value.StartDate
+        EndDate: this.create_task_form.value.StartDate,
       });
     }
   }
@@ -283,21 +387,30 @@ export class CreateTaskComponent implements OnInit {
 
   SetTime(time, type: string) {
     let endTime;
-    const startTime = type === 'startTime' ? time.split(':')[0] % 12 + ':' + time.split(':')[1]
-      : endTime = time.split(':')[0] % 12 + ':' + time.split(':')[1];
-    console.log('Start time: ', startTime + ' endTime ', endTime);
+    const startTime =
+      type === "startTime"
+        ? (time.split(":")[0] % 12) + ":" + time.split(":")[1]
+        : (endTime = (time.split(":")[0] % 12) + ":" + time.split(":")[1]);
+    console.log("Start time: ", startTime + " endTime ", endTime);
+    this.create_task_form.value[type] = time;
   }
 
   checkSubMilestone(val) {
     if (val) {
-      const sNewFileName = val.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+      const sNewFileName = val.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, "");
       if (val !== sNewFileName) {
-        this.commonService.showToastrMessage(this.constantsService.MessageType.error, 'Special characters are found in PUBID name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', false);
+        this.commonService.showToastrMessage(
+          this.constantsService.MessageType.error,
+          "Special characters are found in PUBID name. Please rename it. List of special characters ~ # % & * { }  : / + < > ? \" @ '",
+          false
+        );
         return false;
       }
-      const item = val + ':1:In Progress';
-      const lowerCaseSubMile = this.subMilestonesArrayFormat && this.subMilestonesArrayFormat.length ?
-        this.subMilestonesArrayFormat.map((ele) => ele.toLowerCase()) : [];
+      const item = val + ":1:In Progress";
+      const lowerCaseSubMile =
+        this.subMilestonesArrayFormat && this.subMilestonesArrayFormat.length
+          ? this.subMilestonesArrayFormat.map((ele) => ele.toLowerCase())
+          : [];
       const found = lowerCaseSubMile.indexOf(item.toLowerCase());
       if (found === -1) {
         this.createSubMilestone = true;
@@ -314,8 +427,8 @@ export class CreateTaskComponent implements OnInit {
     const batchUrl = [];
     this.formSubmit.isSubmit = true;
     this.submitBtn.isClicked = true;
-    if (type === 'createTask') {
-      if(!this.checkSubMilestone(this.enteredSubMile)) {
+    if (type === "createTask") {
+      if (!this.checkSubMilestone(this.enteredSubMile)) {
         this.submitBtn.isClicked = false;
         return false;
       }
@@ -326,17 +439,28 @@ export class CreateTaskComponent implements OnInit {
       const errorMsgs = this.validateTask();
       if (errorMsgs) {
         this.submitBtn.isClicked = false;
-        this.commonService.showToastrMessage(this.constantsService.MessageType.error, errorMsgs, true);
+        this.commonService.showToastrMessage(
+          this.constantsService.MessageType.error,
+          errorMsgs,
+          true
+        );
         return false;
       }
       this.submitBtn.isClicked = true;
-      const startTime = this.commonService.ConvertTimeformat(24, this.create_task_form.value.StartTime);
-      const endTime = this.commonService.ConvertTimeformat(24, this.create_task_form.value.EndTime);
+      debugger;
+      const startTime = this.commonService.ConvertTimeformat(
+        24,
+        this.create_task_form.value.StartTime
+      );
+      const endTime = this.commonService.ConvertTimeformat(
+        24,
+        this.create_task_form.value.EndTime
+      );
 
       if (this.createSubMilestone) {
         const array = [];
-        this.subMilestonesArrayFormat.forEach(ele => {
-          if (!ele.includes(';#')) {
+        this.subMilestonesArrayFormat.forEach((ele) => {
+          if (!ele.includes(";#")) {
             array.push(ele);
           } else {
             array.push(ele);
@@ -345,69 +469,97 @@ export class CreateTaskComponent implements OnInit {
 
         let milestoneDataObj = {};
         milestoneDataObj = {
-          SubMilestones: array.join(';#')
+          SubMilestones: array.join(";#"),
         };
 
         /* tslint:disable:no-string-literal */
-        milestoneDataObj['__metadata'] = { type: this.constantsService.listNames.Schedules.type };
+        milestoneDataObj["__metadata"] = {
+          type: this.constantsService.listNames.Schedules.type,
+        };
         /* tslint:enable:no-string-literal */
 
         const milestoneObj = Object.assign({}, this.queryConfig);
         milestoneObj.url = this.spOperationsService.getItemURL(
-          this.constantsService.listNames.Schedules.name, this.subMilestonesArrayList[0].ID);
+          this.constantsService.listNames.Schedules.name,
+          this.subMilestonesArrayList[0].ID
+        );
         milestoneObj.listName = this.constantsService.listNames.Schedules.name;
-        milestoneObj.type = 'PATCH';
+        milestoneObj.type = "PATCH";
         milestoneObj.data = milestoneDataObj;
         batchUrl.push(milestoneObj);
       }
 
       let taskObj = {};
-      const taskLength = this.taskArrayList.length ? this.taskArrayList.length + 1 : '';
+      const taskLength = this.taskArrayList.length
+        ? this.taskArrayList.length + 1
+        : "";
       taskObj = {
-        Title: this.create_task_form.value.ProjectCode.ProjectCode + ' ' + this.create_task_form.value.Milestones + ' ' +
-          this.create_task_form.value.ProjectCode.ServiceLevel + ' ' + taskLength.toString(),
-        Entity: '',
+        Title:
+          this.create_task_form.value.ProjectCode.ProjectCode +
+          " " +
+          this.create_task_form.value.Milestones +
+          " " +
+          this.create_task_form.value.ProjectCode.ServiceLevel +
+          " " +
+          taskLength.toString(),
+        Entity: "",
         ProjectCode: this.create_task_form.value.ProjectCode.ProjectCode,
         Task: this.create_task_form.value.ProjectCode.ServiceLevel,
-        StartDate: this.datePipe.transform(new Date(this.create_task_form.value.StartDate),
-          'yyyy-MM-dd' + 'T' + startTime + ':00.000'),
-        DueDateDT: this.datePipe.transform(this.create_task_form.value.EndDate,
-          'yyyy-MM-dd' + 'T' + endTime + ':00.000'),
-        ExpectedTime: '0',
-        TimeSpent: '',
+        StartDate: this.datePipe.transform(
+          new Date(this.create_task_form.value.StartDate),
+          "yyyy-MM-dd" + "T" + startTime + ":00.000"
+        ),
+        DueDateDT: this.datePipe.transform(
+          this.create_task_form.value.EndDate,
+          "yyyy-MM-dd" + "T" + endTime + ":00.000"
+        ),
+        ExpectedTime: "0",
+        TimeSpent: "",
         CommentsMT: this.create_task_form.value.Comments,
-        TaskComments: '',
-        Status: 'Not Started',
+        TaskComments: "",
+        Status: "Not Started",
         AssignedToId: this.currentUserInfo.Id.toString(),
-        TimeZoneNM: this.globalService.DashboardData.ResourceCategorization.find(c => c.ID ===
-          this.globalService.currentUser.userId) !== undefined ?
-          this.globalService.DashboardData.ResourceCategorization.find(c => c.ID ===
-            this.globalService.currentUser.userId).TimeZone !== undefined ?
-            this.globalService.DashboardData.ResourceCategorization.find(c => c.ID ===
-              this.globalService.currentUser.userId).TimeZone.Title : 5.5 : 5.5,
-        TATStatus: 'No',
+        TimeZoneNM:
+          this.globalService.DashboardData.ResourceCategorization.find(
+            (c) => c.ID === this.globalService.currentUser.userId
+          ) !== undefined
+            ? this.globalService.DashboardData.ResourceCategorization.find(
+                (c) => c.ID === this.globalService.currentUser.userId
+              ).TimeZone !== undefined
+              ? this.globalService.DashboardData.ResourceCategorization.find(
+                  (c) => c.ID === this.globalService.currentUser.userId
+                ).TimeZone.Title
+              : 5.5
+            : 5.5,
+        TATStatus: "No",
         SubMilestones: this.create_task_form.value.SubMilestones,
         Milestone: this.create_task_form.value.Milestones,
-        AllowCompletion: 'No',
-        TATBusinessDays: this.commonService.calcBusinessDays(new Date(this.create_task_form.value.StartDate),
-          new Date(this.create_task_form.value.EndDate)),
-        IsCentrallyAllocated: 'No',
-        ActiveCA: 'No',
-        DisableCascade: 'Yes',
+        AllowCompletion: "No",
+        TATBusinessDays: this.commonService.calcBusinessDays(
+          new Date(this.create_task_form.value.StartDate),
+          new Date(this.create_task_form.value.EndDate)
+        ),
+        IsCentrallyAllocated: "No",
+        ActiveCA: "No",
+        DisableCascade: "Yes",
         ContentTypeCH: this.constantsService.CONTENT_TYPE.TASK,
       };
       /* tslint:disable:no-string-literal */
-      taskObj['__metadata'] = { type: this.constantsService.listNames.Schedules.type };
+      taskObj["__metadata"] = {
+        type: this.constantsService.listNames.Schedules.type,
+      };
       /* tslint:enable:no-string-literal */
 
       const invObj = Object.assign({}, this.queryConfig);
-      invObj.url = this.spOperationsService.getReadURL(this.constantsService.listNames.Schedules.name);
+      invObj.url = this.spOperationsService.getReadURL(
+        this.constantsService.listNames.Schedules.name
+      );
       invObj.listName = this.constantsService.listNames.Schedules.name;
-      invObj.type = 'POST';
+      invObj.type = "POST";
       invObj.data = taskObj;
       this.getNumberOfDays(this.create_task_form.value.StartDate);
       batchUrl.push(invObj);
-      console.log('final batchUrl ', batchUrl);
+      console.log("final batchUrl ", batchUrl);
 
       this.submit(batchUrl);
     }
@@ -418,17 +570,30 @@ export class CreateTaskComponent implements OnInit {
     // let batchUrl = [];
     // batchUrl.push(data);
     if (batchUrl.length) {
-      this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'CreateTask', 'POST-BATCH');
+      this.commonService.SetNewrelic(
+        "MyDashboard",
+        "fteCreateTask",
+        "CreateTask",
+        "POST-BATCH"
+      );
       const res: any = await this.spOperationsService.executeBatch(batchUrl);
-      console.log('res ', res);
+      console.log("res ", res);
       if (res.length) {
         if (res[0].retItems.hasError) {
           const errorMsg = res[0].retItems.message.value;
-          this.commonService.showToastrMessage(this.constantsService.MessageType.error,errorMsg,false);
+          this.commonService.showToastrMessage(
+            this.constantsService.MessageType.error,
+            errorMsg,
+            false
+          );
           return false;
         }
-        
-        this.commonService.showToastrMessage(this.constantsService.MessageType.success,'Task Created',false);
+
+        this.commonService.showToastrMessage(
+          this.constantsService.MessageType.success,
+          "Task Created",
+          false
+        );
         this.refetchTaskList();
         this.constantsService.loader.isWaitDisable = true;
         this.createTaskModal = false;
@@ -437,37 +602,54 @@ export class CreateTaskComponent implements OnInit {
   }
 
   refetchTaskList() {
-    if (this.router.url.includes('my-current-tasks')) {
-      this.myDashboardConstantsService.setOpenTaskTabValue(this.myDashboardConstantsService.openTaskSelectedTab);
-    } else if (this.router.url.includes('my-timeline')) {
-      const s = this.datePipe.transform(new Date(this.create_task_form.value.StartDate), 'EEE MMM dd yyyy');
-      const s1 = new Date(new Date().setDate((new Date(s).getDate() - new Date(s).getDay())));
-      const e = this.datePipe.transform(new Date(this.create_task_form.value.EndDate), 'EEE MMM dd yyyy');
-      const e1 = new Date(new Date().setDate((new Date(e).getDate() - new Date(e).getDay()) + 6));
+    if (this.router.url.includes("my-current-tasks")) {
+      this.myDashboardConstantsService.setOpenTaskTabValue(
+        this.myDashboardConstantsService.openTaskSelectedTab
+      );
+    } else if (this.router.url.includes("my-timeline")) {
+      const s = this.datePipe.transform(
+        new Date(this.create_task_form.value.StartDate),
+        "EEE MMM dd yyyy"
+      );
+      const s1 = new Date(
+        new Date().setDate(new Date(s).getDate() - new Date(s).getDay())
+      );
+      const e = this.datePipe.transform(
+        new Date(this.create_task_form.value.EndDate),
+        "EEE MMM dd yyyy"
+      );
+      const e1 = new Date(
+        new Date().setDate(new Date(e).getDate() - new Date(e).getDay() + 6)
+      );
       const obj = {
         isFirstLoad: false,
-        gotoDate: this.datePipe.transform(new Date(this.create_task_form.value.StartDate), 'yyyy-MM-dd'),
+        gotoDate: this.datePipe.transform(
+          new Date(this.create_task_form.value.StartDate),
+          "yyyy-MM-dd"
+        ),
         startDate: s1,
         endDate: e1,
       };
       this.myDashboardConstantsService.setTimelineTabValue(obj);
     } else {
-      this.router.navigate(['myDashboard/my-current-tasks']);
+      this.router.navigate(["myDashboard/my-current-tasks"]);
     }
   }
 
   // tslint:disable-next-line: variable-name
   compare_dates = (date1, date2) => {
     if (date1 > date2) {
-      return ('2daysDate > startDate');
+      return "2daysDate > startDate";
     } else if (date1 < date2) {
-      return ('startDate > 2daysDate');
-    } else { return ('2daysDate = startDate'); }
-  }
+      return "startDate > 2daysDate";
+    } else {
+      return "2daysDate = startDate";
+    }
+  };
 
   getNumberOfDays(sDate) {
-    const as = this.datePipe.transform(new Date(sDate), 'dd MMM yyyy');
-    const as1 = this.datePipe.transform(new Date(), 'dd MMM yyyy');
+    const as = this.datePipe.transform(new Date(sDate), "dd MMM yyyy");
+    const as1 = this.datePipe.transform(new Date(), "dd MMM yyyy");
     const todayDate: any = new Date(as1);
     const startDate: any = new Date(as);
     const diffTime = Math.abs(startDate - todayDate);
@@ -477,49 +659,45 @@ export class CreateTaskComponent implements OnInit {
     let pastdays = false;
     let todays = false;
     const a = this.compare_dates(todayDate, startDate);
-    if (a === '2daysDate > startDate') {
+    if (a === "2daysDate > startDate") {
       pastdays = true;
-    } else if (a === 'startDate > 2daysDate') {
+    } else if (a === "startDate > 2daysDate") {
       nextDays = true;
-    } else if ('2daysDate = startDate') {
+    } else if ("2daysDate = startDate") {
       todays = true;
     }
 
     const days = diffDays;
     if (todays) {
-      this.myDashboardConstantsService.openTaskSelectedTab.event = 'Today';
+      this.myDashboardConstantsService.openTaskSelectedTab.event = "Today";
       this.myDashboardConstantsService.openTaskSelectedTab.days = 0;
       return;
     } else if (nextDays) {
       switch (true) {
-        case (days <= 7): {
-          this.myDashboardConstantsService.openTaskSelectedTab.event = 'Next';
+        case days <= 7: {
+          this.myDashboardConstantsService.openTaskSelectedTab.event = "Next";
           this.myDashboardConstantsService.openTaskSelectedTab.days = 7;
           break;
         }
-        case (days <= 14): {
-          this.myDashboardConstantsService.openTaskSelectedTab.event = 'Next';
+        case days <= 14: {
+          this.myDashboardConstantsService.openTaskSelectedTab.event = "Next";
           this.myDashboardConstantsService.openTaskSelectedTab.days = 14;
           break;
         }
         default: {
-          this.myDashboardConstantsService.openTaskSelectedTab.event = 'Custom';
+          this.myDashboardConstantsService.openTaskSelectedTab.event = "Custom";
           this.myDashboardConstantsService.openTaskSelectedTab.days = 0;
           break;
         }
       }
-
     } else if (pastdays) {
       switch (true) {
-        case (days <= 7): {
-          this.myDashboardConstantsService.openTaskSelectedTab.event = 'Past';
+        case days <= 7: {
+          this.myDashboardConstantsService.openTaskSelectedTab.event = "Past";
           this.myDashboardConstantsService.openTaskSelectedTab.days = 7;
           break;
         }
       }
-
     }
   }
-
-
 }

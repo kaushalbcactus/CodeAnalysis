@@ -112,8 +112,10 @@
                                     [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}">
                                 </p-calendar>
                                 <span class="p-col p-grid p-input-icon-right">
-                                    <i class="pi pi-clock" style="padding: 4px 8px;color: #c53e3e;"></i>
-                                    <input pInputText [disabled]="rowData.tat && rowData.itemType !=='Client Review'" readonly [ngxTimepicker]="picker"
+                                    <!-- <button class="p-mx-1 p-button-raised p-button-danger start-time-button" type="button" pButton icon="pi pi-clock" ></button> -->
+                                    <i class="pi pi-clock" style="padding: 4px 8px;color: #c53e3e; cursor: pointer;" [ngxTimepicker]="picker"
+                                    [(ngModel)]="rowData.pUserStartTimePart"></i>
+                                    <input pInputText [disabled]="rowData.tat && rowData.itemType !=='Client Review'" readonly 
                                     [(ngModel)]="rowData.pUserStartTimePart" class="timePicker p-col-12 p-mt-2">
                                 <ngx-material-timepicker [preventOverlayClick]="true"
                                     (closed)="DateChangePart(rowData,'start')" #picker
@@ -141,8 +143,8 @@
                                 </p-calendar>
 
                                 <span class="p-col p-grid p-input-icon-right">
-                                    <i class="pi pi-clock"  style="padding: 4px 8px;color: #c53e3e;"></i>
-                                    <input #inputDate pInputText [disabled]="rowData.tat && rowData.itemType !=='Client Review'" readonly [ngxTimepicker]="picker"
+                                    <i class="pi pi-clock"  style="padding: 4px 8px;color: #c53e3e;" [ngxTimepicker]="picker" [(ngModel)]="rowData.pUserEndTimePart"></i>
+                                    <input #inputDate pInputText [disabled]="rowData.tat && rowData.itemType !=='Client Review'" readonly 
                                     [min]="rowData.pUserStartDatePart === rowData.pUserEndDatePart ? rowData.pUserStartTimePart :'12:00 am'"
                                     [(ngModel)]="rowData.pUserEndTimePart" class="timePicker p-col-12 p-mt-2">
                                

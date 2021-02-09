@@ -1,53 +1,33 @@
-           :host ::ng-deep .ui-table .ui-table-thead>tr>th {
-              position: -webkit-sticky;
-              position: sticky;
-              top: -10px;
-              z-index: 999;
-          }
-          
-           ::ng-deep .timepicker-dial__control {
-              color: #c53e3e !important;
-          }
-          
-           ::ng-deep #datatable {
-              width: 100% !important;
-          }
-          
-          #modalInnerLoader {
-              border: 5px solid #f3f3f3;
-              border-radius: 50%;
-              border-top: 5px solid red;
-              border-bottom: 5px solid red;
-              width: 100px;
-              height: 100px;
-              -webkit-animation: spin 2s linear infinite;
-              animation: spin 2s linear infinite;
-              margin: 0 auto;
-              position: relative;
-              top: 50%;
-              transform: translateY(-50%);
-          }
-          
-          #modalInnerLoaderText {
-              -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
-              -o-animation: loading-text-opacity 2s linear 0s infinite normal;
-              -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
-              animation: loading-text-opacity 2s linear 0s infinite normal;
-              color: black;
-              font-family: "Helvetica Neue, "Helvetica", ""arial";
-              font-size: 10px;
-              font-weight: bold;
-              opacity: 0.5;
-              text-align: center;
-              text-transform: uppercase;
-              top: 0;
-          }
-          
-           ::ng-deep .clock-face__inner {
-              display: none !important;
-          }
-          
-           ::ng-deep #datatable:nth-child(4),
+               ::ng-deep .timepicker-dial__control {
+                  color: #c53e3e !important;
+              }
+              
+               ::ng-deep .clock-face__inner {
+                  display: none !important;
+              }
+              
+               :host ::ng-deep .p-datatable-header {
+                  position: sticky !important;
+                  top: 0px !important;
+              }
+              
+               :host ::ng-deep .p-datatable .p-datatable-thead>tr>th {
+                  position: -webkit-sticky !important;
+                  position: sticky !important;
+                  top: 55px !important;
+              }
+              
+              .ArraowView,
+              .nextArraowView {
+                  cursor: not-allowed !important;
+                  opacity: .65 !important;
+              }
+              /* @media screen and (max-width: 64em) {
+                :host ::ng-deep .p-datatable .p-datatable-thead>tr>th {
+                   top: 99px;
+               }
+           } */
+              /* ::ng-deep #datatable:nth-child(4),
           #datatable:nth-child(8) {
               width: 2% !important;
               border: none !important;
@@ -56,8 +36,8 @@
            ::ng-deep #datatable>tbody>th {
               border: none !important;
           }
-          
-          .ArraowView {
+           */
+              /* .ArraowView {
               cursor: not-allowed !important;
               opacity: .65 !important;
           }
@@ -103,4 +83,4 @@
           
           #datatable tr:nth-child(even)>td>input {
               background: #f9f9f9 !important;
-          }
+          } */

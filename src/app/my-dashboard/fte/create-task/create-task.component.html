@@ -1,4 +1,4 @@
-<p-dialog header="Create Task" [(visible)]="createTaskModal" [modal]="true" [draggable]="false" [style]="{'width': '50%'}" [maximizable]="false" (onHide)="cancelFormSub('createTask')" [closable]='false'>
+<p-dialog header="Create Task" [(visible)]="createTaskModal" [modal]="true" [draggable]="false" [style]="{'width': '70%'}" [maximizable]="false" (onHide)="cancelFormSub('createTask')" [closable]='false'>
 
 
     <div class="pdialogButton p-col-12 p-grid p-jc-end">
@@ -67,6 +67,17 @@
                                 <div style="color: red;">Start Date is required.</div>
                             </div>
                         </div>
+                        <!-- <span class="p-col p-grid p-input-icon-right">
+                            <i class="pi pi-clock error"  style="padding: 4px 8px;" [ngxTimepicker]="startpicker"  formControlName="StartTime"></i>
+                            <input #inputDate pInputText  placeholder="Select Start Time"  aria-label="12hr format"  formControlName="StartTime" [value]="'09:00 AM'" [format]="12" readonly class="p-col-12 p-mt-2">
+                       
+                            <ngx-material-timepicker #startpicker [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(create_task_form.value.StartTime, 'StartTime')" class="timepickerPosition" [theme]="darkTheme">
+                                </ngx-material-timepicker>
+                        </span>
+                        <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.StartTime.errors">
+                            <div style="color: red;">Start time is required.</div>
+                        </div> -->
+
                         <div class="p-col">
                             <div class="p-d-flex">
                                 <input placeholder="Select Start Time" style="padding:8px;width: 75%;  border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultStartTime" formControlName="StartTime" [value]="'09:00 AM'" [format]="12" readonly>
@@ -84,8 +95,8 @@
                     <label for="EndDate" class="p-col-12 p-m-0 p-md-4 p-mb-md-0 p-p-3"> End Date:</label>
                     <div class="p-col-12 p-md-8 p-grid p-d-flex">
                         <div class="p-col">
-                            <p-calendar [style]="{'border': '1px solid !important'}" [minDate]="create_task_form.value.StartDate" placeholder="Select End Date" formControlName="EndDate" [maxDate]="maxDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
-                                [showIcon]="true" [yearNavigator]="true">
+                            <p-calendar [style]="{'border': '1px solid !important'}" [minDate]="create_task_form.value.StartDate" placeholder="Select End Date" formControlName="EndDate" [maxDate]="maxDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body"
+                                [monthNavigator]="true" [showIcon]="true" [yearNavigator]="true">
                             </p-calendar>
                             <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.EndDate.errors">
                                 <div style="color: red;">End Date is required.</div>

@@ -9,109 +9,146 @@
     <button type="button" pButton icon="pi pi-times" (click)="cancelTBooking();" label="Cancel" class="p-button-raised p-button-danger"></button>
 </div>
 
+<div class="p-col p-flex-column" *ngIf="!modalloaderenable">
 
-<div fxLayout="row" *ngIf="!modalloaderenable" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
+    <div class="p-mb-0 p-pr-4  p-grid p-jc-between">
 
+        <i class="fa fa-plus-circle error p-my-1 p-pl-2" (click)="AddNewRow()" style="font-size: 1.5em;cursor: pointer;" aria-hidden="true">Add Line</i>
 
-    <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start" fxLayoutGap="20px">
-        <p-table #tableId [style]="{'font-size':'12px','width' : '100%'}" [value]="UserMilestones" [globalFilterFields]="['Entity','ProjectCode','Milestone']" id="datatable" styleClass="p-datatable-cactus p-datatable-gridlines">
-            <ng-template pTemplate="caption">
-                <div style="text-align: right">
-                    <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-                    <input type="text" pInputText size="50" placeholder="Search by Client / Project / Milestone/Category" (input)="tableId.filterGlobal($event.target.value, 'contains')" style="width:auto">
-                </div>
-            </ng-template>
-            <ng-template pTemplate="header">
-                <tr>
-                    <th>Client</th>
-                    <th>Project</th>
-                    <th>Milestone/Category</th>
-
-                    <th [attr.colspan]=" first || last ? '2':''" *ngFor="let day of weekDays;let first = first;let last=last;" [ngStyle]="{'text-align':'center','width': first || last ? '10em':'6.5em','padding':'0px'}">
-
-
-                        <div *ngIf="first || last;else elseBlock " fxLayout="row" fxLayoutAlign="space-around center">
-
-                            <button pButton *ngIf="first" type="button" [ngClass]="{'ArraowView': !prevArrow}" style="border: none;background-color: #f4f4f4 !important;" [disabled]="!prevArrow" (click)="getweekDates('decrease')" icon="fa fa-chevron-left" iconPos="left"></button>                            {{day | date:'EEE, MMM dd'}}
-
-                            <button pButton *ngIf="last" type="button" [ngClass]="{'nextArraowView': !nextArrow}" style="border: none;background-color: #f4f4f4 !important;" [disabled]="!nextArrow" (click)="getweekDates('increase')" icon="fa fa-chevron-right" iconPos="left"></button>
-
-                        </div>
-                        <ng-template #elseBlock> {{day | date:'EEE, MMM dd'}} </ng-template>
-
-
-
-                    </th>
-
-                    <th style="width: 7em;text-align: center;">Actions</th>
-                    <th style="width: 5em;text-align: center;background: #E5cFD2; ">Total</th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-rowData let-editing="editing" let-ri="rowIndex">
-                <tr [pEditableRow]="rowData">
-
-                    <td [ngStyle]="{'padding': rowData.isEditable ? '0px':'5px'}">
-
-                        <p-dropdown class="CLS_My_DashBoard_ClientName" filter="true"  resetFilterOnHide="true" *ngIf="rowData.isEditable" [options]="rowData.dbClientLegalEntities" [(ngModel)]="rowData.Entity" (ngModelChange)="getAllProjects($event,rowData)" [style]="{ width: '100%', overflow: 'visible',border:'none' }">
-                        </p-dropdown>
-
-                        <span fxLayout="row wrap" *ngIf="!rowData.isEditable"> {{rowData.Entity}} </span>
-
-                    </td>
-                    <td [ngStyle]="{'padding': rowData.isEditable ? '0px':'5px'}">
-                        <p-dropdown class="CLS_My_DashBoard_ProjectCode" fxLayout="row wrap" resetFilterOnHide="true" filter="true" *ngIf="rowData.isEditable" (ngModelChange)="getAllMilestones($event,rowData)" [options]="rowData.dbProjects" [(ngModel)]="rowData.ProjectCodeTitle" [style]="{ width: '100%', overflow: 'visible',border:'none' }">
-                        </p-dropdown>
-
-                        <span fxLayout="row wrap" *ngIf="!rowData.isEditable"> {{rowData.ProjectCodeTitle}} </span>
-                    </td>
-                    <td [ngStyle]="{'padding': rowData.isEditable ? '0px':'5px'}">
-                        <p-dropdown class="CLS_My_DashBoard_Milestone" fxLayout="row wrap" resetFilterOnHide="true" filter="true" *ngIf="rowData.isEditable" [options]="rowData.dbMilestones" [(ngModel)]="rowData.displayName" (ngModelChange)="checkMilestone($event,rowData)" [style]="{ width: '100%', overflow: 'visible',border:'none'}">
-                        </p-dropdown>
-
-                        <span fxLayout="row wrap" *ngIf="!rowData.isEditable"> {{rowData.displayName}} </span>
-                    </td>
-
-                    <td [attr.colspan]=" first || last ? '2':''" style="text-align: center;" *ngFor="let dayhours of rowData.TimeSpents;let first = first;let last=last; ">
-
-                        <input *ngIf="rowData.type ==='task' && dayhours.editable" style="text-align: center;width: 80%;border: none;color:#C53E3E;" aria-label="24hr format" [min]="dayhours.minHrs" [(ngModel)]="dayhours.MileHrs" [ngxTimepicker]="mon" [format]="24" readonly>
-
-                        <ngx-material-timepicker #mon [minutesGap]="15" (closed)="SetTime(dayhours.MileHrs,dayhours,rowData)" [enableKeyboardInput]="true" class="timepickerPosition" [theme]="darkTheme">
-                        </ngx-material-timepicker>
-
-                        <span *ngIf="rowData.type ==='Adhoc' ||(rowData.type ==='task' && !dayhours.editable)">{{dayhours.MileHrs}}</span>
-                    </td>
-                    <td style="text-align: center;">
-                        <i *ngIf="rowData.commentEnable" style="font-size: 1.5em;cursor: pointer; padding-right: 10px;" class="fa fa-commenting-o" aria-hidden="true" (click)="openDialog(rowData, 'comments')"></i>
-                        <i *ngIf="rowData.commentEnable && rowData.ID !== -1" class="fa fa-upload" aria-hidden="true" style="font-size: 1.5em;cursor: pointer;" (click)="openDialog(rowData, 'fileupload')"></i>
-                    </td>
-                    <td style="background: #FFE6EA;">
-                        {{getTotalHoursRow(rowData)}}
-                    </td>
-
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="footer" *ngIf="UserMilestones.length  >  0">
-                <tr id="tableFooter">
-                    <td></td>
-                    <td> </td>
-                    <td> </td>
-                    <td colspan="2" style="text-align: center;">{{getTotalHoursColumn(0)}} </td>
-                    <td style="text-align: center;">{{getTotalHoursColumn(1)}} </td>
-                    <td style="text-align: center;">{{getTotalHoursColumn(2)}} </td>
-                    <td style="text-align: center;">{{getTotalHoursColumn(3)}} </td>
-                    <td style="text-align: center;">{{getTotalHoursColumn(4)}} </td>
-                    <td style="text-align: center;">{{getTotalHoursColumn(5)}} </td>
-                    <td colspan="2" style="text-align: center;">{{getTotalHoursColumn(6)}} </td>
-                    <td> </td>
-                    <td style="background: #FFE6EA;"> {{getTotalOfTotal()}}</td>
-                </tr>
-            </ng-template>
-        </p-table>
-
-        <span *ngIf="UserMilestones.length === 0" style="font-weight: 500;font-size: 2em;"> No Data</span>
-        <i class="fa fa-plus-circle" (click)="AddNewRow()" style="color:#C53E3E;font-size: 1.5em;cursor: pointer;" aria-hidden="true">Add Line</i>
+        <span class="p-input-icon-left p-my-1">
+            <i class="pi pi-search"></i>
+            <input type="text" pInputText size="50" placeholder="Search by Client / Project / Milestone/Category" (input)="tableId.filterGlobal($event.target.value, 'contains')" />
+        </span>
     </div>
+    <p-table #tableId [value]="UserMilestones" [globalFilterFields]="['Entity','ProjectCode','Milestone']" id="datatable" styleClass="p-datatable-cactus p-datatable-gridlines" [scrollable]="true" scrollHeight="295px">
 
+        <ng-template pTemplate="colgroup" let-columns>
+            <colgroup>
+                <col style="width: 125px;">
+                <col style="width: 125x;">
+                <col style="width: 150px;">
+                <col [attr.colspan]=" first || last ? '2':''" *ngFor="let day of weekDays;let first = first;let last=last;" [ngStyle]="{'width': first || last ? '65px':'80px','padding':'0px'}">
+                <col style="width:80px">
+                <col style="width:60px">
+
+            </colgroup>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Client</th>
+                <th>Project</th>
+                <th>Milestone/Category</th>
+
+                <th [attr.colspan]=" first || last ? '2':''" *ngFor="let day of weekDays;let first = first;let last=last;">
+
+
+                    <div class="p-grid p-ai-center p-m-auto" *ngIf="first || last;else elseBlock">
+
+                        <button *ngIf="first" pButton pRipple type="button" icon="pi pi-chevron-left" class="p-button-rounded p-button-text p-button-plain" style="border: none;
+                        background-color: #ffffff !important;
+                        color: #2f2f30 !important;" [disabled]="!prevArrow" (click)="getweekDates('decrease')" [ngClass]="{'ArraowView': !prevArrow}"></button>
+
+                        <div class="p-m-auto">{{day | date:'EEE, MMM dd'}}</div>
+                        <button pButton pRipple *ngIf="last" type="button" [ngClass]="{'nextArraowView': !nextArrow}" style="border: none;
+                        background-color: #ffffff !important;
+                        color: #2f2f30 !important;" [disabled]="!nextArrow" (click)="getweekDates('increase')" icon="pi pi-chevron-right" class="p-button-rounded p-button-text p-button-plain"></button>
+
+                    </div>
+                    <ng-template #elseBlock>
+                        <div class="p-text-center p-m-auto"> {{day | date:'EEE, MMM dd'}} </div>
+                    </ng-template>
+
+
+
+                </th>
+
+                <th class="p-text-center">Actions</th>
+                <th class="p-text-center" style="background: #E5cFD2; ">Total</th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-rowData let-editing="editing" let-ri="rowIndex">
+            <tr [pEditableRow]="rowData" #row>
+
+                <td [ngStyle]="{'padding': rowData.isEditable ? '0px':'5px'}">
+
+                    <p-dropdown class="CLS_My_DashBoard_ClientName" filter="true" resetFilterOnHide="true" *ngIf="rowData.isEditable" [options]="rowData.dbClientLegalEntities" [(ngModel)]="rowData.Entity" (ngModelChange)="getAllProjects($event,rowData)" [style]="{ width: '100%', overflow: 'visible',border:'none' }">
+                    </p-dropdown>
+
+                    <span fxLayout="row wrap" *ngIf="!rowData.isEditable"> {{rowData.Entity}} </span>
+
+                </td>
+                <td [ngStyle]="{'padding': rowData.isEditable ? '0px':'5px'}">
+                    <p-dropdown class="CLS_My_DashBoard_ProjectCode" fxLayout="row wrap" resetFilterOnHide="true" filter="true" *ngIf="rowData.isEditable" (ngModelChange)="getAllMilestones($event,rowData)" [options]="rowData.dbProjects" [(ngModel)]="rowData.ProjectCodeTitle"
+                        [style]="{ width: '100%', overflow: 'visible',border:'none' }">
+                    </p-dropdown>
+
+                    <span fxLayout="row wrap" *ngIf="!rowData.isEditable"> {{rowData.ProjectCodeTitle}} </span>
+                </td>
+                <td [ngStyle]="{'padding': rowData.isEditable ? '0px':'5px'}">
+                    <p-dropdown class="CLS_My_DashBoard_Milestone" fxLayout="row wrap" resetFilterOnHide="true" filter="true" *ngIf="rowData.isEditable" [options]="rowData.dbMilestones" [(ngModel)]="rowData.displayName" (ngModelChange)="checkMilestone($event,rowData)" [style]="{ width: '100%', overflow: 'visible',border:'none'}">
+                    </p-dropdown>
+
+                    <span fxLayout="row wrap" *ngIf="!rowData.isEditable"> {{rowData.displayName}} </span>
+                </td>
+
+                <td [attr.colspan]=" first || last ? '2':''" class="p-text-center" *ngFor="let dayhours of rowData.TimeSpents;let first = first;let last=last; ">
+
+                    <input class="p-text-center error" *ngIf="rowData.type ==='task' && dayhours.editable" style="width: 80%;border: none;" aria-label="24hr format" [min]="dayhours.minHrs" [(ngModel)]="dayhours.MileHrs" [ngxTimepicker]="mon" [format]="24" readonly>
+
+                    <ngx-material-timepicker #mon [minutesGap]="15" (closed)="SetTime(dayhours.MileHrs,dayhours,rowData)" [enableKeyboardInput]="true" class="timepickerPosition" [theme]="darkTheme">
+                    </ngx-material-timepicker>
+
+                    <span *ngIf="rowData.type ==='Adhoc' ||(rowData.type ==='task' && !dayhours.editable)">{{dayhours.MileHrs}}</span>
+                </td>
+                <td class="p-text-center">
+                    <i *ngIf="rowData.commentEnable" style="font-size: 1.5em;cursor: pointer; padding-right: 10px;" class="fa fa-commenting-o" aria-hidden="true" (click)="openDialog(rowData, 'comments')"></i>
+                    <i *ngIf="rowData.commentEnable && rowData.ID !== -1" class="fa fa-upload" aria-hidden="true" style="font-size: 1.5em;cursor: pointer;" (click)="openDialog(rowData, 'fileupload')"></i>
+                </td>
+                <td class="p-text-center" style="background: #FFE6EA;">
+                    {{getTotalHoursRow(rowData)}}
+                </td>
+
+            </tr>
+        </ng-template>
+
+        <!-- </p-scrollPanel> -->
+        <ng-template pTemplate="footer" *ngIf="UserMilestones.length  >  0">
+            <tr id="tableFooter">
+                <td></td>
+                <td> </td>
+                <td> </td>
+                <td [attr.colspan]="2" class="p-text-center">{{getTotalHoursColumn(0)}} </td>
+                <td class="p-text-center">{{getTotalHoursColumn(1)}} </td>
+                <td class="p-text-center">{{getTotalHoursColumn(2)}} </td>
+                <td class="p-text-center">{{getTotalHoursColumn(3)}} </td>
+                <td class="p-text-center">{{getTotalHoursColumn(4)}} </td>
+                <td class="p-text-center">{{getTotalHoursColumn(5)}} </td>
+                <td [attr.colspan]="2" class="p-text-center">{{getTotalHoursColumn(6)}} </td>
+                <td> </td>
+                <td class="p-text-center" style="background: #FFE6EA;"> {{getTotalOfTotal()}}</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td [attr.colspan]="weekDays.length + 7">
+                    No Data found
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+    <div class="p-col p-p-0" style="font-size: 12px;">
+        <p class="p-mb-1"> Time spent on any task or thought required to complete a project. For eg,</p>
+        <ul class="p-mb-1">
+            <li>Prep work such as search for authors, thought/research associated with which digital tactic to use, reading source data, dummy submissions.</li>
+            <li>Internal/external KOC prep and attendance; drafting meeting minutes.</li>
+            <li>Deliverable development time, eg, writing, editorial, QC or graphics time.</li>
+            <li>Discussion time, eg, meetings with reviewers, writer-graphics iterations, discussions related to queries on client/author comments Important.</li>
+        </ul>
+        <p class="p-mb-0">note: If client meetings/conference attendance are specifically being billed back to the client, time should be added under the specific project used for billing and not under the next category.</p>
+
+    </div>
 </div>
 
 

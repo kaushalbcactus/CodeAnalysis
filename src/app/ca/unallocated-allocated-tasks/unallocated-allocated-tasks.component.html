@@ -157,10 +157,10 @@
                                         </p-calendar>
 
                                         <span class="p-col p-grid p-input-icon-right">
-                                            <i class="pi pi-clock"  style="padding: 4px 8px;color: #c53e3e;"></i>
-                                            <input #inputDate pInputText  readonly [ngxTimepicker]="picker"
+                                            <i class="pi pi-clock"  style="padding: 4px 8px;color: #c53e3e;" [ngxTimepicker]="picker"
                                           
-                                            [(ngModel)]="rowData.UserStartTimePart" class="timePicker p-col-12 p-mt-2">
+                                            [(ngModel)]="rowData.UserStartTimePart"></i>
+                                            <input #inputDate pInputText  readonly [(ngModel)]="rowData.UserStartTimePart" class="timePicker p-col-12 p-mt-2">
                                        
                                         <ngx-material-timepicker [preventOverlayClick]="true"
                                         (closed)="DateChangePart(rowData,Slot,'start')" #picker
@@ -185,8 +185,8 @@
                                         </p-calendar>
 
                                         <span class="p-col p-grid p-input-icon-right">
-                                            <i class="pi pi-clock"  style="padding: 4px 8px;color: #c53e3e;"></i>
-                                            <input #inputDate pInputText  readonly [ngxTimepicker]="picker"
+                                            <i class="pi pi-clock"  style="padding: 4px 8px;color: #c53e3e;"  [(ngModel)]="rowData.UserEndTimePart" [ngxTimepicker]="picker"></i>
+                                            <input #inputDate pInputText  readonly 
                                             [min]="rowData.UserStartDatePart === rowData.UserEndDatePart ? rowData.UserStartTimePart :'12:00 am'"
                                             [(ngModel)]="rowData.UserEndTimePart" class="timePicker p-col-12 p-mt-2">
                                        

@@ -24,3 +24,19 @@
 ::ng-deep .VisualRepresentation {
     padding-bottom: 200px !important;
 }
+
+
+/* ::ng-deep .start-time-button {
+    position: absolute !important;
+    right: 5px !important;
+    top: 17px !important;
+    border-radius: 0px 4px 4px 0px !important;
+    background-color: transparent !important;
+    border: 0 none !important;
+    color: #c53e3e !important;
+    box-shadow: none !important;
+}
+
+::ng-deep .start-time-button:hover {
+    background: rgba(0, 0, 0, 0.04) !important;
+} */

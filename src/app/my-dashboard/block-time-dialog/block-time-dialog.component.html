@@ -25,92 +25,147 @@
 
 </div>
 
+<div class="" [hidden]="modalloaderenable">
 
-<table [hidden]="modalloaderenable" style="width:100%;margin:10px 0px 0px 0px;">
-    <tr *ngIf="data.timeblockType !=='Admin' && data.timeblockType !=='Internal Meeting' && data.timeblockType !=='Training' && data.timeblockType !=='Leave'">
-        <th>Client Name:</th>
-        <td>
-            <p-dropdown [style]="{'min-width':'100%'}" [options]="ClientLegalEntities" [(ngModel)]="SelectedClientLegalEntity" resetFilterOnHide="true" filter="true" placeholder="Select a Client" [showClear]="true"></p-dropdown>
+    <table class="p-col-12 cls_adhocTaskTable">
+        <tr *ngIf="data.timeblockType !=='Admin' && data.timeblockType !=='Internal Meeting' && data.timeblockType !=='Training' && data.timeblockType !=='Leave'">
+            <th>Client Name:</th>
+            <td>
+                <p-dropdown class="p-fluid" [options]="ClientLegalEntities" [(ngModel)]="SelectedClientLegalEntity" resetFilterOnHide="true" filter="true" placeholder="Select a Client" [showClear]="true"></p-dropdown>
 
-        </td>
-    </tr>
-    <tr *ngIf="data.timeblockType !== 'Leave'">
-        <th>Date:</th>
-        <td>
-
-
-            <p-calendar [style]="{'min-width':'100%'}" [minDate]="minDateValue" placeholder="Select Date" [(ngModel)]="eventDate" [maxDate]="maxDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" [yearNavigator]="true"></p-calendar>
+            </td>
+        </tr>
+        <tr *ngIf="data.timeblockType !== 'Leave'">
+            <th>Date:</th>
+            <td>
 
 
-
-        </td>
-    </tr>
-    <tr *ngIf="data.timeblockType ==='Admin'">
-        <th>Total Hours:</th>
-        <td>
-            <input placeholder="Select Hours" style="color: #333333; background: #ffffff;  padding: 0.429em; width:100%;    margin: 0px 8px 0px 0px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" (ngModelChange)="SetEndTime($event)" [(ngModel)]="starttime"
-                [ngxTimepicker]="StartTime" [format]="24" readonly>
-
-            <ngx-material-timepicker #StartTime [minutesGap]="15" [enableKeyboardInput]="true" (closed)="SetTime(starttime)" class="timepickerPosition" [theme]="darkTheme">
-            </ngx-material-timepicker>
-        </td>
-
-    </tr>
-
-    <tr *ngIf="data.timeblockType !=='Admin' && data.timeblockType !=='Leave'">
-        <th>Time:</th>
-        <td>
-
-            <input placeholder="Select Start Time" style="color: #333333; background: #ffffff;  padding: 0.429em; width:49%;    margin: 0px 8px 0px 0px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" (ngModelChange)="SetEndTime($event)"
-                [(ngModel)]="starttime" [ngxTimepicker]="StartTime" [format]="12" readonly>
-
-            <ngx-material-timepicker #StartTime [minutesGap]="15" class="timepickerPosition" [theme]="darkTheme">
-            </ngx-material-timepicker>
-
-
-            <input placeholder="Select End Time" style="color: #333333; background: #ffffff;  padding: 0.429em; width:49%; border: 1px solid #a6a6a6; border-radius: 4px;" min="{{minEndTime}}" aria-label="12hr format" [(ngModel)]="endtime" [ngxTimepicker]="EndTime"
-                readonly>
-
-            <ngx-material-timepicker #EndTime [minutesGap]="15" class="timepickerPosition" [theme]="darkTheme">
-            </ngx-material-timepicker>
-
-
-        </td>
-    </tr>
-
-    <tr *ngIf="data.timeblockType ==='Leave'">
-        <th>Start Date:</th>
-        <td>
-
-            <p-calendar [style]="{'min-width':'100%'}" [minDate]="minDateValue" placeholder="Select Start Date" [(ngModel)]="eventDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" [yearNavigator]="true"
-                (onClose)="EnableHalfDay()"></p-calendar>
-
-        </td>
-    </tr>
+                <p-calendar class="p-fluid" [minDate]="minDateValue" placeholder="Select Date" [(ngModel)]="eventDate" [maxDate]="maxDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" [yearNavigator]="true"></p-calendar>
 
 
 
-    <tr *ngIf="data.timeblockType ==='Leave'">
-        <th>End Date:</th>
-        <td>
+            </td>
+        </tr>
+        <tr *ngIf="data.timeblockType ==='Admin'">
+            <th>Total Hours:</th>
+            <td>
+                <input pInputText placeholder="Select Hours" aria-label="12hr format" [format]="24" (ngModelChange)="SetEndTime($event)" [(ngModel)]="starttime" [ngxTimepicker]="StartTime" [format]="24" readonly class="p-col-12">
+                <ngx-material-timepicker #StartTime [minutesGap]="15" [enableKeyboardInput]="true" (closed)="SetTime(starttime)" class="timepickerPosition" [theme]="darkTheme">
+                </ngx-material-timepicker>
+            </td>
 
-            <p-calendar [style]="{'min-width':'100%'}" [minDate]="eventDate" placeholder="Select End Date" [(ngModel)]="eventEndDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" (onClose)="EnableHalfDay()"
-                [yearNavigator]="true"></p-calendar>
-        </td>
-    </tr>
-    <tr *ngIf="halfDayEnable">
-        <th>Is Half Day :</th>
-        <td>
-            <p-checkbox [(ngModel)]="IsHalfDay" binary="true"></p-checkbox>
-        </td>
-    </tr>
+        </tr>
+
+        <tr *ngIf="data.timeblockType !=='Admin' && data.timeblockType !=='Leave'">
+            <th>Time:</th>
+            <td>
+                <div class="p-col p-grid p-py-0">
+                    <span class="p-col p-grid p-input-icon-right p-mr-1">
+                   <i class="pi pi-clock error"  style="padding: 4px 8px;" ></i>
+
+
+                    <input  pInputText placeholder="Select Start Time"  aria-label="12hr format" 
+                    [ngxTimepicker]="StartTime" [(ngModel)]="starttime"  (ngModelChange)="SetEndTime($event)" [format]="12" readonly
+                    class="p-col-12 p-mt-2">
+           
+                    <ngx-material-timepicker #StartTime [minutesGap]="15" class="timepickerPosition" [theme]="darkTheme">
+                    </ngx-material-timepicker>
+                </span>
+
+                    <span class="p-col p-grid p-input-icon-right">
+                     <i class="pi pi-clock error"  style="padding: 4px 8px;"></i>
+
+                     <input  pInputText placeholder="Select End Time"  aria-label="12hr format" 
+                     [ngxTimepicker]="EndTime" [(ngModel)]="endtime" [format]="12" readonly
+                          class="p-col-12 p-mt-2">
+           
+                      <ngx-material-timepicker #EndTime [minutesGap]="15" class="timepickerPosition" [theme]="darkTheme">
+                      </ngx-material-timepicker>
+                </span>
+                </div>
+            </td>
+        </tr>
+
+        <tr *ngIf="data.timeblockType ==='Leave'">
+            <th>Start Date:</th>
+            <td>
+
+                <p-calendar class="p-fluid" [minDate]="minDateValue" placeholder="Select Start Date" [(ngModel)]="eventDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" [yearNavigator]="true" (onClose)="EnableHalfDay()"></p-calendar>
+
+            </td>
+        </tr>
 
 
 
-    <tr>
-        <th>Comments:</th>
-        <td> <textarea rows="7" cols="30" style="width: 100%;" [(ngModel)]="commment" pInputTextarea></textarea> </td>
+        <tr *ngIf="data.timeblockType ==='Leave'">
+            <th>End Date:</th>
+            <td>
 
-    </tr>
+                <p-calendar class="p-fluid" [minDate]="eventDate" placeholder="Select End Date" [(ngModel)]="eventEndDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" (onClose)="EnableHalfDay()" [yearNavigator]="true"></p-calendar>
+            </td>
+        </tr>
+        <tr *ngIf="halfDayEnable">
+            <th>Is Half Day :</th>
+            <td>
+                <p-checkbox [(ngModel)]="IsHalfDay" binary="true"></p-checkbox>
+            </td>
+        </tr>
 
-</table>
+
+
+        <tr>
+            <th>Comments:</th>
+            <td> <textarea rows="7" cols="30" style="width: 100%;" [(ngModel)]="commment" pInputTextarea></textarea> </td>
+
+        </tr>
+
+    </table>
+
+    <div class="p-col p-p-0" style="font-size: 12px;" *ngIf="data.timeblockType === 'Client Meeting / Training'">
+        <p class="p-mb-1">*Note: Use for client work not associated with a specific project but required to maintain and run an account. Includes project status meetings, governance meetings, compliance training, client visits and associated travel time.</p>
+        <p class="p-mb-0"><b>Important Note:</b> If client meetings/conference attendance are specifically being billed back to the client, time should be added under the specific project used for billing and not under this category.</p>
+        <!-- <p class="p-mb-1">*Note: Time spent on client work not associated with a specific project but required to maintain and run an account. For eg,</p>
+        <ul class="p-mb-1">
+            <li>Client meetings not specific to a project, eg, weekly calls, project status meetings, governance meetings.</li>
+            <li>Compliance training.</li>
+            <li>Client visits and associated travel time.</li>
+        </ul>
+        <p class="p-mb-0">Important Note: If client meetings/conference attendance are specifically being billed back to the client, time should be added under the specific project used for billing and not under this category.</p> -->
+
+    </div>
+    <div class="p-col p-p-0" style="font-size: 12px;" *ngIf="data.timeblockType === 'Training'">
+        <p class="p-mb-0">
+            *Note: Use for any training activity by trainee and trainer. For eg, new joinee training, reviewer/finalizer training, new TA/deliverable type training, self-learning.
+        </p>
+        <!-- <p class="p-mb-1">*Note: Time spent on any training activity by trainee and trainer. For eg,</p>
+        <ul class="p-mb-1">
+            <li>New joinee training.</li>
+            <li>Reviewer/finalizer training.</li>
+            <li>Training/Introduction for a new TA/deliverable type.</li>
+            <li>Self-learning.</li>
+        </ul> -->
+    </div>
+    <div class="p-col p-p-0" style="font-size: 12px;" *ngIf="data.timeblockType === 'Internal Meeting'">
+        <p class="p-mb-0">
+            *Note: Use for internal meetings, especially to maintain/further the business. Includes sales/BD activities, thought leadership activities (with Clarinda's team), quarterly meeting, 1:1 meetings, recruitment-related tasks and meetings.
+        </p>
+
+        <!-- <p class="p-mb-1">*Note: Time spent on internal meetings, especially to maintain/further the business. For eg,</p>
+        <ul class="p-mb-1">
+            <li>Sales/BD activities.</li>
+            <li>Thought leadership activities, including activities with Clarinda's team/task force.</li>
+            <li>Quarterly meeting, offsites, 1:1 meetings.</li>
+            <li>Recruitment-related tasks and meetings.</li>
+        </ul> -->
+    </div>
+    <div class="p-col p-p-0" style="font-size: 12px;" *ngIf="data.timeblockType === 'Admin'">
+        <p class="p-mb-0">
+            *Note: Must be kept to a minimum and includes purely administrative activities like making internal reports/evaluating metrics.
+        </p>
+        <!-- <p class="p-mb-1">*Note: Must be kept to a minimum and includes purely administrative activities</p>
+        <ul class="p-mb-1">
+            <li>Making reports/evaluating metrics.</li>
+            <li>Approving leave and attendance updates.</li>
+        </ul> -->
+    </div>
+</div>

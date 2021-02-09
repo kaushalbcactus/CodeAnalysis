@@ -2158,10 +2158,11 @@ export class StandardprojectComponent implements OnInit {
    * This set all the milestone and other object so that it will directly available on angular 1 or js file.
    */
   async saveTimelineData() {
+    this.constants.loader.isWaitDisable =false;
     let isTrue = this.validateRequiredField(true);
 
     if (this.pmObject.addProject.FinanceManagement.selectedFile && this.pmObject.addProject.FinanceManagement.selectedFile.size === 0) {
-
+      this.constants.loader.isWaitDisable=true;
       this.commonService.showToastrMessage(this.constants.MessageType.error, this.constants.Messages.ZeroKbFile.replace('{{fileName}}', this.pmObject.addProject.FinanceManagement.selectedFile.name), false);
     }
 
@@ -2204,13 +2205,13 @@ export class StandardprojectComponent implements OnInit {
       // await this.pmCommonService.validateAndSave();
       // new code by maxwell file upload progress bar
 
-      this.pmObject.isMainLoaderHidden = false;
+      this.constants.loader.isWaitDisable = false;
       const newProjectCode = await this.pmCommonService.verifyAndUpdateProjectCode();
       this.pmObject.addProject.ProjectAttributes.ProjectCode = newProjectCode;
       if (newProjectCode) {
         if (this.pmObject.addProject.FinanceManagement.selectedFile) {
           let SelectedFile = [];
-          this.pmObject.isMainLoaderHidden = true;
+          this.constants.loader.isWaitDisable = true;
           this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'UploadFiles', "POST-BATCH");
 
           const FolderName = await this.pmCommonService.getFolderName();
@@ -2232,11 +2233,13 @@ export class StandardprojectComponent implements OnInit {
           this.CallAddUpdateProject();
         }
       }
+    }else {
+      this.constants.loader.isWaitDisable=true;
     }
   }
 
   async CallAddUpdateProject() {
-    this.pmObject.isMainLoaderHidden = false;
+    this.constants.loader.isWaitDisable = false;
     await this.pmCommonService.addUpdateProject();
     this.commonService.showToastrMessage(this.constants.MessageType.success, 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode, true);
     this.pmCommonService.reloadPMPage();

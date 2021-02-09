@@ -312,7 +312,7 @@ export class DeliverableTypesComponent implements OnInit {
       return false;
     }
     if (
-      this.deliverableTypesRows.some(
+      this.deliverableTypesRows.filter(c=>c.Acronym).some(
         (a) => a.Acronym.toLowerCase() === this.acronym.toLowerCase()
       )
     ) {
@@ -383,7 +383,7 @@ export class DeliverableTypesComponent implements OnInit {
     );
 
     this.common.showToastrMessage(
-      this.constants.MessageType.error,
+      this.constants.MessageType.success,
       "The deliverable type " +
         data.DeliverableType +
         " has deleted successfully.",

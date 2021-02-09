@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { DynamicDialogRef, DynamicDialogConfig, DialogService } from 'primeng/dynamicdialog';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
@@ -19,13 +19,10 @@ import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-do
 export class TimeBookingDialogComponent implements OnInit {
 
   // tslint:disable-next-line: variable-name
-  @ViewChild('scrollDown', { static: true }) _el: ElementRef;
-
+  @ViewChildren("row", { read: ElementRef }) rowElement: QueryList<ElementRef>;
   thenBlock: Table;
   @ViewChild('tableId', { static: true })
   tableId: Table;
-
-
   modalloaderenable = true;
   dbClientLegalEntities: any = [{ label: 'Select Client', value: null }];
   timeSpentObject = { taskDay: null, taskHrs: null };
@@ -123,6 +120,11 @@ export class TimeBookingDialogComponent implements OnInit {
 
     this.UserMilestones.push(newMilestone);
     this.UserMilestones = [...this.UserMilestones];
+    setTimeout(() => {
+      const el = this.rowElement.last;
+      el.nativeElement.scrollIntoView({behavior: "smooth", inline: "start", block: "start"});  
+    }, 200);
+    
   }
 
   // *************************************************************************************************

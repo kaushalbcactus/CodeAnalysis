@@ -935,8 +935,9 @@ export class MyTimelineComponent implements OnInit {
         task: task,
         mode: task === undefined ? "create" : "edit",
       },
-      header: event,
-      width: "50vw",
+      styleClass:"cls_blockTime",
+      header: event === "Leave" ? event : event +' *',
+      width: "60vw",
       closable: false,
     });
     ref.onClose.subscribe(async (blockTimeobj: any) => {
