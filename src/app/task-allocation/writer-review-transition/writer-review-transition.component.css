@@ -1,4 +1,4 @@
-.transitionButton {
+/* .transitionButton {
     position: fixed !important;
     width: 85vw !important;
     margin: -50px !important;
@@ -29,9 +29,7 @@
 
 
 div.maincontent {
-  /* text-align: center; */
   margin: 0 auto;
-  /* max-height: 720px; */
 }
 div.writerSection,
 div.reviewerSection {
@@ -69,4 +67,4 @@ div.writerSection {
 
 .mt-15 {
  margin-top: 15px;
-}
+} */

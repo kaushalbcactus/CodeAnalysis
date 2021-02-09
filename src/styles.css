@@ -205,7 +205,8 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
     color: #ffffff !important;
 }
 
-.p-datatable .p-sortable-column.p-highlight:hover {
+.p-datatable .p-sortable-column.p-highlight:hover,
+.p-progressbar .p-progressbar-value {
     background: #c41818 !important;
 }
 

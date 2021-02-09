@@ -1,107 +1,80 @@
-<div class="footer" fxLayout="row" fxLayoutAlign="end center">
-  <div
-    class="input-color"
-    fxLayoutAlign="end center"
-    style="margin-right: 10px;"
-  >
-    <!-- <button type="button" title="Refresh" class="cls_conflict_refresh" (click)="refresh()">
-      <mat-icon>refresh</mat-icon>
-    </button> -->
-    <button
-    type="button"
-    pButton
-    icon="pi pi-refresh"
-    [ngStyle]="{ 'margin-right': '5px', cursor: 'pointer' }"
-    label="Refresh"
-    class="ui-button-secondary cls_conflict_refresh"
-    (click)="refresh()"
-    style="background-color: ghostwhite;"
-  ></button>
-  </div>
-  <button
-    type="button"
-    pButton
-    icon="pi pi-save"
-    [ngStyle]="{ 'margin-right': '5px', cursor: 'pointer' }"
-    label="Save"
-    [hidden]="!hideLoader"
-    class="saveTaskButton cls_conflict_save"
-    (click)="save()"
-  ></button>
-  <button
-    type="button"
-    pButton
-    icon="pi pi-times"
-    label="Cancel"
-    [hidden]="!hideLoader"
-    class="ui-button-secondary cls_conflict_close"
-    style="background-color: ghostwhite;"
-    (click)="close()"
-  ></button>
+<div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="!hideLoader">
+    <div id="modalInnerLoader"></div>
+    <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
-  <div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" [hidden]="hideLoader">
-    <div id="scInnerLoader"></div>
-    <div id="scInnerLoaderText">Loading...</div>
-  </div>
-  <div [hidden]="!hideLoader">
-  <p-accordion class="cls_conflict_accordion">
+
+<!--**************************************************************************************************
+                                        popup   data view 
+************************************************************************************************** -->
+
+
+<div class="pdialogButton p-col-12 p-grid p-jc-end" *ngIf="hideLoader">
+
+    <button pButton pRipple type="button" icon="pi pi-refresh" class="p-button-rounded p-button-danger p-button-outlined p-mr-1 cls_conflict_refresh" (click)="refresh()"></button>
+
+    <button pButton pRipple type="button" icon="pi pi-save" class="p-button-rounded p-button-danger p-button-outlined p-mr-1 cls_conflict_save" (click)="save()"></button>
+
+    <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined cls_conflict_close" (click)="close()"></button>
+
+</div>
+
+<p-accordion *ngIf="hideLoader" class="p-mt-2 cls_conflict_accordion">
     <p-accordionTab *ngFor="let task of conflicTasks">
-      <p-header>
-        <span >{{ task.user.userName }}</span>
-      </p-header>
-      <div>
-        <p-table [columns]="cols" [value]="task.tasks" class="conflictTable cls_conflict_conflictTable">
-          <ng-template pTemplate="header" let-columns>
-            <tr>
-              <th class="allocatedHrs">
-                Hours Allocated
-              </th>
-              <th class="date">
-                Dates
-              </th>
-              <th class="projectCode">
-                Project Code
-              </th>
-              <th class="shortTitle">
-                Short Title
-              </th>
-              <th class="hrsAllocated">
-                Hrs allocated
-              </th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-rowData let-columns="columns">
-            <tr>
-              <td>
-                <span>{{ rowData.allocatedHrs }} </span>
-              </td>
-              <td>
-                <span>{{ rowData.allocation.date | date: " d MMM, y" }}</span>
-              </td>
-              <td [attr.colSpan]="3">
-              <p-table class="conflictProjectSection" [value]="rowData.projects">
-                <ng-template pTemplate="body" let-innerRowData let-columns="innercolumns">
-                  <tr>
+        <ng-template pTemplate="header">
+            <div class="p-col p-grid p-mt-0 p-p-0">
+                <h5 class="p-col p-px-2  p-pt-1 p-m-0">{{ task.user.userName }}</h5>
+            </div>
+        </ng-template>
+        <p-table [columns]="cols" [value]="task.tasks" class="conflictTable cls_conflict_conflictTable" styleClass="p-datatable-cactus p-datatable-gridlines">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th class="allocatedHrs">
+                        Hours Allocated
+                    </th>
+                    <th class="date">
+                        Dates
+                    </th>
+                    <th class="projectCode">
+                        Project Code
+                    </th>
+                    <th class="shortTitle">
+                        Short Title
+                    </th>
+                    <th class="hrsAllocated">
+                        Hrs allocated
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <tr>
                     <td>
-                      <a [href]="goToProjectDetails(innerRowData)" *ngIf="innerRowData.showProjectLink && goToProjectDetails(innerRowData); else elseBlock" target="_blank" style="color:#c53e3e;" target="_blank"> {{ innerRowData.projectCode }}</a>
-                      <ng-template #elseBlock>{{innerRowData.projectCode}}</ng-template>
+                        <span>{{ rowData.allocatedHrs }} </span>
                     </td>
                     <td>
-                      <span> {{ innerRowData.shortTitle }} </span>
+                        <span>{{ rowData.allocation.date | date: " d MMM, y" }}</span>
                     </td>
-                    <td>
-                      <span> {{ innerRowData.allocatedhrs }} </span>
+                    <td [attr.colSpan]="3">
+                        <p-table class="conflictProjectSection" [value]="rowData.projects">
+                            <ng-template pTemplate="body" let-innerRowData let-columns="innercolumns">
+                                <tr>
+                                    <td>
+                                        <a [href]="goToProjectDetails(innerRowData)" *ngIf="innerRowData.showProjectLink && goToProjectDetails(innerRowData); else elseBlock" target="_blank" style="color:#c53e3e;" target="_blank"> {{ innerRowData.projectCode }}</a>
+                                        <ng-template #elseBlock>{{innerRowData.projectCode}}</ng-template>
+                                    </td>
+                                    <td>
+                                        <span> {{ innerRowData.shortTitle }} </span>
+                                    </td>
+                                    <td>
+                                        <span> {{ innerRowData.allocatedhrs }} </span>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
                     </td>
-                  </tr>
-                </ng-template>
-                </p-table>
-              </td>
-            </tr>
-          </ng-template>
+                </tr>
+            </ng-template>
         </p-table>
         <app-usercapacity #UserCapacity [userCapacity]="task.userCapacity" [parentModule]="'conflictallocation'"></app-usercapacity>
-      </div>
     </p-accordionTab>
-  </p-accordion>
-</div>
+</p-accordion>

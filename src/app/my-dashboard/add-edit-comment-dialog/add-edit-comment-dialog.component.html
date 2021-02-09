@@ -9,11 +9,11 @@
 
 <div [ngClass]="config.data === undefined ? 'currentTaskButton p-col p-grid p-jc-end' : 'pdialogButton p-col-12 p-grid p-jc-end'" *ngIf="!modalloaderenable">
 
-    <button *ngIf="!MarkComplete" type="button" pButton icon="pi pi-check" id="savecomment" class="p-mx-1 p-button-raised p-button-danger" (click)="saveComment(false)" label="Save Comment"></button>
+    <button *ngIf="!MarkComplete" type="button" pButton icon="pi pi-check" id="savecomment" class="p-mx-1 p-button-raised p-button-danger p-mr-1" (click)="saveComment(false)" label="Save Comment"></button>
 
-    <button *ngIf="MarkComplete" [disabled]="disableComment" type="button" pButton icon="pi pi-check" id="savewithoutcomment" (click)="saveComment(true)" [ngStyle]="{'cursor': disableComment===false ? 'pointer':'not-allowed'}" class="p-button-raised p-button-danger"
+    <button *ngIf="MarkComplete" [disabled]="disableComment" type="button" pButton icon="pi pi-check" id="savewithoutcomment" (click)="saveComment(true)" [ngStyle]="{'cursor': disableComment===false ? 'pointer':'not-allowed'}" class="p-button-raised p-button-danger p-mr-1"
         label="Save without Comment"></button>
-    <button *ngIf="MarkComplete" class="p-button-raised p-button-danger" [disabled]="!disableComment" type="button" pButton icon="pi pi-save" id="savewithoutcomment" [ngStyle]="{'cursor': disableComment === true ? 'pointer':'not-allowed'}" (click)="saveComment(true)"
+    <button *ngIf="MarkComplete" class="p-button-raised p-button-danger p-mr-1" [disabled]="!disableComment" type="button" pButton icon="pi pi-save" id="savewithoutcomment" [ngStyle]="{'cursor': disableComment === true ? 'pointer':'not-allowed'}" (click)="saveComment(true)"
         label="Save with Comment"></button>
 
     <button type="button" class="p-button-raised p-button-danger" pButton icon="pi pi-times" (click)="cancelComment();" label="Cancel"></button>
