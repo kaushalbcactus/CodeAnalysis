@@ -85,6 +85,8 @@ export class TimelineComponent
   ganttChart: GanttChartComponent;
   @ViewChild("dailyAllocateOP", { static: false })
   dailyAllocateOP: AllocationOverlayComponent;
+  @ViewChild("dailyAllocateOP2", { static: false })
+  dailyAllocateOP2: AllocationOverlayComponent;
   @ViewChild("ganttPicker", { static: false })
   picker: NgxMaterialTimepickerComponent;
   Today = new Date();
@@ -1833,7 +1835,7 @@ export class TimelineComponent
         this.showOverlayPanel(
           e,
           task,
-          this.dailyAllocateOP,
+          this.dailyAllocateOP2,
           e.target.parentElement
         );
       }
@@ -7651,14 +7653,16 @@ export class TimelineComponent
             topAdject = panelContainer.scrollTop;
           }
         }
-        panel.style.top = event.pageY + topAdject + "px";
-        panel.style.left = event.pageX + "px";
+        panel.style.setProperty("top", event.pageY + topAdject - 115 + "px", "important"); //.top = event.pageY + topAdject + "px";
+        panel.style.setProperty("left", event.pageX - 30 + "px", "important"); //.style.left = event.pageX + "px";
+        panel.style.setProperty("right", "inherit", "important");
       }, 50);
     }
   }
 
   hideOverlayPanel() {
     this.dailyAllocateOP.hideOverlay();
+    this.dailyAllocateOP2.hideOverlay();
   }
 
   validateTask(nodes): boolean {

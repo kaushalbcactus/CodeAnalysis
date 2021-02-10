@@ -280,7 +280,7 @@
 
     <div [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'" [hidden]="!visualgraph || loaderenable">
         <app-gantt-chart #ganttcontainer [ganttData]='this.taskAllocateCommonService.ganttParseObject' [beforeTaskChanged]="onBeforeTaskChangedCall" [beforeTaskDrag]="onBeforeTaskDragCall" [taskClick]="onTaskClickCall" [afterTaskDrag]="onAfterTaskDragCall"></app-gantt-chart>
-        <app-allocation-overlay #dailyAllocateOP></app-allocation-overlay>
+        <app-allocation-overlay #dailyAllocateOP2></app-allocation-overlay>
     </div>
 
     <input [hidden]='true' readonly [ngxTimepicker]="ganttPicker" [(ngModel)]="taskTime" [min]="minTime" [max]="maxTime" class="timePicker">
