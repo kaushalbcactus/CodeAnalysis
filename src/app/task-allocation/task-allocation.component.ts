@@ -51,7 +51,7 @@ export class TaskAllocationComponent implements OnInit {
   errormessage = '';
   response;
   batchContents = new Array();
-
+  countFields: boolean = false;
   searchFormControl = new FormControl('', [
     Validators.required,
 
@@ -191,6 +191,10 @@ export class TaskAllocationComponent implements OnInit {
     let arrayOperationResources;
     if (project.length > 0) {
       arrayOperationResources = project[0].AllOperationresources.results != null ? project[0].AllOperationresources.results : '';
+      project[0].BusinessVertical
+      this.countFields = project[0].BusinessVertical.toLowerCase() === "medcom" ||
+      project[0].BusinessVertical.toLowerCase() ==="medcomm" ||
+      project[0].BusinessVertical.toLowerCase() === "medinfo" ? true : false;
       const operationalResouce = arrayOperationResources.length > 0 ? (arrayOperationResources.find
         (c => c.ID === this.globalObject.currentUser.userId) !== undefined ?
         arrayOperationResources.find(c => c.ID === this.globalObject.currentUser.userId) : '') : '';

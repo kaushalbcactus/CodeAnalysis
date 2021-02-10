@@ -59,5 +59,20 @@
             </mat-expansion-panel-header>
             <app-timeline fxLayout="row" (reloadResources)="reloadResourceArray($event)" fxLayoutAlign="center center" style="width:100%;padding-bottom:200px;"></app-timeline>
         </mat-expansion-panel>
+
+          <!--********************************************************************************************
+                                             MC/MI Count Fields Panel
+         *******************************************************************************************-->
+
+        <mat-expansion-panel *ngIf="countFields" style="
+          border-radius: 0px;width:100%;" [expanded]="true">
+            <mat-expansion-panel-header fxLayoutAlign="center center" style=" background: #db1721;" [collapsedHeight]="customCollapsedHeight" [expandedHeight]="customCollapsedHeight">
+                <h4 style="width:100%;margin: 0%;">
+                    <!-- <mat-icon style="vertical-align: middle;">timeline</mat-icon> -->
+                    Variables
+                </h4>
+            </mat-expansion-panel-header>
+           <app-mc-mi-count-fields fxLayout="column" style="width:100%;"></app-mc-mi-count-fields>
+        </mat-expansion-panel>
     </mat-accordion>
 </div>
