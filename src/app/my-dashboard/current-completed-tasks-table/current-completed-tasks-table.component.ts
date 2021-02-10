@@ -91,54 +91,81 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
         header: "Status",
         visibility: true,
         exportable: true,
+        Type: "string",
+        dbName: "MainStatus",
+        options: [],
       },
       {
         field: "TaskStatus",
         header: "Task Status",
         visibility: true,
         exportable: true,
+        Type: "string",
+        dbName: "TaskStatus",
+        options: [],
       },
       {
         field: "TaskName",
         header: "Task Name",
         visibility: true,
         exportable: true,
+        Type: "string",
+        dbName: "DisplayTitle",
+        options: [],
       },
       {
         field: "ExportStartDate",
         header: "Start Date",
         visibility: false,
         exportable: true,
+        Type: "",
+        dbName: "",
+        options: [],
       },
       {
         field: "ExportDueDate",
         header: "End Date",
         visibility: false,
         exportable: true,
+        Type: "",
+        dbName: "",
+        options: [],
       },
       {
         field: "StartDate",
         header: "Start Date",
         visibility: true,
         exportable: false,
+        Type: "datetime",
+        dbName: "StartDate",
+        options: [],
       },
       {
         field: "DueDate",
         header: "Due Date",
         visibility: true,
         exportable: false,
+        Type: "datetime",
+        dbName: "DueDate",
+        options: [],
       },
       {
         field: "ExpectedTime",
         header: "Allocated Time",
         visibility: true,
         exportable: true,
+        Type: "",
+        dbName: "",
+        options: [],
       },
       {
         field: "TimeSpent",
         header: "Time Spent",
         visibility: true,
         exportable: true,
+        Type: "",
+        dbName: "",
+        options: [],
       },
     ];
 
@@ -146,8 +173,9 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     await this.processData(
       this.config.data ? this.config.data.allpopupTasks : this.allTasksData
     );
+    this.cols = this.commonService.MainfilterForTable(this.cols, this.allTasks);
     this.loaderenable = false;
-    this.initializeTableOptions();
+    this.tableBlock = this.TasksTable;
   }
 
   openPopup(data) {
@@ -186,99 +214,99 @@ export class CurrentCompletedTasksTableComponent implements OnInit {
     }
   }
 
-  initializeTableOptions() {
-    this.AllTaskColArray =
-      this.route.snapshot.data.type === "MyCompletedTask"
-        ? {
-            MainStatus: [{ label: "Closed", value: "Closed" }],
-            TaskStatus: [],
-            TaskName: [],
-            StartDate: [],
-            DueDate: [],
-          }
-        : {
-            MainStatus: [],
-            TaskStatus: [],
-            TaskName: [],
-            StartDate: [],
-            DueDate: [],
-          };
-    this.createColFieldValues(this.allTasks);
-  }
+  // initializeTableOptions() {
+  //   this.AllTaskColArray =
+  //     this.route.snapshot.data.type === "MyCompletedTask"
+  //       ? {
+  //           MainStatus: [{ label: "Closed", value: "Closed" }],
+  //           TaskStatus: [],
+  //           TaskName: [],
+  //           StartDate: [],
+  //           DueDate: [],
+  //         }
+  //       : {
+  //           MainStatus: [],
+  //           TaskStatus: [],
+  //           TaskName: [],
+  //           StartDate: [],
+  //           DueDate: [],
+  //         };
+  //   this.createColFieldValues(this.allTasks);
+  // }
 
   // *********************************************************************************************************
   // Column filter for search
   // ********************************************************************************************************
 
-  createColFieldValues(resArray) {
-    this.AllTaskColArray.TaskStatus = this.commonService.sortData(
-      this.myDashboardConstantsService.uniqueArrayObj(
-        resArray.map((a) => {
-          const b = { label: a.TaskStatus, value: a.TaskStatus };
-          return b;
-        })
-      )
-    );
+  // createColFieldValues(resArray) {
+  //   this.AllTaskColArray.TaskStatus = this.commonService.sortData(
+  //     this.myDashboardConstantsService.uniqueArrayObj(
+  //       resArray.map((a) => {
+  //         const b = { label: a.TaskStatus, value: a.TaskStatus };
+  //         return b;
+  //       })
+  //     )
+  //   );
 
-    this.AllTaskColArray.TaskName = this.commonService.sortData(
-      this.myDashboardConstantsService.uniqueArrayObj(
-        resArray.map((a) => {
-          const b = {
-            label: a.DisplayTitle,
-            value: a.DisplayTitle,
-            // tslint:disable-next-line: align
-          };
-          return b;
-        })
-      )
-    );
-    this.AllTaskColArray.MainStatus = this.commonService.sortData(
-      this.myDashboardConstantsService.uniqueArrayObj(
-        resArray.map((a) => {
-          const b = {
-            label: a.MainStatus,
-            value: a.MainStatus,
-            // tslint:disable-next-line: align
-          };
-          return b;
-        })
-      )
-    );
-    this.AllTaskColArray.StartDate = this.myDashboardConstantsService.uniqueArrayObj(
-      resArray.map((a) => {
-        const b = {
-          label:
-            // tslint:disable-next-line: align
-            this.datePipe.transform(a.StartDate, "MMM d, y, h:mm a"),
-          value: a.StartDate,
-          // tslint:disable-next-line: align
-        };
-        return b;
-      })
-    );
-    this.AllTaskColArray.DueDate = this.myDashboardConstantsService.uniqueArrayObj(
-      resArray.map((a) => {
-        const b = {
-          label:
-            // tslint:disable-next-line: align
-            this.datePipe.transform(a.DueDate, "MMM d, y, h:mm a"),
-          value: a.DueDate,
-          // tslint:disable-next-line: align
-        };
-        return b;
-      })
-    );
+  //   this.AllTaskColArray.TaskName = this.commonService.sortData(
+  //     this.myDashboardConstantsService.uniqueArrayObj(
+  //       resArray.map((a) => {
+  //         const b = {
+  //           label: a.DisplayTitle,
+  //           value: a.DisplayTitle,
+  //           // tslint:disable-next-line: align
+  //         };
+  //         return b;
+  //       })
+  //     )
+  //   );
+  //   this.AllTaskColArray.MainStatus = this.commonService.sortData(
+  //     this.myDashboardConstantsService.uniqueArrayObj(
+  //       resArray.map((a) => {
+  //         const b = {
+  //           label: a.MainStatus,
+  //           value: a.MainStatus,
+  //           // tslint:disable-next-line: align
+  //         };
+  //         return b;
+  //       })
+  //     )
+  //   );
+  //   this.AllTaskColArray.StartDate = this.myDashboardConstantsService.uniqueArrayObj(
+  //     resArray.map((a) => {
+  //       const b = {
+  //         label:
+  //           // tslint:disable-next-line: align
+  //           this.datePipe.transform(a.StartDate, "MMM d, y, h:mm a"),
+  //         value: a.StartDate,
+  //         // tslint:disable-next-line: align
+  //       };
+  //       return b;
+  //     })
+  //   );
+  //   this.AllTaskColArray.DueDate = this.myDashboardConstantsService.uniqueArrayObj(
+  //     resArray.map((a) => {
+  //       const b = {
+  //         label:
+  //           // tslint:disable-next-line: align
+  //           this.datePipe.transform(a.DueDate, "MMM d, y, h:mm a"),
+  //         value: a.DueDate,
+  //         // tslint:disable-next-line: align
+  //       };
+  //       return b;
+  //     })
+  //   );
 
-    this.AllTaskColArray.StartDate = this.AllTaskColArray.StartDate.sort(
-      (a, b) =>
-        new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
-    );
-    this.AllTaskColArray.DueDate = this.AllTaskColArray.DueDate.sort((a, b) =>
-      new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
-    );
-    this.loaderenable = false;
-    this.tableBlock = this.TasksTable;
-  }
+  //   this.AllTaskColArray.StartDate = this.AllTaskColArray.StartDate.sort(
+  //     (a, b) =>
+  //       new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
+  //   );
+  //   this.AllTaskColArray.DueDate = this.AllTaskColArray.DueDate.sort((a, b) =>
+  //     new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
+  //   );
+  //   this.loaderenable = false;
+  //   this.tableBlock = this.TasksTable;
+  // }
 
   exportTasks() {
     this.TasksTable.exportCSV();

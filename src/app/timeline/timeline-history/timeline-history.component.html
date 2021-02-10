@@ -6,10 +6,9 @@
     <div class="p-d-flex p-flex-column" style="padding:5vw;" *ngIf="!hideLoader">
         <div id="modalInnerLoader"></div>
         <div id="modalInnerLoaderText">Loading...</div>
-      </div>
-    <p-table #timelineTable id="tblTimeline" [hidden]='!hideLoader' [columns]="timelineHeader" [value]="timelineData" [scrollable]="true" scrollHeight="400px" 
-    [virtualScroll]="true" [lazy]="lazy" [rows]="10" [rowTrackBy]="rowTrackBy" [virtualRowHeight]="34" (onLazyLoad)="loadData($event)"
-        [lazyLoadOnInit]="false" [totalRecords]="totalRecords" [loading]="loading" styleClass="p-datatable-cactus p-datatable-gridlines">
+    </div>
+    <p-table #timelineTable id="tblTimeline" [hidden]='!hideLoader' [columns]="timelineHeader" [value]="timelineData" [scrollable]="true" scrollHeight="400px" [virtualScroll]="true" [lazy]="lazy" [rows]="10" [rowTrackBy]="rowTrackBy" [virtualRowHeight]="34"
+        (onLazyLoad)="loadData($event)" [lazyLoadOnInit]="false" [totalRecords]="totalRecords" [loading]="loading" styleClass="p-datatable-cactus p-datatable-gridlines">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th width="4%">Sr.No.</th>
@@ -23,7 +22,7 @@
                             </div>
                         </ng-template>
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                            <p-multiSelect [ngModel]="value" maxSelectedLabels="1" [options]="col.options" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
                                 <ng-template let-option pTemplate="item">
                                     <div class="p-multiselect-representative-option">
                                         <span class="p-ml-1">{{option.label}}</span>
@@ -32,7 +31,7 @@
                             </p-multiSelect>
                         </ng-template>
                         <!-- <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-multiSelect *ngIf="col.field == 'date_time'" [ngModel]="value" 
+                            <p-multiSelect *ngIf="col.field == 'date_time'" [ngModel]="value" maxSelectedLabels="1" 
                                 [options]="filter.dates" 
                                 placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
                                 <ng-template let-option pTemplate="item">
@@ -41,7 +40,7 @@
                                     </div>
                                 </ng-template>
                             </p-multiSelect>
-                            <p-multiSelect *ngIf="col.field == 'activity_type'" [ngModel]="value" 
+                            <p-multiSelect *ngIf="col.field == 'activity_type'" [ngModel]="value" maxSelectedLabels="1" 
                                 [options]="filter.activityType" 
                                 placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
                                 <ng-template let-option pTemplate="item">
@@ -50,7 +49,7 @@
                                     </div>
                                 </ng-template>
                             </p-multiSelect>
-                            <p-multiSelect *ngIf="col.field == 'activity_sub_type'" [ngModel]="value" 
+                            <p-multiSelect *ngIf="col.field == 'activity_sub_type'" [ngModel]="value" maxSelectedLabels="1" 
                                 [options]="filter.activitySubType" 
                                 placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
                                 <ng-template let-option pTemplate="item">
@@ -59,7 +58,7 @@
                                     </div>
                                 </ng-template>
                             </p-multiSelect>
-                            <p-multiSelect *ngIf="col.field == 'activity_by'" [ngModel]="value" 
+                            <p-multiSelect *ngIf="col.field == 'activity_by'" [ngModel]="value" maxSelectedLabels="1" 
                                 [options]="filter.activityBy" 
                                 placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
                                 <ng-template let-option pTemplate="item">
@@ -105,6 +104,6 @@
             </tr>
         </ng-template>
     </p-table>
-    
-    
+
+
 </p-sidebar>

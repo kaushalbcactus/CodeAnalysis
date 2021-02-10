@@ -1,62 +1,56 @@
 <div class="filter-wrapper">
-  <div>
-    <div class="taskType">
-      <span>Task type </span>
-      <p-dropdown #taskTypeFilter [options]="filterObj.taskType" class="filterBy" filter="true" resetFilterOnHide="true"
-        optionLabel="type" placeholder="Select Task Type" (onChange)="filterResource()"
-        [(ngModel)]="filterObj.selectedTaskType">
-      </p-dropdown>
-    </div>
-  </div>
-  <div class="resource">
     <div>
-      <span>Resources </span>
-      <p-dropdown #resourcesFilter [options]="filterObj.filteredResources" class="resourceSelect"
-        optionLabel="UserNamePG.Title" filter="true" resetFilterOnHide="true" placeholder="Select Resource"
-        (onChange)="fetchResourcesTasks($event)" [(ngModel)]="filterObj.selectedResource">
-      </p-dropdown>
+        <div class="taskType">
+            <span>Task type </span>
+            <p-dropdown #taskTypeFilter [options]="filterObj.taskType" class="filterBy" filter="true" resetFilterOnHide="true" optionLabel="type" placeholder="Select Task Type" (onChange)="filterResource()" [(ngModel)]="filterObj.selectedTaskType">
+            </p-dropdown>
+        </div>
     </div>
-  </div>
+    <div class="resource">
+        <div>
+            <span>Resources </span>
+            <p-dropdown #resourcesFilter [options]="filterObj.filteredResources" class="resourceSelect" optionLabel="UserNamePG.Title" filter="true" resetFilterOnHide="true" placeholder="Select Resource" (onChange)="fetchResourcesTasks($event)" [(ngModel)]="filterObj.selectedResource">
+            </p-dropdown>
+        </div>
+    </div>
 </div>
 
 <div class="clear"></div>
 <div id="adminContent">
-  <!-- Success or Alert message placeholder-->
-  <!-- <ngb-alert *ngIf="successMessage" type="success" (close)="successMessage = null">{{ successMessage }}</ngb-alert>
+    <!-- Success or Alert message placeholder-->
+    <!-- <ngb-alert *ngIf="successMessage" type="success" (close)="successMessage = null">{{ successMessage }}</ngb-alert>
   <ngb-alert *ngIf="alertMessage" type="warning" (close)="alertMessage = null">{{ alertMessage }}</ngb-alert> -->
-  <!-- Table -->
-  <div *ngIf="showAdminTable">
-    <p-table #admin id="reviewerTable" [columns]="ReviewerDetailColumns" [value]="ReviewerDetail" [hidden]="hideTable" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-    [style]="{'font-size':'13px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="adminTable">
-      <ng-template pTemplate="header" let-columns>
-        <tr>
-          <th *ngFor="let col of columns" [pSortableColumn]="col.field">
-            <div class="p-d-flex p-jc-between p-ai-center">
-              {{col.header}}
-              <p-sortIcon [field]="col.field"></p-sortIcon>
-              <p-columnFilter *ngIf="col.field != 'docUrlHtmlTag'"   [field]="col.field"
-                matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
-                <ng-template pTemplate="header">
-                  <div class="p-px-3 p-pt-3 p-pb-0">
-                    <span class="p-text-bold"> {{col.header}} Picker</span>
-                  </div>
-                </ng-template>
-                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                  <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All"
-                    (onChange)="filter($event.value)" optionLabel="label">
-                    <ng-template let-option pTemplate="item">
-                      <div class="p-multiselect-representative-option">
-                        <span class="p-ml-1">{{option.label}}</span>
-                      </div>
-                    </ng-template>
-                  </p-multiSelect>
-                </ng-template>
-              </p-columnFilter>
-            </div>
-          </th>
-          <th>Actions</th>
-        </tr>
-        <!-- <tr>
+    <!-- Table -->
+    <div *ngIf="showAdminTable">
+        <p-table #admin id="reviewerTable" [columns]="ReviewerDetailColumns" [value]="ReviewerDetail" [hidden]="hideTable" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [style]="{'font-size':'13px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="adminTable">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                        <div class="p-d-flex p-jc-between p-ai-center">
+                            {{col.header}}
+                            <p-sortIcon [field]="col.field"></p-sortIcon>
+                            <p-columnFilter *ngIf="col.field != 'docUrlHtmlTag'" [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                                <ng-template pTemplate="header">
+                                    <div class="p-px-3 p-pt-3 p-pb-0">
+                                        <span class="p-text-bold"> {{col.header}} Picker</span>
+                                    </div>
+                                </ng-template>
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-multiSelect [ngModel]="value" maxSelectedLabels="1" [options]="col.options" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                                        <ng-template let-option pTemplate="item">
+                                            <div class="p-multiselect-representative-option">
+                                                <span class="p-ml-1">{{option.label}}</span>
+                                            </div>
+                                        </ng-template>
+                                    </p-multiSelect>
+                                </ng-template>
+                            </p-columnFilter>
+                        </div>
+                    </th>
+                    <th>Actions</th>
+                </tr>
+                <!-- <tr>
                     <th *ngFor="let col of columns" [ngSwitch]="col.field">
                         <p-multiSelect *ngSwitchCase="'taskTitle'" [style]="{ width: '100%' }" [options]="AdminColArray.taskTitle" defaultLabel="Task Title" (onChange)="admin.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"
                             (input)="optionFilter($event)" (onPanelShow)="isOptionFilter = true" [maxSelectedLabels]="1">
@@ -69,54 +63,53 @@
                     </th>
                     <th></th>
                 </tr> -->
-      </ng-template>
-      <ng-template pTemplate="body" let-rowData let-columns="columns">
-        <tr>
-          <td *ngFor="let col of columns">
-            <ng-container *ngIf="
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <tr>
+                    <td *ngFor="let col of columns">
+                        <ng-container *ngIf="
                 col.field != 'docUrlHtmlTag' &&
                 col.field != 'taskTitle' &&
                 col.field != 'taskCompletionDate' &&
                 col.field != ''
               ">
-              {{ rowData[col.field] }}
-            </ng-container>
-            <ng-container *ngIf="col.field === 'taskTitle'">
-              {{ rowData[col.field] }}
-            </ng-container>
-            <ng-container *ngIf="col.field == 'taskCompletionDate'">
-              {{ rowData[col.field] | date: "MMM d, yyyy" }}
-            </ng-container>
-            <!-- <ng-container *ngIf="col.field === 'taskTitle' && rowData['subMilestones'] !== ''">
+                            {{ rowData[col.field] }}
+                        </ng-container>
+                        <ng-container *ngIf="col.field === 'taskTitle'">
+                            {{ rowData[col.field] }}
+                        </ng-container>
+                        <ng-container *ngIf="col.field == 'taskCompletionDate'">
+                            {{ rowData[col.field] | date: "MMM d, yyyy" }}
+                        </ng-container>
+                        <!-- <ng-container *ngIf="col.field === 'taskTitle' && rowData['subMilestones'] !== ''">
                     {{rowData[col.field]}} - {{rowData['subMilestones']}}
                   </ng-container>
                   <ng-container *ngIf="col.field === 'taskTitle' && rowData['subMilestones'] === ''">
                     {{rowData[col.field]}}
                   </ng-container> -->
-            <ng-container *ngIf="col.field == 'docUrlHtmlTag'">
-              <div [innerHTML]="rowData[col.field]"></div>
-            </ng-container>
-          </td>
-          <td>
-            <a class="hoverClick" [hidden]="rowData['docUrlHtmlTag'] ? false : true"
-              (click)="openfeedbackpopup([rowData], {parent:'Retrospective'})"><i class="fa fa-edit"
+                        <ng-container *ngIf="col.field == 'docUrlHtmlTag'">
+                            <div [innerHTML]="rowData[col.field]"></div>
+                        </ng-container>
+                    </td>
+                    <td>
+                        <a class="hoverClick" [hidden]="rowData['docUrlHtmlTag'] ? false : true" (click)="openfeedbackpopup([rowData], {parent:'Retrospective'})"><i class="fa fa-edit"
                 aria-hidden="true"></i>Provide Rating</a>
 
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage" let-columns>
-        <tr>
-          <td [attr.colspan]="columns.length + 1">
-            No Data found
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage" let-columns>
+                <tr>
+                    <td [attr.colspan]="columns.length + 1">
+                        No Data found
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
 </div>
 
 <div class="p-d-flex p-flex-column" style="padding:5vw;" *ngIf="!hideLoader">
-  <div id="modalInnerLoader"></div>
-  <div id="modalInnerLoaderText">Loading...</div>
+    <div id="modalInnerLoader"></div>
+    <div id="modalInnerLoaderText">Loading...</div>
 </div>

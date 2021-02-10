@@ -43,7 +43,7 @@
                                 </div>
                             </ng-template>
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                                <p-multiSelect [ngModel]="value" maxSelectedLabels="1" [options]="col.options" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
                                     <ng-template let-option pTemplate="item">
                                         <div class="p-multiselect-representative-option">
                                             <span class="p-ml-1">{{option.label}}</span>

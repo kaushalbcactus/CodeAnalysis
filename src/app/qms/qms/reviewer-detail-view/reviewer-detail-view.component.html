@@ -1,7 +1,7 @@
 <div id="reviewerContent">
 
     <p-table #rd id="reviewerTable" [columns]="ReviewerDetailColumns" [value]="ReviewerDetail" [hidden]="hideTable" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {​​​​​​​​first}​​​​​​​​ to {​​​​​​​​last}​​​​​​​​ of {​​​​​​​​totalRecords}​​​​​​​​ entries"
-    [style]="{'font-size':'13px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="reviewerTable">
+        [style]="{'font-size':'13px'}" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="reviewerTable">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field">
@@ -15,7 +15,7 @@
                                 </div>
                             </ng-template>
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
+                                <p-multiSelect [ngModel]="value" maxSelectedLabels="1" [options]="col.options" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
                                     <ng-template let-option pTemplate="item">
                                         <div class="p-multiselect-representative-option">
                                             <span class="p-ml-1">{{option.label}}</span>
@@ -79,4 +79,4 @@
 <div class="p-d-flex p-flex-column" style="padding:5vw;" *ngIf="!hideLoader">
     <div id="modalInnerLoader"></div>
     <div id="modalInnerLoaderText">Loading...</div>
-  </div>
+</div>

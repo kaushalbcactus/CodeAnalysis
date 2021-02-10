@@ -111,16 +111,13 @@ export class ChangeBudgetDialogComponent implements OnInit {
         this.constantsService.loader.isWaitDisable = true;
         switch (this.selectedValue) {
           case this.adminConstants.ACTION.ADD:
-            await this.addBudget();
-            this.constantsService.loader.isWaitDisable = false;
+            await this.addBudget();         
             break;
           case this.adminConstants.ACTION.REDUCE:
             await this.reduceBudget();
-            this.constantsService.loader.isWaitDisable = false;
             break;
           case this.adminConstants.ACTION.RESTRUCTURE:
             await this.restructureBudget();
-            this.constantsService.loader.isWaitDisable = false;
             break;
         }
 
@@ -162,20 +159,22 @@ export class ChangeBudgetDialogComponent implements OnInit {
     this.adminObject.newBudget.AmountOOP = this.changeBudgetForm.controls.oop.value;
     this.adminObject.newBudget.AmountTax = this.changeBudgetForm.controls.tax.value;
     if (this.adminObject.newBudget.AmountRevenue < 0) {
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Revenue should be Positive Number',false);
       return false;
     }
     if (this.adminObject.newBudget.AmountOOP < 0) {
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'OOP should be Positive Number',false);
       return false;
     }
     if (this.adminObject.newBudget.AmountTax < 0) {
-
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Tax should be Positive Number',false);
       return false;
     }
     if (this.adminObject.newBudget.Amount < 0) {
-
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Total should be Positive Number',false);
       return false;
     }
@@ -223,51 +222,54 @@ export class ChangeBudgetDialogComponent implements OnInit {
     this.adminObject.newBudget.AmountOOP = this.changeBudgetForm.controls.oop.value;
     this.adminObject.newBudget.AmountTax = this.changeBudgetForm.controls.tax.value;
     if (this.adminObject.newBudget.AmountRevenue > 0) {
-
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Revenue amount should be negative number',false);
       return false;
     }
     if (this.adminObject.newBudget.AmountOOP > 0) {
-
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'OOP amount should be negative number',false);
       return false;
     }
     if (this.adminObject.newBudget.AmountTax > 0) {
-
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Tax amount should be negative number',false);
       return false;
     }
     if (this.adminObject.newBudget.Amount > 0) {
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Total should be negative number',false);
       return false;
     }
 
     if (Math.abs(this.adminObject.newBudget.AmountRevenue) > this.currPOObj.BalancedRevenue) {
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Can\'t reduce Revenue amount by '+Math.abs(this.adminObject.newBudget.AmountRevenue)+' as the Linked/Invoice Balance is ' + this.currPOObj.BalancedRevenue ,false);
       return false;
     }
     if (Math.abs(this.adminObject.newBudget.AmountOOP) > this.currPOObj.BalancedOOP) {
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Can\'t reduce OOP amount by '+Math.abs(this.adminObject.newBudget.AmountOOP)+' as the Linked/Invoice Balance is ' + this.currPOObj.BalancedOOP ,false);
       return false;
     }
 
     if (Math.abs(this.adminObject.newBudget.Amount) > this.adminObject.oldBudget.Amount) {
-
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Total Amount must be less than or equal to existing Total',false);
       return false;
     }
     if (Math.abs(this.adminObject.newBudget.AmountRevenue) > this.adminObject.oldBudget.AmountRevenue) {
-
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Revenue must be less than or equal to existing Revenue',false);
       return false;
     }
     if (Math.abs(this.adminObject.newBudget.AmountOOP) > this.adminObject.oldBudget.AmountOOP) {
-
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'OOP must be less than or equal to existing OOP Value',false);
       return false;
     }
     if (Math.abs(this.adminObject.newBudget.AmountTax) > this.adminObject.oldBudget.AmountTax) {
-
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Tax Amount must be less than or equal to existing Tax',false);
       return false;
     }
@@ -328,37 +330,39 @@ export class ChangeBudgetDialogComponent implements OnInit {
     this.adminObject.newBudget.AmountOOP = this.changeBudgetForm.controls.oop.value;
     this.adminObject.newBudget.AmountTax = this.changeBudgetForm.controls.tax.value;
     if (Math.abs(this.adminObject.newBudget.Amount) > this.adminObject.oldBudget.Amount) {
-
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Total Amount must be less than or equal to existing Total',false);
       return false;
     }
     if (this.adminObject.newBudget.AmountRevenue < 0 && Math.abs(this.adminObject.newBudget.AmountRevenue) > this.currPOObj.BalancedRevenue) {
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Can\'t reduce Revenue amount by '+Math.abs(this.adminObject.newBudget.AmountRevenue)+' as the Linked/Invoice Balance is ' + this.currPOObj.BalancedRevenue ,false);
       return false;
     }
 
     if (this.adminObject.newBudget.AmountOOP < 0 && Math.abs(this.adminObject.newBudget.AmountOOP) > this.currPOObj.BalancedOOP) {
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Can\'t reduce OOP amount by '+Math.abs(this.adminObject.newBudget.AmountOOP)+' as the Linked/Invoice Balance is ' + this.currPOObj.BalancedOOP ,false);
       return false;
     }
 
     if (this.adminObject.newBudget.AmountRevenue < 0 && Math.abs(this.adminObject.newBudget.AmountRevenue) > this.adminObject.oldBudget.AmountRevenue) {
-
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Revenue must be less than or equal to existing Revenue',false);
       return false;
     }
     if (this.adminObject.newBudget.AmountOOP < 0 && Math.abs(this.adminObject.newBudget.AmountOOP) > this.adminObject.oldBudget.AmountOOP) {
-
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'OOP must be less than or equal to existing OOP Value',false);
       return false;
     }
     if (this.adminObject.newBudget.AmountTax < 0 && Math.abs(this.adminObject.newBudget.AmountTax) > this.adminObject.oldBudget.AmountTax) {
-
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Tax Amount must be less than or equal to existing Tax',false);
       return false;
     }
     if (this.adminObject.newBudget.Amount !== 0) {
-
+      this.constantsService.loader.isWaitDisable=true;
       this.common.showToastrMessage(this.constantsService.MessageType.error,'Total Should be Zero',false);
       return false;
     }

@@ -3,53 +3,42 @@
     <div id="scInnerLoaderText">Loading...</div>
 </div>
 
-<div *ngIf="constantService.userPermission.isFDUserAdmin"  class="p-col-12 p-md-12 p-lg-12 f-right">
+<div *ngIf="constantService.userPermission.isFDUserAdmin" class="p-col-12 p-md-12 p-lg-12 f-right">
     <div style="display: -webkit-inline-box;">
         <div class="box" style="margin-right: 20px">
-            <button type="button" class="fdBtn" pButton label="Approve Expense"
-                (click)="approveExpense('approve')"></button>
+            <button type="button" class="fdBtn" pButton label="Approve Expense" (click)="approveExpense('approve')"></button>
         </div>
         <div class="box">
-            <button type="button" class="fdBtn" pButton label="Reject Expense"
-                (click)="approveExpense('reject')"></button>
+            <button type="button" class="fdBtn" pButton label="Reject Expense" (click)="approveExpense('reject')"></button>
         </div>
     </div>
 </div>
 <div style="clear: both;"></div>
 
 <div class="financeTable" hideshowMenu>
-    <p-table #pendingExpense [columns]="pendingExpeseCols" [value]="pendingExpenses" 
-        [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-        [paginator]="true" [rows]="10"
-        exportFilename="Pending_Expenses" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
-        selectionMode="" [(selection)]="selectedAllRowsItem" 
-        styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="pendingExpenseTable">
+    <p-table #pendingExpense [columns]="pendingExpeseCols" [value]="pendingExpenses" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [paginator]="true" [rows]="10"
+        exportFilename="Pending_Expenses" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" [(selection)]="selectedAllRowsItem" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="pendingExpenseTable">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th class="firstColumnWidth">S.No</th>
                 <th class="firstColumnWidth">
                     <p-tableHeaderCheckbox (click)="selectAllRows()"></p-tableHeaderCheckbox>
                 </th>
-                <th *ngFor="let col of columns"
-                    [ngStyle]="{'width': (col.field === 'RequestType' || col.field === 'ProjectCode' || col.field === 'Category'|| col.field === 'ExpenseType'|| col.field === 'ClientAmount'|| col.field === 'ClientCurrency'|| col.field === 'CreatedDate'|| col.field === 'CreatedBy' ) ? '10em': (col.field === 'ClientLegalEntity') ? '15em':(col.field === 'VendorName') ? '20em':'3em' }"
+                <th *ngFor="let col of columns" [ngStyle]="{'width': (col.field === 'RequestType' || col.field === 'ProjectCode' || col.field === 'Category'|| col.field === 'ExpenseType'|| col.field === 'ClientAmount'|| col.field === 'ClientCurrency'|| col.field === 'CreatedDate'|| col.field === 'CreatedBy' ) ? '10em': (col.field === 'ClientLegalEntity') ? '15em':(col.field === 'VendorName') ? '20em':'3em' }"
                     [pSortableColumn]="col.field" [hidden]="!col.visibility">
                     <!-- {{col.header}}
                     <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon> -->
                     <div *ngIf="col.field != ''" class="p-d-flex p-jc-between p-ai-center">
                         {{col.header}}
                         <p-sortIcon [field]="col.field"></p-sortIcon>
-                        <p-columnFilter
-                            *ngIf="col.header != ''"
-                            [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false"
-                            [showOperator]="false" [showAddButton]="false">
+                        <p-columnFilter *ngIf="col.header != ''" [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
                             <ng-template pTemplate="header">
                                 <div class="p-px-3 p-pt-3 p-pb-0">
                                     <span class="p-text-bold"> {{col.header}} Picker</span>
                                 </div>
                             </ng-template>
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-multiSelect [ngModel]="value" [options]="col.options" placeholder="All"
-                                    (onChange)="filter($event.value)" optionLabel="label">
+                                <p-multiSelect [ngModel]="value" maxSelectedLabels="1" [options]="col.options" placeholder="All" (onChange)="filter($event.value)" optionLabel="label">
                                     <ng-template let-option pTemplate="item">
                                         <div class="p-multiselect-representative-option">
                                             <span class="p-ml-1">{{option.label}}</span>
@@ -61,8 +50,7 @@
                     </div>
                 </th>
                 <th class="lastColumnWidth">
-                    <i (click)=" fdDataShareServie.convertToExcelFile(pendingExpense)" title="Export To Excel"
-                    class="pi pi-file-excel tableExportIcon"></i>
+                    <i (click)=" fdDataShareServie.convertToExcelFile(pendingExpense)" title="Export To Excel" class="pi pi-file-excel tableExportIcon"></i>
                 </th>
             </tr>
             <!-- <tr>
@@ -141,8 +129,7 @@
                     <div>
                         <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu">
                         </p-menu>
-                        <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-                            (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
+                        <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
                     </div>
                 </td>
             </tr>

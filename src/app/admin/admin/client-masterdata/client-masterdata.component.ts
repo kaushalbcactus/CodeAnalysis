@@ -2419,9 +2419,10 @@ export class ClientMasterdataComponent implements OnInit {
 
     ref.onClose.subscribe(async (budgetObj: any) => {
       if (budgetObj) {
+        this.constantsService.loader.isWaitDisable=true;
         this.modalloaderenable = true;
         await this.uploadFile(budgetObj.selectedFile);
-        await this.confirmBudgetUpdate(budgetObj.selectedFile);
+       
       }
     });
   }
@@ -2446,6 +2447,7 @@ export class ClientMasterdataComponent implements OnInit {
               "File uploaded sucessfully.",
               false
             );
+            await this.confirmBudgetUpdate(selectedFile);
           } else {
             this.common.showToastrMessage(
               this.constantsService.MessageType.error,
