@@ -268,7 +268,16 @@ export class MyDashboardConstantsService {
     ClientReviewSchedules: {
       select: 'ID,Title,Status,Task,Milestone,ProjectCode',
       filter: 'ProjectCode eq \'{{projectCode}}\' and Task eq \'Client Review\' and (Status eq \'Completed\' or Status eq \'Not Started\')'
-    }
+    },
+
+    // SlotTasks:{
+    //   select: 'ID,Title,Task,Status,Milestone,SubMilestones,ExpectedTime,CentralAllocationDone,IsCentrallyAllocated, ActiveCA',
+    //   filter: "ActiveCA eq 'Yes' and Status ne 'Deleted' and Status ne 'Completed'",
+    //   filterSlot: " and IsCentrallyAllocated eq 'Yes'",
+    //   filterTask: " ParentSlot eq {{ParentSlotId}} ",
+    //   orderby: 'DueDateDT asc',
+    //   top: 4200
+    // }
 
   };
 
@@ -525,7 +534,6 @@ export class MyDashboardConstantsService {
       listName: this.constants.listNames.Schedules.name
     });
     if (status === 'Completed') {
-
       // Project Information
       const projectInfObj = Object.assign({}, this.mydashboardComponent.projectInfoByPC);
       projectInfObj.filter = projectInfObj.filter.replace(/{{ProjectCode}}/g, task.ProjectCode);
@@ -536,16 +544,28 @@ export class MyDashboardConstantsService {
         listName: this.constants.listNames.ProjectInformation.name
       });
 
+      // Get Slot tasks
+      const SlotTasksObj = Object.assign({}, this.mydashboardComponent.nextPreviousTaskChild);
+      SlotTasksObj.filter = SlotTasksObj.filter.replace(/{{ParentSlotId}}/g, task.ParentSlot);
+      batchURL.push({
+        data: null,
+        url: this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', SlotTasksObj),
+        type: 'GET',
+        listName: this.constants.listNames.Schedules.name
+      });
+
     }
 
     this.common.SetNewrelic('MyDashboard', 'MyDashboardConstantService', 'getCurrentAndParentTask');
     const currentParentTasks = await this.spServices.executeBatch(batchURL);
-    const parentTaskProp = { Status: 'In Progress', ActiveCA: 'Yes', __metadata: { type: this.constants.listNames.Schedules.type } };
+    const parentTaskProp = { Status: this.constants.STATUS.IN_PROGRESS, ActiveCA: 'Yes', __metadata: { type: this.constants.listNames.Schedules.type } };
     const parentTaskRes = currentParentTasks.length ? currentParentTasks[0].retItems[0] : null;
     const currentTaskRes = currentParentTasks.length ? currentParentTasks[1].retItems[0] : null;
+    debugger;
+    const ActiveSlotTasksPresent = currentParentTasks.length && currentParentTasks[3].retItems.filter(c=> c.Status === this.constants.STATUS.IN_PROGRESS ||  c.Status === this.constants.STATUS.NOT_STARTED).length > 0 ? true: false;
     if (status === 'Completed') {
       const projInfoRes = currentParentTasks.length ? currentParentTasks[2].retItems[0] : null;
-      if (!currentTaskRes.NextTasks) {
+      if (!currentTaskRes.NextTasks && !ActiveSlotTasksPresent) {
         if (parentTaskRes.Status !== 'Completed') {
           const ctDueDate = new Date(this.datePipe.transform(currentTaskRes.DueDateDT, 'MMM d, y h:mm a'));
           const todayDate = new Date();

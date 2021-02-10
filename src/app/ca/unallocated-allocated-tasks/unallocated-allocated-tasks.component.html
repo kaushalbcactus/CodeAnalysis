@@ -86,12 +86,12 @@
         <ng-template pTemplate="body" let-task let-expanded="expanded" let-columns="columns" let-rowIndex="rowIndex" let-Slot>
             <tr>
                 <td>
-                    <a href="#" [pRowToggler]="task" style="color:#C53E3E;">
+                    <a href="#" [pRowToggler]="task" class="error">
                         <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
                     </a>
                 </td>
                 <td>{{task.ClientName}}</td>
-                <td><a style="color:#C53E3E;" href="{{globalService.sharePointPageObject.webAbsoluteUrl}}/dashboard#/taskAllocation?ProjectCode={{task.ProjectCode}}" target="_blank">{{task.ProjectCode}}</a> <br /> ({{task.ProjectName}}) </td>
+                <td><a class="error" href="{{globalService.sharePointPageObject.webAbsoluteUrl}}/dashboard#/taskAllocation?ProjectCode={{task.ProjectCode}}" target="_blank">{{task.ProjectCode}}</a> <br /> ({{task.ProjectName}}) </td>
                 <td> {{task.Milestone}} <span *ngIf="task.SubMilestones && task.SubMilestones !=='Default'"> -  {{task.SubMilestones}}</span></td>
                 <td>{{task.Displaytask}}</td>
                 <td>{{task.DeliveryType}}</td>
