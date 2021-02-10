@@ -234,8 +234,8 @@
                             <div id="modalInnerLoaderText">Loading...</div>
                         </div>
 
-                        <p-calendar *ngIf="inActiveProjectLoader" [(ngModel)]="rangeDates" selectionMode="range" (onClose)="getInactiveProject()" [style]="{'width':'100%', 'cursor': 'pointer'}" numberOfMonths='1' appendTo="body" dateFormat="dd M , yy" [showIcon]="true" [disabledDays]="[0,6]"
-                            [readonlyInput]="true" placeholder="Select Custom Dates"></p-calendar>
+                        <p-calendar *ngIf="inActiveProjectLoader" [(ngModel)]="rangeDates" selectionMode="range" (onClose)="getInactiveProject()" [style]="{'width':'30% !important', 'cursor': 'pointer'}" numberOfMonths='1' appendTo="body" dateFormat="dd M , yy" [showIcon]="true"
+                            [disabledDays]="[0,6]" [readonlyInput]="true" placeholder="Select Custom Dates"></p-calendar>
                         <p-table *ngIf="inActiveProjectLoader" #inActiveProject [columns]="projectsDisplayedColumns" [value]="pmObject.allProjects.inActiveProjectCopyArray" [paginator]="true" [rows]="5" [lazy]="true" [totalRecords]="pmObject.totalRecords.inActiveProject" [rowsPerPageOptions]="[5,10,15]"
                             [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" styleClass="p-datatable-cactus p-datatable-gridlines p-mt-2" [loading]="pmObject.loading.inActiveProject" (onLazyLoad)="inActivelazyLoadTask($event)"
                             [lazyLoadOnInit]="false">

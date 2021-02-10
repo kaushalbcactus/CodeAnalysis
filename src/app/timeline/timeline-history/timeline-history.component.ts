@@ -37,12 +37,12 @@ export class TimelineHistoryComponent implements OnInit {
   public lazy: boolean;
   public displayBody = false;
   public timelineHeader = [
-    { field: 'date_time', header: 'Date & Time', width: '14%', Type:'datetime',dbName:'date_time', options:[] },
-    { field: 'activity_type', header: 'Activity Type', width: '14%', Type:'string',dbName:'activity_type', options:[] },
-    { field: 'activity_sub_type', header: 'Activity Sub-Type', width: '16%', Type:'string',dbName:'activity_sub_type', options:[] },
-    { field: 'activity_by', header: 'Activity By', width: '16%', Type:'string',dbName:'activity_by', options:[] },
-    { field: 'activity_description', header: 'Activity Description', width: '20%' },
-    { field: 'file_uploaded', header: 'File Uploaded', width: '16%' }
+    { field: 'date_time', header: 'Date & Time', Type:'datetime',dbName:'date_time', options:[] },
+    { field: 'activity_type', header: 'Activity Type', Type:'string',dbName:'activity_type', options:[] },
+    { field: 'activity_sub_type', header: 'Activity Sub-Type', Type:'string',dbName:'activity_sub_type', options:[] },
+    { field: 'activity_by', header: 'Activity By', Type:'string',dbName:'activity_by', options:[] },
+    { field: 'activity_description', header: 'Activity Description'},
+    { field: 'file_uploaded', header: 'File Uploaded'}
   ];
   public filter = {
     dates: [],
