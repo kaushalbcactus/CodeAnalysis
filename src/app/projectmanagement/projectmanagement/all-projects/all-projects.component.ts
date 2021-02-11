@@ -105,6 +105,7 @@ export class AllProjectsComponent implements OnInit {
     ProjectStatus: "",
     ProjectBudgetStatus: "",
   };
+  selectedTask:any;
   newSelectedSOW;
   moveSOWObjectArray = [];
   sowDropDownArray: SelectItem[];
@@ -3576,7 +3577,18 @@ export class AllProjectsComponent implements OnInit {
         "Project"
       );
     }
+    this.selectedTask = selectedProjectObj;
   }
+
+
+  @HostListener('document:click', ['$event'])
+  clickout(event) {
+    if(event.target.className === 'p-component-overlay p-sidebar-mask'){
+      this.selectedTask=null;
+    }
+  }
+
+
 
   /**
    * This method is used to send email by using template.

@@ -8,7 +8,7 @@
         <div id="modalInnerLoaderText">Loading...</div>
     </div>
     <p-table #timelineTable id="tblTimeline" [hidden]='!hideLoader' [columns]="timelineHeader" [value]="timelineData" [scrollable]="true" scrollHeight="400px" [virtualScroll]="true" [lazy]="lazy" [rows]="10" [rowTrackBy]="rowTrackBy" [virtualRowHeight]="34"
-        [style]="{'margin':'0px 35px'}" (onLazyLoad)="loadData($event)" [lazyLoadOnInit]="false" [totalRecords]="totalRecords" [loading]="loading" styleClass="p-datatable-cactus p-datatable-gridlines">
+        z [style]="{'margin':'0px 35px'}" (onLazyLoad)="loadData($event)" [lazyLoadOnInit]="false" [totalRecords]="totalRecords" [loading]="loading" styleClass="p-datatable-cactus p-datatable-gridlines">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th class="firstColumnWidth">Sr.No.</th>

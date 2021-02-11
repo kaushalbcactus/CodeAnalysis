@@ -15,6 +15,7 @@ export class AdminComponent implements OnInit {
   public hideRestrospective = true;
   public hideScorecard = true;
   public navLinks = [];
+  viewMenu: boolean =false;
   constructor(
     private router: Router,
     private global: GlobalService,
@@ -56,10 +57,13 @@ export class AdminComponent implements OnInit {
       });
     }
 
-    this.internalRouter = this.navLinks.find((c) =>
+      this.internalRouter = this.navLinks.find((c) =>
       this.router.url.includes(c.routerLink)
     )
       ? this.navLinks.find((c) => this.router.url.includes(c.routerLink))
       : this.navLinks[0];
+    
+      this.viewMenu=true;
+    
   }
 }

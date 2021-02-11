@@ -5,3 +5,8 @@
     height: 28px !important;
     cursor: pointer !important;
 }
+
+:host ::ng-deep .cls_selectedProject {
+    background: rgb(181 63 72 / 12%) !important;
+    color: #bf2727 !important;
+}

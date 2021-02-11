@@ -365,7 +365,7 @@ export class TimelineHistoryComponent implements OnInit {
     this.timelineDataCopy = JSON.parse(JSON.stringify(this.timelineData));
     //this.filter = this.getFilterData(this.timelineData);
     this.timelineHeader = this.commonService.MainfilterForTable(this.timelineHeader,this.timelineData);
-    this.hideLoader = true;
+   
   }
 
   updateInitialStruture(obj) {
@@ -428,6 +428,7 @@ export class TimelineHistoryComponent implements OnInit {
   }
 
   async processPendingRequests() {
+
     const retVersions = await this.processStructure();
     let processingObjs = [];
     processingObjs = this.updateStructure(this.timelineBaseObj, retVersions, processingObjs);
@@ -521,6 +522,9 @@ export class TimelineHistoryComponent implements OnInit {
       this.totalRecords = this.timelineData.length;
       setTimeout(() => {
         this.setTableHeight('down', 0);
+          const tableHeader:any = this.elemRef.nativeElement.querySelector('.p-datatable-scrollable-header-box')
+          tableHeader.style.paddingRight= this.timelineData.length < 9 ? "0px" : "17px";
+          this.hideLoader=true;
       }, 500);
     } else {
       if (this.timelineBaseObj.data.length < 1) {
@@ -528,7 +532,10 @@ export class TimelineHistoryComponent implements OnInit {
       } else {
         setTimeout(() => {
           this.totalRecords = this.timelineData.length + this.buffer;
-          this.setTableHeight('down', this.buffer);
+          this.setTableHeight('down', this.buffer);  
+            const tableHeader:any = this.elemRef.nativeElement.querySelector('.p-datatable-scrollable-header-box')
+            tableHeader.style.paddingRight= this.timelineData.length < 9 ? "0px" : "17px";
+            this.hideLoader=true;
         }, 500);
       }
     }
@@ -1145,6 +1152,8 @@ export class TimelineHistoryComponent implements OnInit {
    * @param scrollDirection - up/down
    */
   setTableHeight(scrollDirection, buffer) {
+
+
     // const ifDone = this.checkifAllDone(this.timelineBaseObj);
     // It is used to remove empty whitespace from top by setting it to 0
 //const table: any = this.elemRef.nativeElement.querySelector('#tblTimeline .ui-table-scrollable-body-table');

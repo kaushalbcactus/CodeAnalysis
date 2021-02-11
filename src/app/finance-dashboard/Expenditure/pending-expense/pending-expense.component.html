@@ -24,8 +24,8 @@
                 <th class="firstColumnWidth">
                     <p-tableHeaderCheckbox (click)="selectAllRows()"></p-tableHeaderCheckbox>
                 </th>
-                <th *ngFor="let col of columns" [ngStyle]="{'width': (col.field === 'RequestType' || col.field === 'ProjectCode' || col.field === 'Category'|| col.field === 'ExpenseType'|| col.field === 'ClientAmount'|| col.field === 'ClientCurrency'|| col.field === 'CreatedDate'|| col.field === 'CreatedBy' ) ? '10em': (col.field === 'ClientLegalEntity') ? '15em':(col.field === 'VendorName') ? '20em':'3em' }"
-                    [pSortableColumn]="col.field" [hidden]="!col.visibility">
+                <!-- [ngStyle]="{'width': (col.field === 'RequestType' || col.field === 'ProjectCode' || col.field === 'Category'|| col.field === 'ExpenseType'|| col.field === 'ClientAmount'|| col.field === 'ClientCurrency'|| col.field === 'CreatedDate'|| col.field === 'CreatedBy' ) ? '10em': (col.field === 'ClientLegalEntity') ? '15em':(col.field === 'VendorName') ? '20em':'3em' }" -->
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                     <!-- {{col.header}}
                     <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon> -->
                     <div *ngIf="col.field != ''" class="p-d-flex p-jc-between p-ai-center">

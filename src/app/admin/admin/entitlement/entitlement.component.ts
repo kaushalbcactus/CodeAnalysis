@@ -23,14 +23,15 @@ export class EntitlementComponent implements OnInit {
     ) { }
 
   async ngOnInit() {
-    this.constants.loader.isPSInnerLoaderHidden = true;
-    await this.checkUserPresentInGroup();
-
     this.adminConstantService.internalRouter = this.adminConstantService.EntitleMentMenu.List.find((c) =>
     this.router.url.includes(c.routerLink)
   )
     ? this.adminConstantService.EntitleMentMenu.List.find((c) => this.router.url.includes(c.routerLink))
     : this.adminConstantService.EntitleMentMenu.List[0];
+    this.constants.loader.isPSInnerLoaderHidden = true;
+    await this.checkUserPresentInGroup();
+
+
   }
   async checkUserPresentInGroup() {
     const isPresent = false;
