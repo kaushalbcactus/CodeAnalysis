@@ -278,7 +278,7 @@
                                                          gantt chart Data
            *********************************************************************************** -->
 
-    <div [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'" [hidden]="!visualgraph || loaderenable">
+    <div style="position: relative;" [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'" [hidden]="!visualgraph || loaderenable">
         <app-gantt-chart #ganttcontainer [ganttData]='this.taskAllocateCommonService.ganttParseObject' [beforeTaskChanged]="onBeforeTaskChangedCall" [beforeTaskDrag]="onBeforeTaskDragCall" [taskClick]="onTaskClickCall" [afterTaskDrag]="onAfterTaskDragCall"></app-gantt-chart>
         <app-allocation-overlay #dailyAllocateOP2></app-allocation-overlay>
     </div>
