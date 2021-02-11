@@ -731,7 +731,8 @@ i.pi.pi-ellipsis-v,
 form>div>div>label,
 form>div>div>div>label,
 .formfont,
-.cls_adhocTaskTable {
+.cls_adhocTaskTable,
+.cls_Table {
     font-size: 13px !important;
 }
 

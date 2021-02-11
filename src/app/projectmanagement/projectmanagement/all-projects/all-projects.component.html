@@ -60,7 +60,7 @@
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-rowData let-task let-rowIndex="rowIndex">
-                <tr>
+                <tr [ngClass]="{'cls_selectedProject': selectedTask === task}">
                     <td>{{rowIndex+1}}</td>
                     <td>
                         <a class="error" *ngIf="showNavigateSOW" href="javascript:void(0)" (click)="navigateToSOW(task)">{{task.SOWCode}}</a>

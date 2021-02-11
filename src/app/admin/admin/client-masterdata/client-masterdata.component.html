@@ -417,42 +417,42 @@
 
 
 
-
-
-<div *ngIf="adminObject.po.isRightVisible" class="ng-right-side-overlay">
-    <p-sidebar [(visible)]="adminObject.po.isRightVisible" position="right" styleClass="ui-sidebar-md">
-        <p-table [value]="PORightRows">
-            <ng-template pTemplate="header">
-                <tr>
-                    <th>Name</th>
-                    <th>Value</th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-rowData let-task style="overflow: auto">
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">SOW ID</td>
-                    <td>{{task.ID}}</td>
-                </tr>
-                <tr>
-                    <td colspan="2" [ngStyle]="{'color':'#d7181f'}">Budget</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Total</td>
-                    <td>{{task.Amount}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Net</td>
-                    <td>{{task.AmountRevenue}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">OOP</td>
-                    <td>{{task.AmountOOP}}</td>
-                </tr>
-                <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Tax</td>
-                    <td>{{task.AmountTax}}</td>
-                </tr>
-            </ng-template>
-        </p-table>
+<div *ngIf="adminObject.po.isRightVisible" class="right-side-overlay">
+    <p-sidebar [(visible)]="adminObject.po.isRightVisible" position="right" [baseZIndex]="10000" [style]="{width:'28em'}">
+        <p-scrollPanel [style]="{'width': '100%', 'height': '95vh'}">
+            <p-table [value]="PORightRows" styleClass="p-datatable-cactus p-datatable-sm p-datatable-gridlines">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData let-task style="overflow: auto">
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">SOW ID</td>
+                        <td>{{task.ID}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" [ngStyle]="{'color':'#d7181f'}">Budget</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Total</td>
+                        <td>{{task.Amount}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Net</td>
+                        <td>{{task.AmountRevenue}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">OOP</td>
+                        <td>{{task.AmountOOP}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Tax</td>
+                        <td>{{task.AmountTax}}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-scrollPanel>
     </p-sidebar>
 </div>

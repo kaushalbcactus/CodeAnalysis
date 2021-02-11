@@ -24,8 +24,8 @@
                 <th class="firstColumnWidth">
                     <p-tableHeaderCheckbox (click)="selectAllRows()"></p-tableHeaderCheckbox>
                 </th>
-                <th *ngFor="let col of columns" [ngStyle]="{'width': (col.field === 'RequestType' || col.field === 'ProjectCode' || col.field === 'Category'|| col.field === 'ExpenseType'|| col.field === 'ClientAmount'|| col.field === 'ClientCurrency'|| col.field === 'CreatedDate'|| col.field === 'CreatedBy' ) ? '10em': (col.field === 'ClientLegalEntity') ? '15em':(col.field === 'VendorName') ? '20em':'3em' }"
-                    [pSortableColumn]="col.field" [hidden]="!col.visibility">
+                <!-- [ngStyle]="{'width': (col.field === 'RequestType' || col.field === 'ProjectCode' || col.field === 'Category'|| col.field === 'ExpenseType'|| col.field === 'ClientAmount'|| col.field === 'ClientCurrency'|| col.field === 'CreatedDate'|| col.field === 'CreatedBy' ) ? '10em': (col.field === 'ClientLegalEntity') ? '15em':(col.field === 'VendorName') ? '20em':'3em' }" -->
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                     <!-- {{col.header}}
                     <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon> -->
                     <div *ngIf="col.field != ''" class="p-d-flex p-jc-between p-ai-center">
@@ -142,8 +142,10 @@
 <!-- Table End  -->
 
 <!-- Right Side Bar -->
-<p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow:'auto'}" styleClass="ui-sidebar-md">
-    <ng-container *ngIf="rightSideBar">
-        <app-table-attribute [rowItemData]="selectedRowItem"></app-table-attribute>
-    </ng-container>
+<p-sidebar [(visible)]="rightSideBar" position="right" [baseZIndex]="10000" [style]="{width:'28em'}">
+    <p-scrollPanel [style]="{'width': '100%', 'height': '95vh'}">
+        <ng-container *ngIf="rightSideBar">
+            <app-table-attribute [rowItemData]="selectedRowItem"></app-table-attribute>
+        </ng-container>
+    </p-scrollPanel>
 </p-sidebar>

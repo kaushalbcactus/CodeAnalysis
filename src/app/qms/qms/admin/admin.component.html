@@ -1,6 +1,6 @@
-<div class="adminView">
-  <p-tabMenu [model]="navLinks" class="innerTab personalTabs" [activeItem]="internalRouter">
-  </p-tabMenu>
+<div class="adminView" *ngIf="viewMenu">
+    <p-tabMenu [model]="navLinks" class="innerTab personalTabs" [activeItem]="internalRouter">
+    </p-tabMenu>
 
-  <router-outlet></router-outlet>
+    <router-outlet></router-outlet>
 </div>

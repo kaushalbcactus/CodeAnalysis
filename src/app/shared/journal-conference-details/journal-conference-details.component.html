@@ -1,4 +1,4 @@
-<table class="p-col-12 p-mt-2">
+<table class="p-col-12 p-mt-2 cls_Table">
     <tbody>
         <!--Inner Open Main Accordian Start-->
         <tr colspan="10" class="model-open main-table-detail">
@@ -8,11 +8,11 @@
                     <div class="info" *ngIf="isPubSupportComponent && journal_Conf_data.length">
                         <span>PubSupport Status : {{journal_Conf_data[0]?.project.PubSupportStatus}}</span>
                         <span>Submission Date : {{journal_Conf_data[0]?.project.LastSubmissionDate | date:'MMM d, y, hh:mm a' }}</span>
-                        <span><a style="color:#d7181f;cursor:pointer" (click)="AuthorDetails(journal_Conf_data[0]?.project)">Author Details</a></span>
-                        <span><a style="color:#d7181f;cursor:pointer"  (click)="goToPubSupport(journal_Conf_data[0]?.project.ProjectCode)">Open PubSupport</a></span>
+                        <span><a class="error" style="cursor:pointer" (click)="AuthorDetails(journal_Conf_data[0]?.project)">Author Details</a></span>
+                        <span><a  class="error" style="cursor:pointer"  (click)="goToPubSupport(journal_Conf_data[0]?.project.ProjectCode)">Open PubSupport</a></span>
                     </div>
                 </div>
-                <table class="p-col-12">
+                <table class="p-col-12 cls_Table">
                     <!--Inner Open Main Accordian Head Start-->
                     <thead>
                         <tr class="header-style">
@@ -31,7 +31,7 @@
                     <!-- <tbody *ngIf="journal_Conf_data &&journal_Conf_data[0].element.length == 0"> -->
                     <tbody *ngIf="journal_Conf_data.length == 0">
                         <tr>
-                            <td colspan="10" style="text-align:center;color:#d7181f;cursor: auto !important;">
+                            <td class="p-text-center error" colspan="10" style="cursor: auto !important;">
                                 <b>No Data available.</b>
                             </td>
                         </tr>
@@ -165,9 +165,9 @@
                         <ng-container *ngIf="showSubDetails &&  i == showSubDetailsIndex">
                             <tr colspan="10" *ngIf="showHideSubDetailsData">
                                 <td colspan="10" class="submission-inner-table">
-                                    <table>
+                                    <table class="p-col-12 cls_Table">
                                         <!--Submission Detail Head Start-->
-                                        <thead style="color:#d7181f;padding-left:30px;">
+                                        <thead class="error" style="padding-left:30px;">
                                             <tr class="header-style">
                                                 <th>No</th>
                                                 <th>Submission Date</th>
@@ -184,7 +184,7 @@
 
                                         <tbody *ngIf="submission_details_data.length === 0">
                                             <tr>
-                                                <td colspan="9" style="text-align:center;color:#d7181f;cursor: auto !important;">
+                                                <td class="p-text-center error" colspan="9" style="cursor: auto !important;">
                                                     <b>No Submission Detail available.</b>
                                                 </td>
                                             </tr>
@@ -234,32 +234,45 @@
                                                 </td>
                                                 <td></td>
                                             </tr>
-                                            <ng-container *ngIf="galleyDetailsData.length === 0 && showHideGalleyData && galleyIndex === galleyIndexChecked">
-                                                <tr>
-                                                    <td colspan="9" style="text-align:center;color:#d7181f;cursor: auto !important;top: 15px;">
-                                                        <b>No Galley Details available.</b>
-                                                    </td>
-                                                </tr>
-                                            </ng-container>
                                             <ng-container *ngIf="showHideGalleyDetails && galleyIndex === galleyIndexChecked && showHideGalleyData">
                                                 <!--View Gallery Detail Start-->
-                                                <tr *ngFor="let g of galleyDetailsData; let i=index;">
-                                                    <td></td>
-                                                    <td>
-                                                        <label>Galley N0.</label><br>
-                                                        <span><b>{{i + 1}}</b></span>
-                                                    </td>
-                                                    <td>
-                                                        <label>Galley Date:</label><br>
-                                                        <span><b>{{g.GalleyDate | date:'MMM d, y, hh:mm a'}}</b></span>
-                                                    </td>
-                                                    <td colspan="6">
-                                                        <label>Galley Document</label><br>
-                                                        <a class="downloadUpload" title="Download Document" *ngIf="g.GalleyURL" (click)="downloadFile(g.GalleyURL,g.Title+'_GalleyDoc_files')">
-                                                            &nbsp;<i class="fa fa-download"
-                                                                aria-hidden="true"></i></a>
-                                                        <a class="downloadUpload" title="Replace Document" *ngIf="g.GalleyURL && isUploadIcon" (click)="replaceFile('GalleyURL',g.ID)">
-                                                            &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
+                                                <tr colspan="9">
+                                                    <td colspan="9" class="submission-inner-table">
+                                                        <table class="p-col-12 cls_Table">
+                                                            <!--Galley Detail Head Start-->
+                                                            <thead class="error" style="padding-left:30px;">
+                                                                <tr class="header-style">
+                                                                    <th>Galley No</th>
+                                                                    <th>Galley Date</th>
+                                                                    <th>Galley Document Document</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <!--Galley Detail Head End-->
+
+                                                            <tbody *ngIf="galleyDetailsData.length === 0">
+                                                                <tr>
+                                                                    <td class="p-text-center error" colspan="9" style="cursor: auto !important;">
+                                                                        <b>No Galley Details available.</b>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                            <!--Galley Detail Body Start-->
+                                                            <tbody *ngFor="let g of galleyDetailsData; let i=index;">
+                                                                <tr>
+                                                                    <td>
+                                                                        <span>{{i + 1}}</span>
+                                                                    </td>
+                                                                    <td> <span><b>{{g.GalleyDate | date:'MMM d, y, hh:mm a'}}</b></span> </td>
+                                                                    <td>
+                                                                        <a class="downloadUpload" title="Download Document" *ngIf="g.GalleyURL" (click)="downloadFile(g.GalleyURL,g.Title+'_GalleyDoc_files')">
+                                                                        &nbsp;<i class="fa fa-download"
+                                                                            aria-hidden="true"></i></a>
+                                                                        <a class="downloadUpload" title="Replace Document" *ngIf="g.GalleyURL && isUploadIcon" (click)="replaceFile('GalleyURL',g.ID)">
+                                                                        &nbsp;<i class="fa fa-upload" aria-hidden="true"></i></a>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
                                                     </td>
                                                 </tr>
                                             </ng-container>

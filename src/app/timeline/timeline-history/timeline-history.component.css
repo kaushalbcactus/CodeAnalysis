@@ -19,6 +19,7 @@
     width: 20% !important;
 }
 
-:host ::ng-deep .p-datatable-scrollable-header-box {
+
+/* :host ::ng-deep .p-datatable-scrollable-header-box {
     padding-right: 0px !important;
-}
+} */

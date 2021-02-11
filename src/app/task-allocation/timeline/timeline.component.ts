@@ -7642,19 +7642,33 @@ export class TimelineComponent
         let panel: any = document.querySelector(
           ".dailyAllocationOverlayComp > div"
         );
-        let panelContainer: any = document.getElementById("s4-workspace");
-        let topAdject = 0;
-        if (panelContainer) {
-          topAdject =
-            panelContainer.scrollTop > 0
-              ? panelContainer.scrollTop - panel.clientHeight
-              : 0;
-          if (topAdject < 0) {
-            topAdject = panelContainer.scrollTop;
-          }
+        let visualRepBound; 
+        const visualRepLocation = document.querySelector('.VisualRepresentation');
+        if(visualRepLocation) {
+          visualRepBound = visualRepLocation.getBoundingClientRect();
         }
-        panel.style.setProperty("top", event.pageY + topAdject - 115 + "px", "important"); //.top = event.pageY + topAdject + "px";
-        panel.style.setProperty("left", event.pageX - 30 + "px", "important"); //.style.left = event.pageX + "px";
+        
+        // let panelContainer: any = document.getElementById("s4-workspace");
+        // //let topAdject = 0;
+        // if (panelContainer) {
+        //   // topAdject =
+        //   //   panelContainer.scrollTop > 0
+        //   //     ? panelContainer.scrollTop - panel.clientHeight
+        //   //     : 0;
+        //   // if (topAdject < 0) {
+        //   //   topAdject = panelContainer.scrollTop;
+        //   // }
+        //   panel.style.setProperty("top", event.pageY - visualRepBound.top - panelContainer.scrollTop + "px", "important"); //.top = event.pageY + topAdject + "px";
+        // }
+        // else {
+        //   console.log(event);
+        //   // console.log(eventBound);
+        //   // console.log(visualRepBound);
+        //   // panel.style.setProperty("top", eventBound.top - visualRepBound.top + 15 + "px", "important"); //.top = event.pageY + topAdject + "px";
+        //   // panel.style.setProperty("left", eventBound.x - visualRepBound.x + "px", "important"); //.style.left = event.pageX + "px";
+        // }
+        panel.style.setProperty("top", event.pageY - visualRepBound.top - window.scrollY + "px", "important"); //.top = event.pageY + topAdject + "px";
+        panel.style.setProperty("left", event.pageX - 45 + "px", "important"); //.style.left = event.pageX + "px";
         panel.style.setProperty("right", "inherit", "important");
       }, 50);
     }
