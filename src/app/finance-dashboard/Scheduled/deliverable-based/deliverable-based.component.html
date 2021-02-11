@@ -124,10 +124,12 @@
     </p-table>
 </div>
 <!-- Right Side Bar -->
-<p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow: 'auto'}" styleClass="ui-sidebar-md">
-    <ng-container *ngIf="rightSideBar">
-        <app-ili-table-attribute [rowItemData]="selectedRowItem"></app-ili-table-attribute>
-    </ng-container>
+<p-sidebar [(visible)]="rightSideBar" position="right" [baseZIndex]="10000" [style]="{width:'28em'}">
+    <p-scrollPanel [style]="{'width': '100%', 'height': '95vh'}">
+        <ng-container *ngIf="rightSideBar">
+            <app-ili-table-attribute [rowItemData]="selectedRowItem"></app-ili-table-attribute>
+        </ng-container>
+    </p-scrollPanel>
 </p-sidebar>
 
 <app-timeline-history #timelineRef></app-timeline-history>
