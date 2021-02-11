@@ -249,7 +249,7 @@ export class PreStackcommonService {
     let allocationSplit = [];
     const maxLimit = +resource.maxHrs + 2;
     const budgetHrs: number = +allocationData.budgetHrs;
-    let maxAvailableHrs = +resource.maxHrs;
+    let maxAvailableHrs = +resource.maxHrs === 0 ? 8 : +resource.maxHrs;
     let remainingBudgetHrs: string;
     while (maxAvailableHrs <= maxLimit) {
       const resourceCapacity = JSON.parse(JSON.stringify(resource));
@@ -400,6 +400,7 @@ export class PreStackcommonService {
     const arrAllocation = [];
     const budgetHours = +allocationData.budgetHrs;
     const resourceCapacity = JSON.parse(JSON.stringify(resourceCapacityCopy));
+    resourceCapacity.maxHrs = resourceCapacity.maxHrs === 0 ? 8 : resourceCapacity.maxHrs;
     const sliderMaxHrs = this.common.convertToHrsMins(resourceCapacity.maxHrs + 3.75);
     const resourceDailyDetails = resourceCapacity.dates.filter(d => [0, 6].indexOf(new Date(d.date).getDay()) < 0); // .filter(d => d.userCapacity !== 'Leave');
     let businessDays = resourceCapacity.dates.filter(d => d.userCapacity !== 'Leave').length;
