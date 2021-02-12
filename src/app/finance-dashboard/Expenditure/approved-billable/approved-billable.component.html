@@ -1,6 +1,7 @@
 <div class="p-col-12 p-md-12 p-lg-12 f-right">
     <div style="display: -webkit-inline-box;">
-        <div class="box" style="margin-right: 20px;" *ngIf="constantService.userPermission.isFDUserAdmin">
+        <!-- style="margin-right: 20px;" -->
+        <div class="box mr-20" *ngIf="constantService.userPermission.isFDUserAdmin">
             <button pButton type="button" class="fdBtn cls_schoopInv" label="Schedule OOP Invoice" (click)="openPopup('scheduleOopModal')" style="float:left"></button>
         </div>
         <div class="box" *ngIf="constantService.userPermission.isFDUserAdmin">
