@@ -3,7 +3,7 @@
     <div id="scInnerLoaderText">Loading...</div>
 </div>
 
-<div class="financeTable" hideshowMenu>
+<div class="financeTable p-mt-1" hideshowMenu [hidden]='!isPSInnerLoaderHidden'>
     <p-table #rc [columns]="rejectCancelExpenseCols" [value]="rejectExpenses" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [paginator]="true" [rows]="10" exportFilename="Cancelled_Reject_Expenses"
         [rowsPerPageOptions]="[10,25,50]" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="rejectCancelExpenseTable">
         <ng-template pTemplate="header" let-columns>
@@ -117,12 +117,19 @@
                 </td>
             </tr>
         </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+                <td [attr.colspan]="columns.length + 3" class="error p-text-center ">
+                    No data available.
+                </td>
+            </tr>
+        </ng-template>
     </p-table>
 </div>
 
-<div *ngIf="rejectExpenses.length == 0" style="color:red;text-align: center;padding-top: 20px;">
+<!-- <div *ngIf="rejectExpenses.length == 0" style="color:red;text-align: center;padding-top: 20px;">
     No data available.
-</div>
+</div> -->
 <!-- Right Side Bar -->
 <p-sidebar [(visible)]="rightSideBar" position="right" [baseZIndex]="10000" [style]="{width:'28em'}">
     <p-scrollPanel [style]="{'width': '100%', 'height': '95vh'}">

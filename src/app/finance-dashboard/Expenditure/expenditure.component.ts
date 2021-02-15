@@ -1,22 +1,34 @@
-import { Component, OnInit, ComponentFactoryResolver, ViewChild, ElementRef, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { SPOperationService } from '../../Services/spoperation.service';
-import { ConstantsService } from '../../Services/constants.service';
-import { GlobalService } from '../../Services/global.service';
-import { FdConstantsService } from '../fdServices/fd-constants.service';
-import { SelectItem } from 'primeng/api';
-import { FDDataShareService } from '../fdServices/fd-shareData.service';
-import { DatePipe } from '@angular/common';
-import { Router } from '@angular/router';
-import { CommonService } from 'src/app/Services/common.service';
-import { Subject, Observable, timer, Subscription } from 'rxjs';
-import { DynamicDialogRef, DialogService } from 'primeng/dynamicdialog';
+import {
+  Component,
+  OnInit,
+  ComponentFactoryResolver,
+  ViewChild,
+  ElementRef,
+  OnDestroy,
+} from "@angular/core";
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormControl,
+} from "@angular/forms";
+import { SPOperationService } from "../../Services/spoperation.service";
+import { ConstantsService } from "../../Services/constants.service";
+import { GlobalService } from "../../Services/global.service";
+import { FdConstantsService } from "../fdServices/fd-constants.service";
+import { SelectItem } from "primeng/api";
+import { FDDataShareService } from "../fdServices/fd-shareData.service";
+import { DatePipe } from "@angular/common";
+import { Router } from "@angular/router";
+import { CommonService } from "src/app/Services/common.service";
+import { Subject, Observable, timer, Subscription } from "rxjs";
+import { DynamicDialogRef, DialogService } from "primeng/dynamicdialog";
 
 @Component({
-  selector: 'app-expenditure',
-  templateUrl: './expenditure.component.html',
-  styleUrls: ['./expenditure.component.css'],
-  providers: [DynamicDialogRef]
+  selector: "app-expenditure",
+  templateUrl: "./expenditure.component.html",
+  styleUrls: ["./expenditure.component.css"],
+  providers: [DynamicDialogRef],
 })
 export class ExpenditureComponent implements OnInit, OnDestroy {
   caFolderName: any;
@@ -34,8 +46,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     private router: Router,
     private commonService: CommonService,
     public ref: DynamicDialogRef,
-    public dialogService: DialogService,
-  ) { }
+    public dialogService: DialogService
+  ) {}
 
   get isValidExpenditureForm() {
     return this.addExpenditure_form.controls;
@@ -47,14 +59,13 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
   private eventsSubject: Subject<void> = new Subject<void>();
 
-
   // Show Hide Requesr Expense Modal
   showHideREModal: boolean = false;
   formSubmit: any = {
-    isSubmit: false
+    isSubmit: false,
   };
   submitBtn: any = {
-    isClicked: false
+    isClicked: false,
   };
 
   // Forms
@@ -81,14 +92,16 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
   // hideDatesSectiuon: boolean = false;
   public queryConfig = {
     data: null,
-    url: '',
-    type: '',
-    listName: ''
+    url: "",
+    type: "",
+    listName: "",
   };
-
-  @ViewChild('target', { static: true }) MyProp: ElementRef;
-  @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
-  @ViewChild('caFileInput', { static: false }) caFileInput: ElementRef;
+  @ViewChild("fileuploderView", { static: false }) fileuploderView: ElementRef;
+  @ViewChild("cafileuploderView", { static: false })
+  cafileuploderView: ElementRef;
+  @ViewChild("target", { static: true }) MyProp: ElementRef;
+  @ViewChild("fileInput", { static: false }) fileInput: ElementRef;
+  @ViewChild("caFileInput", { static: false }) caFileInput: ElementRef;
 
   everysec$: Observable<number> = timer(0, 1000);
 
@@ -121,16 +134,15 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
   // Mail Contetn
   mailContentRes: any;
 
-
   totalLineItems: any = [
     {
-      ProjectCode: '',
-      AmountPerProject: '',
-      projectItem: '',
-    }
+      ProjectCode: "",
+      AmountPerProject: "",
+      projectItem: "",
+    },
   ];
 
-  selectedPCArrays: any = [{ ProjectCode: '' }];
+  selectedPCArrays: any = [{ ProjectCode: "" }];
 
   selectedPI: any = [];
 
@@ -139,7 +151,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
   cvEmailIdFound: boolean = false;
 
   finalAddEArray: any = [];
-  projectClientIsEmpty: boolean = false;
+  projectClientIsEmpty: boolean = true;
   pcmLevels: any = [];
 
   // Upload File
@@ -161,7 +173,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
   cmLevelIdList: any = [];
 
   resCatEmails: any = [];
-  
+
   async ngOnInit() {
     this.fdConstantsService.internalRouter = this.fdConstantsService.fdComponent.tabs.expenditureMenu.find(
       (c) => this.router.url.includes(c.routerLink)
@@ -179,10 +191,10 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     // Tabs list
     this.expenditureMenuList = [
-      { label: 'Pending Expense', routerLink: ['pending'] },
-      { label: 'Cancelled/Rejected', routerLink: ['cancelled-reject'] },
-      { label: 'Approved(Non Billable)', routerLink: ['approvedNonBillable'] },
-      { label: 'Approved(Billable)', routerLink: ['approvedBillable'] }
+      { label: "Pending Expense", routerLink: ["pending"] },
+      { label: "Cancelled/Rejected", routerLink: ["cancelled-reject"] },
+      { label: "Approved(Non Billable)", routerLink: ["approvedNonBillable"] },
+      { label: "Approved(Billable)", routerLink: ["approvedBillable"] },
     ];
 
     this.expenditureFormField();
@@ -191,129 +203,145 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     this.getCurrencyListItem();
 
     this.recordTypes = [
-      { label: 'Freelancer', value: 'Freelancer' },
-      { label: 'Vendor', value: 'Vendor' },
-      { label: 'Contractor', value: 'Contractor' },
+      { label: "Freelancer", value: "Freelancer" },
+      { label: "Vendor", value: "Vendor" },
+      { label: "Contractor", value: "Contractor" },
     ];
 
     this.expenseTypeArray = [
-      { label: 'Submission Fee', value: 'Submission Fee' },
-      { label: 'Page Charges', value: 'Page Charges' },
-      { label: 'Open Access', value: 'Open Access' },
-      { label: 'Printing', value: 'Printing' },
-      { label: 'Permission And Copyrights', value: 'Permission and Copyrights' },
-      { label: 'Full Text Purchases', value: 'Full Text Purchases' },
-      { label: 'Vendor', value: 'Vendor' },
-      { label: 'Freelancer', value: 'Freelancer' },
-      { label: 'Travelling', value: 'Travelling' },
-      { label: 'Shipping / Logistic', value: 'Shipping / Logistic' },
-      { label: 'Others', value: 'Others' }
+      { label: "Submission Fee", value: "Submission Fee" },
+      { label: "Page Charges", value: "Page Charges" },
+      { label: "Open Access", value: "Open Access" },
+      { label: "Printing", value: "Printing" },
+      {
+        label: "Permission And Copyrights",
+        value: "Permission and Copyrights",
+      },
+      { label: "Full Text Purchases", value: "Full Text Purchases" },
+      { label: "Vendor", value: "Vendor" },
+      { label: "Freelancer", value: "Freelancer" },
+      { label: "Travelling", value: "Travelling" },
+      { label: "Shipping / Logistic", value: "Shipping / Logistic" },
+      { label: "Others", value: "Others" },
     ];
-    this.selectedExpenseType = { label: 'SubmissionFee', value: 'Submission Fee' };
+    this.selectedExpenseType = {
+      label: "SubmissionFee",
+      value: "Submission Fee",
+    };
   }
 
   getCurrencyListItem() {
     this.currencyList = [
-      { label: 'AUD', value: 'AUD' },
-      { label: 'CNY', value: 'CNY' },
-      { label: 'BRL', value: 'BRL' },
-      { label: 'DKK', value: 'DKK' },
-      { label: 'EUR', value: 'EUR' },
-      { label: 'GBP', value: 'GBP' },
-      { label: 'INR', value: 'INR' },
-      { label: 'JPY', value: 'JPY' },
-      { label: 'KRW', value: 'KRW' },
-      { label: 'USD', value: 'USD' },
-      { label: 'SGD', value: 'SGD' },
-      { label: 'NTD', value: 'NTD' }
+      { label: "AUD", value: "AUD" },
+      { label: "CNY", value: "CNY" },
+      { label: "BRL", value: "BRL" },
+      { label: "DKK", value: "DKK" },
+      { label: "EUR", value: "EUR" },
+      { label: "GBP", value: "GBP" },
+      { label: "INR", value: "INR" },
+      { label: "JPY", value: "JPY" },
+      { label: "KRW", value: "KRW" },
+      { label: "USD", value: "USD" },
+      { label: "SGD", value: "SGD" },
+      { label: "NTD", value: "NTD" },
     ];
   }
   async projectInfo() {
     // Check PI list
     // const res = await this.fdDataShareServie.checkProjectsAvailable();
-    this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
-      if (res) {
-        this.projectInfoData = res;
-        console.log('PI Data ', this.projectInfoData);
-      }
-    }));
+    this.subscription.add(
+      this.fdDataShareServie.defaultPIData.subscribe((res) => {
+        if (res) {
+          this.projectInfoData = res;
+          console.log("PI Data ", this.projectInfoData);
+        }
+      })
+    );
   }
 
   biilingEntityInfo() {
-    this.subscription.add(this.fdDataShareServie.defaultBEData.subscribe((res) => {
-      if (res) {
-        this.billingEntityData = res;
-        console.log('BE Data ', this.billingEntityData);
-      }
-    }));
+    this.subscription.add(
+      this.fdDataShareServie.defaultBEData.subscribe((res) => {
+        if (res) {
+          this.billingEntityData = res;
+          console.log("BE Data ", this.billingEntityData);
+        }
+      })
+    );
   }
 
   cleInfo() {
-    this.subscription.add(this.fdDataShareServie.defaultCLEData.subscribe((res) => {
-      if (res) {
-        this.cleData = res;
-        console.log('Client Legal Entity ', this.cleData);
-      }
-    }));
+    this.subscription.add(
+      this.fdDataShareServie.defaultCLEData.subscribe((res) => {
+        if (res) {
+          this.cleData = res;
+          console.log("Client Legal Entity ", this.cleData);
+        }
+      })
+    );
   }
 
   brmInfo() {
-    this.subscription.add(this.fdDataShareServie.defaultBRMData.subscribe((res) => {
-      if (res) {
-        this.brmData = res;
-        console.log('Budget Rate Master ', this.brmData);
-      }
-    }));
+    this.subscription.add(
+      this.fdDataShareServie.defaultBRMData.subscribe((res) => {
+        if (res) {
+          this.brmData = res;
+          console.log("Budget Rate Master ", this.brmData);
+        }
+      })
+    );
   }
 
   resourceCInfo() {
-    this.subscription.add(this.fdDataShareServie.defaultRCData.subscribe((res) => {
-      if (res) {
-        this.rcData = res;
-        console.log('Resource Categorization ', this.rcData);
-      }
-    }));
+    this.subscription.add(
+      this.fdDataShareServie.defaultRCData.subscribe((res) => {
+        if (res) {
+          this.rcData = res;
+          console.log("Resource Categorization ", this.rcData);
+        }
+      })
+    );
   }
 
   expenditureFormField() {
     this.addExpenditure_form = this.fb.group({
-      PaymentRequest: new FormControl('', Validators.required),
-      Billable: ['', Validators.required],
-      FreelancerVenderName: new FormControl('', Validators.required),
+      PaymentRequest: new FormControl("", Validators.required),
+      Billable: ["", Validators.required],
+      FreelancerVenderName: new FormControl("", Validators.required),
       // PayingEntity: new FormControl('', Validators.required),
-      InvoiceNo: ['', Validators.required],
-      Currency: ['', Validators.required],
-      Amount: ['', Validators.required],
+      InvoiceNo: ["", Validators.required],
+      Currency: ["", Validators.required],
+      Amount: ["", Validators.required],
       // PaymentMode: new FormControl('', Validators.required),
-      SpendType: ['', Validators.required],
-      Notes: [''],
-      FileURL: ['', Validators.required],
-      CAFileURL: ['', Validators.required],
+      SpendType: ["", Validators.required],
+      Notes: [""],
+      FileURL: ["", Validators.required],
+      CAFileURL: ["", Validators.required],
       // ProjectCode: ['', Validators.required],
     });
   }
 
   createFreelancerFormFiled() {
     this.createFreelancer_form = this.fb.group({
-      Title: ['', [Validators.required, Validators.maxLength(50)]],
-      RecordType: ['', [Validators.required]],
-      PhoneNo: ['', [Validators.required, Validators.maxLength(15)]],
-      Email: ['', [Validators.required, Validators.email]],
-      Address: ['', Validators.required],
-      BilledTo: ['', Validators.required],
-      CreditPeriod: ['', Validators.required],
-      ContractStartDate: ['', Validators.required],
-      ContractEndDate: [''],
-      BillingTerms: ['', Validators.required],
-      WLA: ['', Validators.required],
-      NDA: ['', Validators.required],
+      Title: ["", [Validators.required, Validators.maxLength(50)]],
+      RecordType: ["", [Validators.required]],
+      PhoneNo: ["", [Validators.required, Validators.maxLength(15)]],
+      Email: ["", [Validators.required, Validators.email]],
+      Address: ["", Validators.required],
+      BilledTo: ["", Validators.required],
+      CreditPeriod: ["", Validators.required],
+      ContractStartDate: ["", Validators.required],
+      ContractEndDate: [""],
+      BillingTerms: ["", Validators.required],
+      WLA: ["", Validators.required],
+      NDA: ["", Validators.required],
       // File: new FormControl('', Validators.required),
     });
   }
 
   // Date Range
   SelectedDateRange() {
-    console.log('Selected Date Range ', this.rangeDates);
+    console.log("Selected Date Range ", this.rangeDates);
     if (this.rangeDates) {
       this.setDefaultDateRange();
     }
@@ -322,11 +350,15 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
   setDefault() {
     const last3Days = this.commonService.getLastWorkingDay(65, new Date());
     const dates = [last3Days, new Date()];
-    const startDate = new Date(this.datePipe.transform(dates[0], 'yyyy-MM-dd') + ' 00:00:00').toISOString();
-    const endDate = new Date(this.datePipe.transform(dates[1], 'yyyy-MM-dd') + ' 23:59:00').toISOString();
+    const startDate = new Date(
+      this.datePipe.transform(dates[0], "yyyy-MM-dd") + " 00:00:00"
+    ).toISOString();
+    const endDate = new Date(
+      this.datePipe.transform(dates[1], "yyyy-MM-dd") + " 23:59:00"
+    ).toISOString();
     const obj = {
       startDate: startDate,
-      endDate: endDate
+      endDate: endDate,
     };
     this.fdDataShareServie.expenseDateRange = obj;
     this.fdDataShareServie.sendExpenseDateRange(obj);
@@ -335,26 +367,32 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
   setDefaultDateRange() {
     // SetDefault Values
     if (this.rangeDates) {
-      const startDate = new Date(this.datePipe.transform(this.rangeDates[0], 'yyyy-MM-dd') + ' 00:00:00').toISOString();
-      const endDate = new Date(this.datePipe.transform(this.rangeDates[1], 'yyyy-MM-dd') + ' 23:59:00').toISOString();
+      const startDate = new Date(
+        this.datePipe.transform(this.rangeDates[0], "yyyy-MM-dd") + " 00:00:00"
+      ).toISOString();
+      const endDate = this.rangeDates[1] ? new Date(
+        this.datePipe.transform(this.rangeDates[1], "yyyy-MM-dd") + " 23:59:00"
+      ).toISOString() : new Date(
+        this.datePipe.transform(this.rangeDates[0], "yyyy-MM-dd") + " 23:59:00"
+      ).toISOString();
       const obj = {
         startDate: startDate,
-        endDate: endDate
+        endDate: endDate,
       };
       this.fdDataShareServie.expenseDateRange = obj;
       this.fdDataShareServie.sendExpenseDateRange(obj);
-      console.log('startDate ' + startDate + ' endDate' + endDate);
+      console.log("startDate " + startDate + " endDate" + endDate);
     }
   }
 
   selectedBillable() {
-    if (this.addExpenditure_form.value.Billable === 'Billable') {
+    if (this.addExpenditure_form.value.Billable === "Billable") {
       if (this.isPICleEmpty(this.piCleData[1])) {
         this.cleList = this.piCleData[1];
         this.piCleData[1] = {};
       }
-    } else if (this.addExpenditure_form.value.Billable === 'Non Billable') {
-      if (this.cleList.hasOwnProperty('label')) {
+    } else if (this.addExpenditure_form.value.Billable === "Non Billable") {
+      if (this.cleList.hasOwnProperty("label")) {
         this.piCleData[1] = this.cleList;
       }
     }
@@ -369,16 +407,23 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     return false;
   }
 
-
   selectedRequest() {
-    console.log('selected Request ', this.addExpenditure_form.value.PaymentRequest);
-    if (this.addExpenditure_form.value.PaymentRequest === 'Credit Card') {
+    console.log(
+      "selected Request ",
+      this.addExpenditure_form.value.PaymentRequest
+    );
+    if (this.addExpenditure_form.value.PaymentRequest === "Credit Card") {
       // this.addExpenditure_form.removeControl('InvoiceNo');
-      this.addExpenditure_form.addControl('InvoiceNo', new FormControl(''));
-      this.addExpenditure_form.controls['InvoiceNo'].disable();
-    } else if (this.addExpenditure_form.value.PaymentRequest === 'Invoice Payment') {
-      this.addExpenditure_form.addControl('InvoiceNo', new FormControl('', Validators.required));
-      this.addExpenditure_form.controls['InvoiceNo'].enable();
+      this.addExpenditure_form.addControl("InvoiceNo", new FormControl(""));
+      this.addExpenditure_form.controls["InvoiceNo"].disable();
+    } else if (
+      this.addExpenditure_form.value.PaymentRequest === "Invoice Payment"
+    ) {
+      this.addExpenditure_form.addControl(
+        "InvoiceNo",
+        new FormControl("", Validators.required)
+      );
+      this.addExpenditure_form.controls["InvoiceNo"].enable();
     }
   }
 
@@ -386,7 +431,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
   async initialize() {
     // For Mail
     this.currentUserInfoData = await this.fdDataShareServie.getCurrentUserInfo();
-    console.log('this.currentUserInfoData  ', this.currentUserInfoData);
+    console.log("this.currentUserInfoData  ", this.currentUserInfoData);
     this.groupInfo = await this.fdDataShareServie.getGroupInfo();
     this.groupITInfo = await this.fdDataShareServie.getITInfo();
     await this.getVendorFreelanceData();
@@ -402,7 +447,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     this.resourceCInfo();
     // Empty Selected Project & Client Array before push
     // this.eventsSubject.next()
-    this.selectedPCArrays = [{ ProjectCode: '' }];
+    this.selectedPCArrays = [{ ProjectCode: "" }];
     this.cleInfo();
     this.brmInfo();
     this.gropDDData();
@@ -414,9 +459,20 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     this.submitBtn.isClicked = false;
   }
   async getVendorFreelanceData() {
-    const vendorObj = Object.assign({}, this.fdConstantsService.fdComponent.addUpdateFreelancer);
-    this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'GetVendorFreelancerData', 'GET');
-    const res = await this.spServices.readItems(this.constantService.listNames.VendorFreelancer.name, vendorObj);
+    const vendorObj = Object.assign(
+      {},
+      this.fdConstantsService.fdComponent.addUpdateFreelancer
+    );
+    this.commonService.SetNewrelic(
+      "Finance-Dashboard",
+      "expenditure",
+      "GetVendorFreelancerData",
+      "GET"
+    );
+    const res = await this.spServices.readItems(
+      this.constantService.listNames.VendorFreelancer.name,
+      vendorObj
+    );
     const arrResults = res.length ? res : [];
     this.freelancerVendersRes = arrResults;
   }
@@ -425,43 +481,58 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     this.datas = [];
     for (let i = 0; i < this.projectInfoData.length; i++) {
       const element = this.projectInfoData[i];
-      const projectType = element.ProjectType ? element.ProjectType.toLowerCase() : '';
-      if (projectType.indexOf('writing') > -1) {
+      const projectType = element.ProjectType
+        ? element.ProjectType.toLowerCase()
+        : "";
+      if (projectType.indexOf("writing") > -1) {
         this.piCleData.push({
           label: element.ProjectCode,
-          value: element
+          value: element,
         });
       }
     }
     this.piCleData = [...this.piCleData];
-    const pidata = [{ label: 'Project Code', items: this.piCleData }];
+    const pidata = [{ label: "Project Code", items: this.piCleData }];
     for (let i = 0; i < this.cleData.length; i++) {
       const element = this.cleData[i];
       this.datas.push({
         label: element.Title,
-        value: element
+        value: element,
       });
     }
     this.datas = [...this.datas];
-    const cledata = [{ label: 'Client', items: this.datas }];
+    const cledata = [{ label: "Client", items: this.datas }];
     this.piCleData = [...pidata, ...cledata];
-    console.log('this.piCleData ', this.piCleData);
+    console.log("this.piCleData ", this.piCleData);
   }
 
   async getMailContent() {
     // const mailContentEndpoint = this.fdConstantsService.fdComponent.mailContent;
     const mailContentEndpoint = {
-      filter: this.fdConstantsService.fdComponent.mailContent.filter.replace('{{MailType}}', 'CreateExpense'),
+      filter: this.fdConstantsService.fdComponent.mailContent.filter.replace(
+        "{{MailType}}",
+        "CreateExpense"
+      ),
       select: this.fdConstantsService.fdComponent.mailContent.select,
       top: this.fdConstantsService.fdComponent.mailContent.top,
     };
 
-    const obj = [{
-      url: this.spServices.getReadURL(this.constantService.listNames.MailContent.name, mailContentEndpoint),
-      type: 'GET',
-      listName: this.constantService.listNames.MailContent.name
-    }];
-    this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'GetMailContent', 'GET');
+    const obj = [
+      {
+        url: this.spServices.getReadURL(
+          this.constantService.listNames.MailContent.name,
+          mailContentEndpoint
+        ),
+        type: "GET",
+        listName: this.constantService.listNames.MailContent.name,
+      },
+    ];
+    this.commonService.SetNewrelic(
+      "Finance-Dashboard",
+      "expenditure",
+      "GetMailContent",
+      "GET"
+    );
     const res = await this.spServices.executeBatch(obj);
     this.mailContentRes = res.length ? res[0].retItems : [];
     // console.log('Mail Content res ', this.mailContentRes);
@@ -471,37 +542,45 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
   initializeProjectClient() {
     this.totalLineItems = [
       {
-        ProjectCode: '',
-        AmountPerProject: '',
-        projectItem: '',
-      }
+        ProjectCode: "",
+        AmountPerProject: "",
+        projectItem: "",
+      },
     ];
   }
 
   addProjectAmtItem() {
     if (!this.addSts) {
       this.totalLineItems.push({
-        ProjectCode: '',
-        AmountPerProject: ''
+        ProjectCode: "",
+        AmountPerProject: "",
       });
-      this.selectedPCArrays.push({ ProjectCode: '' });
-      console.log('this.totalLineItems ', this.totalLineItems);
+      this.selectedPCArrays.push({ ProjectCode: "" });
+      console.log("this.totalLineItems ", this.totalLineItems);
     } else {
-
-      this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Your entered amount is equal to actual Amount. So you  cant asign further amount.', false);
+      this.commonService.showToastrMessage(
+        this.constantService.MessageType.info,
+        "Your entered amount is equal to actual Amount. So you  cant asign further amount.",
+        false
+      );
     }
   }
   selectedProjectCode(pItem: any, index: number) {
-    console.log('Selected Project code ', pItem);
-    const isPCPresent = pItem.hasOwnProperty('ProjectCode');
-    const found = this.checkUniqueValue(isPCPresent ? pItem.ProjectCode : pItem.Title);
+    console.log("Selected Project code ", pItem);
+    const isPCPresent = pItem.hasOwnProperty("ProjectCode");
+    const found = this.checkUniqueValue(
+      isPCPresent ? pItem.ProjectCode : pItem.Title
+    );
     if (found) {
-      this.commonService.showToastrMessage(this.constantService.MessageType.warn, 'You have already selected this project/client please select another one.', false);
+      this.commonService.showToastrMessage(
+        this.constantService.MessageType.warn,
+        "You have already selected this project/client please select another one.",
+        false
+      );
       this.totalLineItems[index] = {};
-      this.selectedPCArrays[index].ProjectCode = '';
-
+      this.selectedPCArrays[index].ProjectCode = "";
     } else {
-      if (pItem.hasOwnProperty('Currency')) {
+      if (pItem.hasOwnProperty("Currency")) {
         this.selectedPCArrays[index].ProjectCode = pItem.Title;
         this.totalLineItems[index].projectItem = pItem;
         this.projectClientIsEmpty = this.isEmpty(this.totalLineItems);
@@ -518,19 +597,18 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
       }
       this.selectedPCArrays[index].ProjectCode = pItem.ProjectCode;
     }
-    console.log('this.selectedPCArrays ', this.selectedPCArrays);
+    console.log("this.selectedPCArrays ", this.selectedPCArrays);
   }
 
   getPIByTitle(title, index) {
     const found = this.projectInfoData.find((x) => {
       if (x.ProjectCode === title) {
         this.selectedPI[index] = x.CMLevel1.results;
-        console.log('this.selectedPI ', this.selectedPI);
+        console.log("this.selectedPI ", this.selectedPI);
         return x;
-
       }
     });
-    return found ? found : '';
+    return found ? found : "";
   }
 
   // Check Duplicate Value
@@ -540,24 +618,36 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         return x;
       }
     });
-    return found ? found : '';
+    return found ? found : "";
   }
 
-
-
   async getPFByTitle(ProjectCode: any, index: number) {
-    const pfObj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
-    pfObj.filter = pfObj.filter.replace('{{ProjectCode}}', ProjectCode);
-    this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'GetPFByProjectCode', 'GET');
-    const res = await this.spServices.readItems(this.constantService.listNames.ProjectFinances.name, pfObj);
+    const pfObj = Object.assign(
+      {},
+      this.fdConstantsService.fdComponent.projectFinances
+    );
+    pfObj.filter = pfObj.filter.replace("{{ProjectCode}}", ProjectCode);
+    this.commonService.SetNewrelic(
+      "Finance-Dashboard",
+      "expenditure",
+      "GetPFByProjectCode",
+      "GET"
+    );
+    const res = await this.spServices.readItems(
+      this.constantService.listNames.ProjectFinances.name,
+      pfObj
+    );
     const arrResults = res.length ? res : [];
     if (arrResults.length) {
       // console.log(arrResults[0]);
       if (!arrResults.length) {
-
-        this.commonService.showToastrMessage(this.constantService.MessageType.warn, 'Currency not found for selected project / client.', false);
+        this.commonService.showToastrMessage(
+          this.constantService.MessageType.warn,
+          "Currency not found for selected project / client.",
+          false
+        );
         this.totalLineItems[index] = {};
-        this.selectedPCArrays[index].ProjectCode = '';
+        this.selectedPCArrays[index].ProjectCode = "";
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         return;
       }
@@ -569,19 +659,28 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
   }
 
   cancelFormSub(formType) {
-    if (formType === 'addExpenditure') {
+    if (formType === "addExpenditure") {
       this.showHideREModal = false;
       this.expenditureFormField();
       this.addExpenditure_form.reset();
       this.totalLineItems = [];
       this.addSts = false;
+      this.fileuploderView.nativeElement.classList.remove("active");
+      this.fileuploderView.nativeElement.getElementsByClassName(
+        "file-select-name"
+      )[0].innerText = "No file chosen...";
+      this.cafileuploderView.nativeElement.classList.remove("active");
+      this.cafileuploderView.nativeElement.getElementsByClassName(
+        "file-select-name"
+      )[0].innerText = "No file chosen...";
       this.initializeProjectClient();
-    } else if (formType === 'createFreelancer') {
+    } else if (formType === "createFreelancer") {
       this.createFreelancer_form.reset();
       this.freeLancerModal = false;
     }
     this.formSubmit.isSubmit = false;
     this.submitBtn.isClicked = false;
+
     this.subscription.unsubscribe();
   }
 
@@ -597,11 +696,13 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     this.addSts = false;
   }
   enteredAmt(val, index) {
-    console.log('val ', val, 'index  ', index);
+    console.log("val ", val, "index  ", index);
     let totalAmt = 0;
     for (let j = 0; j < this.totalLineItems.length; j++) {
       const element = this.totalLineItems[j];
-      totalAmt += parseFloat(element.AmountPerProject ? element.AmountPerProject : 0);
+      totalAmt += parseFloat(
+        element.AmountPerProject ? element.AmountPerProject : 0
+      );
     }
     const expenditureAmt = parseFloat(this.addExpenditure_form.value.Amount);
     // let amt = parseInt(val);
@@ -615,7 +716,11 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
       val = 0;
       // this.totalLineItems[index].AmountPerProject = '';
 
-      this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Your entered amount greater than actual Amount.', false);
+      this.commonService.showToastrMessage(
+        this.constantService.MessageType.info,
+        "Your entered amount greater than actual Amount.",
+        false
+      );
       const obj: any = this.totalLineItems[index];
       obj.AmountPerProject = val;
       this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
@@ -631,12 +736,11 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
   }
 
   convertAmtToCC(cc, pcurrency, amt) {
-    console.log('brmData ', this.brmData);
+    console.log("brmData ", this.brmData);
     const convertedAmt = (cc * amt) / pcurrency;
-    console.log('convertedAmt ', convertedAmt);
+    console.log("convertedAmt ", convertedAmt);
     return convertedAmt;
   }
-
 
   // Get Conversion Rate
   getConversionRate(currency: any) {
@@ -645,7 +749,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         return x;
       }
     });
-    return found ? found.ConversionRate : '';
+    return found ? found.ConversionRate : "";
   }
 
   isEmpty(obj) {
@@ -653,8 +757,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
       const value = obj[key];
       const amtVal = value.AmountPerProject ? false : true;
 
-      if (!value.ProjectCode || amtVal || !value.projectItem)
-        return true;
+      if (!value.ProjectCode || amtVal || !value.projectItem) return true;
     }
     return false;
   }
@@ -669,47 +772,67 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
   contractSDate() {
     if (this.createFreelancer_form.value.ContractStartDate) {
-      this.minimumDate = new Date(this.datePipe.transform(this.createFreelancer_form.value.ContractStartDate, 'M dd, yy'));
+      this.minimumDate = new Date(
+        this.datePipe.transform(
+          this.createFreelancer_form.value.ContractStartDate,
+          "M dd, yy"
+        )
+      );
       this.minimumDate.setDate(this.minimumDate.getDate() + 1);
     }
   }
 
   contractEDate() {
     if (!this.createFreelancer_form.value.ContractStartDate) {
-
-      this.commonService.showToastrMessage(this.constantService.MessageType.error, 'Please select Contract start date first & try again.', false);
-      this.createFreelancer_form.get('ContractEndDate').setValue('');
+      this.commonService.showToastrMessage(
+        this.constantService.MessageType.error,
+        "Please select Contract start date first & try again.",
+        false
+      );
+      this.createFreelancer_form.get("ContractEndDate").setValue("");
     }
   }
 
   onSubmit(type: string) {
-    if (type === 'addExpenditure') {
-
+    if (type === "addExpenditure") {
+      this.formSubmit.isSubmit = true;
       if (this.addExpenditure_form.invalid || this.projectClientIsEmpty) {
         return;
       }
       if (!this.addSts) {
         // this.totalLineItems[index].AmountPerProject = '';
-        this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Your entered amount is less than actual Amount.', false);
+        this.commonService.showToastrMessage(
+          this.constantService.MessageType.info,
+          "Your entered amount is less than actual Amount.",
+          false
+        );
         return;
       }
       if (this.SelectedFile[0].file.size === 0) {
-
-        this.commonService.showToastrMessage(this.constantService.MessageType.warn, 'Unable to upload file, size of ' + this.SelectedFile[0].file.name + ' is 0 KB.', false);
+        this.commonService.showToastrMessage(
+          this.constantService.MessageType.warn,
+          "Unable to upload file, size of " +
+            this.SelectedFile[0].file.name +
+            " is 0 KB.",
+          false
+        );
         return;
-      }
-      else if (this.caSelectedFile[0].file.size === 0) {
-
-        this.commonService.showToastrMessage(this.constantService.MessageType.warn, 'Unable to upload file, size of ' + this.caSelectedFile[0].file.name + ' is 0 KB.', false);
+      } else if (this.caSelectedFile[0].file.size === 0) {
+        this.commonService.showToastrMessage(
+          this.constantService.MessageType.warn,
+          "Unable to upload file, size of " +
+            this.caSelectedFile[0].file.name +
+            " is 0 KB.",
+          false
+        );
         return;
       }
       this.submitBtn.isClicked = true;
       this.getResCatByCMLevel();
-      this.formSubmit.isSubmit = true;
+
       this.projectClientIsEmpty = this.isEmpty(this.totalLineItems);
       this.uploadFileData();
-
-    } else if (type === 'createFreelancer') {
+    } else if (type === "createFreelancer") {
       const batchUrl = [];
       this.formSubmit.isSubmit = true;
       if (this.createFreelancer_form.invalid || this.cvEmailIdFound) {
@@ -717,23 +840,32 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
       }
       this.submitBtn.isClicked = true;
       this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-      this.createFreelancer_form.get('BilledTo').setValue(this.createFreelancer_form.value.BilledTo.Title);
-      this.createFreelancer_form.get('RecordType').setValue(this.createFreelancer_form.value.RecordType);
-      this.createFreelancer_form.value['__metadata'] = { type: this.constantService.listNames.VendorFreelancer.type };
-      const endpoint = this.fdConstantsService.fdComponent.addUpdateFreelancer.create;
+      this.createFreelancer_form
+        .get("BilledTo")
+        .setValue(this.createFreelancer_form.value.BilledTo.Title);
+      this.createFreelancer_form
+        .get("RecordType")
+        .setValue(this.createFreelancer_form.value.RecordType);
+      this.createFreelancer_form.value["__metadata"] = {
+        type: this.constantService.listNames.VendorFreelancer.type,
+      };
+      const endpoint = this.fdConstantsService.fdComponent.addUpdateFreelancer
+        .create;
       const formValue: any = this.createFreelancer_form.value;
       if (!formValue.ContractEndDate) {
         formValue.ContractEndDate = null;
       }
       // added by arvind
-      formValue.IsActiveCH = 'Yes';
-      formValue.AddressMT = formValue.Address
-      delete formValue.Address
+      formValue.IsActiveCH = "Yes";
+      formValue.AddressMT = formValue.Address;
+      delete formValue.Address;
       // Arvind Code end here.
       const getPrjContactItemData = Object.assign({}, this.queryConfig);
-      getPrjContactItemData.url = this.spServices.getReadURL(this.constantService.listNames.VendorFreelancer.name);
+      getPrjContactItemData.url = this.spServices.getReadURL(
+        this.constantService.listNames.VendorFreelancer.name
+      );
       getPrjContactItemData.listName = this.constantService.listNames.VendorFreelancer.name;
-      getPrjContactItemData.type = 'POST';
+      getPrjContactItemData.type = "POST";
       getPrjContactItemData.data = formValue;
       batchUrl.push(getPrjContactItemData);
       this.submitForm(batchUrl, type);
@@ -747,25 +879,48 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
       for (let pi = 0; pi < this.totalLineItems.length; pi++) {
         const element = this.totalLineItems[pi];
         this.pcmLevels = [];
-        if (element && element.ProjectCode.CMLevel1 && element.ProjectCode.CMLevel2) {
-          for (let i = 0; i < element.ProjectCode.CMLevel1.results.length; i++) {
+        if (
+          element &&
+          element.ProjectCode.CMLevel1 &&
+          element.ProjectCode.CMLevel2
+        ) {
+          for (
+            let i = 0;
+            i < element.ProjectCode.CMLevel1.results.length;
+            i++
+          ) {
             const ele = element.ProjectCode.CMLevel1.results[i];
             this.pcmLevels.push(ele);
           }
-          this.pcmLevels.push(element.ProjectCode.CMLevel2);
+          if(element.ProjectCode.CMLevel2 && element.ProjectCode.CMLevel2.ID > -1){
+            this.pcmLevels.push(element.ProjectCode.CMLevel2);
+          }
         }
         let finalAmt = element.AmountPerProject;
-        if (this.addExpenditure_form.value.Currency !== element.projectItem.Currency) {
-          const cc = this.getConversionRate(this.addExpenditure_form.value.Currency);
-          const pcurrency = this.getConversionRate(element.projectItem.Currency);
+        if (
+          this.addExpenditure_form.value.Currency !==
+          element.projectItem.Currency
+        ) {
+          const cc = this.getConversionRate(
+            this.addExpenditure_form.value.Currency
+          );
+          const pcurrency = this.getConversionRate(
+            element.projectItem.Currency
+          );
           // console.log('CC ', cc);
           // console.log('pcurrency ', pcurrency);
-          const amt = this.convertAmtToCC(parseFloat(cc), parseFloat(pcurrency), parseFloat(element.AmountPerProject));
+          const amt = this.convertAmtToCC(
+            parseFloat(cc),
+            parseFloat(pcurrency),
+            parseFloat(element.AmountPerProject)
+          );
           // console.log('amt ----- ', amt);
           finalAmt = parseFloat(amt.toFixed(2));
         }
         this.finalAddEArray.push({
-          Title: element.ProjectCode.ProjectCode ? element.ProjectCode.ProjectCode : element.projectItem.Title,
+          Title: element.ProjectCode.ProjectCode
+            ? element.ProjectCode.ProjectCode
+            : element.projectItem.Title,
           Number: this.addExpenditure_form.value.InvoiceNo,
           SpendType: this.addExpenditure_form.value.SpendType,
           // PaymentMode: this.addExpenditure_form.value.PaymentMode.value,
@@ -773,16 +928,17 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
           Amount: parseFloat(element.AmountPerProject),
           ClientCurrency: element.projectItem.Currency,
           ClientAmount: finalAmt.toString(),
-          Status: 'Created',
+          Status: "Created",
           FileURL: this.fileUploadedUrl,
           ClientApprovalFileURL: this.caFileUploadedUrl,
           NotesMT: this.addExpenditure_form.value.Notes,
           CategoryST: this.addExpenditure_form.value.Billable,
-          AccessId: { results: this.pcmLevels.map(x => x.ID) },
+          AccessId: { results: this.pcmLevels.map((x) => x.ID) },
           // ApproverFileUrl: '',
           // PayingEntity: this.addExpenditure_form.value.PayingEntity.Title,
           RequestType: this.addExpenditure_form.value.PaymentRequest,
-          VendorFreelancer: this.addExpenditure_form.value.FreelancerVenderName.Id,
+          VendorFreelancer: this.addExpenditure_form.value.FreelancerVenderName
+            .Id,
         });
       }
 
@@ -790,62 +946,104 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
       // const endpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.create;
       for (let j = 0; j < this.finalAddEArray.length; j++) {
         const element = this.finalAddEArray[j];
-        element['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
+        element["__metadata"] = {
+          type: this.constantService.listNames.SpendingInfo.type,
+        };
         // data.push({
         //     objData: element,
         //     endpoint: endpoint,
         //     requestPost: true,
         // })
         const addExpenseObj = Object.assign({}, this.queryConfig);
-        addExpenseObj.url = this.spServices.getReadURL(this.constantService.listNames.SpendingInfo.name);
+        addExpenseObj.url = this.spServices.getReadURL(
+          this.constantService.listNames.SpendingInfo.name
+        );
         addExpenseObj.listName = this.constantService.listNames.SpendingInfo.name;
-        addExpenseObj.type = 'POST';
+        addExpenseObj.type = "POST";
         addExpenseObj.data = element;
         batchUrl.push(addExpenseObj);
       }
-      this.submitForm(batchUrl, 'addExpenditure');
+      this.submitForm(batchUrl, "addExpenditure");
     }
-    console.log('finalAddEArray ', this.finalAddEArray);
+    console.log("finalAddEArray ", this.finalAddEArray);
   }
 
   onFileChange(event, folderName) {
-    console.log('Event ', event);
+    console.log("Event ", event);
     this.fileReader = new FileReader();
     if (event.target.files && event.target.files.length > 0) {
       this.SelectedFile = [];
       this.selectedFile = event.target.files[0];
       const fileName = this.selectedFile.name;
-      const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+      const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, "");
       if (fileName !== sNewFileName) {
-        this.fileInput.nativeElement.value = '';
-        this.addExpenditure_form.get('FileURL').setValue('');
-        this.commonService.showToastrMessage(this.constantService.MessageType.error, 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', false);
+        this.fileInput.nativeElement.value = "";
+        this.addExpenditure_form.get("FileURL").setValue("");
+        this.commonService.showToastrMessage(
+          this.constantService.MessageType.error,
+          "Special characters are found in file name. Please rename it. List of special characters ~ # % & * { }  : / + < > ? \" @ '",
+          false
+        );
         return false;
       }
       this.FolderName = folderName;
-      this.SelectedFile.push(new Object({ name: sNewFileName, file: this.selectedFile }));
+      this.SelectedFile.push(
+        new Object({ name: sNewFileName, file: this.selectedFile })
+      );
 
+      this.fileuploderView.nativeElement.getElementsByClassName(
+        "file-select-name"
+      )[0].innerText = this.selectedFile.name;
+      this.fileuploderView.nativeElement.classList.add("active");
+    } else {
+      this.fileuploderView.nativeElement.classList.remove("active");
+      this.fileuploderView.nativeElement.getElementsByClassName(
+        "file-select-name"
+      )[0].innerText = "No file chosen...";
     }
   }
 
-
-
   async uploadFileData() {
     const date = new Date();
-    this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'FileUpolad', 'POST-BATCH');
-    this.commonService.UploadFilesProgress(this.SelectedFile, 'SpendingInfoFiles/' + this.FolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
-      if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
-        if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
-          this.submitBtn.isClicked = false;
-          this.commonService.showToastrMessage(this.constantService.MessageType.error, 'File not uploaded, Folder / File Not Found', false);
-        } else if (uploadedfile[0].ServerRelativeUrl) {
-          this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
-          this.uploadCAFileData();
+    this.commonService.SetNewrelic(
+      "Finance-Dashboard",
+      "expenditure",
+      "FileUpolad",
+      "POST-BATCH"
+    );
+    this.commonService
+      .UploadFilesProgress(
+        this.SelectedFile,
+        "SpendingInfoFiles/" +
+          this.FolderName +
+          "/" +
+          this.datePipe.transform(date, "yyyy") +
+          "/" +
+          this.datePipe.transform(date, "MMMM"),
+        true
+      )
+      .then(async (uploadedfile) => {
+        if (
+          this.SelectedFile.length > 0 &&
+          this.SelectedFile.length === uploadedfile.length
+        ) {
+          if (
+            uploadedfile[0].hasOwnProperty("odata.error") ||
+            uploadedfile[0].hasError
+          ) {
+            this.submitBtn.isClicked = false;
+            this.commonService.showToastrMessage(
+              this.constantService.MessageType.error,
+              "File not uploaded, Folder / File Not Found",
+              false
+            );
+          } else if (uploadedfile[0].ServerRelativeUrl) {
+            this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
+            this.uploadCAFileData();
+          }
         }
-      }
-    });
+      });
   }
-
 
   caOnFileChange(event, folderName) {
     // console.log('Event ', event);
@@ -854,50 +1052,96 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
       this.caSelectedFile = [];
       this.selectedCAFile = event.target.files[0];
       const fileName = this.selectedCAFile.name;
-      const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+      const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, "");
       if (fileName !== sNewFileName) {
-        this.caFileInput.nativeElement.value = '';
-        this.addExpenditure_form.get('CAFileURL').setValue('');
+        this.caFileInput.nativeElement.value = "";
+        this.addExpenditure_form.get("CAFileURL").setValue("");
 
-        this.commonService.showToastrMessage(this.constantService.MessageType.error, 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', false);
+        this.commonService.showToastrMessage(
+          this.constantService.MessageType.error,
+          "Special characters are found in file name. Please rename it. List of special characters ~ # % & * { }  : / + < > ? \" @ '",
+          false
+        );
         return false;
       }
       this.caFolderName = folderName;
-      this.caSelectedFile.push(new Object({ name: sNewFileName, file: this.selectedCAFile }));
+      this.caSelectedFile.push(
+        new Object({ name: sNewFileName, file: this.selectedCAFile })
+      );
+      this.cafileuploderView.nativeElement.getElementsByClassName(
+        "file-select-name"
+      )[0].innerText = this.selectedCAFile.name;
+      this.cafileuploderView.nativeElement.classList.add("active");
+    } else {
+      this.cafileuploderView.nativeElement.classList.remove("active");
+      this.cafileuploderView.nativeElement.getElementsByClassName(
+        "file-select-name"
+      )[0].innerText = "No file chosen...";
     }
   }
 
   async uploadCAFileData() {
     const date = new Date();
-    this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'UploadCAFiles', 'POST-BATCH');
-    this.commonService.UploadFilesProgress(this.caSelectedFile, 'SpendingInfoFiles/' + this.caFolderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM'), true).then(async uploadedfile => {
-      if (this.caSelectedFile.length > 0 && this.caSelectedFile.length === uploadedfile.length) {
-        if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
-          this.submitBtn.isClicked = false;
+    this.commonService.SetNewrelic(
+      "Finance-Dashboard",
+      "expenditure",
+      "UploadCAFiles",
+      "POST-BATCH"
+    );
+    this.commonService
+      .UploadFilesProgress(
+        this.caSelectedFile,
+        "SpendingInfoFiles/" +
+          this.caFolderName +
+          "/" +
+          this.datePipe.transform(date, "yyyy") +
+          "/" +
+          this.datePipe.transform(date, "MMMM"),
+        true
+      )
+      .then(async (uploadedfile) => {
+        if (
+          this.caSelectedFile.length > 0 &&
+          this.caSelectedFile.length === uploadedfile.length
+        ) {
+          if (
+            uploadedfile[0].hasOwnProperty("odata.error") ||
+            uploadedfile[0].hasError
+          ) {
+            this.submitBtn.isClicked = false;
 
-          this.commonService.showToastrMessage(this.constantService.MessageType.error, 'Approve File not uploaded, Folder / File Not Found', false);
-        } else if (uploadedfile[0].ServerRelativeUrl) {
-          this.caFileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
-          this.submitExpediture();
+            this.commonService.showToastrMessage(
+              this.constantService.MessageType.error,
+              "Approve File not uploaded, Folder / File Not Found",
+              false
+            );
+          } else if (uploadedfile[0].ServerRelativeUrl) {
+            this.caFileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
+            this.submitExpediture();
+          }
         }
-      }
-    });
+      });
   }
   async submitForm(batchUrl, type: string) {
     let res = await this.spServices.executeBatch(batchUrl);
-    res = res.length ? res.map(a => a.retItems) : [];
-    if (type === 'addExpenditure') {
-
-      this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Expense created.', false);
+    res = res.length ? res.map((a) => a.retItems) : [];
+    if (type === "addExpenditure") {
+      this.commonService.showToastrMessage(
+        this.constantService.MessageType.success,
+        "Expense created.",
+        false
+      );
       this.showHideREModal = false;
       for (let k = 0; k < res.length; k++) {
         const element = res[k];
         this.sendCreateExpenseMail(element);
       }
-
-    } else if (type === 'createFreelancer') {
-
-      this.commonService.showToastrMessage(this.constantService.MessageType.success, this.createFreelancer_form.value.RecordType + ' created.', true);
+    } else if (type === "createFreelancer") {
+      this.commonService.showToastrMessage(
+        this.constantService.MessageType.success,
+        this.createFreelancer_form.value.RecordType + " created.",
+        true
+      );
       this.cancelFormSub(type);
       this.getVendorFreelanceData();
     }
@@ -905,7 +1149,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
   }
 
   replaceContent(mailContent, key, value) {
-    return mailContent.replace(new RegExp(key, 'g'), value);
+    return mailContent.replace(new RegExp(key, "g"), value);
   }
 
   getCleByPC(item) {
@@ -914,7 +1158,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         return x;
       }
     });
-    return found ? found : '';
+    return found ? found : "";
   }
 
   getTosList() {
@@ -922,13 +1166,13 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     let arrayTo = [];
     if (approvers.length) {
       for (const a in approvers) {
-        if (approvers[a].Email !== undefined && approvers[a].Email !== '') {
+        if (approvers[a].Email !== undefined && approvers[a].Email !== "") {
           arrayTo.push(approvers[a].Email);
         }
       }
     }
     arrayTo = arrayTo.filter(this.onlyUnique);
-    console.log('arrayTo ', arrayTo);
+    console.log("arrayTo ", arrayTo);
     return arrayTo;
   }
 
@@ -944,11 +1188,13 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     // CS Team Member
     if (this.resCatEmails.length) {
-      arrayCC = arrayCC.concat(this.fdDataShareServie.getCSMember(this.resCatEmails));
+      arrayCC = arrayCC.concat(
+        this.fdDataShareServie.getCSMember(this.resCatEmails)
+      );
     }
 
     arrayCC = arrayCC.filter(this.onlyUnique);
-    console.log('arrayCC ', arrayCC);
+    console.log("arrayCC ", arrayCC);
     return arrayCC;
   }
 
@@ -965,12 +1211,11 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
           const ele = elements[e];
           this.cmLevelIdList.push(ele);
         }
-
       } else {
         this.cmLevelIdList.push(elements);
       }
     }
-    console.log('this.cmLevelIdList ', this.cmLevelIdList);
+    console.log("this.cmLevelIdList ", this.cmLevelIdList);
     this.resCatEmails = [];
     this.resourceCatData();
   }
@@ -985,7 +1230,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     //     const element = this.cmLevelIdList[c];
     //     this.resCatEmails.push(this.getResourceData(element))
     // }
-    console.log('resCatEmails ', this.resCatEmails);
+    console.log("resCatEmails ", this.resCatEmails);
     // }
   }
 
@@ -995,38 +1240,94 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         return x;
       }
     });
-    return found ? found : '';
+    return found ? found : "";
   }
 
   sendCreateExpenseMail(expense) {
     const isCleData = this.getCleByPC(expense);
-    const val1 = isCleData.hasOwnProperty('ClientLegalEntity') ? expense.Title + ' (' + isCleData.ClientLegalEntity + ')' :
-      expense.Title;
+    const val1 = isCleData.hasOwnProperty("ClientLegalEntity")
+      ? expense.Title + " (" + isCleData.ClientLegalEntity + ")"
+      : expense.Title;
 
     if (this.mailContentRes.length) {
-      const mailSubject = expense.Title + ': Expense Created';
+      const mailSubject = expense.Title + ": Expense Created";
       let mailContent = this.mailContentRes[0].ContentMT;
-      mailContent = this.replaceContent(mailContent, '@@Val9@@', this.currentUserInfoData.Title);
-      mailContent = this.replaceContent(mailContent, '@@Val8@@', !isCleData.hasOwnProperty('ClientLegalEntity') ?
-        'Client legal entity' : 'Project');
-      mailContent = this.replaceContent(mailContent, '@@Val0@@', expense.ID);
-      mailContent = this.replaceContent(mailContent, '@@Val1@@', val1);
-      mailContent = this.replaceContent(mailContent, '@@Val2@@', expense.CategoryST);
-      mailContent = this.replaceContent(mailContent, '@@Val4@@', expense.SpendType);
-      mailContent = this.replaceContent(mailContent, '@@Val5@@', expense.Currency + ' ' + parseFloat(expense.Amount).toFixed(2));
-      mailContent = this.replaceContent(mailContent, '@@Val6@@', expense.ClientAmount ? expense.ClientCurrency +
-        ' ' + parseFloat(expense.ClientAmount).toFixed(2) : '--');
-      mailContent = this.replaceContent(mailContent, '@@Val7@@', expense.NotesMT);
-      mailContent = this.replaceContent(mailContent, '@@Val10@@', this.globalService.sharePointPageObject.rootsite +
-        '' + expense.FileURL);
-      mailContent = this.replaceContent(mailContent, '@@Val11@@', this.globalService.sharePointPageObject.rootsite +
-        '' + expense.ClientApprovalFileURL);
-      mailContent = this.replaceContent(mailContent, '@@Val12@@', expense.RequestType);
+      mailContent = this.replaceContent(
+        mailContent,
+        "@@Val9@@",
+        this.currentUserInfoData.Title
+      );
+      mailContent = this.replaceContent(
+        mailContent,
+        "@@Val8@@",
+        !isCleData.hasOwnProperty("ClientLegalEntity")
+          ? "Client legal entity"
+          : "Project"
+      );
+      mailContent = this.replaceContent(mailContent, "@@Val0@@", expense.ID);
+      mailContent = this.replaceContent(mailContent, "@@Val1@@", val1);
+      mailContent = this.replaceContent(
+        mailContent,
+        "@@Val2@@",
+        expense.CategoryST
+      );
+      mailContent = this.replaceContent(
+        mailContent,
+        "@@Val4@@",
+        expense.SpendType
+      );
+      mailContent = this.replaceContent(
+        mailContent,
+        "@@Val5@@",
+        expense.Currency + " " + parseFloat(expense.Amount).toFixed(2)
+      );
+      mailContent = this.replaceContent(
+        mailContent,
+        "@@Val6@@",
+        expense.ClientAmount
+          ? expense.ClientCurrency +
+              " " +
+              parseFloat(expense.ClientAmount).toFixed(2)
+          : "--"
+      );
+      mailContent = this.replaceContent(
+        mailContent,
+        "@@Val7@@",
+        expense.NotesMT
+      );
+      mailContent = this.replaceContent(
+        mailContent,
+        "@@Val10@@",
+        this.globalService.sharePointPageObject.rootsite + "" + expense.FileURL
+      );
+      mailContent = this.replaceContent(
+        mailContent,
+        "@@Val11@@",
+        this.globalService.sharePointPageObject.rootsite +
+          "" +
+          expense.ClientApprovalFileURL
+      );
+      mailContent = this.replaceContent(
+        mailContent,
+        "@@Val12@@",
+        expense.RequestType
+      );
 
       const ccUser = this.getCCList();
       const tos = this.getTosList();
-      this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'SendMail', 'POST');
-      this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
+      this.commonService.SetNewrelic(
+        "Finance-Dashboard",
+        "expenditure",
+        "SendMail",
+        "POST"
+      );
+      this.spServices.sendMail(
+        tos.join(","),
+        this.currentUserInfoData.Email,
+        mailSubject,
+        mailContent,
+        ccUser.join(",")
+      );
     }
     this.reFetchData();
   }
@@ -1040,26 +1341,31 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
   // Tab Action
   onExpenditureTabs(event) {
-    console.log('Expenditure Tabs event ', event);
+    console.log("Expenditure Tabs event ", event);
     if (event.index === 0) {
       // this.loadComponent('pec');
-      this.router.navigate(['/financeDashboard/expenditure/pending']);
+      this.router.navigate(["/financeDashboard/expenditure/pending"]);
     } else if (event.index === 1) {
       // this.loadComponent('crc');
-      this.router.navigate(['/financeDashboard/expenditure/cancelled-reject']);
+      this.router.navigate(["/financeDashboard/expenditure/cancelled-reject"]);
     } else if (event.index === 2) {
       // this.loadComponent('anbc');
-      this.router.navigate(['/financeDashboard/expenditure/approvedNonBillable']);
+      this.router.navigate([
+        "/financeDashboard/expenditure/approvedNonBillable",
+      ]);
     } else if (event.index === 3) {
       // this.loadComponent('abc');
-      this.router.navigate(['/financeDashboard/expenditure/approvedBillable']);
+      this.router.navigate(["/financeDashboard/expenditure/approvedBillable"]);
     }
   }
 
   ngAfterContentInit() {
     if (this.constantService.userPermission.userPermissionMsg) {
-
-      this.commonService.showToastrMessage(this.constantService.MessageType.warn, 'You don\'t have access to the url. Please contact SP team.', true);
+      this.commonService.showToastrMessage(
+        this.constantService.MessageType.warn,
+        "You don't have access to the url. Please contact SP team.",
+        true
+      );
       this.constantService.userPermission.userPermissionMsg = false;
     }
   }
@@ -1073,10 +1379,9 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     // }
     // this.projectInfoData.unsubscribe();
     this.fdDataShareServie.expenseDateRange = {
-      startDate: '',
-      endDate: '',
+      startDate: "",
+      endDate: "",
     };
     this.subscription.unsubscribe();
   }
-
 }

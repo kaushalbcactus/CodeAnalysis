@@ -1,7 +1,5 @@
-<p-table [value]="rowData" [rowsPerPageOptions]="[10,25,50]"
-[showCurrentPageReport]="true"
-currentPageReportTemplate="Showing {​​​​​​​​first}​​​​​​​​ to {​​​​​​​​last}​​​​​​​​ of {​​​​​​​​totalRecords}​​​​​​​​ entries"
-styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" stateKey="tableattributes">
+<p-table [value]="rowData" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {​​​​​​​​first}​​​​​​​​ to {​​​​​​​​last}​​​​​​​​ of {​​​​​​​​totalRecords}​​​​​​​​ entries" styleClass="p-datatable-cactus p-datatable-sm  p-datatable-gridlines"
+    stateStorage="local" stateKey="tableattributes">
     <ng-template pTemplate="header">
         <tr>
             <th>Name</th>
@@ -10,112 +8,112 @@ styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" state
     </ng-template>
     <ng-template pTemplate="body" let-item>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Project Code</td>
+            <td class="error">Project Code</td>
             <td>{{rowItemData.ProjectCode}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Client Legal Entity</td>
+            <td class="error">Client Legal Entity</td>
             <td>{{rowItemData.ClientLegalEntity}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">SOW Code</td>
+            <td class="error">SOW Code</td>
             <td>{{rowItemData.SOWCode}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">SOW Name</td>
+            <td class="error">SOW Name</td>
             <td>{{rowItemData.SOWName}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Number</td>
+            <td class="error">Number</td>
             <td>{{rowItemData.Number}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Category</td>
+            <td class="error">Category</td>
             <td>{{rowItemData.Category}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Vendor Name</td>
+            <td class="error">Vendor Name</td>
             <td>{{rowItemData.VendorName}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Expense Type</td>
+            <td class="error">Expense Type</td>
             <td>{{rowItemData.ExpenseType}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Request Type</td>
+            <td class="error">Request Type</td>
             <td>{{rowItemData.RequestType}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Payment Mode</td>
+            <td class="error">Payment Mode</td>
             <td>{{rowItemData.PaymentMode}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Paying Entity</td>
+            <td class="error">Paying Entity</td>
             <td>{{rowItemData.PayingEntity}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Client Currency</td>
+            <td class="error">Client Currency</td>
             <td>{{rowItemData.ClientCurrency}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Client Amount</td>
+            <td class="error">Client Amount</td>
             <td>{{rowItemData.ClientAmount}}</td>
         </tr>
         <tr *ngIf="rowItemData.Currency">
-            <td [ngStyle]="{'color':'#d7181f'}">Currency</td>
+            <td class="error">Currency</td>
             <td>{{rowItemData.Currency}}</td>
         </tr>
         <tr *ngIf="rowItemData.Amount">
-            <td [ngStyle]="{'color':'#d7181f'}">Amount</td>
+            <td class="error">Amount</td>
             <td>{{rowItemData.Amount}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Status</td>
+            <td class="error">Status</td>
             <td>{{rowItemData.Status}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Notes</td>
+            <td class="error">Notes</td>
             <td>{{rowItemData.Notes}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Date Spend</td>
+            <td class="error">Date Spend</td>
             <td>{{rowItemData.DateSpend}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Approver Comments</td>
+            <td class="error">Approver Comments</td>
             <td>{{rowItemData.ApproverComments}}</td>
         </tr>
 
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Approver File Url</td>
+            <td class="error">Approver File Url</td>
             <td><a href="{{rowItemData.ApproverFileUrl}}" class="cls_ApproveFileUrl" target="_blank" style="color:red" *ngIf="rowItemData.ApproverFileUrl">Click here</a>
             </td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">File URL</td>
+            <td class="error">File URL</td>
             <td><a href="{{rowItemData.FileURL}}" class="cls_FileUrl" target="_blank" style="color:red" *ngIf="rowItemData.FileURL">Click
                     here</a>
             </td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Client Approval File URL</td>
+            <td class="error">Client Approval File URL</td>
             <td><a href="{{rowItemData.ClientApprovalFileURL }}" class="cls_ClientApproveFileUrl" target="_blank" style="color:red" *ngIf="rowItemData.ClientApprovalFileURL">Click here</a>
             </td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Created Date</td>
+            <td class="error">Created Date</td>
             <td>{{rowItemData.Created | date:'mediumDate'}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Created By</td>
+            <td class="error">Created By</td>
             <td>{{rowItemData.CreatedBy}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Modified Date</td>
+            <td class="error">Modified Date</td>
             <td>{{rowItemData.Modified | date:'mediumDate'}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Modified By</td>
+            <td class="error">Modified By</td>
             <td>{{rowItemData.ModifiedBy}}</td>
         </tr>
 

@@ -1,16 +1,12 @@
-<!-- Approve Accept Reject Modal -->
-<!-- <p-dialog header="{{expenseDialog.title}}" [(visible)]="displayModal" [modal]="true" [draggable]="false" [responsive]="true" [contentStyle]="{'max-height':'450px'}" [style]="{'width': '50%'}" [blockScroll]="true" (onHide)="cancelFormSub('cancelReject_form')"> -->
+<div class="pdialogButton p-col-12 p-grid p-jc-end">
+    <button class="p-mx-1 p-button-raised p-button-danger" [disabled]="submitBtn.isClicked" type="button" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'cursor':'pointer' }" (click)="onSubmit(expenseDialog.title)" label="{{expenseDialog.title}}"></button>
+    <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="p-button-raised p-button-danger"></button>
+</div>
 
-    <div class='UserButton' fxLayout="row" fxLayoutAlign="end center">
-      <!-- <button id="saveClient" pButton type="button" class="fdBtn" label="{{expenseDialog.title}}" [disabled]="submitBtn.isClicked" (click)="onSubmit(expenseDialog.title)"></button>
-      <button type="button" pButton (click)="cancel();" label="Cancel" class="ui-button-secondary cancel-btn"></button> -->
-      <button class="p-mx-1 p-button-raised p-button-danger" type="button" [disabled]="submitBtn.isClicked" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'cursor':'pointer' }" (click)="onSubmit(expenseDialog.title)" label="{{expenseDialog.title}}"></button>
-      <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="p-button-raised p-button-danger"></button>
-  
-    </div>
-    <div fxLayout="row" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
-    <form style="font-size: 13px; padding-top: 10px;" id="myform" [formGroup]="cancelReject_form" *ngIf="expenseDialog.title === 'Cancel Expense' || expenseDialog.title === 'Reject Expense'  ">
-        <div class="p-grid">
+
+<div class="p-col p-grid">
+    <form class="p-col formfont" id="myform" [formGroup]="cancelReject_form" *ngIf="expenseDialog.title === 'Cancel Expense' || expenseDialog.title === 'Reject Expense'  ">
+        <div class="p-col p-grid">
             <div class="p-col-6">Are you sure you want to {{expenseDialog.text}} this expense ?</div>
             <div class="p-col-6">
                 <p-radioButton name="ce" value="Yes" label="Yes" inputId="preopt1" (onClick)="isExpenseRej()" formControlName="isCancel">
@@ -27,7 +23,6 @@
                 <span class="ui-float-label">
                     <textarea [rows]="4" [cols]="30" pInputTextarea autoResize="autoResize"
                         formControlName="ApproverComments"></textarea>
-                    <!-- <label for="float-input">Comment</label> -->
                 </span>
                 <div *ngIf="formSubmit.isSubmit && isValidCancelExpeseForm.ApproverComments.errors">
                     <div *ngIf="isValidCancelExpeseForm.ApproverComments.errors.required" style="color:red;">Comments are required.
@@ -37,39 +32,41 @@
         </div>
     </form>
 
-    <form style="font-size: 13px; padding-top: 10px;" id="myform" [formGroup]="approveExpense_form" *ngIf="expenseDialog.title === 'Approve Expense' || expenseDialog.title === 'Approve Expense'  ">
-        <div>
-            <div class="p-grid">
-                <div class="p-col-6">Paying Entity</div>
-                <div class="p-col-6">
-                    <p-dropdown resetFilterOnHide="true" [options]="billingEntityData" virtualScroll="true" itemSize="30" [showClear]="false" placeholder="Select a Billing Entity" [style]="{'width':'100%'}" formControlName="PayingEntity" (onChange)="selectedBE($event.value)"
-                        optionLabel="Title">
-                    </p-dropdown>
-                    <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.PayingEntity.errors">
-                        <div *ngIf="isValidApproveExpeseForm.PayingEntity.errors.required" style="color:red;">Paying entity is required.</div>
-                    </div>
+    <form class="p-col formfont" id="myform" [formGroup]="approveExpense_form" *ngIf="expenseDialog.title === 'Approve Expense' || expenseDialog.title === 'Approve Expense'">
+
+        <div class="p-col p-grid">
+            <div class="p-col-3">Paying Entity</div>
+            <div class="p-col">
+                <p-dropdown resetFilterOnHide="true" [options]="billingEntityData" virtualScroll="true" itemSize="30" [showClear]="false" placeholder="Select a Billing Entity" class="p-fluid" appendTo="body" formControlName="PayingEntity" (onChange)="selectedBE($event.value)"
+                    optionLabel="Title">
+                </p-dropdown>
+                <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.PayingEntity.errors">
+                    <div *ngIf="isValidApproveExpeseForm.PayingEntity.errors.required" style="color:red;">Paying entity is required.</div>
                 </div>
             </div>
-            <div class="p-grid" *ngIf="selectedRowItem.RequestType === 'Invoice Payment' " style="width: -webkit-fill-available !important;">
-                <div class="p-col-6">Note</div>
-                <div class="p-col-6">
-                    <!-- <input type="text" pInputText formControlName="ApproverComments" /> -->
-                    <textarea rows="5" cols="30" pInputTextarea formControlName="ApproverComments" maxlength="100"></textarea>
-                    <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.ApproverComments.errors">
-                        <div *ngIf="isValidApproveExpeseForm.ApproverComments.errors.required" style="color:red;">Please provide Note.</div>
-                    </div>
+        </div>
+        <div class="p-col p-grid" *ngIf="selectedRowItem.RequestType === 'Invoice Payment' " style="width: -webkit-fill-available !important;">
+            <div class="p-col-3">Note</div>
+            <div class="p-col">
+                <textarea rows="5" cols="30" pInputTextarea formControlName="ApproverComments" maxlength="100"></textarea>
+                <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.ApproverComments.errors">
+                    <div *ngIf="isValidApproveExpeseForm.ApproverComments.errors.required" style="color:red;">Please provide Note.</div>
                 </div>
             </div>
-            <div class="p-grid" *ngIf="selectedRowItem.RequestType === 'Credit Card'">
-                <div class="p-col-6">Reference Number</div>
-                <div class="p-col-6">
-                    <input type="text" pInputText formControlName="Number" />
+        </div>
+        <div class="p-col p-grid p-flex-column" *ngIf="selectedRowItem.RequestType === 'Credit Card'">
+            <div class="p-col p-grid">
+                <div class="p-col-3">Reference Number</div>
+                <div class="p-col">
+                    <input class="p-col-12" type="text" pInputText formControlName="Number" />
                     <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.Number.errors">
                         <div *ngIf="isValidApproveExpeseForm.Number.errors.required" style="color:red;">Please provide Reference number.</div>
                     </div>
                 </div>
-                <div class="p-col-6">Payment Date</div>
-                <div class="p-col-5">
+            </div>
+            <div class="p-col p-grid">
+                <div class="p-col-3">Payment Date</div>
+                <div class="p-col">
                     <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy" yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}"
                         appendTo="body" formControlName="DateSpend">
                     </p-calendar>
@@ -77,33 +74,45 @@
                         <div *ngIf="isValidApproveExpeseForm.DateSpend.errors.required" style="color:red;">Please provide Payment Date.</div>
                     </div>
                 </div>
-                <div class="p-col-6">Payment Mode</div>
-                <div class="p-col-6">
-                    <p-dropdown resetFilterOnHide="true" [options]="paymentModeArray" [showClear]="false" placeholder="Select a Payment Mode" [style]="{'width':'100%'}" formControlName="PaymentMode" optionLabel="value" (onChange)="selectedPaymentMode($event.value)" onfocus='this.size=10;'>
+            </div>
+            <div class="p-col p-grid">
+                <div class="p-col-3">Payment Mode</div>
+                <div class="p-col">
+                    <p-dropdown resetFilterOnHide="true" [options]="paymentModeArray" [showClear]="false" placeholder="Select a Payment Mode" class="p-fluid" appendTo="body" formControlName="PaymentMode" optionLabel="value" (onChange)="selectedPaymentMode($event.value)"
+                        onfocus='this.size=10;'>
                     </p-dropdown>
                     <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.PaymentMode.errors">
                         <div *ngIf="isValidApproveExpeseForm.PaymentMode.errors.required" style="color:red;">Please provide Payment Mode.</div>
                     </div>
                 </div>
-                <div class="p-col-6">Notes</div>
-                <div class="p-col-6">
+            </div>
+            <div class="p-col p-grid">
+                <div class="p-col-3">Notes</div>
+                <div class="p-col">
                     <textarea [rows]="4" [cols]="30" pInputTextarea autoResize="autoResize" formControlName="ApproverComments"></textarea>
                     <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.ApproverComments.errors">
                         <div *ngIf="isValidApproveExpeseForm.ApproverComments.errors.required" style="color:red;">Please provide Note.</div>
                     </div>
                 </div>
-                <div class="p-col-6">Upload File</div>
-                <div class="p-col-6">
-                    <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event, 'ApprovedExpenseFiles')" #fileInput formControlName="ApproverFileUrl" />
+            </div>
+            <div class="p-col p-grid">
+                <div class="p-col-3">Upload File</div>
+                <div class="p-col">
+                    <div class="file-upload p-col-12 p-px-0 p-pb-0" #fileuploderView>
+                        <div class="file-select">
+                            <div class="file-select-button" id="fileName">Choose File</div>
+                            <div class="file-select-name" id="noFile">No file chosen...</div>
+                            <input type="file" formControlName="ApproverFileUrl" name="chooseFile" class="form-control" id="chooseFile" (change)="onFileChange($event, 'ApprovedExpenseFiles')">
+                        </div>
+                    </div>
                     <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.ApproverFileUrl.errors">
                         <div *ngIf="isValidApproveExpeseForm.ApproverFileUrl.errors.required" style="color:red;">Please provide file.</div>
                     </div>
                 </div>
             </div>
-
-            <div [ngStyle]="{'margin-top':selectedRowItem.RequestType !== 'Credit Card' ? '45%' : '0px' }"></div>
-
         </div>
+
+        <!-- <div [ngStyle]="{'margin-top':selectedRowItem.RequestType !== 'Credit Card' ? '45%' : '0px' }"></div> -->
+
     </form>
 </div>
-<!-- </p-dialog> -->

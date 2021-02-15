@@ -105,7 +105,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
   // List of Subscribers
   private subscription: Subscription = new Subscription();
 
-  @ViewChild("ab", { static: false }) approvedBTable: Table;
+  // @ViewChild("ab", { static: false }) approvedBTable: Table;
 
   // Project Info
   projectInfoData: any = [];
@@ -415,7 +415,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     }
     this.approvedBillableRes = [...this.approvedBillableRes];
     //this.createColFieldValues(this.approvedBillableRes);
-    this.approvedBillableCols = this.commonService.MainfilterForTable(this.approvedBillableCols, this.approvedBillableRes);
+    this.approvedBillableCols = this.approvedBillableRes && this.approvedBillableRes.length > 0 ? this.commonService.MainfilterForTable(this.approvedBillableCols, this.approvedBillableRes) : this.approvedBillableCols.filter(c=>c.visibility === true);
     this.isLoaderenable = false;
   }
 
@@ -1316,54 +1316,54 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  @HostListener("document:click", ["$event"])
-  clickout(event) {
-    if (event.target.className === "pi pi-ellipsis-v") {
-      if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        if (
-          this.tempClick !== event.target.parentElement.children[0].children[0]
-        ) {
-          this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = "";
-        } else {
-          this.tempClick = undefined;
-        }
-      } else {
-        this.tempClick = event.target.parentElement.children[0].children[0];
-        this.tempClick.style.display = "";
-      }
-    } else {
-      if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        this.tempClick = undefined;
-      }
-    }
-  }
-  optionFilter(event: any) {
-    if (event.target.value) {
-      this.isOptionFilter = false;
-    }
-  }
+  // @HostListener("document:click", ["$event"])
+  // clickout(event) {
+  //   if (event.target.className === "pi pi-ellipsis-v") {
+  //     if (this.tempClick) {
+  //       this.tempClick.style.display = "none";
+  //       if (
+  //         this.tempClick !== event.target.parentElement.children[0].children[0]
+  //       ) {
+  //         this.tempClick = event.target.parentElement.children[0].children[0];
+  //         this.tempClick.style.display = "";
+  //       } else {
+  //         this.tempClick = undefined;
+  //       }
+  //     } else {
+  //       this.tempClick = event.target.parentElement.children[0].children[0];
+  //       this.tempClick.style.display = "";
+  //     }
+  //   } else {
+  //     if (this.tempClick) {
+  //       this.tempClick.style.display = "none";
+  //       this.tempClick = undefined;
+  //     }
+  //   }
+  // }
+  // optionFilter(event: any) {
+  //   if (event.target.value) {
+  //     this.isOptionFilter = false;
+  //   }
+  // }
 
-  ngAfterViewChecked() {
-    if (this.approvedBillableRes.length && this.isOptionFilter) {
-      const obj = {
-        tableData: this.approvedBTable,
-        colFields: this.appBillableColArray,
-      };
-      if (obj.tableData.filteredValue) {
-        this.commonService.updateOptionValues(obj);
-      } else if (
-        obj.tableData.filteredValue === null ||
-        obj.tableData.filteredValue === undefined
-      ) {
-        this.createColFieldValues(obj.tableData.value);
-        this.isOptionFilter = false;
-      }
-    }
-    this.cdr.detectChanges();
-  }
+  // ngAfterViewChecked() {
+  //   if (this.approvedBillableRes.length && this.isOptionFilter) {
+  //     const obj = {
+  //       tableData: this.approvedBTable,
+  //       colFields: this.appBillableColArray,
+  //     };
+  //     if (obj.tableData.filteredValue) {
+  //       this.commonService.updateOptionValues(obj);
+  //     } else if (
+  //       obj.tableData.filteredValue === null ||
+  //       obj.tableData.filteredValue === undefined
+  //     ) {
+  //       this.createColFieldValues(obj.tableData.value);
+  //       this.isOptionFilter = false;
+  //     }
+  //   }
+  //   this.cdr.detectChanges();
+  // }
 
   onSubmit(scheduleOopInvoice_form, InvoiceType: string, type: string) {
     const batchURL = [];

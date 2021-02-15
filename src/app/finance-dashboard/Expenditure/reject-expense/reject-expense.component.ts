@@ -21,7 +21,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
     // Testing
     @Input() datas: string;
 
-    isPSInnerLoaderHidden: boolean = true;
+    isPSInnerLoaderHidden: boolean = false;
 
     rejectExpenses: any = [];
     rejectCancelExpenseCols: any[];
@@ -236,9 +236,8 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
             })
         }
         this.rejectExpenses = [...this.rejectExpenses];
+        this.rejectCancelExpenseCols =  this.rejectExpenses && this.rejectExpenses.length > 0 ?this.commonService.MainfilterForTable(this.rejectCancelExpenseCols, this.rejectExpenses) : this.rejectCancelExpenseCols.filter(c=>c.visibility === true);
         this.isPSInnerLoaderHidden = true;
-        //this.createColFieldValues(this.rejectExpenses);
-        this.rejectCancelExpenseCols = this.commonService.MainfilterForTable(this.rejectCancelExpenseCols, this.rejectExpenses);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 

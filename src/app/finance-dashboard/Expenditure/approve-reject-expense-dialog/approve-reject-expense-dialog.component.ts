@@ -1,30 +1,36 @@
-import { Component, OnInit } from "@angular/core";
-import { FormGroup, Validators, FormBuilder, FormControl } from "@angular/forms";
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import {
+  FormGroup,
+  Validators,
+  FormBuilder,
+  FormControl,
+} from "@angular/forms";
 import { Subscription } from "rxjs";
 import { FDDataShareService } from "../../fdServices/fd-shareData.service";
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { ConstantsService } from 'src/app/Services/constants.service';
-import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { CommonService } from 'src/app/Services/common.service';
-import { FdConstantsService } from '../../fdServices/fd-constants.service';
+import { DynamicDialogConfig, DynamicDialogRef } from "primeng/dynamicdialog";
+import { ConstantsService } from "src/app/Services/constants.service";
+import { SPOperationService } from "src/app/Services/spoperation.service";
+import { CommonService } from "src/app/Services/common.service";
+import { FdConstantsService } from "../../fdServices/fd-constants.service";
 
 @Component({
   selector: "app-approve-reject-expense-dialog",
   templateUrl: "./approve-reject-expense-dialog.component.html",
-  styleUrls: ["./approve-reject-expense-dialog.component.css"]
+  styleUrls: ["./approve-reject-expense-dialog.component.css"],
 })
 export class ApproveRejectExpenseDialogComponent implements OnInit {
+  @ViewChild("fileuploderView", { static: false }) fileuploderView: ElementRef;
   cancelReject_form: FormGroup;
   approveExpense_form: FormGroup;
   expenseDialog: any = {
-    title: '',
-    text: ''
+    title: "",
+    text: "",
   };
   formSubmit: any = {
-    isSubmit: false
+    isSubmit: false,
   };
   submitBtn: any = {
-    isClicked: false
+    isClicked: false,
   };
   selectedRowItem: any;
   private subscription: Subscription = new Subscription();
@@ -33,7 +39,7 @@ export class ApproveRejectExpenseDialogComponent implements OnInit {
   paymentModeArray = [
     { label: "BankTransfer", value: "Bank Transfer" },
     { label: "CreditCard", value: "Credit Card" },
-    { label: "Cheque", value: "Cheque" }
+    { label: "Cheque", value: "Cheque" },
   ];
   fileEvent: any;
   folderName: string;
@@ -55,26 +61,33 @@ export class ApproveRejectExpenseDialogComponent implements OnInit {
     private constant: ConstantsService,
     private fdConstantsService: FdConstantsService,
     private spServices: SPOperationService,
-    private commonService: CommonService,
+    private commonService: CommonService
   ) {}
 
   ngOnInit() {
     this.expenseDialog = this.config.data.expenseDialog;
     this.selectedRowItem = this.config.data.selectedRowItem;
-    if(this.expenseDialog.text == 'Approve') {
+    if (this.expenseDialog.text == "Approve") {
       this.approveExpenseFormField();
       this.addRemoveFormFieldForAE(this.selectedRowItem.RequestType);
-    } else if(this.expenseDialog.text == 'Reject' || this.expenseDialog.text == 'Cancel') {
+    } else if (
+      this.expenseDialog.text == "Reject" ||
+      this.expenseDialog.text == "Cancel"
+    ) {
       this.canRejExpenseFormField();
-      this.expenseDialog.text === 'Cancel' ?
-            this.getApproveExpenseMailContent(this.constant.EMAIL_TEMPLATE_NAME.CANCEL_EXPENSE)
-                : this.getApproveExpenseMailContent(this.constant.EMAIL_TEMPLATE_NAME.REJECT_EXPENSE);
+      this.expenseDialog.text === "Cancel"
+        ? this.getApproveExpenseMailContent(
+            this.constant.EMAIL_TEMPLATE_NAME.CANCEL_EXPENSE
+          )
+        : this.getApproveExpenseMailContent(
+            this.constant.EMAIL_TEMPLATE_NAME.REJECT_EXPENSE
+          );
     }
   }
 
   biilingEntityInfo() {
     this.subscription.add(
-      this.fdDataShareServie.defaultBEData.subscribe(res => {
+      this.fdDataShareServie.defaultBEData.subscribe((res) => {
         if (res) {
           this.billingEntityData = res;
           console.log("BE Data ", this.billingEntityData);
@@ -84,42 +97,72 @@ export class ApproveRejectExpenseDialogComponent implements OnInit {
   }
 
   addRemoveFormFieldForAE(type: string) {
-    if (type === 'Invoice Payment') {
-        this.approveExpense_form.removeControl('Number');
-        this.approveExpense_form.removeControl('DateSpend');
-        this.approveExpense_form.removeControl('PaymentMode');
-        // this.approveExpense_form.removeControl('ApproverComments');
-        this.approveExpense_form.removeControl('ApproverFileUrl');
-    } else if (type === 'Credit Card') {
-        this.approveExpense_form.addControl('Number', new FormControl('', Validators.required));
-        this.approveExpense_form.addControl('DateSpend', new FormControl('', Validators.required));
-        this.approveExpense_form.addControl('PaymentMode', new FormControl('', Validators.required));
-        this.approveExpense_form.addControl('ApproverComments', new FormControl('', Validators.required));
-        this.approveExpense_form.addControl('ApproverFileUrl', new FormControl('', Validators.required));
+    if (type === "Invoice Payment") {
+      this.approveExpense_form.removeControl("Number");
+      this.approveExpense_form.removeControl("DateSpend");
+      this.approveExpense_form.removeControl("PaymentMode");
+      // this.approveExpense_form.removeControl('ApproverComments');
+      this.approveExpense_form.removeControl("ApproverFileUrl");
+    } else if (type === "Credit Card") {
+      this.approveExpense_form.addControl(
+        "Number",
+        new FormControl("", Validators.required)
+      );
+      this.approveExpense_form.addControl(
+        "DateSpend",
+        new FormControl("", Validators.required)
+      );
+      this.approveExpense_form.addControl(
+        "PaymentMode",
+        new FormControl("", Validators.required)
+      );
+      this.approveExpense_form.addControl(
+        "ApproverComments",
+        new FormControl("", Validators.required)
+      );
+      this.approveExpense_form.addControl(
+        "ApproverFileUrl",
+        new FormControl("", Validators.required)
+      );
     }
     this.biilingEntityInfo();
     // Get Mail Content
-    this.getApproveExpenseMailContent(this.constant.EMAIL_TEMPLATE_NAME.APPROVE_EXPENSE);
-}
+    this.getApproveExpenseMailContent(
+      this.constant.EMAIL_TEMPLATE_NAME.APPROVE_EXPENSE
+    );
+  }
 
-async getApproveExpenseMailContent(type) {
-  // const mailContentEndpoint = this.fdConstantsService.fdComponent.mailContent;
-  const mailContentEndpoint = {
-      filter: this.fdConstantsService.fdComponent.mailContent.filter.replace('{{MailType}}', type),
+  async getApproveExpenseMailContent(type) {
+    // const mailContentEndpoint = this.fdConstantsService.fdComponent.mailContent;
+    const mailContentEndpoint = {
+      filter: this.fdConstantsService.fdComponent.mailContent.filter.replace(
+        "{{MailType}}",
+        type
+      ),
       select: this.fdConstantsService.fdComponent.mailContent.select,
       top: this.fdConstantsService.fdComponent.mailContent.top,
-  };
+    };
 
-  const obj = [{
-      url: this.spServices.getReadURL(this.constant.listNames.MailContent.name, mailContentEndpoint),
-      type: 'GET',
-      listName: this.constant.listNames.MailContent.name
-  }];
-  this.commonService.SetNewrelic('Finance-Dashboard', 'approve-red-expense-dialog', 'getApproveExpenseMailContent', 'GET');
-  const res = await this.spServices.executeBatch(obj);
-  this.mailContentRes = res;
-  console.log('Approve Mail Content res ', this.mailContentRes);
-}
+    const obj = [
+      {
+        url: this.spServices.getReadURL(
+          this.constant.listNames.MailContent.name,
+          mailContentEndpoint
+        ),
+        type: "GET",
+        listName: this.constant.listNames.MailContent.name,
+      },
+    ];
+    this.commonService.SetNewrelic(
+      "Finance-Dashboard",
+      "approve-red-expense-dialog",
+      "getApproveExpenseMailContent",
+      "GET"
+    );
+    const res = await this.spServices.executeBatch(obj);
+    this.mailContentRes = res;
+    console.log("Approve Mail Content res ", this.mailContentRes);
+  }
 
   approveExpenseFormField() {
     this.approveExpense_form = this.fb.group({
@@ -128,20 +171,32 @@ async getApproveExpenseMailContent(type) {
       DateSpend: ["", Validators.required],
       PaymentMode: ["", Validators.required],
       ApproverComments: ["", Validators.required],
-      ApproverFileUrl: ["", Validators.required]
+      ApproverFileUrl: ["", Validators.required],
     });
   }
 
   canRejExpenseFormField() {
     this.cancelReject_form = this.fb.group({
       isCancel: ["", Validators.required],
-      ApproverComments: ["", Validators.required]
+      ApproverComments: ["", Validators.required],
     });
   }
 
   onFileChange(fileEvent, folderName: string) {
-    this.fileEvent = fileEvent;
-    this.folderName = folderName;
+    debugger;
+    if (fileEvent.target.files && fileEvent.target.files.length > 0) {
+      this.fileEvent = fileEvent;
+      this.folderName = folderName;
+      this.fileuploderView.nativeElement.getElementsByClassName(
+        "file-select-name"
+      )[0].innerText = fileEvent.target.files[0].name;
+      this.fileuploderView.nativeElement.classList.add("active");
+    } else {
+      this.fileuploderView.nativeElement.classList.remove("active");
+      this.fileuploderView.nativeElement.getElementsByClassName(
+        "file-select-name"
+      )[0].innerText = "No file chosen...";
+    }
   }
 
   isExpenseRej() {
@@ -162,19 +217,19 @@ async getApproveExpenseMailContent(type) {
     this.formSubmit.isSubmit = true;
 
     let currentForm;
-    if(expenseType == 'Cancel Expense' || expenseType == 'Reject Expense') {
+    if (expenseType == "Cancel Expense" || expenseType == "Reject Expense") {
       currentForm = this.cancelReject_form;
-    } else if(expenseType == 'Approve Expense') {
+    } else if (expenseType == "Approve Expense") {
       currentForm = this.approveExpense_form;
     }
     let expenseObj = {
-      type : expenseType,
-      form : currentForm,
+      type: expenseType,
+      form: currentForm,
       event: this.fileEvent,
-      folderName: this.folderName, 
-      mailContent: this.mailContentRes
-    }
-    if(currentForm.invalid) {
+      folderName: this.folderName,
+      mailContent: this.mailContentRes,
+    };
+    if (currentForm.invalid) {
       return;
     }
 

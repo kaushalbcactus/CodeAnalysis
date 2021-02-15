@@ -29,7 +29,11 @@ body .ui-tabview .ui-tabview-panels {
     padding: 0em 0em;
 }
 
-#pc table {
+
+/* commented by maxwell because of datepicker ui issue  */
+
+
+/* #pc table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
     width: 100%;
@@ -40,7 +44,7 @@ th {
     border: 1px solid #dddddd;
     text-align: left;
     padding: 8px;
-}
+} */
 
 .pCalendarBtn {
     width: 100% !important;
@@ -169,9 +173,9 @@ textarea {
 }
 
 .f-left {
-    float:left;
-    padding-left: 0px !important ;
-    padding-bottom: 0px !important ;
+    float: left;
+    padding-left: 0px !important;
+    padding-bottom: 0px !important;
 }
 
 .inner-detail {
@@ -856,7 +860,6 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
     margin-bottom: 1%;
 }
 
-
 .ui-table-scrollable-header {
     overflow: visible!important;
 }
@@ -891,12 +894,16 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
     right: 40px !important;
 }
 
-.financeTable table>tbody>tr>td,
+
+/* commented by maxwell used from main style sheet  */
+
+
+/* .financeTable table>tbody>tr>td,
 .financeTable table>thead>tr>th,
 .ui-multiselect-label,
 .ui-multiselect-item {
     font-size: 12px !important;
-}
+} */
 
 
 /*

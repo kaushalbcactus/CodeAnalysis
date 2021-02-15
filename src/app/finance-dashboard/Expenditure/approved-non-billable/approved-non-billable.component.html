@@ -3,18 +3,14 @@
     <div id="scInnerLoaderText">Loading...</div>
 </div>
 
-<div class="p-col">
-    <div class="p-col-12 p-md-12 p-lg-12 f-right">
-        <div style="display: -webkit-inline-box;">
-            <div class="box" *ngIf="constantService.userPermission.isFDUserAdmin">
-                <button pButton type="button" class="fdBtn" label="Mark As Payment" (click)="openPopup('markAsPaymentModal')" style="float:left"></button>
-            </div>
-        </div>
-    </div>
-    <div style="clear: both;"></div>
-</div>
 
-<div class="financeTable" hideshowMenu>
+
+
+<button *ngIf="constantService.userPermission.isFDUserAdmin" pButton type="button" class="fdBtn p-ml-1" label="Mark As Payment" (click)="openPopup('markAsPaymentModal')" style="float:right; margin-top: -42px;"></button>
+
+
+
+<div class="financeTable p-mt-1" hideshowMenu *ngIf='isPSInnerLoaderHidden'>
     <p-table #anb [columns]="approvedNonBillableCols" [value]="approvedNonBillableRes" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [paginator]="true" [rows]="10"
         (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode="" [(selection)]="selectedAllRowsItem" exportFilename="Approved_NonBillable_Expenses" styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local"
         stateKey="financeTableNonApprovableBills">
@@ -25,7 +21,7 @@
                     <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                 </th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
-                    <div *ngIf="col.field != ''" class="p-d-flex p-jc-between p-ai-center">
+                    <div *ngIf="col.field != ''" class="p-jc-between p-ai-center">
                         {{col.header}}
                         <p-sortIcon [field]="col.field"></p-sortIcon>
                         <p-columnFilter *ngIf="col.header != ''  && col.field !='docUrlHtmlTag' && col.field!='docReviewUrlHtmlTag'" [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
@@ -123,11 +119,14 @@
                 </td>
             </tr>
         </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+                <td [attr.colspan]="columns.length + 3" class="error p-text-center ">
+                    No data available.
+                </td>
+            </tr>
+        </ng-template>
     </p-table>
-</div>
-
-<div *ngIf="approvedNonBillableRes.length == 0" style="color:red;text-align: center;padding-top: 20px;">
-    No data available.
 </div>
 
 <!-- Right Side Bar -->

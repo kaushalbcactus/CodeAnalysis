@@ -1,14 +1,13 @@
-
-<div  class="p-col-12 p-md-12 p-lg-12 f-left">
+<div class="p-col-12 p-md-12 p-lg-12 f-left">
     <div style="display: -webkit-inline-box;">
         <div class="box" style="height: 42px !important;">
-            <!-- Tabmenu list -->   
+            <!-- Tabmenu list -->
             <p-tabMenu [model]="fdConstantsService.fdComponent.tabs.expenditureMenu" style="margin-right: 20px" [activeItem]="fdConstantsService.internalRouter"></p-tabMenu>
         </div>
-        <div [hidden]='fdConstantsService.fdComponent.hideDatesSection' style="margin-left: 20px;" class="box">
-            <p-calendar [style]="{width:'300px'}" [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true" dateFormat="M dd, yy" placeholder="Select Start & End Date" showButtonBar="true" (onClose)="SelectedDateRange()" (onClearClick)="setDefault()"></p-calendar>
+        <div [hidden]='fdConstantsService.fdComponent.hideDatesSection' class="box p-mx-2">
+            <p-calendar [style]="{width:'200px'}" [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true" dateFormat="M dd, yy" placeholder="Select Start & End Date" showButtonBar="true" (onClose)="SelectedDateRange()" (onClearClick)="setDefault()"></p-calendar>
         </div>
-        <div class="box" style="margin-left: 20px;">
+        <div class="box">
             <button pButton type="button" class="fdBtn" label="Request expense" (click)="requestExpense()"></button>
         </div>
     </div>
@@ -17,8 +16,16 @@
 
 
 <!-- Request Expense -->
-<p-dialog header="Add Expenditure" [(visible)]="showHideREModal" [modal]="true" [contentStyle]="{'max-height':'450px'}" [responsive]="true" [style]="{'width': '55%'}" (onHide)="cancelFormSub('addExpenditure')">
-    <form id="myform" style="font-size: 13px; padding-top: 15px;"  [formGroup]="addExpenditure_form" #target>
+<p-dialog header="Add Expenditure" [(visible)]="showHideREModal" [modal]="true" [contentStyle]="{'max-height':'450px'}" [responsive]="true" [style]="{'width': '55%'}" (onHide)="cancelFormSub('addExpenditure')" [closable]="false">
+
+    <div class="p-offset-8">
+        <div class="pdialogButton p-col-4 p-mx-0 p-grid p-jc-end">
+            <button class="p-mx-1 p-button-raised p-button-danger" type="button" pButton icon="pi pi-save" id="cls_AddExpense" [ngStyle]="{'cursor':'pointer' }" (click)="onSubmit('addExpenditure')" label="Add Expense"></button>
+            <button type="button" pButton icon="pi pi-times" (click)="cancelFormSub('addExpenditure')" label="Cancel" class="p-button-raised p-button-danger"></button>
+        </div>
+    </div>
+
+    <form id="myform" class="p-col formfont" [formGroup]="addExpenditure_form" #target>
         <div class="p-grid">
             <div class="p-col-4">
                 <div class="box">
@@ -27,11 +34,11 @@
             </div>
             <div class="p-col-8">
                 <div class="box">
-                    <p-radioButton name="PaymentRequest" value="Credit Card" label="Credit Card" inputId="pm1" (onClick)="selectedRequest()" formControlName="PaymentRequest"></p-radioButton>&nbsp;
-                    <p-radioButton name="PaymentRequest" value="Invoice Payment" label="Invoice Payment" inputId="pmD2" (onClick)="selectedRequest()" formControlName="PaymentRequest">
-                    </p-radioButton>&nbsp;
+                    <p-radioButton class="p-col-4" name="PaymentRequest" value="Credit Card" label="Credit Card" inputId="pm1" (onClick)="selectedRequest()" formControlName="PaymentRequest"></p-radioButton>&nbsp;
+                    <p-radioButton class="p-col-4" name="PaymentRequest" value="Invoice Payment" label="Invoice Payment" inputId="pmD2" (onClick)="selectedRequest()" formControlName="PaymentRequest">
+                    </p-radioButton>
                     <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.PaymentRequest.errors">
-                        <div *ngIf="isValidExpenditureForm.PaymentRequest.errors.required" style="color:red;">
+                        <div *ngIf="isValidExpenditureForm.PaymentRequest.errors.required" class="error">
                             Payment Request is required.</div>
                     </div>
                 </div>
@@ -46,12 +53,12 @@
             </div>
             <div class="p-col-8">
                 <div class="box">
-                    <p-radioButton name="Billable" value="Billable" label="Yes" inputId="b1" (onClick)="selectedBillable()" formControlName="Billable">
+                    <p-radioButton class="p-col-4" name="Billable" value="Billable" label="Yes" inputId="b1" (onClick)="selectedBillable()" formControlName="Billable">
                     </p-radioButton>&nbsp;
-                    <p-radioButton name="Billable" value="Non Billable" label="No" inputId="b2" (onClick)="selectedBillable()" formControlName="Billable">
+                    <p-radioButton class="p-col-4" name="Billable" value="Non Billable" label="No" inputId="b2" (onClick)="selectedBillable()" formControlName="Billable">
                     </p-radioButton>&nbsp;
                     <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.Billable.errors">
-                        <div *ngIf="isValidExpenditureForm.Billable.errors.required" style="color:red;">Billable is required.
+                        <div *ngIf="isValidExpenditureForm.Billable.errors.required" class="error">Billable is required.
                         </div>
                     </div>
                 </div>
@@ -64,19 +71,17 @@
                     Freelancer/ Vendor Name
                 </div>
             </div>
-            <div class="p-col-4">
-                <div class="box">
+            <div class="p-col-8 p-md-8 p-d-flex">
+                <div class="p-col p-pl-0">
                     <p-dropdown resetFilterOnHide="true" [options]="freelancerVendersRes" virtualScroll="true" itemSize="30" [showClear]="false" resetFilterOnHide="false" filter="true" autoDisplayFirst="false" name="projctCodeDD" placeholder="Select Freelancer/ Vendor Name "
                         [style]="{'width':'100%'}" formControlName="FreelancerVenderName" optionLabel="Title">
                     </p-dropdown>
                     <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.FreelancerVenderName.errors">
-                        <div *ngIf="isValidExpenditureForm.FreelancerVenderName.errors.required" style="color:red;">
+                        <div *ngIf="isValidExpenditureForm.FreelancerVenderName.errors.required" class="error">
                             Freelancer / Vendor Name is required.</div>
                     </div>
                 </div>
-            </div>
-            <div class="p-col-4">
-                <i class="pi pi-plus-circle" style="font-size: 2em;color:#c53e3e" (click)="openFreelancerModal()"></i>
+                <i class="p-col-1 p-mt-1 pi pi-plus-circle error" (click)="openFreelancerModal()" style="font-size: 2em;cursor: pointer;"></i>
             </div>
         </div>
         <div class="p-grid">
@@ -89,7 +94,7 @@
                 <div class="box">
                     <input type="text" pInputText formControlName="InvoiceNo" style="width: 100%;" />
                     <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.InvoiceNo.errors">
-                        <div *ngIf="isValidExpenditureForm.InvoiceNo.errors.required" style="color:red;">Please Provide Invoice / Reference No.</div>
+                        <div *ngIf="isValidExpenditureForm.InvoiceNo.errors.required" class="error">Please Provide Invoice / Reference No.</div>
                     </div>
                 </div>
             </div>
@@ -108,7 +113,7 @@
                     </p-dropdown>
 
                     <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.Currency.errors">
-                        <div *ngIf="isValidExpenditureForm.Currency.errors.required" style="color:red;">Please select Currency.
+                        <div *ngIf="isValidExpenditureForm.Currency.errors.required" class="error">Please select Currency.
                         </div>
                     </div>
                 </div>
@@ -126,7 +131,7 @@
                     <input id="input" type="text" appNumberOnly pInputText style="width: 100%;" formControlName="Amount" maxlength="15" (input)="refAmt($event.target.value)" />
 
                     <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.Amount.errors">
-                        <div *ngIf="isValidExpenditureForm.Amount.errors.required" style="color:red;">Please provide Amount.
+                        <div *ngIf="isValidExpenditureForm.Amount.errors.required" class="error">Please provide Amount.
                         </div>
                     </div>
                 </div>
@@ -144,7 +149,7 @@
                     <p-dropdown resetFilterOnHide="true" [options]="expenseTypeArray" placeholder="Select a Expense Type" [style]="{'width':'100%'}" formControlName="SpendType" optionLabel="value" onfocus='this.size=10;'>
                     </p-dropdown>
                     <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.SpendType.errors">
-                        <div *ngIf="isValidExpenditureForm.SpendType.errors.required" style="color:red;">Expense type is required.
+                        <div *ngIf="isValidExpenditureForm.SpendType.errors.required" class="error">Expense type is required.
                         </div>
                     </div>
                 </div>
@@ -159,7 +164,7 @@
                 <div class="box">
                     <textarea rows="3" cols="40" pInputTextarea formControlName="Notes"></textarea>
                     <!-- <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.Notes.errors">
-                        <div *ngIf="isValidExpenditureForm.Notes.errors.required" style="color:red;">Note is
+                        <div *ngIf="isValidExpenditureForm.Notes.errors.required" class="error">Note is
                             required.</div>
                     </div> -->
                 </div>
@@ -171,11 +176,16 @@
                 <div class="box">Upload File</div>
             </div>
             <div class="p-col-8">
-                <div class="box">
-                    <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event, 'CreatedExpenseFiles')" #fileInput formControlName="FileURL" />
-                    <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.FileURL.errors">
-                        <div *ngIf="isValidExpenditureForm.FileURL.errors.required" style="color:red;">File is required.
-                        </div>
+
+                <div class="file-upload p-col-12 p-px-0 p-pb-0" #fileuploderView>
+                    <div class="file-select">
+                        <div class="file-select-button" id="fileName">Choose File</div>
+                        <div class="file-select-name" id="noFile">No file chosen...</div>
+                        <input type="file" formControlName="FileURL" name="chooseFile" class="form-control" id="chooseFile" (change)="onFileChange($event, 'CreatedExpenseFiles')">
+                    </div>
+                </div>
+                <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.FileURL.errors">
+                    <div *ngIf="isValidExpenditureForm.FileURL.errors.required" class="error">File is required.
                     </div>
                 </div>
             </div>
@@ -186,11 +196,15 @@
                 <div class="box">Approval Email File</div>
             </div>
             <div class="p-col-8">
-                <div class="box">
-                    <input type="file" name="myfile" class="form-control" id="myfile" (change)="caOnFileChange($event, 'ClientApproval')" #caFileInput formControlName="CAFileURL" />
-                    <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.CAFileURL.errors">
-                        <div *ngIf="isValidExpenditureForm.CAFileURL.errors.required" style="color:red;">Approval file is required.
-                        </div>
+                <div class="file-upload p-col-12 p-px-0 p-pb-0" #cafileuploderView>
+                    <div class="file-select">
+                        <div class="file-select-button" id="fileName">Choose File</div>
+                        <div class="file-select-name" id="noFile">No file chosen...</div>
+                        <input type="file" formControlName="CAFileURL" name="chooseFile" class="form-control" id="chooseFile" (change)="caOnFileChange($event, 'ClientApproval')">
+                    </div>
+                </div>
+                <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.CAFileURL.errors">
+                    <div *ngIf="isValidExpenditureForm.CAFileURL.errors.required" class="error">Approval file is required.
                     </div>
                 </div>
             </div>
@@ -201,58 +215,48 @@
         <div class="p-col-8">
             <table style="width: 100%;">
                 <tr>
-                    <th width="35%" style="border: none">Project / Client </th>
+                    <th style="border: none">Project / Client </th>
                     <th style="border: none">Amount</th>
                     <th style="border: none">
-                        <i class="pi pi-plus-circle" style="font-size: 2em;color:#c53e3e;" (click)="addProjectAmtItem()"></i>
+                        <i class="pi pi-plus-circle error" style="font-size:1.8em" (click)="addProjectAmtItem()"></i>
                     </th>
                 </tr>
                 <tr *ngFor="let p of totalLineItems; let i = index">
                     <td>
-                        <p-dropdown resetFilterOnHide="true" [options]="piCleData" [group]="true" 
-                        virtualScroll="true" itemSize="15" filter="true" 
-                        placeholder="Select a Project Code / Client" [style]="{'width':'100%'}" 
-                        [(ngModel)]="p.ProjectCode" (onChange)="selectedProjectCode($event.value, i)">
+                        <p-dropdown resetFilterOnHide="true" [options]="piCleData" [group]="true" virtualScroll="true" itemSize="15" filter="true" placeholder="Select a Project Code / Client" [style]="{'width':'100%'}" [(ngModel)]="p.ProjectCode" appendTo="body" (onChange)="selectedProjectCode($event.value, i)">
                             <ng-template let-group pTemplate="group">
                                 <span style="margin-left:.25em">{{group.label}}</span>
                             </ng-template>
                         </p-dropdown>
                     </td>
                     <td>
-                        <input id="input" type="text" appNumberOnly pInputText [(ngModel)]="p.AmountPerProject" maxlength="15" (input)="enteredAmt($event.target.value, i)" />
+                        <input class="p-col-12" id="input" type="text" appNumberOnly pInputText [(ngModel)]="p.AmountPerProject" maxlength="15" (input)="enteredAmt($event.target.value, i)" />
                     </td>
                     <td>
                         <!-- <button pButtontype="button" label="Add" (click)="addProjectAmtItem()" class="ui-button-rounded"></button> -->
 
                     </td>
                 </tr>
-                <div *ngIf="formSubmit.isSubmit && projectClientIsEmpty" style="color:red;">
+                <div *ngIf="formSubmit.isSubmit && projectClientIsEmpty" class="error cls_erromessageFont">
                     Please select Project/Client & add Amount.
                 </div>
             </table>
         </div>
         <!-- <div class="ui-g-4">Col3</div> -->
     </div>
-
-    <p-footer>
-        <button class="p-mx-1 p-button-raised p-button-danger" type="button" pButton icon="pi pi-save" id="cls_AddExpense" [disabled]="submitBtn.isClicked" [ngStyle]="{'cursor':'pointer' }" (click)="onSubmit('addExpenditure')" label="Add Expense"></button>
-        <button type="button" pButton icon="pi pi-times" (click)="cancelFormSub('addExpenditure')" label="Cancel" class="p-button-raised p-button-danger"></button>
-    
-        <!-- <button pButton type="button" class="fdBtn" label="Add Expense" [disabled]="submitBtn.isClicked" (click)="onSubmit('addExpenditure')"></button>
-        <button pButton type="button" class="fdBtn" label="Cancel" (click)="cancelFormSub('addExpenditure')"></button> -->
-    </p-footer>
 </p-dialog>
 
 <!-- Create Freelancer / Vendor Modal -->
-<p-dialog header="Create Freelancer / Vendor" [(visible)]="freeLancerModal" [modal]="true" [contentStyle]="{'max-height':'450px', 'overflow':'visible'}" [style]="{'width': '100%'}" [responsive]="true" [closable]="false">
-    <div class='UserButton' fxLayout="row" fxLayoutAlign="end center">
-        <button type="button" class="fdBtn" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="onSubmit('createFreelancer')" label="Create"></button>
-        <button type="button" class="fdBtn" pButton icon="pi pi-times" id="cancelClient" (click)="cancelFormSub('createFreelancer')" label="Cancel"></button>
+<p-dialog header="Create Freelancer / Vendor" [(visible)]="freeLancerModal" [modal]="true" [contentStyle]="{'max-height':'450px', 'overflow':'visible'}" [style]="{'width': '96%'}" [responsive]="true" [closable]="false">
+
+    <div class="pdialogButton p-col-12 p-grid p-jc-end">
+        <button class="p-mx-1 p-button-raised p-button-danger cls_addFreelancer" type="button" pButton icon="pi pi-save" id="saveFreelancer" [ngStyle]="{'cursor':'pointer' }" (click)="onSubmit('createFreelancer')" label="Create"></button>
+        <button type="button" pButton icon="pi pi-times" (click)="cancelFormSub('createFreelancer')" label="Cancel" class="p-button-raised p-button-danger cls_cancelFreelancer"></button>
     </div>
 
-    <div fxLayout="row" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
+    <div class="p-col p-grid">
 
-        <form style="font-size: 13px;" [formGroup]="createFreelancer_form" class="p-col">
+        <form [formGroup]="createFreelancer_form" class="p-col formfont">
 
             <div class="p-grid">
                 <div class="p-grid p-col">
@@ -260,7 +264,7 @@
                     <div class="p-col-8">
                         <input type="text" pInputText formControlName="Title" style="width: 100%;" maxlength="100" />
                         <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.Title.errors">
-                            <div *ngIf="isValidCreateFreelancerForm.Title.errors.required" style="color:red;">
+                            <div *ngIf="isValidCreateFreelancerForm.Title.errors.required" class="error">
                                 Please provide Name.</div>
                         </div>
                     </div>
@@ -270,7 +274,7 @@
                     <div class="p-col-8">
                         <input type="text" pInputText formControlName="PhoneNo" placeholder="" style="width: 100%;" appNumberOnly maxlength="30" />
                         <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.PhoneNo.errors">
-                            <div *ngIf="isValidCreateFreelancerForm.PhoneNo.errors.required" style="color:red;">
+                            <div *ngIf="isValidCreateFreelancerForm.PhoneNo.errors.required" class="error">
                                 Please provide Phone NO .</div>
                         </div>
                     </div>
@@ -283,11 +287,11 @@
                     <div class="p-col-8">
                         <input type="text" pInputText formControlName="Email" placeholder="a@a.com" maxlength="100" style="width: 100%;" (blur)="isUniqueClientVendorEmailID()" />
                         <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.Email.errors">
-                            <div *ngIf="isValidCreateFreelancerForm.Email.errors.required" style="color:red;">
+                            <div *ngIf="isValidCreateFreelancerForm.Email.errors.required" class="error">
                                 Please provide Email.</div>
                         </div>
                         <div *ngIf="cvEmailIdFound">
-                            <div style="color:red;">
+                            <div class="error">
                                 This Email ID is already avaliable.Please provide new one.</div>
                         </div>
                     </div>
@@ -297,7 +301,7 @@
                     <div class="p-col-8">
                         <input id="input" type="text" pInputText formControlName="CreditPeriod" placeholder="xx days" style="width: 100%;" />
                         <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.CreditPeriod.errors">
-                            <div *ngIf="isValidCreateFreelancerForm.CreditPeriod.errors.required" style="color:red;">
+                            <div *ngIf="isValidCreateFreelancerForm.CreditPeriod.errors.required" class="error">
                                 Please provide CreditPeriod.</div>
                         </div>
                     </div>
@@ -312,7 +316,7 @@
                         </p-dropdown>
 
                         <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.BilledTo.errors">
-                            <div *ngIf="isValidCreateFreelancerForm.BilledTo.errors.required" style="color:red;">
+                            <div *ngIf="isValidCreateFreelancerForm.BilledTo.errors.required" class="error">
                                 Please provide Billing Name.</div>
                         </div>
                     </div>
@@ -324,7 +328,7 @@
                         </p-dropdown>
 
                         <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.RecordType.errors">
-                            <div *ngIf="isValidCreateFreelancerForm.RecordType.errors.required" style="color:red;">
+                            <div *ngIf="isValidCreateFreelancerForm.RecordType.errors.required" class="error">
                                 Please provide Type.</div>
                         </div>
                     </div>
@@ -338,7 +342,7 @@
                         <p-calendar styleClass="pCalendarBtn" [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="M dd, yy" yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" formControlName="ContractStartDate" (onSelect)="contractSDate()">
                         </p-calendar>
                         <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.ContractStartDate.errors">
-                            <div *ngIf="isValidCreateFreelancerForm.ContractStartDate.errors.required" style="color:red;">
+                            <div *ngIf="isValidCreateFreelancerForm.ContractStartDate.errors.required" class="error">
                                 Please provide Start Date.</div>
                         </div>
                     </div>
@@ -365,7 +369,7 @@
                         <p-radioButton name="WLA" value="No" label="No" inputId="b2" formControlName="WLA">
                         </p-radioButton>
                         <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.WLA.errors">
-                            <div *ngIf="isValidCreateFreelancerForm.WLA.errors.required" style="color:red;">WLA is required.
+                            <div *ngIf="isValidCreateFreelancerForm.WLA.errors.required" class="error">WLA is required.
                             </div>
                         </div>
                     </div>
@@ -378,7 +382,7 @@
                         <p-radioButton name="NDA" value="No" label="No" inputId="b2" formControlName="NDA">
                         </p-radioButton>
                         <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.NDA.errors">
-                            <div *ngIf="isValidCreateFreelancerForm.NDA.errors.required" style="color:red;">NDA is required.
+                            <div *ngIf="isValidCreateFreelancerForm.NDA.errors.required" class="error">NDA is required.
                             </div>
                         </div>
                     </div>
@@ -392,7 +396,7 @@
                     <div class="p-col-8">
                         <textarea rows="5" cols="30" pInputTextarea formControlName="Address" maxlength="100" style="width: 100%;"></textarea>
                         <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.Address.errors">
-                            <div *ngIf="isValidCreateFreelancerForm.Address.errors.required" style="color:red;">
+                            <div *ngIf="isValidCreateFreelancerForm.Address.errors.required" class="error">
                                 Please provide Address.</div>
                         </div>
                     </div>
@@ -402,7 +406,7 @@
                     <div class="p-col-8">
                         <textarea rows="5" cols="30" pInputTextarea formControlName="BillingTerms" maxlength="100" style="width: 100%;"></textarea>
                         <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.BillingTerms.errors">
-                            <div *ngIf="isValidCreateFreelancerForm.BillingTerms.errors.required" style="color:red;">
+                            <div *ngIf="isValidCreateFreelancerForm.BillingTerms.errors.required" class="error">
                                 Please provide Billing terms.</div>
                         </div>
                     </div>

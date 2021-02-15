@@ -1,34 +1,46 @@
-import { Component, OnInit, ViewChild, Output, EventEmitter, ViewEncapsulation, HostListener, ApplicationRef, NgZone, ChangeDetectorRef, ElementRef } from '@angular/core';
-import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
-import { CommonService } from 'src/app/Services/common.service';
-import { ConstantsService } from 'src/app/Services/constants.service';
-import { PmconstantService } from '../../services/pmconstant.service';
-import { PMObjectService } from '../../services/pmobject.service';
-import {  DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { PMCommonService } from '../../services/pmcommon.service';
-import { SPOperationService } from 'src/app/Services/spoperation.service';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  Output,
+  EventEmitter,
+  ViewEncapsulation,
+  HostListener,
+  ApplicationRef,
+  NgZone,
+  ChangeDetectorRef,
+  ElementRef,
+} from "@angular/core";
+import { DatePipe, PlatformLocation, LocationStrategy } from "@angular/common";
+import { CommonService } from "src/app/Services/common.service";
+import { ConstantsService } from "src/app/Services/constants.service";
+import { PmconstantService } from "../../services/pmconstant.service";
+import { PMObjectService } from "../../services/pmobject.service";
+import { DialogService, DynamicDialogRef } from "primeng/dynamicdialog";
+import { PMCommonService } from "../../services/pmcommon.service";
+import { SPOperationService } from "src/app/Services/spoperation.service";
 // import { CommunicationComponent } from '../communication/communication.component';
-import { ProjectAttributesComponent } from '../add-projects/project-attributes/project-attributes.component';
-import { ManageFinanceComponent } from '../add-projects/manage-finance/manage-finance.component';
-import { TimelineHistoryComponent } from '../../../timeline/timeline-history/timeline-history.component';
-import { Router, ActivatedRoute } from '@angular/router';
-import { ProjectTimelineComponent } from './project-timeline/project-timeline.component';
-import { GlobalService } from 'src/app/Services/global.service';
-import { DataService } from 'src/app/Services/data.service';
-import { Table } from 'primeng/table';
-import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
-import { CsFinanceAuditDialogComponent } from './cs-finance-audit-dialog/cs-finance-audit-dialog.component';
-import { InvoiceLineitemsComponent } from './invoice-lineitems/invoice-lineitems.component';
-import { CdpfComponent } from 'src/app/shared/sqms/cdpf/cdpf.component';
-import { JournalConferenceDetailsComponent } from 'src/app/shared/journal-conference-details/journal-conference-details.component';
-import { ProjectBudgetBreakupComponent } from './project-budget-breakup/project-budget-breakup.component';
-import { MenuItem, SelectItem, SortEvent } from 'primeng/api';
+import { ProjectAttributesComponent } from "../add-projects/project-attributes/project-attributes.component";
+import { ManageFinanceComponent } from "../add-projects/manage-finance/manage-finance.component";
+import { TimelineHistoryComponent } from "../../../timeline/timeline-history/timeline-history.component";
+import { Router, ActivatedRoute } from "@angular/router";
+import { ProjectTimelineComponent } from "./project-timeline/project-timeline.component";
+import { GlobalService } from "src/app/Services/global.service";
+import { DataService } from "src/app/Services/data.service";
+import { Table } from "primeng/table";
+import { ViewUploadDocumentDialogComponent } from "src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component";
+import { CsFinanceAuditDialogComponent } from "./cs-finance-audit-dialog/cs-finance-audit-dialog.component";
+import { InvoiceLineitemsComponent } from "./invoice-lineitems/invoice-lineitems.component";
+import { CdpfComponent } from "src/app/shared/sqms/cdpf/cdpf.component";
+import { JournalConferenceDetailsComponent } from "src/app/shared/journal-conference-details/journal-conference-details.component";
+import { ProjectBudgetBreakupComponent } from "./project-budget-breakup/project-budget-breakup.component";
+import { MenuItem, SelectItem, SortEvent } from "primeng/api";
 
 declare var $;
 @Component({
-  selector: 'app-all-projects',
-  templateUrl: './all-projects.component.html',
-  styleUrls: ['./all-projects.component.css'],
+  selector: "app-all-projects",
+  templateUrl: "./all-projects.component.html",
+  styleUrls: ["./all-projects.component.css"],
   // encapsulation: ViewEncapsulation.None
 })
 export class AllProjectsComponent implements OnInit {
@@ -37,39 +49,182 @@ export class AllProjectsComponent implements OnInit {
   popItems: MenuItem[];
   selectedProjectObj;
   displayedColumns: any[] = [
-    { field: "SOWCode", header: "Sow Code", visibility: true, Type:'string',dbName:'SOWCode', options:[] },
-    { field: "ProjectCode", header: "Project Code", visibility: true ,Type:'string',dbName:'ProjectCode', options:[] },
-    { field: "ShortTitle", header: "Short Title", visibility: true, Type:'string',dbName:'ShortTitle', options:[] },
+    {
+      field: "SOWCode",
+      header: "Sow Code",
+      visibility: true,
+      Type: "string",
+      dbName: "SOWCode",
+      options: [],
+    },
+    {
+      field: "ProjectCode",
+      header: "Project Code",
+      visibility: true,
+      Type: "string",
+      dbName: "ProjectCode",
+      options: [],
+    },
+    {
+      field: "ShortTitle",
+      header: "Short Title",
+      visibility: true,
+      Type: "string",
+      dbName: "ShortTitle",
+      options: [],
+    },
     {
       field: "ClientLegalEntity",
       header: "Client Legal Entity",
-      visibility: true,Type:'string',dbName:'ClientLegalEntity', options:[]
+      visibility: true,
+      Type: "string",
+      dbName: "ClientLegalEntity",
+      options: [],
     },
-    { field: "DeliverableType", header: "Deliverable Type", visibility: false ,Type:'',dbName:'', options:[] },
-    { field: "ProjectType", header: "Project Type", visibility: true, Type:'string',dbName:'ProjectType', options:[] },
+    {
+      field: "DeliverableType",
+      header: "Deliverable Type",
+      visibility: false,
+      Type: "",
+      dbName: "",
+      options: [],
+    },
+    {
+      field: "ProjectType",
+      header: "Project Type",
+      visibility: true,
+      Type: "string",
+      dbName: "ProjectType",
+      options: [],
+    },
     {
       field: "PrimaryResources",
       header: "Primary Resources",
-      visibility: true, Type:'',dbName:'', options:[]
+      visibility: true,
+      Type: "",
+      dbName: "",
+      options: [],
     },
-    { field: "POC", header: "POC", visibility: true , Type:'string',dbName:'POC', options:[] },
-    { field: "TA", header: "TA", visibility: true , Type:'string',dbName:'TA', options:[] },
-    { field: "Molecule", header: "Molecule", visibility: true , Type:'string',dbName:'Molecule', options:[]},
-    { field: "RevenueBudget", header: "Revenue Budget", visibility: false, Type:'',dbName:'', options:[] },
-    { field: "OOPBudget", header: "OOP Budget", visibility: false, Type:'',dbName:'', options:[] },
-    { field: "Currency", header: "Currency", visibility: false, Type:'',dbName:'', options:[] },
-    { field: "Status", header: "Status", visibility: true, exportable: false, Type:'string',dbName:'Status', options:[] },
-    { field: "modifiedStatus", header: "Status", visibility: false, Type:'',dbName:'', options:[] },
-    { field: "CreatedBy", header: "Created By", visibility: false, Type:'',dbName:'', options:[] },
-    { field: "CreatedDateFormat", header: "Created Date", visibility: false, Type:'',dbName:'', options:[] },
-    { field: "ModifiedBy", header: "Modified By", visibility: false , Type:'',dbName:'', options:[]},
-    { field: "ReferenceCount", header: "Reference Count", visibility: false, Type:'',dbName:'', options:[] },
-    { field: "PageCount", header: "Page Count", visibility: false, Type:'',dbName:'', options:[] },
-    { field: "SlideCount", header: "Slide Count", visibility: false, Type:'',dbName:'', options:[] },
+    {
+      field: "POC",
+      header: "POC",
+      visibility: true,
+      Type: "string",
+      dbName: "POC",
+      options: [],
+    },
+    {
+      field: "TA",
+      header: "TA",
+      visibility: true,
+      Type: "string",
+      dbName: "TA",
+      options: [],
+    },
+    {
+      field: "Molecule",
+      header: "Molecule",
+      visibility: true,
+      Type: "string",
+      dbName: "Molecule",
+      options: [],
+    },
+    {
+      field: "RevenueBudget",
+      header: "Revenue Budget",
+      visibility: false,
+      Type: "",
+      dbName: "",
+      options: [],
+    },
+    {
+      field: "OOPBudget",
+      header: "OOP Budget",
+      visibility: false,
+      Type: "",
+      dbName: "",
+      options: [],
+    },
+    {
+      field: "Currency",
+      header: "Currency",
+      visibility: false,
+      Type: "",
+      dbName: "",
+      options: [],
+    },
+    {
+      field: "Status",
+      header: "Status",
+      visibility: true,
+      exportable: false,
+      Type: "string",
+      dbName: "Status",
+      options: [],
+    },
+    {
+      field: "modifiedStatus",
+      header: "Status",
+      visibility: false,
+      Type: "",
+      dbName: "",
+      options: [],
+    },
+    {
+      field: "CreatedBy",
+      header: "Created By",
+      visibility: false,
+      Type: "",
+      dbName: "",
+      options: [],
+    },
+    {
+      field: "CreatedDateFormat",
+      header: "Created Date",
+      visibility: false,
+      Type: "",
+      dbName: "",
+      options: [],
+    },
+    {
+      field: "ModifiedBy",
+      header: "Modified By",
+      visibility: false,
+      Type: "",
+      dbName: "",
+      options: [],
+    },
+    {
+      field: "ReferenceCount",
+      header: "Reference Count",
+      visibility: false,
+      Type: "",
+      dbName: "",
+      options: [],
+    },
+    {
+      field: "PageCount",
+      header: "Page Count",
+      visibility: false,
+      Type: "",
+      dbName: "",
+      options: [],
+    },
+    {
+      field: "SlideCount",
+      header: "Slide Count",
+      visibility: false,
+      Type: "",
+      dbName: "",
+      options: [],
+    },
     {
       field: "AnnotationBinder",
       header: "Annotation/Binder",
-      visibility: false,Type:'',dbName:'', options:[]
+      visibility: false,
+      Type: "",
+      dbName: "",
+      options: [],
     },
 
     // { field: 'CreatedDate', header: 'Created Date', visibility: true, exportable: false }
@@ -89,7 +244,7 @@ export class AllProjectsComponent implements OnInit {
   ];
   // { field: 'CreatedBy' },
   // { field: 'CreatedDate' }];
- 
+
   projectViewDataArray = [];
   public toUpdateIds = [];
   isAllProjectLoaderHidden = true;
@@ -105,7 +260,7 @@ export class AllProjectsComponent implements OnInit {
     ProjectStatus: "",
     ProjectBudgetStatus: "",
   };
-  selectedTask:any;
+  selectedTask: any;
   newSelectedSOW;
   moveSOWObjectArray = [];
   sowDropDownArray: SelectItem[];
@@ -314,7 +469,7 @@ export class AllProjectsComponent implements OnInit {
 
   async convertToExcelFile(data) {
     this.showTable = true;
-    this.constants.loader.isWaitDisable= false;
+    this.constants.loader.isWaitDisable = false;
     console.log(data);
     const budgets = await this.pmCommonService.getAllBudget(
       this.allProjectRef.filteredValue
@@ -339,7 +494,7 @@ export class AllProjectsComponent implements OnInit {
     });
     data._values = this.pmObject.allProjectsArray;
     this.pmCommonService.convertToExcelFile(data);
-    this.constants.loader.isWaitDisable= true;
+    this.constants.loader.isWaitDisable = true;
   }
 
   reloadAllProject() {
@@ -540,7 +695,6 @@ export class AllProjectsComponent implements OnInit {
         this.pmObject.tabMenuItems[0].label =
           "All Projects (" + this.pmObject.countObj.allProjectCount + ")";
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
-      
       }
       if (this.route.snapshot.queryParams) {
         this.params.ProjectCode = this.route.snapshot.queryParams.ProjectCode;
@@ -696,8 +850,6 @@ export class AllProjectsComponent implements OnInit {
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       }
     }
-
-  
 
     if (this.pmObject.allProjectItems && this.pmObject.allProjectItems.length) {
       const tempAllProjectArray = [];
@@ -901,7 +1053,10 @@ export class AllProjectsComponent implements OnInit {
         tempAllProjectArray.push(projObj);
       }
       if (tempAllProjectArray) {
-        this.displayedColumns = await this.commonService.MainfilterForTable(this.displayedColumns,tempAllProjectArray);
+        this.displayedColumns = await this.commonService.MainfilterForTable(
+          this.displayedColumns,
+          tempAllProjectArray
+        );
       }
       this.pmObject.allProjectsArray = [];
       this.pmObject.allProjectsArray = tempAllProjectArray;
@@ -917,21 +1072,25 @@ export class AllProjectsComponent implements OnInit {
       this.pmObject.columnFilter.ProjectCode &&
       this.pmObject.columnFilter.ProjectCode.length
     ) {
-      const codeExists = this.displayedColumns.find(c=>c.dbName ==='ProjectCode').options.find(
-        (e) => e.label === this.pmObject.columnFilter.ProjectCode[0]
-      );
+      const codeExists = this.displayedColumns
+        .find((c) => c.dbName === "ProjectCode")
+        .options.find(
+          (e) => e.label === this.pmObject.columnFilter.ProjectCode[0]
+        );
       if (codeExists) {
         this.allProjectRef.filter(
           this.pmObject.columnFilter.ProjectCode,
           "ProjectCode",
           "in"
         );
-        this.allProjectRef.filters['ProjectCode']=null;
-        this.allProjectRef.filters['ProjectCode'] = [{
-          matchMode: 'in',
-          operator: "and",
-          value: this.pmObject.columnFilter.ProjectCode,
-       }];
+        this.allProjectRef.filters["ProjectCode"] = null;
+        this.allProjectRef.filters["ProjectCode"] = [
+          {
+            matchMode: "in",
+            operator: "and",
+            value: this.pmObject.columnFilter.ProjectCode,
+          },
+        ];
       } else {
         this.pmObject.columnFilter.ProjectCode = [];
       }
@@ -957,13 +1116,14 @@ export class AllProjectsComponent implements OnInit {
     }
 
     setTimeout(() => {
-      const tabMenuInk: any = document.querySelector('.p-tabmenu-ink-bar');
-      const tabMenuWidth: any = document.querySelector('.p-menuitem-link-active');
-      tabMenuInk.style.width= tabMenuWidth.offsetWidth + 'px';
+      const tabMenuInk: any = document.querySelector(".p-tabmenu-ink-bar");
+      const tabMenuWidth: any = document.querySelector(
+        ".p-menuitem-link-active"
+      );
+      tabMenuInk.style.width = tabMenuWidth.offsetWidth + "px";
     }, 10);
     this.showFilterOptions = true;
   }
-
 
   async approveRejectBudgetReduction(selectedStatus, projectObj) {
     let batchURL = [];
@@ -1351,7 +1511,7 @@ export class AllProjectsComponent implements OnInit {
     //   document.documentElement.clientHeight
     // ) + 'px';
 
-    this.constants.loader.isWaitDisable= false;
+    this.constants.loader.isWaitDisable = false;
 
     const result = await this.getGetIds(selectedProjectObj, projectAction);
     if (result && result.length) {
@@ -1364,11 +1524,27 @@ export class AllProjectsComponent implements OnInit {
         : [];
       switch (projectAction) {
         case this.pmConstant.ACTION.CONFIRM_PROJECT:
-          this.constants.loader.isWaitDisable= true;
+          this.constants.loader.isWaitDisable = true;
 
-          this.commonService.confirmMessageDialog('Change Status of Project -' + selectedProjectObj.ProjectCode + '', 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
-            + ' from \'' + selectedProjectObj.Status + '\' to \'' + this.constants.projectStatus.Unallocated + '\'?', null, ['Yes', 'No'], false).then(async Confirmation => {
-              if (Confirmation === 'Yes') {
+          this.commonService
+            .confirmMessageDialog(
+              "Change Status of Project -" +
+                selectedProjectObj.ProjectCode +
+                "",
+              "Are you sure you want to change the Status of Project - " +
+                selectedProjectObj.ProjectCode +
+                "" +
+                " from '" +
+                selectedProjectObj.Status +
+                "' to '" +
+                this.constants.projectStatus.Unallocated +
+                "'?",
+              null,
+              ["Yes", "No"],
+              false
+            )
+            .then(async (Confirmation) => {
+              if (Confirmation === "Yes") {
                 this.changeProjectStatusUnallocated(selectedProjectObj);
               }
             });
@@ -1385,29 +1561,68 @@ export class AllProjectsComponent implements OnInit {
               ).retItems
             : [];
           if (pbbItems) {
-            if (pbbItems.find(c => c.Status === 'Approval Pending')) {
-
-              this.commonService.showToastrMessage(this.constants.MessageType.error, 'Budget approval still pending for ' + selectedProjectObj.ProjectCode, true);
-              this.constants.loader.isWaitDisable= true;
+            if (pbbItems.find((c) => c.Status === "Approval Pending")) {
+              this.commonService.showToastrMessage(
+                this.constants.MessageType.error,
+                "Budget approval still pending for " +
+                  selectedProjectObj.ProjectCode,
+                true
+              );
+              this.constants.loader.isWaitDisable = true;
               break;
             }
           }
-         
-          this.constants.loader.isWaitDisable= true;
 
-          this.commonService.confirmMessageDialog('Change Status of Project -' + selectedProjectObj.ProjectCode + '', 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
-            + ' from \'' + selectedProjectObj.Status + '\' to \'' + this.constants.projectStatus.NewAuditInProgress + '\'?', null, ['Yes', 'No'], false).then(async Confirmation => {
-              if (Confirmation === 'Yes') {
-                this.changeProjectStatusAuditInProgress(selectedProjectObj, scheduleItems);
+          this.constants.loader.isWaitDisable = true;
+
+          this.commonService
+            .confirmMessageDialog(
+              "Change Status of Project -" +
+                selectedProjectObj.ProjectCode +
+                "",
+              "Are you sure you want to change the Status of Project - " +
+                selectedProjectObj.ProjectCode +
+                "" +
+                " from '" +
+                selectedProjectObj.Status +
+                "' to '" +
+                this.constants.projectStatus.NewAuditInProgress +
+                "'?",
+              null,
+              ["Yes", "No"],
+              false
+            )
+            .then(async (Confirmation) => {
+              if (Confirmation === "Yes") {
+                this.changeProjectStatusAuditInProgress(
+                  selectedProjectObj,
+                  scheduleItems
+                );
               }
             });
 
           break;
         case this.pmConstant.ACTION.CLOSE_PROJECT:
-          this.constants.loader.isWaitDisable= true;
-          this.commonService.confirmMessageDialog('Change Status of Project -' + selectedProjectObj.ProjectCode + '', 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
-            + ' from \'' + this.constants.projectStatus.NewPendingClosure + '\' to \'' + this.constants.projectStatus.Closed + '\'?', null, ['Yes', 'No'], false).then(async Confirmation => {
-              if (Confirmation === 'Yes') {
+          this.constants.loader.isWaitDisable = true;
+          this.commonService
+            .confirmMessageDialog(
+              "Change Status of Project -" +
+                selectedProjectObj.ProjectCode +
+                "",
+              "Are you sure you want to change the Status of Project - " +
+                selectedProjectObj.ProjectCode +
+                "" +
+                " from '" +
+                this.constants.projectStatus.NewPendingClosure +
+                "' to '" +
+                this.constants.projectStatus.Closed +
+                "'?",
+              null,
+              ["Yes", "No"],
+              false
+            )
+            .then(async (Confirmation) => {
+              if (Confirmation === "Yes") {
                 this.changeProjectStatusClose(selectedProjectObj);
               }
             });
@@ -1425,26 +1640,49 @@ export class AllProjectsComponent implements OnInit {
 
           // Get InvoiceLine Items ##1;
           const inoviceGet = Object.assign({}, options);
-          const invoiceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.INVOICE_LINE_ITEMS_BY_PROJECTCODE);
-          invoiceFilter.filter = invoiceFilter.filter.replace(/{{projectCode}}/gi,
-            selectedProjectObj.ProjectCode);
-          inoviceGet.url = this.spServices.getReadURL(this.constants.listNames.InvoiceLineItems.name,
-            invoiceFilter);
-          inoviceGet.type = 'GET';
+          const invoiceFilter = Object.assign(
+            {},
+            this.pmConstant.FINANCE_QUERY.INVOICE_LINE_ITEMS_BY_PROJECTCODE
+          );
+          invoiceFilter.filter = invoiceFilter.filter.replace(
+            /{{projectCode}}/gi,
+            selectedProjectObj.ProjectCode
+          );
+          inoviceGet.url = this.spServices.getReadURL(
+            this.constants.listNames.InvoiceLineItems.name,
+            invoiceFilter
+          );
+          inoviceGet.type = "GET";
           inoviceGet.listName = this.constants.listNames.InvoiceLineItems.name;
           batchURL.push(inoviceGet);
-          this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetInvoiceLineItem');
+          this.commonService.SetNewrelic(
+            "projectManagment",
+            "allProj-allprojects",
+            "GetInvoiceLineItem"
+          );
           const sResult = await this.spServices.executeBatch(batchURL);
-          this.constants.loader.isWaitDisable= true;
+          this.constants.loader.isWaitDisable = true;
           if (sResult && sResult.length) {
             const invoiceItems = sResult[0].retItems;
             for (const item of invoiceItems) {
               if (item.Status !== this.constants.STATUS.SCHEDUELD) {
-
-                this.commonService.showToastrMessage(this.constants.MessageType.error, 'Cancellation not allowed as there is confirmed invoice line items.', true, true);
+                this.commonService.showToastrMessage(
+                  this.constants.MessageType.error,
+                  "Cancellation not allowed as there is confirmed invoice line items.",
+                  true,
+                  true
+                );
                 return;
-              } else if (item.ScheduleType === 'oop' && item.Status === this.constants.STATUS.SCHEDUELD) {
-                this.commonService.showToastrMessage(this.constants.MessageType.error, 'Cancellation not allowed as there is \'Scheduled OOP\' line items.', true, true);
+              } else if (
+                item.ScheduleType === "oop" &&
+                item.Status === this.constants.STATUS.SCHEDUELD
+              ) {
+                this.commonService.showToastrMessage(
+                  this.constants.MessageType.error,
+                  "Cancellation not allowed as there is 'Scheduled OOP' line items.",
+                  true,
+                  true
+                );
                 return;
               }
             }
@@ -1470,7 +1708,7 @@ export class AllProjectsComponent implements OnInit {
             }
           }
           this.loadReasonDropDown();
-          
+
           this.pmObject.isReasonSectionVisible = true;
           break;
       }
@@ -3429,7 +3667,7 @@ export class AllProjectsComponent implements OnInit {
     this.projectViewDataArray.push(this.pmObject.addProject);
     this.enableCountFields =
       this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() ===
-      "medcom" ||
+        "medcom" ||
       this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() ===
         "medcomm" ||
       this.pmObject.addProject.ProjectAttributes.PracticeArea.toLowerCase() ===
@@ -3494,15 +3732,21 @@ export class AllProjectsComponent implements OnInit {
   //   This function is used to open or download project scope
   // **************************************************************************************************
   async goToProjectScope(task) {
-    this.constants.loader.isWaitDisable= false;
-    const response = await this.commonService.goToProjectScope(task, task.Status);
-    if (response === 'No Document Found.') {
-      this.commonService.showToastrMessage(this.constants.MessageType.error, task.ProjectCode + ' - Project Scope not found.', false);
-    }
-    else {
+    this.constants.loader.isWaitDisable = false;
+    const response = await this.commonService.goToProjectScope(
+      task,
+      task.Status
+    );
+    if (response === "No Document Found.") {
+      this.commonService.showToastrMessage(
+        this.constants.MessageType.error,
+        task.ProjectCode + " - Project Scope not found.",
+        false
+      );
+    } else {
       window.open(response);
     }
-    this.constants.loader.isWaitDisable= true;
+    this.constants.loader.isWaitDisable = true;
   }
   goToAllocationPage(task) {
     window.open(
@@ -3517,10 +3761,15 @@ export class AllProjectsComponent implements OnInit {
       data: {
         projectObj: projObj,
       },
-      header: 'Manage Finance - ' + selectedProjectObj.ProjectCode + '(' + selectedProjectObj.Title + ')',
-      contentStyle: { width: '100%', height: '100% !important' },
-      width: '98%',
-      closable:false
+      header:
+        "Manage Finance - " +
+        selectedProjectObj.ProjectCode +
+        "(" +
+        selectedProjectObj.Title +
+        ")",
+      contentStyle: { width: "100%", height: "100% !important" },
+      width: "98%",
+      closable: false,
     });
     ref.onClose.subscribe((element) => {
       this.pmCommonService.resetAddProject();
@@ -3580,15 +3829,15 @@ export class AllProjectsComponent implements OnInit {
     this.selectedTask = selectedProjectObj;
   }
 
-
-  @HostListener('document:click', ['$event'])
+  @HostListener("document:click", ["$event"])
   clickout(event) {
-    if(event.target.className === 'p-component-overlay p-sidebar-mask'){
-      this.selectedTask=null;
+    if (
+      event.target.className === "p-component-overlay p-sidebar-mask" ||
+      event.target.className === "p-sidebar-close-icon pi pi-times ng-tns-c67-8"
+    ) {
+      this.selectedTask = null;
     }
   }
-
-
 
   /**
    * This method is used to send email by using template.
@@ -3811,12 +4060,26 @@ export class AllProjectsComponent implements OnInit {
    */
   async moveSOW(projObj) {
     this.sowDropDownArray = [];
-    this.constants.loader.isWaitDisable= false;
+    this.constants.loader.isWaitDisable = false;
     let arrResults = [];
-    const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.ALL_SOW_Client);
-    sowFilter.filter = sowFilter.filter.replace('{Client}', this.selectedProjectObj.ClientLegalEntity);
-    this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSow', "GET");
-    arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
+    const sowFilter = Object.assign(
+      {},
+      this.pmConstant.SOW_QUERY.ALL_SOW_Client
+    );
+    sowFilter.filter = sowFilter.filter.replace(
+      "{Client}",
+      this.selectedProjectObj.ClientLegalEntity
+    );
+    this.commonService.SetNewrelic(
+      "projectManagment",
+      "allProj-allprojects",
+      "GetSow",
+      "GET"
+    );
+    arrResults = await this.spServices.readItems(
+      this.constants.listNames.SOW.name,
+      sowFilter
+    );
 
     if (arrResults && arrResults.length) {
       this.pmObject.allSOWItems = arrResults;
@@ -3833,7 +4096,7 @@ export class AllProjectsComponent implements OnInit {
       });
     }
 
-    this.constants.loader.isWaitDisable= true;
+    this.constants.loader.isWaitDisable = true;
     this.newSelectedSOW = undefined;
     this.pmObject.isMoveProjectToSOWVisible = true;
   }
@@ -4437,7 +4700,7 @@ export class AllProjectsComponent implements OnInit {
   }
 
   onChangeSelect(event) {
-    if (this.selectedOption === 'Open') {
+    if (this.selectedOption === "Open") {
       this.showTable = false;
       this.showProjectInput = false;
       this.callReloadProject();
@@ -4449,10 +4712,8 @@ export class AllProjectsComponent implements OnInit {
       this.providedProjectCode = "";
       this.pmObject.tabMenuItems[0].label = "All Projects (0)";
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
-     // this.createColFieldValues([]);
+      // this.createColFieldValues([]);
     }
-
-
   }
 
   async searchClosedProject(event) {
@@ -4509,12 +4770,10 @@ export class AllProjectsComponent implements OnInit {
       this.pmObject.allProjectsArray = [...emptyProjects];
       this.pmObject.tabMenuItems[0].label = "All Projects (0)";
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
-
     }
     this.isAllProjectLoaderHidden = true;
     this.isAllProjectTableHidden = false;
     this.showFilterOptions = true;
-   
   }
   /**
    * This method is used to close the dialog box.
@@ -4528,7 +4787,6 @@ export class AllProjectsComponent implements OnInit {
   closeMoveSOW() {
     this.pmObject.isMoveProjectToSOWVisible = false;
   }
-
 
   // this will open dialog with filter for Finance audit or CS audit project list.
   showAllCSFinanceAudit(title) {
@@ -4634,8 +4892,8 @@ export class AllProjectsComponent implements OnInit {
   }
 
   async editDeliverable() {
-    this.constants.loader.isWaitDisable= false;
-  
+    this.constants.loader.isWaitDisable = false;
+
     this.deliverableTypeOptions = [];
     const result = await this.spServices.readItems(
       this.constants.listNames.DeliverableType.name,
@@ -4649,7 +4907,7 @@ export class AllProjectsComponent implements OnInit {
         });
       });
     }
-    this.constants.loader.isWaitDisable= true;
+    this.constants.loader.isWaitDisable = true;
     this.changeDeliverable = true;
   }
 
@@ -4704,8 +4962,10 @@ export class AllProjectsComponent implements OnInit {
 
   async editProjectDate() {
     this.scheduledTasks = [];
-    this.constants.loader.isWaitDisable= false;
-    if(this.selectedProjectObj.Status == this.constants.projectStatus.InProgress) {
+    this.constants.loader.isWaitDisable = false;
+    if (
+      this.selectedProjectObj.Status == this.constants.projectStatus.InProgress
+    ) {
       this.disableStartDate = true;
       this.minDateValue = this.selectedProjectObj.ProposedStartDate;
     } /*else if(this.selectedProjectObj.Status == this.constants.projectStatus.OnHold) {
@@ -4724,12 +4984,16 @@ export class AllProjectsComponent implements OnInit {
       //   new Date().setDate(new Date().getDate() - 1)
       // );
     }, this.pmConstant.TIME_OUT);
-    this.scheduledTasks = await this.commonService.getScheduleTasks(this.selectedProjectObj.ProjectCode);
-    this.resources = this.selectedProjectObj.PrimaryResourcesId.length ? await this.getResources() : [];
+    this.scheduledTasks = await this.commonService.getScheduleTasks(
+      this.selectedProjectObj.ProjectCode
+    );
+    this.resources = this.selectedProjectObj.PrimaryResourcesId.length
+      ? await this.getResources()
+      : [];
     this.proposedStartDate = this.selectedProjectObj.ProposedStartDate;
     this.proposedEndDate = this.selectedProjectObj.ProposedEndDate;
 
-    this.constants.loader.isWaitDisable= true;
+    this.constants.loader.isWaitDisable = true;
     this.updateProjectDate = true;
   }
 

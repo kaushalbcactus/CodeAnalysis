@@ -65,7 +65,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     }
     tempClick: any;
     // Loadder
-    isPSInnerLoaderHidden: boolean = true;
+    isPSInnerLoaderHidden: boolean = false;
 
     // Show Hide Requesr Expense Modal
     showHideREModal: boolean = false;
@@ -128,7 +128,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     // List of Subscribers
     private subscription: Subscription = new Subscription();
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
-    @ViewChild('pendingExpense', { static: false }) pendingEnpenseTable: Table;
 
     // Project Info
     projectInfoData: any = [];
@@ -455,9 +454,8 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             });
         }
         this.pendingExpenses = [...this.pendingExpenses];
+        this.pendingExpeseCols = this.pendingExpenses && this.pendingExpenses.length > 0 ? this.commonService.MainfilterForTable(this.pendingExpeseCols, this.pendingExpenses) : this.pendingExpeseCols.filter(c=>c.visibility === true);
         this.isPSInnerLoaderHidden = true;
-        //this.createColFieldValues(this.pendingExpenses);
-        this.pendingExpeseCols = this.commonService.MainfilterForTable(this.pendingExpeseCols, this.pendingExpenses);
     }
 
     getSowTitle(pi: any) {

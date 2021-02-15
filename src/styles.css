@@ -732,7 +732,8 @@ form>div>div>label,
 form>div>div>div>label,
 .formfont,
 .cls_adhocTaskTable,
-.cls_Table {
+.cls_Table,
+.cls_erromessageFont {
     font-size: 13px !important;
 }
 
