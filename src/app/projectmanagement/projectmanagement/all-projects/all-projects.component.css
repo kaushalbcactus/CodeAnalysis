@@ -2,7 +2,6 @@
 :host ::ng-deep .currencyDownload:enabled:hover {
     background: #ffffff !important;
     color: #212529 !important;
-    height: 28px !important;
     cursor: pointer !important;
 }
 
