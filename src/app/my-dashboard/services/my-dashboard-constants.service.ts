@@ -561,7 +561,6 @@ export class MyDashboardConstantsService {
     const parentTaskProp = { Status: this.constants.STATUS.IN_PROGRESS, ActiveCA: 'Yes', __metadata: { type: this.constants.listNames.Schedules.type } };
     const parentTaskRes = currentParentTasks.length ? currentParentTasks[0].retItems[0] : null;
     const currentTaskRes = currentParentTasks.length ? currentParentTasks[1].retItems[0] : null;
-    debugger;
     const ActiveSlotTasksPresent = currentParentTasks.length && currentParentTasks[3].retItems.filter(c=> c.Status === this.constants.STATUS.IN_PROGRESS ||  c.Status === this.constants.STATUS.NOT_STARTED).length > 0 ? true: false;
     if (status === 'Completed') {
       const projInfoRes = currentParentTasks.length ? currentParentTasks[2].retItems[0] : null;

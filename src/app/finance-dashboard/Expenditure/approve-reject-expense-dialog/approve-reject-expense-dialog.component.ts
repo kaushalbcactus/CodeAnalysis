@@ -183,7 +183,6 @@ export class ApproveRejectExpenseDialogComponent implements OnInit {
   }
 
   onFileChange(fileEvent, folderName: string) {
-    debugger;
     if (fileEvent.target.files && fileEvent.target.files.length > 0) {
       this.fileEvent = fileEvent;
       this.folderName = folderName;

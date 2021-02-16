@@ -447,7 +447,6 @@ export class CreateTaskComponent implements OnInit {
         return false;
       }
       this.submitBtn.isClicked = true;
-      debugger;
       const startTime = this.commonService.ConvertTimeformat(
         24,
         this.create_task_form.value.StartTime
