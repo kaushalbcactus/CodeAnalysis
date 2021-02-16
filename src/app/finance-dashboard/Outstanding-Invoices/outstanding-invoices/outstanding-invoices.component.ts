@@ -1768,7 +1768,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         "Auxiliary Name for " +
         this.selectedRowItem.InvoiceNumber +
         " " +
-        " updated sucessfully.",
+        " updated successfully.",
         true
       );
       this.formSubmit.isSubmit = false;
@@ -1897,7 +1897,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         this.reFetchData();
         this.commonService.showToastrMessage(
           this.constantService.MessageType.success,
-          lineItem.InvoiceNumber + "created sucessfully.",
+          lineItem.InvoiceNumber + "created successfully.",
           true
         );
       } else {

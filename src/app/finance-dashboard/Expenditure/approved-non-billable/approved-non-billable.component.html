@@ -4,9 +4,8 @@
 </div>
 
 
+<button *ngIf="constantService.userPermission.isFDUserAdmin" pButton type="button" class="p-button-outlined p-button-danger cls_markAsPayment p-ml-1" pTooltip="Mark As Payment" (click)="openPopup('markAsPaymentModal')" icon="pi pi-check-square" style="float:right; margin-top: -42px;"></button>
 
-
-<button *ngIf="constantService.userPermission.isFDUserAdmin" pButton type="button" class="fdBtn p-ml-1" label="Mark As Payment" (click)="openPopup('markAsPaymentModal')" style="float:right; margin-top: -42px;"></button>
 
 
 
@@ -100,7 +99,7 @@
         <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
             <tr>
                 <td>{{rowIndex+1}}</td>
-                <td>
+                <td class="p-text-center">
                     <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
                 </td>
                 <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility">

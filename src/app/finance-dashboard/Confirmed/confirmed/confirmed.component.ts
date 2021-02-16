@@ -113,7 +113,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     @ViewChild('timelineRef', { static: false }) timeline: TimelineHistoryComponent;
     @ViewChild('editorRef', { static: false }) editorRef: EditorComponent;
 
-    @ViewChild('cnf', { static: false }) confirmTable: Table;
+    // @ViewChild('cnf', { static: false }) confirmTable: Table;
     // List of Subscribers
     private subscription: Subscription = new Subscription();
     // Project Info
@@ -381,6 +381,9 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 this.selectedDDPO.value.ID) : '';
             this.onChange(this.selectedDDPO);
         }
+        else{
+            this.confirmCols = this.confirmCols.filter(c=>c.visibility===true) ;
+        }
     }
 
     searchPOId(poId, myArray) {
@@ -406,6 +409,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         }
     }
     onChange(data: any) {
+        this.constantService.loader.isWaitDisable=false;
         this.matchedILIArray = [];
         this.selectedAllRowData = [];
         this.selectedRowItemData = [];
@@ -436,7 +440,9 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 }
             }
             this.formatData(this.matchedILIArray);
+            this.constantService.loader.isWaitDisable=true;
         } else {
+            this.constantService.loader.isWaitDisable=true;
             this.confirmedRes = [];
             this.confirmedInColArray.ProjectCode = [];
             this.confirmedInColArray.SOWCode = [];
@@ -498,7 +504,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             });
         }
        // this.createColFieldValues(this.confirmedRes);
-       this.confirmCols = this.commonService.MainfilterForTable(this.confirmCols, this.confirmedRes);
+       this.confirmCols = this.confirmedRes && this.confirmedRes.length > 0 ? this.commonService.MainfilterForTable(this.confirmCols, this.confirmedRes) :  this.confirmCols.filter(c=>c.visibility===true) ;
     }
 
     getProject(pc: any) {
@@ -945,7 +951,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.proformaModal = false;
             this.isPSInnerLoaderHidden = true;
            this.reFetchData();
-            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Proforma Number: ' + retCall[0].Title + ' - Added Sucessfully  ', false);
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Proforma Number: ' + retCall[0].Title + ' - Added successfully  ', false);
         } else {
             await this.spServices.executeBatch(batchUrl);
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;

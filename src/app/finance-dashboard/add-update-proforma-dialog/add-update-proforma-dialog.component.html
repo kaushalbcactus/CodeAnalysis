@@ -1,15 +1,16 @@
-<div fxLayout="column" style="padding: 12vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+<div class="p-d-flex p-flex-column" style="padding: 2vw;" *ngIf="modalloaderenable">
     <div id="modalInnerLoader"></div>
     <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
-<div class='UserButton' fxLayout="row" fxLayoutAlign="end center" *ngIf="!modalloaderenable">
+<div class="pdialogButton p-col-12 p-grid p-jc-end" *ngIf="!modalloaderenable">
 
-    <button type="button" pButton icon="pi pi-save" class="cls_proformaSave" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SaveDetails()" label="Save"></button>
-
-    <button type="button" class="cls_proformaCancel" pButton icon="pi pi-times" id="cancelClient" (click)="cancel();" label="Cancel"></button>
+    <button type="button" pButton icon="pi pi-save" id="saveClient" (click)="SaveDetails();" label="Save" class="p-mx-1 p-button-raised p-button-danger cls_proformaSave"></button>
+    <button type="button" pButton icon="pi pi-times" (click)="cancel();" label="Cancel" class="p-button-raised p-button-danger cls_proformaCancel"></button>
 
 </div>
+
+
 
 <div fxLayout="row" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px" *ngIf="!modalloaderenable">
 
@@ -80,9 +81,7 @@
             <div class="p-col-12 p-md-12 p-lg-6 p-grid">
                 <div class="p-col-6 p-md-4 p-lg-4 proformaitem">POC Name</div>
                 <div class="p-col-6 p-md-8 p-lg-8 proformaitem">
-                    <p-dropdown resetFilterOnHide="true" [style]="{'width':'100%'}" 
-                    class=" cls_addproformapoc" [options]="listOfPOCNames" formControlName="POCName" 
-                    placeholder="Select POC Name" [filter]="true" optionLabel="FullNameCC" [style]="{width: '215px'}">
+                    <p-dropdown resetFilterOnHide="true" [style]="{'width':'100%'}" class=" cls_addproformapoc" [options]="listOfPOCNames" formControlName="POCName" placeholder="Select POC Name" [filter]="true" optionLabel="FullNameCC">
                     </p-dropdown>
                     <div *ngIf="isProformaFormSubmit && ProformaForm.controls.POCName.errors">
                         <div *ngIf="ProformaForm.controls.POCName.errors.required" style="color:red;">Please provide POC Name.</div>

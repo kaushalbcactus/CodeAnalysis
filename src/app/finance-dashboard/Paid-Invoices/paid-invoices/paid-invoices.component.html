@@ -8,7 +8,7 @@
     </div>
     <div style="clear: both;"></div>
 </div> -->
-<div class="p-col-12">
+<div class="p-col p-grid p-mt-1">
     <p-calendar [style]="{width:'300px'}" [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true" dateFormat="M dd, yy" placeholder="Select Start & End Date" showButtonBar="true" (onClose)="SelectedDateRange()" [minDate]="min2Years" (onClearClick)="setDefault()"></p-calendar>
 </div>
 <div class="financeTable" hideshowMenu>
@@ -18,7 +18,7 @@
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th class="firstColumnWidth">S.No</th>
-                <th class="firstColumnWidth">
+                <th class="firstColumnWidth p-text-center">
                     <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                 </th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
@@ -97,7 +97,7 @@
                         <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
                     </a>
                 </td>
-                <td>
+                <td class="p-text-center">
                     <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
                 </td>
                 <td *ngFor="let col of columns;index as i" class="ui-resizable-column" [hidden]="!col.visibility">

@@ -4,9 +4,19 @@
 </div>
 
 
-<div *ngIf="constantService.userPermission.isFDUserAdmin" class="" style="float: right;margin-top: -42px;">
+<!-- <div *ngIf="constantService.userPermission.isFDUserAdmin" class="" style="float: right;margin-top: -42px;">
     <button type="button" class="fdBtn p-mr-1" pButton label="Approve Expense" (click)="approveExpense('approve')"></button>
     <button type="button" class="fdBtn" pButton label="Reject Expense" (click)="approveExpense('reject')"></button>
+</div> -->
+
+<div *ngIf="constantService.userPermission.isFDUserAdmin" class="" style="margin-top: -42px; float:right;">
+
+
+    <button pButton pRipple type="button" icon="fa fa-check-square" pTooltip="Approve Expense" class="p-button-outlined p-button-danger cls_approveExpense p-mr-1" (click)="approveExpense('approve')"></button>
+    <button pButton type="button" class="p-button-outlined p-button-danger cls_RejectExpense" pTooltip="Reject Expense" (click)="approveExpense('reject')" icon="fa fa-window-close-o"></button>
+
+    <!-- <button pButton type="button" class="fdBtn cls_schoopInv" label="Schedule OOP Invoice" (click)="openPopup('scheduleOopModal')" style="float:left"></button> -->
+    <!-- <button pButton type="button" class="fdBtn cls_mafab" label="Mark As Payment" (click)="openPopup('markAsPaymentModal')" style="float:left"></button> -->
 </div>
 <!-- <div *ngIf="constantService.userPermission.isFDUserAdmin" class="p-col-12 p-md-12 p-lg-12 f-right">
     <div style="display: -webkit-inline-box;">

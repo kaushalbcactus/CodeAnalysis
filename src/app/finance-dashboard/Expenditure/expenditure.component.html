@@ -8,7 +8,8 @@
             <p-calendar [style]="{width:'200px'}" [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true" dateFormat="M dd, yy" placeholder="Select Start & End Date" showButtonBar="true" (onClose)="SelectedDateRange()" (onClearClick)="setDefault()"></p-calendar>
         </div>
         <div class="box">
-            <button pButton type="button" class="fdBtn" label="Request expense" (click)="requestExpense()"></button>
+            <button pButton pRipple type="button" icon="fa fa-file-text-o" pTooltip="Request expense" class="p-button-outlined p-button-danger cls_mafab p-ml-1" (click)="requestExpense()"></button>
+
         </div>
     </div>
 </div>

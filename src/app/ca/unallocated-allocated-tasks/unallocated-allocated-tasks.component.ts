@@ -1595,7 +1595,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
    
     await this.getProperties();
     this.commonService.clearToastrMessage();
-    this.commonService.showToastrMessage(this.constants.MessageType.success, 'Slots updated Sucessfully.', false);
+    this.commonService.showToastrMessage(this.constants.MessageType.success, 'Slots updated successfully.', false);
 
     if (unt) {
       this.caGlobal.loading = true;

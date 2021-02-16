@@ -480,7 +480,7 @@ export class ClientReviewComponent implements OnInit {
 
           this.isCRInnerLoaderHidden = true;
 
-          this.commonService.showToastrMessage(this.Constant.MessageType.success, task.Title + ' is completed Sucessfully.', true);
+          this.commonService.showToastrMessage(this.Constant.MessageType.success, task.Title + ' is completed successfully.', true);
 
           const index = this.pmObject.clientReviewArray.findIndex(item => item.ID === task.ID);
           this.pmObject.clientReviewArray.splice(index, 1);

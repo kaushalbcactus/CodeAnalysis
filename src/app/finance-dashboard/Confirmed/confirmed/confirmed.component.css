@@ -1,6 +1,7 @@
 /* table ui */
 
-::ng-deep .financeTable .ui-table table,
+
+/* ::ng-deep .financeTable .ui-table table,
 .ui-table table {
     table-layout: auto !important;
 }
@@ -11,9 +12,9 @@
 
 ::ng-deep .ui-table-resizable {
     padding-bottom: 1px;
-    /* overflow: auto; */
+
     width: auto !important;
-}
+} */
 
 
 /* .ui-table .ui-table-tbody > tr, .ui-table .ui-table-thead > tr > th, .ui-table .ui-table-tfoot > tr > td{
@@ -29,10 +30,8 @@
     border-width: 1px;
 } */
 
-.p-grid {
-    margin-top: 0.5em !important;
-}
 
+/* 
 #ptdd .ui-dropdown {
     width: 200px !important;
 }
@@ -44,24 +43,4 @@
 ::ng-deep .dropdownClass,
 .textfeildClass {
     width: 100% !important;
-}
-
-.UserButton {
-    position: fixed !important;
-    width: 85% !important;
-    margin: -50px !important;
-}
-
-#saveClient,
-#cancelClient {
-    background-color: #C53E3E !important;
-    border-color: #C53E3E !important;
-}
-
-.addProformaHeight {
-    max-height: 530px;
-}
-
-::ng-deep .addProformaHeight>div {
-    padding: 0.5rem !important;
-}
+} */

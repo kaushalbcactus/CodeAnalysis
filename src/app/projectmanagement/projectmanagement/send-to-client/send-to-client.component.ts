@@ -252,7 +252,7 @@ export class SendToClientComponent implements OnInit {
 
     await this.spServices.executeBatch(batchUrl);
 
-    this.commonService.showToastrMessage(this.Constant.MessageType.success, task.Title + ' is completed Sucessfully',true);
+    this.commonService.showToastrMessage(this.Constant.MessageType.success, task.Title + ' is completed successfully',true);
     this.Constant.loader.isWaitDisable= true;
     const index = this.pmObject.sendToClientArray.findIndex(item => item.ID === task.ID);
     this.pmObject.sendToClientArray.splice(index, 1);

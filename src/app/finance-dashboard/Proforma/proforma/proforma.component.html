@@ -1,28 +1,17 @@
 <!-- Loadder -->
-<div class="tableLoader" [hidden]='isPSInnerLoaderHidden'>
+<div class="p-d-flex p-flex-column" style="padding: 10vw;width: 100%;" *ngIf="!isPSInnerLoaderHidden">
     <div id="scInnerLoader"></div>
     <div id="scInnerLoaderText">Loading...</div>
 </div>
 
-<div class="p-col">
-    <div class="p-col-12 p-md-12 p-lg-12 f-right">
-        <div style="display: -webkit-inline-box;">
-            <div class="box mr-20">
-                <button type="button" class="fdBtn" pButton icon="pi pi-plus-circle" iconPos="left" label="Create Proforma" (click)="showProformaDialog()"></button>
-            </div>
-            <div class="box fg">
-                <button type="button" class="fdBtn" pButton label="Sent to Client" (click)="sentToClient()"></button>
-            </div>
-            <!-- <div class="box">
-                <i style="font-size: 1.8em;cursor: pointer;" (click)="fdDataShareServie.convertToExcelFile(pfc)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
-            </div> -->
-        </div>
-    </div>
-    <div style="clear: both;"></div>
+
+<div class="p-col p-grid p-jc-end p-mt-1" [hidden]="!isPSInnerLoaderHidden">
+    <button pButton pRipple type="button" icon="pi pi-plus" class="p-button-outlined p-button-danger p-mr-1 cls_createProforma" pTooltip="Create Proforma" tooltipPosition="bottom" (click)="showProformaDialog()"></button>
+    <button pButton pRipple type="button" icon="pi pi-send" class="p-button-outlined p-button-danger cls_SendToClient" pTooltip="Sent to Client" (click)="sentToClient()"></button>
 </div>
 
 <!-- <button (click)="checkSelectedRowData()">Check Data</button> -->
-<div class="financeTable" hideshowMenu>
+<div class="financeTable" hideshowMenu [hidden]="!isPSInnerLoaderHidden">
     <p-table #pfc [columns]="proformaCols" dataKey="Id" [value]="proformaRes" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [paginator]="true" [rows]="10" styleClass="p-datatable-cactus p-datatable-gridlines"
         [(selection)]="selectedRowData" selectionMode="multiple" exportFilename="Proformas" stateStorage="local" stateKey="proformaTable" rowExpandMode="multiple" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)">
 

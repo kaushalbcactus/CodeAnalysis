@@ -28,8 +28,13 @@ export class FinanceDashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    localStorage.clear();
     this.isPSInnerLoaderHidden = false;
-    this.globalObject.currentTitle = "Finance Dashboard";
+    setTimeout(() => {
+      this.globalObject.currentTitle = "Finance Dashboard";
+    }, 200);
+  
+ 
     this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     
     this.fdConstantsService.mainRouter = this.fdConstantsService.fdComponent.tabs.topMenu.find(

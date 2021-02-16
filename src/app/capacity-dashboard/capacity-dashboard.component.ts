@@ -488,7 +488,7 @@ export class CapacityDashboardComponent implements OnInit {
           this.commonService.clearToastrMessage();
           this.commonService.showToastrMessage(
             this.constants.MessageType.success,
-            "Resource block sucessfully.",
+            "Resource block successfully.",
             true,
             true
           );
@@ -579,7 +579,7 @@ export class CapacityDashboardComponent implements OnInit {
     this.commonService.clearToastrMessage();
     this.commonService.showToastrMessage(
       this.constants.MessageType.success,
-      "Blocking resource deleted sucessfully.",
+      "Blocking resource deleted successfully.",
       true,
       true
     );
@@ -631,7 +631,7 @@ export class CapacityDashboardComponent implements OnInit {
         this.commonService.clearToastrMessage();
         this.commonService.showToastrMessage(
           this.constants.MessageType.success,
-          "Blocking resource updated sucessfully.",
+          "Blocking resource updated successfully.",
           true,
           true
         );

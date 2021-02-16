@@ -1,41 +1,16 @@
 <!-- Loadder -->
-<div class="tableLoader" [hidden]='isPSInnerLoaderHidden'>
+<div class="p-d-flex p-flex-column" style="padding: 10vw;width: 100%;" *ngIf="!isPSInnerLoaderHidden">
     <div id="scInnerLoader"></div>
     <div id="scInnerLoaderText">Loading...</div>
 </div>
 
 
-<!-- <div class="ui-g">
-    <div class="ui-g-3"></div>
-    <div class="ui-g-3"></div>
-    <div class="ui-g-3"></div>
-    <div class="ui-g-3 f-right" style="display: flex;">
-        <div class="box mr-20 fg">
-            <button type="button" class="fdBtn" pButton icon="fa fa-upload" iconPos="left"
-                label="Upload Payment Receipt" (click)="uploadReceipts()"></button>
-        </div>
-        <div class="box mr-20">
-            <button type="button" class="fdBtn" pButton label="Sent to AP" (click)="sentToAP()"></button>
-        </div>
-        <div class="box">
-           
-        </div>
-    </div>
-</div> -->
-
-<div class="p-col-12 p-md-12 p-lg-12 f-right">
-    <div style="display: -webkit-inline-box;">
-        <div class="box" style="margin-right: 20px">
-            <button type="button" class="fdBtn" pButton icon="pi pi-caret-up" iconPos="left" label="Upload Payment Receipt" (click)="uploadReceipts()"></button>
-        </div>
-        <div class="box">
-            <button type="button" class="fdBtn" pButton label="Sent to AP" (click)="sentToAP()"></button>
-        </div>
-    </div>
+<div class="p-col p-grid p-jc-end p-mt-1" [hidden]="!isPSInnerLoaderHidden">
+    <button pButton pRipple type="button" icon="pi pi-upload" class="p-button-outlined p-button-danger p-mr-1 cls_UploadPaymentReceipt" pTooltip="Upload Payment Receipt" (click)="uploadReceipts()"></button>
+    <button pButton pRipple type="button" icon="pi pi-send" class="p-button-outlined p-button-danger cls_SendToAP" pTooltip="Sent to AP" (click)="sentToAP()"></button>
 </div>
-<div style="clear: both;"></div>
 
-<div class="financeTable" hideshowMenu>
+<div class="financeTable" [hidden]="!isPSInnerLoaderHidden" hideshowMenu>
     <p-table #outi dataKey="Id" [columns]="outstandingInCols" [value]="outstandingInvoicesRes" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [paginator]="true"
         [rows]="10" [(selection)]="selectedRowData" selectionMode="" (onRowSelect)="onRowSelect($event)" exportFilename="Outstanding_Invoices" rowExpandMode="multiple" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)" styleClass="p-datatable-cactus p-datatable-gridlines"
         stateStorage="local" stateKey="outstandingTable">
@@ -122,7 +97,7 @@
                         <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
                     </a>
                 </td>
-                <td>
+                <td class="p-text-center">
                     <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
                 </td>
                 <td *ngFor="let col of columns;index as i" class="ui-resizable-column" [hidden]="!col.visibility">
@@ -166,12 +141,15 @@
             </tr>
             <tr *ngIf="!invoice.loaderenable">
                 <td [attr.colspan]="13" style="padding: 0px;">
-                    <p-table #invoicesTable [columns]="invoiceCols" class="invoicesTable" [style]="{'font-size':'13px'}" [value]="invoice.invoiceDetails">
+                    <p-table #invoicesTable [columns]="invoiceCols" class="invoicesTable" [value]="invoice.invoiceDetails" styleClass="p-datatable-cactus p-datatable-gridlines">
                         <ng-template pTemplate="header" let-columns>
 
-                            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
-                                {{col.header}}
-                                <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+                            <th class="p-py-1 p-px-2" style="border-left: 1px solid #e4e4e4;
+                            border-right: 1px solid #ededed;" *ngFor="let col of columns" [pSortableColumn]="col.field">
+                                <div *ngIf="col.field != ''" class="p-d-flex p-jc-between p-ai-center">
+                                    {{col.header}}
+                                    <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+                                </div>
                             </th>
                             <th class="lastColumnWidth"></th>
 

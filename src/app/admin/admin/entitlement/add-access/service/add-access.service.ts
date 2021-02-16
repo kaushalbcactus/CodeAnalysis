@@ -482,14 +482,14 @@ export class AddAccessService {
     if (updatedRules > 0) {
       Message =
         Message === ""
-          ? updatedRules + " rules updated sucessfully."
-          : Message + " and " + updatedRules + " rules updated sucessfully.";
+          ? updatedRules + " rules updated successfully."
+          : Message + " and " + updatedRules + " rules updated successfully.";
     }
     if (deletedRules > 0) {
       Message =
         Message === ""
-          ? deletedRules + " rules deleted sucessfully."
-          : Message + " and " + deletedRules + " rules deleted sucessfully.";
+          ? deletedRules + " rules deleted successfully."
+          : Message + " and " + deletedRules + " rules deleted successfully.";
     }
     this.commonService.clearToastrMessage();
     this.commonService.showToastrMessage(
@@ -922,7 +922,7 @@ export class AddAccessService {
     this.commonService.clearToastrMessage();
     this.commonService.showToastrMessage(
       this.constants.MessageType.success,
-      "All " + disMessage + " of Rules updated sucessfully.",
+      "All " + disMessage + " of Rules updated successfully.",
       false
     );
   }

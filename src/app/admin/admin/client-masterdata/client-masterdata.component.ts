@@ -2032,7 +2032,7 @@ export class ClientMasterdataComponent implements OnInit {
               this.modalloaderenable = true;
               this.common.showToastrMessage(
                 this.constantsService.MessageType.success,
-                "File uploaded sucessfully.",
+                "File uploaded successfully.",
                 false
               );
               const poData = await this.getPOData(poDetails, selectedFile[0]);
@@ -2309,7 +2309,7 @@ export class ClientMasterdataComponent implements OnInit {
 
     this.common.showToastrMessage(
       this.constantsService.MessageType.success,
-      "The budget updated sucessfully for " + this.currPOObj.PoName,
+      "The budget updated successfully for " + this.currPOObj.PoName,
       true
     );
     await this.loadRecentPORecords(
@@ -2444,7 +2444,7 @@ export class ClientMasterdataComponent implements OnInit {
           if (!uploadedfile[0].hasOwnProperty("odata.error")) {
             this.common.showToastrMessage(
               this.constantsService.MessageType.success,
-              "File uploaded sucessfully.",
+              "File uploaded successfully.",
               false
             );
             await this.confirmBudgetUpdate(selectedFile);

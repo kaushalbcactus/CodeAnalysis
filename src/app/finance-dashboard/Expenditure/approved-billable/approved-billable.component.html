@@ -1,8 +1,8 @@
 <div *ngIf="constantService.userPermission.isFDUserAdmin" class="" style="margin-top: -42px; float:right;">
 
 
-    <button pButton pRipple type="button" icon="pi pi-check-square" pTooltip="Mark As Payment" tooltipPosition="bottom" class="p-button-outlined p-button-danger cls_mafab p-ml-1" (click)="openPopup('markAsPaymentModal')"></button>
-    <button pButton type="button" class="p-button-outlined p-button-danger cls_schoopInv" pTooltip="Schedule OOP Invoice" tooltipPosition="bottom" (click)="openPopup('scheduleOopModal')" style="float:left" icon="fa fa-pencil-square-o"></button>
+    <button pButton pRipple type="button" icon="pi pi-check-square" pTooltip="Mark As Payment" class="p-button-outlined p-button-danger cls_mafab p-ml-1" (click)="openPopup('markAsPaymentModal')"></button>
+    <button pButton type="button" class="p-button-outlined p-button-danger cls_schoopInv" pTooltip="Schedule OOP Invoice" (click)="openPopup('scheduleOopModal')" style="float:left" icon="fa fa-pencil-square-o"></button>
 
     <!-- <button pButton type="button" class="fdBtn cls_schoopInv" label="Schedule OOP Invoice" (click)="openPopup('scheduleOopModal')" style="float:left"></button> -->
     <!-- <button pButton type="button" class="fdBtn cls_mafab" label="Mark As Payment" (click)="openPopup('markAsPaymentModal')" style="float:left"></button> -->
@@ -123,7 +123,7 @@
 
             <tr>
                 <td>{{rowIndex+1}}</td>
-                <td>
+                <td class="p-text-center">
                     <p-tableCheckbox class="cls_abcheckbox{{rowIndex+1}}" [value]="rowData"></p-tableCheckbox>
                 </td>
 

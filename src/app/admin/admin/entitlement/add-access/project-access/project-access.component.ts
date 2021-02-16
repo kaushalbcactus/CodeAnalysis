@@ -464,7 +464,7 @@ export class ProjectAccessComponent implements OnInit {
 
       this.common.showToastrMessage(
         this.constant.MessageType.success,
-        "New rule added sucessfully.",
+        "New rule added successfully.",
         false,
         false
       );
@@ -564,8 +564,8 @@ export class ProjectAccessComponent implements OnInit {
       this.common.showToastrMessage(
         this.constant.MessageType.success,
         rowData.IsActiveCH === "Yes"
-          ? "Rule recover sucessfully."
-          : "Rule deleted sucessfully, Please click on recover icon to recover rule.",
+          ? "Rule recover successfully."
+          : "Rule deleted successfully, Please click on recover icon to recover rule.",
         false,
         false
       );
@@ -589,7 +589,7 @@ export class ProjectAccessComponent implements OnInit {
         );
         this.common.showToastrMessage(
           this.constant.MessageType.success,
-          "New added rule deleted sucessfully.",
+          "New added rule deleted successfully.",
           false,
           false
         );
@@ -670,7 +670,7 @@ export class ProjectAccessComponent implements OnInit {
         dbRule.edited.UserEdited = dbRule.RuleType === "existing" ? true : false;
         this.common.showToastrMessage(
           this.constant.MessageType.success,
-          "Current rule users updated sucessfully.",
+          "Current rule users updated successfully.",
           false,
           false
         );
