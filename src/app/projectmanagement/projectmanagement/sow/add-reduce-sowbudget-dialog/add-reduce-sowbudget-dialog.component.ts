@@ -168,14 +168,14 @@ export class AddReduceSowbudgetDialogComponent implements OnInit {
   // ***************************************************************************************************
 
 
-  UpdateValidator(value) {
-    if (value === this.pmconstant.ACTION.ADD) {
+  UpdateValidator() {
+    if (this.changeBudgetForm.value.selectedValue.value === this.pmconstant.ACTION.ADD) {
       this.changeBudgetForm.get('total').setValidators([this.common.checkPositiveNumberValidator()]);
       this.changeBudgetForm.get('oop').setValidators([this.common.checkPositiveNumberValidator()]);
       this.changeBudgetForm.get('net').setValidators([this.common.checkPositiveNumberValidator()]);
       this.changeBudgetForm.get('tax').setValidators([this.common.checkPositiveNumberValidator()]);
     }
-    else if (value === this.pmconstant.ACTION.REDUCE) {
+    else if (this.changeBudgetForm.value.selectedValue.value === this.pmconstant.ACTION.REDUCE) {
       this.changeBudgetForm.get('total').setValidators([this.common.checkNegativerNumberValidator(), Validators.min(-this.pmObject.addSOW.Budget.TotalBalance)]);
       this.changeBudgetForm.get('oop').setValidators([this.common.checkNegativerNumberValidator(), Validators.min(-this.pmObject.addSOW.Budget.OOPBalance)]);
       this.changeBudgetForm.get('net').setValidators([this.common.checkNegativerNumberValidator(), Validators.min(-this.pmObject.addSOW.Budget.NetBalance)]);

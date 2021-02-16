@@ -11,11 +11,7 @@
 
 
 
-<div class="allSOW-section" [hidden]='isAllSOWTableHidden'>
-    <!-- <div class="box excelIcon">
-        <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(allSOWRef)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
-    </div>
-    <div class="clear"></div> -->
+<div class="allSOW-section" [hidden]='!isAllSOWLoaderHidden'>
     <p-table #allSOWRef [columns]="displayedColumns" [value]="pmObject.allSOWArray" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,25,50]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
         styleClass="p-datatable-cactus p-datatable-gridlines" stateStorage="local" [stateKey]="showProjectLink ? 'MyDashboardSowTable' : 'SowTable'" selectionMode="" exportFilename="All SOW">
         <ng-template pTemplate="header" let-columns>
@@ -73,7 +69,7 @@
         </ng-template>
         <ng-template pTemplate="emptymessage" let-columns>
             <tr>
-                <td style="text-align:center" [attr.colspan]="9">
+                <td style="text-align:center" [attr.colspan]="columns.length + 2">
                     No sow found
                 </td>
             </tr>
@@ -234,8 +230,12 @@
                             <div id="modalInnerLoaderText">Loading...</div>
                         </div>
 
-                        <p-calendar *ngIf="inActiveProjectLoader" [(ngModel)]="rangeDates" selectionMode="range" (onClose)="getInactiveProject()" [style]="{'width':'30% !important', 'cursor': 'pointer'}" numberOfMonths='1' appendTo="body" dateFormat="dd M , yy" [showIcon]="true"
-                            [disabledDays]="[0,6]" [readonlyInput]="true" placeholder="Select Custom Dates"></p-calendar>
+                        <div class="p-grid p-jc-start">
+                            <div class="p-col-4">
+                                <p-calendar *ngIf="inActiveProjectLoader" [(ngModel)]="rangeDates" selectionMode="range" (onClose)="getInactiveProject()" [style]="{'cursor': 'pointer'}" numberOfMonths='1' appendTo="body" dateFormat="dd M , yy" [showIcon]="true" [disabledDays]="[0,6]"
+                                    [readonlyInput]="true" placeholder="Select Custom Dates"></p-calendar>
+                            </div>
+                        </div>
                         <p-table *ngIf="inActiveProjectLoader" #inActiveProject [columns]="projectsDisplayedColumns" [value]="pmObject.allProjects.inActiveProjectCopyArray" [paginator]="true" [rows]="5" [lazy]="true" [totalRecords]="pmObject.totalRecords.inActiveProject" [rowsPerPageOptions]="[5,10,15]"
                             [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" styleClass="p-datatable-cactus p-datatable-gridlines p-mt-2" [loading]="pmObject.loading.inActiveProject" (onLazyLoad)="inActivelazyLoadTask($event)"
                             [lazyLoadOnInit]="false">

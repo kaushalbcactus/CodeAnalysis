@@ -102,7 +102,6 @@ export class SOWComponent implements OnInit, OnDestroy {
   };
   rangeDates: Date[];
   isAllSOWLoaderHidden = true;
-  isAllSOWTableHidden = true;
   selectedSOWTask;
   activeProjectLoader = true;
   pipelineProjectLoader = true;
@@ -165,7 +164,6 @@ export class SOWComponent implements OnInit, OnDestroy {
     this.loadSOWInit();
   }
   loadSOWInit() {
-    this.isAllSOWTableHidden = true;
     this.isAllSOWLoaderHidden = false;
     this.pmObject.isAddSOWVisible = false;
     this.pmObject.isSOWFormSubmit = false;
@@ -392,10 +390,12 @@ export class SOWComponent implements OnInit, OnDestroy {
         tempAllSOWArray.push(sowObj);
       }
 
-      if (tempAllSOWArray.length) {
-        this.displayedColumns = await this.commonService.MainfilterForTable(this.displayedColumns,tempAllSOWArray);
-      }
+    
+        this.displayedColumns = tempAllSOWArray && tempAllSOWArray.length > 0 ? await this.commonService.MainfilterForTable(this.displayedColumns,tempAllSOWArray): this.displayedColumns.filter(c=>c.visibility===true);
+   
       this.pmObject.allSOWArray = tempAllSOWArray;
+    } else {
+      this.displayedColumns =  this.displayedColumns.filter(c=>c.visibility===true);
     }
 
     if (this.pmObject.columnFilter.SOWCode && this.pmObject.columnFilter.SOWCode.length) {
@@ -424,8 +424,6 @@ export class SOWComponent implements OnInit, OnDestroy {
 
 
     this.isAllSOWLoaderHidden = true;
-    this.isAllSOWTableHidden = false;
-
   }
  
  
@@ -670,7 +668,7 @@ export class SOWComponent implements OnInit, OnDestroy {
         if (clientInfo && clientInfo.length) {
           libraryName = clientInfo[0].ListName;
         }
-        this.constants.loader.isPSInnerLoaderHidden = true;
+        this.constants.loader.isWaitDisable = true;
         this.commonService.SetNewrelic('projectManagment', 'sow', 'sowAddBudget-uploadFile', "POST-BATCH");
         this.commonService.UploadFilesProgress(SelectedFile, libraryName + '/' + docFolder, true).then(async uploadedfile => {
 
@@ -680,7 +678,7 @@ export class SOWComponent implements OnInit, OnDestroy {
               this.pmObject.addSOW.SOWFileName = uploadedfile[0].Name;
               this.pmObject.addSOW.SOWDocProperties = uploadedfile;
             }
-            this.constants.loader.isPSInnerLoaderHidden = false;
+            this.isAllSOWLoaderHidden = false;
             const batchURL = [];
             const options = {
               data: null,
@@ -774,8 +772,6 @@ export class SOWComponent implements OnInit, OnDestroy {
             const res = await this.spServices.executeBatch(batchURL);
 
             // this.updateBudgetEmail(this.pmObject.addSOW);
-            this.constants.loader.isPSInnerLoaderHidden = true;
-
             this.commonService.showToastrMessage(this.constants.MessageType.success,'Budget updated Successfully.',false);
             console.log(res);
             setTimeout(() => {
