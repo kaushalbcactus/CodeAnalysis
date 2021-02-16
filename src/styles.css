@@ -796,3 +796,36 @@ a:hover {
 .p-button.p-button-icon-only {
     height: 35px !important;
 }
+
+.gantt_cell:nth-child(2) .gantt_tree_content {
+    border-radius: 16px;
+    width: 100%;
+    height: 80%;
+    margin: 0% 0;
+    padding-left: 10px;
+    line-height: 230%;
+  }
+  
+  .gantt_task_drag.task_left.task_start_date {
+    background-color: #ff3e56 !important;
+    left: -12px !important;
+  }
+  .gantt_task_drag.task_right.task_end_date {
+    background-color: darkgreen !important;
+    right: -12px !important;
+  }
+
+  .gantt_task_line .gantt_link_control.task_right {
+    right: -22px !important;
+  }
+  
+  .gantt_task_line .gantt_link_control.task_left {
+    left: -22px !important;
+  }
+
+  .gantt_grid_scale .gantt_grid_head_cell,
+.gantt_task .gantt_task_scale .gantt_scale_cell {
+  font-weight: bold !important;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.7) !important;
+}
