@@ -401,7 +401,7 @@ export class AddEditPoDialogComponent implements OnInit {
   async SavePODetails() {
     if (this.PoForm.valid) {
         if (!this.showeditPO) {
-          if (this.PORows.some(a =>
+          if (this.PORows && this.PORows.some(a =>
             a.PoNumber.toLowerCase() === this.PoForm.value.poNumber.toLowerCase())) {
             this.common.showToastrMessage(this.constantsService.MessageType.warn, 'This PO number is already exist. Please enter another PO number.', false);
             return false;
@@ -436,7 +436,7 @@ export class AddEditPoDialogComponent implements OnInit {
     this.selectedFile = null;
     if (event.target.files && event.target.files.length > 0) {
       this.selectedFile = event.target.files;
-      this.fileuploderView.nativeElement.getElementsByClassName('file-select-name')[0].innerText =this.selectedFile.name;
+      this.fileuploderView.nativeElement.getElementsByClassName('file-select-name')[0].innerText =this.selectedFile[0].name;
       this.fileuploderView.nativeElement.classList.add('active');
     }
     else{

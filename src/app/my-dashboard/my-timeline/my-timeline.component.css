@@ -17,9 +17,13 @@
     margin-left: -21px !important;
 } */
 
-::ng-deep .p-dropdown-items-wrapper {
+
+/* commented because time booking dropdown item hidden issue  */
+
+
+/* ::ng-deep .p-dropdown-items-wrapper {
     overflow: hidden !important;
-}
+} */
 
 :host ::ng-deep #CalendarInnerLoader {
     border: 10px solid #f3f3f3;

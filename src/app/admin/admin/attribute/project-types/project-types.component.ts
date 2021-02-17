@@ -146,7 +146,7 @@ export class ProjectTypesComponent implements OnInit {
       this.common.showToastrMessage(this.constants.MessageType.error,'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.',false);
       return false;
     }
-    if (this.projectTypeRows.some(a => a.ProjectType.toLowerCase() === this.projectType.toLowerCase())) {
+    if (this.projectTypeRows && this.projectTypeRows.some(a => a.ProjectType.toLowerCase() === this.projectType.toLowerCase())) {
       this.common.showToastrMessage(this.constants.MessageType.error,'This Project Type is already exist. Please enter another Project Type.',false);
       return false;
     }

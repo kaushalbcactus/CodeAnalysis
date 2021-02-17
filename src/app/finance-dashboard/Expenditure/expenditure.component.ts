@@ -889,7 +889,6 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             i < element.ProjectCode.CMLevel1.results.length;
             i++
           ) {
-            debugger;
             const ele = element.ProjectCode.CMLevel1.results[i];
             if(ele && ele.ID > -1){
               this.pcmLevels.push(ele);

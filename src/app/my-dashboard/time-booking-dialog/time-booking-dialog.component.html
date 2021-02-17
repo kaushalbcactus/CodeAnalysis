@@ -60,7 +60,7 @@
 
                 <td [ngStyle]="{'padding': rowData.isEditable ? '0px':'5px'}">
 
-                    <p-dropdown class="CLS_My_DashBoard_ClientName" filter="true" resetFilterOnHide="true" *ngIf="rowData.isEditable" [options]="rowData.dbClientLegalEntities" [(ngModel)]="rowData.Entity" class="p-fluid" (ngModelChange)="getAllProjects($event,rowData)" [style]="{border:'none'}"
+                    <p-dropdown class="CLS_My_DashBoard_ClientName" filter="true" resetFilterOnHide="true" *ngIf="rowData.isEditable" [options]="rowData.dbClientLegalEntities" [(ngModel)]="rowData.Entity" (ngModelChange)="getAllProjects($event,rowData)" [style]="{border:'none'}"
                         appendTo="body">
                     </p-dropdown>
 
@@ -68,15 +68,15 @@
 
                 </td>
                 <td [ngStyle]="{'padding': rowData.isEditable ? '0px':'5px'}">
-                    <p-dropdown class="CLS_My_DashBoard_ProjectCode" fxLayout="row wrap" resetFilterOnHide="true" filter="true" *ngIf="rowData.isEditable" (ngModelChange)="getAllMilestones($event,rowData)" [options]="rowData.dbProjects" [(ngModel)]="rowData.ProjectCodeTitle"
-                        class="p-fluid" [style]="{ border:'none'}" appendTo="body">
+                    <p-dropdown class="CLS_My_DashBoard_ProjectCode p-fluid" resetFilterOnHide="true" filter="true" *ngIf="rowData.isEditable" (ngModelChange)="getAllMilestones($event,rowData)" [options]="rowData.dbProjects" [(ngModel)]="rowData.ProjectCodeTitle" [style]="{border:'none'}"
+                        appendTo="body">
                     </p-dropdown>
 
                     <span fxLayout="row wrap" *ngIf="!rowData.isEditable"> {{rowData.ProjectCodeTitle}} </span>
                 </td>
                 <td [ngStyle]="{'padding': rowData.isEditable ? '0px':'5px'}">
-                    <p-dropdown class="CLS_My_DashBoard_Milestone" fxLayout="row wrap" resetFilterOnHide="true" filter="true" *ngIf="rowData.isEditable" [options]="rowData.dbMilestones" [(ngModel)]="rowData.displayName" (ngModelChange)="checkMilestone($event,rowData)" appendTo="body"
-                        [style]="{ width: '100%', border:'none'}">
+                    <p-dropdown class="CLS_My_DashBoard_Milestone p-fluid" resetFilterOnHide="true" filter="true" *ngIf="rowData.isEditable" [options]="rowData.dbMilestones" [(ngModel)]="rowData.displayName" (ngModelChange)="checkMilestone($event,rowData)" appendTo="body"
+                        [style]="{border:'none'}">
                     </p-dropdown>
 
                     <span fxLayout="row wrap" *ngIf="!rowData.isEditable"> {{rowData.displayName}} </span>
@@ -128,7 +128,7 @@
         </ng-template>
     </p-table>
 
-    <div class="p-col p-p-0" style="font-size: 12px;">
+    <div class="p-col p-p-0 p-mt-1 formfont">
         <p class="p-mb-1"> Time spent on any task or thought required to complete a project. For eg,</p>
         <ul class="p-mb-1">
             <li>Prep work such as search for authors, thought/research associated with which digital tactic to use, reading source data, dummy submissions.</li>

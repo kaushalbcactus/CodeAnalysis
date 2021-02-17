@@ -274,7 +274,7 @@ export class DeliverableTypesComponent implements OnInit {
       return false;
     }
     if (
-      this.deliverableTypesRows.some(
+      this.deliverableTypesRows  && this.deliverableTypesRows.some(
         (a) =>
           a.DeliverableType.toLowerCase() ===
           this.deliverableTypes.toLowerCase()
