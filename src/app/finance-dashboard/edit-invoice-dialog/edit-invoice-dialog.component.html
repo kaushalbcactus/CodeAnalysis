@@ -1,10 +1,9 @@
-<div class='UserButton' fxLayout="row" fxLayoutAlign="end center">
-
-    <button type="button" pButton icon="pi pi-save" class="cls_editInvoiceSave" id="saveClient" [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SaveDetails()" label="Save"></button>
-
-    <button type="button" class="cls_editInvoiceCancel" pButton icon="pi pi-times" id="cancelClient" (click)="cancel();" label="Cancel"></button>
-
+<div class="pdialogButton p-col-12 p-grid p-jc-end">
+    <button class="p-mx-1 p-button-raised p-button-danger cls_editInvoiceSave" type="button" pButton icon="pi pi-save" id="saveClient" [ngStyle]="{'cursor':'pointer' }" (click)="SaveDetails()" label="Save"></button>
+    <button type="button" pButton icon="pi pi-times" id="cancelClient" (click)="cancel();" label="Cancel" class="p-button-raised p-button-danger cls_editInvoiceCancel"></button>
 </div>
+
+
 
 <div style="font-size: 13px; padding-top: 10px;" fxLayout="row" #scrollDown fxLayoutAlign="space-between start" fxLayoutGap="5px">
 

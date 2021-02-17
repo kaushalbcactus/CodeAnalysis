@@ -134,13 +134,15 @@
             </tr>
             <tr *ngIf="!proforma.loaderenable">
                 <td [attr.colspan]="11" style="padding: 0px;">
-                    <p-table #invoicesTable [columns]="invoiceCols" class="invoicesTable" [style]="{'font-size':'13px'}" [value]="proforma.invoices">
+                    <p-table #invoicesTable [columns]="invoiceCols" class="invoicesTable" [style]="{'font-size':'13px'}" [value]="proforma.invoices" styleClass="p-datatable-cactus p-datatable-gridlines">
                         <ng-template pTemplate="header" let-columns>
 
-                            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                            <th class="p-py-1 p-px-2" style="border-left: 1px solid #e4e4e4;
+                            border-right: 1px solid #ededed;" *ngFor="let col of columns" [pSortableColumn]="col.field">
                                 {{col.header}}
                                 <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
                             </th>
+                            <th class="lastColumnWidth"></th>
 
                         </ng-template>
 
@@ -152,7 +154,7 @@
                                     </ng-container>
 
                                 </td>
-                                <td>
+                                <td class="lastColumnWidth">
                                     <div>
                                         <p-menu #popupMenu [popup]="true" [model]="items" [style]="{'text-align': 'left'}" styleClass="borderMenu"></p-menu>
                                         <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;" (click)="openPopup(rowData, popupMenu,proforma);popupMenu.show($event);"></i>

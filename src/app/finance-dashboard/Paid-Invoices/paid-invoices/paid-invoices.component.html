@@ -140,10 +140,11 @@
             </tr>
             <tr *ngIf="!invoice.loaderenable">
                 <td [attr.colspan]="11" style="padding: 0px;">
-                    <p-table #invoicesTable [columns]="invoiceCols" class="invoicesTable" [style]="{'font-size':'13px'}" [value]="invoice.invoiceDetails">
+                    <p-table #invoicesTable [columns]="invoiceCols" class="invoicesTable" [style]="{'font-size':'13px'}" [value]="invoice.invoiceDetails" styleClass="p-datatable-cactus p-datatable-gridlines">
                         <ng-template pTemplate="header" let-columns>
 
-                            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                            <th class="p-py-1 p-px-2" style="border-left: 1px solid #e4e4e4;
+                            border-right: 1px solid #ededed;" *ngFor="let col of columns" [pSortableColumn]="col.field">
                                 {{col.header}}
                                 <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
                             </th>
