@@ -2582,11 +2582,13 @@ export class TimelineComponent
               } else {
                 this.taskAllocateCommonService.resetDailyAllocation(task);
               }
-              this.commonService.showToastrMessage(
-                this.constants.MessageType.info,
-                arrMsgs.join("/\n"),
-                false
-              );
+              if(arrMsgs.length) {
+                this.commonService.showToastrMessage(
+                  this.constants.MessageType.info,
+                  arrMsgs.join("/\n"),
+                  false
+                );
+              }
               this.setDateToCurrent(task);
               await this.DateChange(task, type);
               this.sharedObject.currentTaskData = task;
