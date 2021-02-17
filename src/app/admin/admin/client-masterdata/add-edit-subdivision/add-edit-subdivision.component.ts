@@ -202,7 +202,7 @@ export class AddEditSubdivisionComponent implements OnInit {
   async saveSubdivision() {
     if (this.subDivisionform.valid) {
       if (!this.showeditSubDivision) {
-        if (this.subDivisionDetailsRows.some(a =>
+        if (this.subDivisionDetailsRows && this.subDivisionDetailsRows.some(a =>
           a.SubDivision.toLowerCase() === this.subDivisionform.value.subDivision_Name.toLowerCase())) {
 
           this.common.showToastrMessage(this.constantsService.MessageType.warn, 'This client sub-division is already exist. Please enter another client sub-division.', false);

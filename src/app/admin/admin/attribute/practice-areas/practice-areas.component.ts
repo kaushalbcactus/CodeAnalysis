@@ -208,7 +208,7 @@ export class PracticeAreasComponent implements OnInit {
       return false;
     }
     if (
-      this.practiceAreaRows.some(
+      this.practiceAreaRows && this.practiceAreaRows.some(
         (a) => a.PracticeArea.toLowerCase() === this.practiceArea.toLowerCase()
       )
     ) {

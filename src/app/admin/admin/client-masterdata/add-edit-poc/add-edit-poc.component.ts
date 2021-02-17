@@ -221,7 +221,7 @@ export class AddEditPocComponent implements OnInit {
   async savePOC() {
     if (this.pocForm.valid) {
       if (!this.showeditPOC) {
-        if (this.POCRows.some(a =>
+        if (this.POCRows && this.POCRows.some(a =>
           a.EmailAddress.toLowerCase() === this.pocForm.value.email.toLowerCase())) {
           this.common.showToastrMessage(this.constantsService.MessageType.warn, 'This email id is already exist. Please enter another email id.', false);
           return false;
