@@ -124,7 +124,7 @@
                 <td>
                     <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
                 </td>
-                <td *ngFor="let col of columns;" [hidden]="!col.visibility" class="ui-resizable-column">
+                <td *ngFor="let col of columns;" [hidden]="!col.visibility" [ngStyle]="{'background-color':rowData.IsColor ? 'rgb(255 149 149 / 62%)' : ''}" class="ui-resizable-column">
                     <ng-container *ngIf="col.field != 'CreatedDate' && col.field != 'Modified' &&  col.field != '' ">
                         {{rowData[col.field]}}
                     </ng-container>

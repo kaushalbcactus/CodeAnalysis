@@ -71,8 +71,8 @@ export class AddEditPoDialogComponent implements OnInit {
 
   removeValidators(form: FormGroup) {
     for (const key in form.controls) {
-        form.get(key).clearValidators();
-        form.get(key).updateValueAndValidity();
+      form.get(key).clearValidators();
+      form.get(key).updateValueAndValidity();
     }
   }
 
@@ -92,10 +92,18 @@ export class AddEditPoDialogComponent implements OnInit {
     this.PoForm.controls.revenue.enable();
     this.PoForm.controls.tax.enable();
     await this.loadPODropdown();
+    await this.setCurrencyAndExpiryDate();
     this.isPOFormSubmit = false;
     this.modalloaderenable = false;
   }
 
+  async setCurrencyAndExpiryDate() {
+    this.PoForm.controls.currency.setValue(this.currClientObj.Currency);
+    let checkDate = new Date(new Date().getFullYear(), 11, 31);
+    const day = checkDate.getDay();
+    checkDate = day == 6 ? new Date(checkDate.setDate(checkDate.getDate() - 1)) : day == 0 ? new Date(checkDate.setDate(checkDate.getDate() - 2)) : checkDate
+    this.PoForm.controls.poExpiryDate.setValue(checkDate)
+  }
   /**
   * Construct a method to show the edit form to edit the po.
   *
@@ -142,8 +150,8 @@ export class AddEditPoDialogComponent implements OnInit {
       poBuyingEntity: this.currPOObj.BuyingEntity
     });
     this.showeditPO = true;
-    this.modalloaderenable=false;
-    
+    this.modalloaderenable = false;
+
   }
 
 
@@ -188,15 +196,15 @@ export class AddEditPoDialogComponent implements OnInit {
       if (moleculeArray && moleculeArray.length) {
         this.adminObject.dropdown.POMoleculeArray = [];
         moleculeArray.forEach(element => {
-          if(!this.adminObject.dropdown.POMoleculeArray.find(c=>c.value === element.Title)){
+          if (!this.adminObject.dropdown.POMoleculeArray.find(c => c.value === element.Title)) {
             this.adminObject.dropdown.POMoleculeArray.push({ label: element.Title, value: element.Title });
           }
         });
 
-        if(!this.config.data.poObject){
+        if (!this.config.data.poObject) {
           this.PoForm.patchValue({
-            molecule : this.adminObject.dropdown.POMoleculeArray.find(c=>c.value === 'NA') ? 
-            this.adminObject.dropdown.POMoleculeArray.find(c=>c.value === 'NA').value :''
+            molecule: this.adminObject.dropdown.POMoleculeArray.find(c => c.value === 'NA') ?
+              this.adminObject.dropdown.POMoleculeArray.find(c => c.value === 'NA').value : ''
           })
         }
       }
@@ -400,24 +408,24 @@ export class AddEditPoDialogComponent implements OnInit {
 
   async SavePODetails() {
     if (this.PoForm.valid) {
-        if (!this.showeditPO) {
-          if (this.PORows.some(a =>
-            a.PoNumber.toLowerCase() === this.PoForm.value.poNumber.toLowerCase())) {
-            this.common.showToastrMessage(this.constantsService.MessageType.warn, 'This PO number is already exist. Please enter another PO number.', false);
-            return false;
-          }
+      if (!this.showeditPO) {
+        if (this.PORows.some(a =>
+          a.PoNumber.toLowerCase() === this.PoForm.value.poNumber.toLowerCase())) {
+          this.common.showToastrMessage(this.constantsService.MessageType.warn, 'This PO number is already exist. Please enter another PO number.', false);
+          return false;
         }
-        if(this.selectedFile) {
-          if (this.selectedFile[0].size <= 0) {
-            this.common.showToastrMessage(this.constantsService.MessageType.warn, 'Unable to upload file, size of ' + this.selectedFile[0].name + ' is 0 KB.', false);
-            return false;
-          }
+      }
+      if (this.selectedFile) {
+        if (this.selectedFile[0].size <= 0) {
+          this.common.showToastrMessage(this.constantsService.MessageType.warn, 'Unable to upload file, size of ' + this.selectedFile[0].name + ' is 0 KB.', false);
+          return false;
         }
-        const data = {
-          poDetails: this.PoForm,
-          selectedFile: this.selectedFile ? this.selectedFile : '',
-        }
-        this.ref.close(data);
+      }
+      const data = {
+        poDetails: this.PoForm,
+        selectedFile: this.selectedFile ? this.selectedFile : '',
+      }
+      this.ref.close(data);
     } else {
       this.isPOFormSubmit = true;
     }
@@ -436,10 +444,10 @@ export class AddEditPoDialogComponent implements OnInit {
     this.selectedFile = null;
     if (event.target.files && event.target.files.length > 0) {
       this.selectedFile = event.target.files;
-      this.fileuploderView.nativeElement.getElementsByClassName('file-select-name')[0].innerText =this.selectedFile.name;
+      this.fileuploderView.nativeElement.getElementsByClassName('file-select-name')[0].innerText = this.selectedFile.name;
       this.fileuploderView.nativeElement.classList.add('active');
     }
-    else{
+    else {
       this.fileuploderView.nativeElement.classList.remove('active');
       this.fileuploderView.nativeElement.getElementsByClassName('file-select-name')[0].innerText = 'No file chosen...';
     }

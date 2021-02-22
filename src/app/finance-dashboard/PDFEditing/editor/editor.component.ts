@@ -517,6 +517,9 @@ export class EditorComponent implements OnInit {
                         POC
                     </th>
                     <th>
+                     Number // Arvind need to code here
+                    </th>
+                    <th>
                         Amount
                     </th>
                 </tr>

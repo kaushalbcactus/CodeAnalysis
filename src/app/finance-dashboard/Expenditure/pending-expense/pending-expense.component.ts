@@ -169,7 +169,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     selectedAllRowsItem: any = [];
 
     selectedRowItem: any;
-
+    spendingInfoAllResults: any;
     // Upload File
 
     selectedFile: any;
@@ -379,6 +379,15 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         // const batchGuid = this.spServices.generateUUID();
 
         let speInfoObj;
+        const filterDate = await this.commonService.calcBusinessDate('Past', 15);
+        let startDate = this.datePipe.transform(filterDate.startDate, "yyyy-MM-dd") + "T00:00:01.000Z";
+        const endDate = this.datePipe.transform(filterDate.endDate, "yyyy-MM-dd") + "T23:59:00.000Z";
+
+        speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.last15DaySpendingInfo);
+        speInfoObj.filter = speInfoObj.filter.replace('{{Status}}', 'Cancelled').replace('{{Status1}}', 'Rejected').replace('{{startDateString}}', startDate).replace('{{endDateString}}', endDate);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'GetSpendingInfo', 'GET');
+        this.spendingInfoAllResults = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
+
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
         if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('ExpenseApprovers') > -1) {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfo);
@@ -393,11 +402,8 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'GetSpendingInfo', 'GET');
         const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
         const arrResults = res.length ? res : [];
-        // console.log('--oo ', arrResults);
         this.formatData(arrResults);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-        // });
-
     }
 
     async formatData(data: any[]) {
@@ -449,12 +455,13 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 DollarAmount: element.DollarAmount,
                 InvoiceID: element.InvoiceID,
                 POLookup: element.POLookup,
+                IsColor: this.spendingInfoAllResults.filter(sp => sp.Title === element.Title).length > 0 ? true : false
                 // PONumber: this.getPONumber(element),
                 // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM dd, yyyy, hh:mm a')
             });
         }
         this.pendingExpenses = [...this.pendingExpenses];
-        this.pendingExpeseCols = this.pendingExpenses && this.pendingExpenses.length > 0 ? this.commonService.MainfilterForTable(this.pendingExpeseCols, this.pendingExpenses) : this.pendingExpeseCols.filter(c=>c.visibility === true);
+        this.pendingExpeseCols = this.pendingExpenses && this.pendingExpenses.length > 0 ? this.commonService.MainfilterForTable(this.pendingExpeseCols, this.pendingExpenses) : this.pendingExpeseCols.filter(c => c.visibility === true);
         this.isPSInnerLoaderHidden = true;
     }
 
@@ -552,7 +559,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         // let uniqueRT = this.checkSameRT();
         // console.log('uniqueRT ', uniqueRT);
         if (!this.selectedAllRowsItem.length) {
-            this.commonService.showToastrMessage(this.constantService.MessageType.warn,'Please select at least one line item try agian.',false);
+            this.commonService.showToastrMessage(this.constantService.MessageType.warn, 'Please select at least one line item try agian.', false);
             return false;
         }
         let uniqueRT = false;
@@ -583,7 +590,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             this.approveRejectExpenseDialog();
         } else {
             // this.displayModal = false;
-            this.commonService.showToastrMessage(this.constantService.MessageType.info,'Please select same Request type & try agian.',false);
+            this.commonService.showToastrMessage(this.constantService.MessageType.info, 'Please select same Request type & try agian.', false);
         }
     }
 
@@ -631,24 +638,24 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     approveRejectExpenseDialog() {
         const ref = this.dialogService.open(ApproveRejectExpenseDialogComponent, {
             data: {
-              expenseDialog: this.cancelRejectDialog,
-              selectedRowItem: this.selectedRowItem
+                expenseDialog: this.cancelRejectDialog,
+                selectedRowItem: this.selectedRowItem
             },
             header: this.cancelRejectDialog.title,
             contentStyle: { height: '450px !important' },
             width: '50%',
             closable: false,
-          });
-          ref.onClose.subscribe(async expense => {
-              if(expense) {
+        });
+        ref.onClose.subscribe(async expense => {
+            if (expense) {
                 this.expenseForm = expense.form;
                 this.mailContentRes = expense.mailContent;
-                if(expense.event)  {
+                if (expense.event) {
                     await this.onFileChange(expense.event, expense.folderName);
                 }
                 await this.onSubmit(expense.type, expense.form);
-              }
-          })
+            }
+        })
     }
 
 
@@ -664,7 +671,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             if (fileName !== sNewFileName) {
                 this.fileInput.nativeElement.value = '';
                 this.approveExpense_form.get('ApproverFileUrl').setValue('');
-                this.commonService.showToastrMessage(this.constantService.MessageType.error,'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'',false);
+                this.commonService.showToastrMessage(this.constantService.MessageType.error, 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', false);
                 return false;
             }
             this.FolderName = folderName;
@@ -681,7 +688,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             if (this.SelectedFile.length > 0 && this.SelectedFile.length === uploadedfile.length) {
                 if (uploadedfile[0].hasOwnProperty('odata.error') || uploadedfile[0].hasError) {
                     this.submitBtn.isClicked = false;
-                    this.commonService.showToastrMessage(this.constantService.MessageType.error,'File not uploaded, Folder / File Not Found.',false);
+                    this.commonService.showToastrMessage(this.constantService.MessageType.error, 'File not uploaded, Folder / File Not Found.', false);
                 } else if (uploadedfile[0].ServerRelativeUrl) {
                     this.isPSInnerLoaderHidden = false;
                     this.fileUploadedUrl = uploadedfile[0].ServerRelativeUrl;
@@ -714,7 +721,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         });
     }
 
-    onSubmit(type: string,expenseForm) {
+    onSubmit(type: string, expenseForm) {
         this.formSubmit.isSubmit = true;
         const batchUrl = [];
         if (type === 'Cancel Expense') {
@@ -727,7 +734,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 ApproverComments: expenseForm.value.ApproverComments,
                 Status: 'Cancelled'
             };
-            speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type};
+            speInfoObj['__metadata'] = { type: this.constantService.listNames.SpendingInfo.type };
             const cancelExpenseObj = Object.assign({}, this.queryConfig);
             cancelExpenseObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +this.selectedRowItem.Id);
             cancelExpenseObj.listName = this.constantService.listNames.SpendingInfo.name;
@@ -764,7 +771,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 return;
             }
             else if (this.selectedFile && this.selectedFile.size === 0) {
-                this.commonService.showToastrMessage(this.constantService.MessageType.error,this.constantService.Messages.ZeroKbFile.replace('{{fileName}}',this.selectedFile.name),false);
+                this.commonService.showToastrMessage(this.constantService.MessageType.error, this.constantService.Messages.ZeroKbFile.replace('{{fileName}}', this.selectedFile.name), false);
                 return;
             }
 
@@ -802,12 +809,12 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         await this.spServices.executeBatch(batchUrl);
         if (type === 'Approve Expense') {
 
-            this.commonService.showToastrMessage(this.constantService.MessageType.success,'Expense Approved.',false);
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Expense Approved.', false);
             // this.displayModal = false;
             this.sendMailToSelectedLineItems(type);
         } else if (type === 'Cancel Expense' || type === 'Reject Expense') {
 
-            this.commonService.showToastrMessage(this.constantService.MessageType.success,'Submitted.',false);
+            this.commonService.showToastrMessage(this.constantService.MessageType.success, 'Submitted.', false);
             // this.displayModal = false;
             this.sendMailToSelectedLineItems(type);
         }
@@ -963,7 +970,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 mailContent = this.replaceContent(mailContent, '@@Val8@@', this.expenseForm.value.PaymentMode.value);
                 mailContent = this.replaceContent(mailContent, '@@Val9@@', this.datePipe.transform(this.expenseForm.value.DateSpend, 'dd MMMM yyyy, hh:mm a'));
                 mailContent = this.replaceContent(mailContent, '@@Val11@@', this.expenseForm.value.Number);
-                mailContent = this.replaceContent(mailContent, '@@Val12@@', '<a download target="_blank" href="' + this.globalService.sharePointPageObject.rootsite + '' + this.fileUploadedUrl +'">Click here</a>');
+                mailContent = this.replaceContent(mailContent, '@@Val12@@', '<a download target="_blank" href="' + this.globalService.sharePointPageObject.rootsite + '' + this.fileUploadedUrl + '">Click here</a>');
             } else {
                 mailContent = this.replaceContent(mailContent, '@@Val8@@', '');
                 mailContent = this.replaceContent(mailContent, '@@Val9@@', '');

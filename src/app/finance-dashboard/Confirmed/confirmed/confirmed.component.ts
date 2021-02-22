@@ -1019,6 +1019,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 appendix.dvcode = project.WBJID ? project.WBJID : '';
                 appendix.cactusSpCode = project.ProjectCode ? project.ProjectCode : '';
                 appendix.title = project.Title ? project.Title : '';
+                
             }
             // console.log('element ----> ', element);
             appendix.poc = element.POCName;

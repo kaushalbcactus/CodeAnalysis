@@ -111,6 +111,11 @@ export class FdConstantsService {
             top: 4500,
             orderby: "{{Status}} desc"
         },
+        last15DaySpendingInfo: {
+            select: "ID,Title,Status,Created",
+            filter: "(Status ne '{{Status}}' and Status ne '{{Status1}}') and (Created ge \'{{startDateString}}\' and Created le \'{{endDateString}}\')",
+            top: 4500
+        },
         spendingInfoCS: {
             select: "ID,Title,Number,Header,DateSpend,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,NotesMT,InvoiceID,CategoryST,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,Author/Id,Author/Title,Author/EMail,Editor/Id, Editor/Title",
             filter: "Status eq '{{Status}}' and AccessId eq {{UserID}}",
@@ -349,7 +354,7 @@ export class FdConstantsService {
         },
 
         invoiceLineItemByProject: {
-            select: "ID,Title,Status,Amount,PO,MainPOC,ScheduleType,InvoiceLookup,ProformaLookup",
+            select: "ID,Title,Status,Amount,PO,MainPOC,ScheduleType,InvoiceLookup,ProformaLookup,ScheduledDate",
             filter: "Title eq '{{ProjectCode}}' ",
             top: 4500
         },

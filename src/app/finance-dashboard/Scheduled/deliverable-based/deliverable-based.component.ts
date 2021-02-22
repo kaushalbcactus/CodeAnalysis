@@ -252,18 +252,18 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     createDBICols() {
         this.deliverableBasedCols = [
-            { field: 'ProjectCode', header: 'Project Code', visibility: true, Type: 'string', dbName: 'ProjectCode', options: []  },
+            { field: 'ProjectCode', header: 'Project Code', visibility: true, Type: 'string', dbName: 'ProjectCode', options: [] },
             { field: 'ProjectTitle', header: 'Project Title', visibility: false },
-            { field: 'ShortTitle', header: 'Short Title', visibility: true, Type: 'string', dbName: 'ShortTitle', options: []  },
-            { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true, Type: 'string', dbName: 'SOWValue', options: []  },
-            { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true, Type: 'string', dbName: 'ProjectMileStone', options: []  },
-            { field: 'POValues', header: 'PO Number/ Name', visibility: true, Type: 'string', dbName: 'POValues', options: []  },
-            { field: 'ClientName', header: 'Client', visibility: true, Type: 'string', dbName: 'ClientName', options: []  },
+            { field: 'ShortTitle', header: 'Short Title', visibility: true, Type: 'string', dbName: 'ShortTitle', options: [] },
+            { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true, Type: 'string', dbName: 'SOWValue', options: [] },
+            { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true, Type: 'string', dbName: 'ProjectMileStone', options: [] },
+            { field: 'POValues', header: 'PO Number/ Name', visibility: true, Type: 'string', dbName: 'POValues', options: [] },
+            { field: 'ClientName', header: 'Client', visibility: true, Type: 'string', dbName: 'ClientName', options: [] },
             { field: 'ScheduledDateFormat', header: 'Scheduled Date', visibility: false },
-            { field: 'ScheduledDate', header: 'Scheduled Date', visibility: true, exportable: false, Type: 'datetime', dbName: 'ScheduledDate', options: []  },
-            { field: 'Amount', header: 'Amount', visibility: true, Type: 'number', dbName: 'Amount', options: []  },
-            { field: 'Currency', header: 'Currency', visibility: true, Type: 'string', dbName: 'Currency', options: []  },
-            { field: 'POCName', header: 'POC Name', visibility: true, Type: 'string', dbName: 'POCName', options: []  },
+            { field: 'ScheduledDate', header: 'Scheduled Date', visibility: true, exportable: false, Type: 'datetime', dbName: 'ScheduledDate', options: [] },
+            { field: 'Amount', header: 'Amount', visibility: true, Type: 'number', dbName: 'Amount', options: [] },
+            { field: 'Currency', header: 'Currency', visibility: true, Type: 'string', dbName: 'Currency', options: [] },
+            { field: 'POCName', header: 'POC Name', visibility: true, Type: 'string', dbName: 'POCName', options: [] },
             { field: 'SOWName', header: 'SOW Name', visibility: false },
             { field: 'SOWCode', header: 'SOW Code', visibility: false },
             { field: 'POName', header: 'PO Name', visibility: false },
@@ -540,7 +540,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             });
             ref.onClose.subscribe((editInvoice: any) => {
                 if (editInvoice) {
-                    const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess('revenue',this.selectedRowItem, editInvoice)
+                    const batchURL = this.fdDataShareServie.EditInvoiceDialogProcess('revenue', this.selectedRowItem, editInvoice)
                     this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem', 'POST');
                     this.submitForm(batchURL, 'editInvoice');
                 }
@@ -561,13 +561,15 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     }
 
 
-    onSubmit(type: string) {
+    async onSubmit(type: string) {
         this.formSubmit.isSubmit = true;
         const batchUrl = [];
+        const invoiceNumber = await this.getInvoiceNumber();
         if (type === 'confirmInvoice') {
             // console.log('form is submitting ..... for selected row Item i.e ', this.selectedRowItem);
             const iliData = {
-                Status: 'Confirmed'
+                Status: 'Confirmed',
+                AdditionalInfo: ''+invoiceNumber
             };
             iliData['__metadata'] = { type: this.constantService.listNames.InvoiceLineItems.type };
             const iliObj = Object.assign({}, this.queryConfig);
@@ -580,6 +582,24 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'updateInvoiceLineItem', 'POST');
             this.submitForm(batchUrl, type);
 
+        }
+    }
+    async getInvoiceNumber() {
+        console.log(this.selectedRowItem);
+        //Get the number of invoices against this project code.
+        //Sort the invoices in ascending order and save the invoice number.
+        //Invoice number should be saved in AdditionalInfo column of InvoicelineItems list.
+        const getInvoiceLineItems = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItemByProject);
+        getInvoiceLineItems.filter = getInvoiceLineItems.filter.replace(/{{ProjectCode}}/gi, this.selectedRowItem.ProjectCode);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-DeliverableBased', 'getInvoiceNumber', 'GET');
+        const invoiceLineItemsResults = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, getInvoiceLineItems);
+        if (invoiceLineItemsResults && invoiceLineItemsResults.length) {
+            const customSortData = invoiceLineItemsResults.slice().sort(function (a, b) {
+                const dateA = new Date(a.ScheduledDate).getTime();
+                const dateB = new Date(b.ScheduledDate).getTime();
+                return dateA - dateB;
+            });
+            return customSortData.findIndex(a => a.Id == this.selectedRowItem.Id) + 1;
         }
     }
 
